@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>7527 Mücadele & Dilekçe Platformu</title>
+    <title>7527 Mücadele, Oy Takip & Dilekçe Platformu</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -26,12 +26,12 @@
                 <span class="text-red-500 text-2xl"><i class="fa-solid fa-paw"></i></span>
                 <div>
                     <span class="font-extrabold text-base sm:text-lg tracking-wider text-white uppercase block leading-none">YAŞAM HAKKI</span>
-                    <span class="text-[10px] sm:text-xs text-red-500 font-semibold tracking-widest uppercase">7527 BASKI & DİLEKÇE PLATFORMU</span>
+                    <span class="text-[10px] sm:text-xs text-red-500 font-semibold tracking-widest uppercase">7527 OY TAKİP & DİLEKÇE PLATFORMU</span>
                 </div>
             </div>
             
             <div class="hidden md:flex items-center space-x-6 text-sm font-medium">
-                <a href="#vekil-takip" class="text-gray-300 hover:text-white transition"><i class="fa-solid fa-landmark text-red-500 mr-1"></i> Vekil İmza Takibi</a>
+                <a href="#vekil-takip" class="text-gray-300 hover:text-white transition"><i class="fa-solid fa-check-to-slot text-red-500 mr-1"></i> Vekil Oy & İmza Takibi</a>
                 <a href="#dilekce-bolumu" class="text-gray-300 hover:text-white transition"><i class="fa-solid fa-file-signature text-red-500 mr-1"></i> Dilekçe Oluştur</a>
                 <a href="#bilgi-rehberi" class="text-gray-300 hover:text-white transition"><i class="fa-solid fa-circle-info text-red-500 mr-1"></i> Yasal Bilgi</a>
             </div>
@@ -47,31 +47,31 @@
         <!-- Başlık -->
         <section class="space-y-4 text-center md:text-left">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-red-950/80 text-red-400 border border-red-800/60">
-                <i class="fa-solid fa-bullhorn"></i> DOĞRUDAN MÜCADELE VE BASKI PLATFORMU
+                <i class="fa-solid fa-bullhorn"></i> ŞEFFAF OY VE İMZA TAKİP HAREKETİ
             </div>
             <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-white leading-tight">
-                7527 SAYILI KANUNA KARŞI<br>
-                <span class="text-red-500">RESMİ DİLEKÇE VE VEKİL BASKI PANELİ</span>
+                7527 SAYILI KANUN<br>
+                <span class="text-red-500">VEKİL OY GEÇMİŞİ & DİLEKÇE PANELİ</span>
             </h1>
             <p class="text-gray-300 text-sm sm:text-base max-w-3xl">
-                Süreç uzatılmadan, doğrudan ilgili makamlara (Cumhurbaşkanlığı, TBMM Başkanlığı, Vekiller) resmi dilekçelerinizi iletin ve vekillerin imza durumunu anlık takip ederek baskı oluşturun.
+                Milletvekillerinin kanun oylamasındaki **önceki oylarını (Kabul / Ret / Katılmadı)** görün, imza/baskı durumlarını takip edin ve ilgili makamlara kişiselleştirilmiş dilekçenizi oluşturun.
             </p>
         </section>
 
-        <!-- SEKSİYON 1: VEKİL İMZA VE BASKI TAKİBİ -->
+        <!-- SEKSİYON 1: VEKİL OY GEÇMİŞİ VE İMZA/BASKI TAKİBİ -->
         <section id="vekil-takip" class="space-y-6 pt-4 border-t border-gray-800">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h2 class="text-2xl font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-landmark text-red-500"></i> Milletvekili İmza Takip ve Kamuoyu Baskı Paneli
+                        <i class="fa-solid fa-landmark text-red-500"></i> Vekil Oy Geçmişi & İmza Takip Paneli
                     </h2>
-                    <p class="text-xs sm:text-sm text-gray-400">Vekillerin imzalarını takip edin, imza atmayan vekillere sosyal medyadan doğrudan çağrı yapın.</p>
+                    <p class="text-xs sm:text-sm text-gray-400">Vekillerin 7527 oylamasındaki tutumlarını inceleyin ve iptal/düzeltme desteği için doğrudan baskı kurun.</p>
                 </div>
 
                 <!-- Sayaç -->
                 <div class="glass-card px-4 py-3 rounded-xl flex items-center gap-4 border-gray-800">
                     <div>
-                        <span class="text-[10px] text-gray-400 block uppercase font-semibold">Atılan İmza</span>
+                        <span class="text-[10px] text-gray-400 block uppercase font-semibold">İptal / İmzacı Vekil</span>
                         <span class="text-xl font-black text-red-500"><span id="statSignedMps">0</span> / 200</span>
                     </div>
                     <div class="w-24 bg-gray-800 h-2.5 rounded-full overflow-hidden">
@@ -82,10 +82,11 @@
             </div>
 
             <!-- Filtreler -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                <input type="text" id="searchInput" oninput="renderVekilData()" placeholder="Vekil adı, parti veya il yazın..." class="bg-gray-900 border border-gray-800 text-xs sm:text-sm rounded-xl px-3.5 py-2.5 text-gray-200 focus:outline-none focus:border-red-500">
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-2">
+                <input type="text" id="searchInput" oninput="renderVekilData()" placeholder="Vekil adı, parti veya il..." class="bg-gray-900 border border-gray-800 text-xs sm:text-sm rounded-xl px-3.5 py-2.5 text-gray-200 focus:outline-none focus:border-red-500">
+                
                 <select id="partyFilter" onchange="renderVekilData()" class="bg-gray-900 border border-gray-800 text-xs sm:text-sm rounded-xl px-3.5 py-2.5 text-gray-200 focus:outline-none focus:border-red-500">
-                    <option value="">Tüm Siyasi Partiler</option>
+                    <option value="">Tüm Partiler</option>
                     <option value="CHP">CHP</option>
                     <option value="AK Parti">AK Parti</option>
                     <option value="DEM Parti">DEM Parti</option>
@@ -93,10 +94,18 @@
                     <option value="İYİ Parti">İYİ Parti</option>
                     <option value="Bağımsız">Bağımsız</option>
                 </select>
+
+                <select id="voteFilter" onchange="renderVekilData()" class="bg-gray-900 border border-gray-800 text-xs sm:text-sm rounded-xl px-3.5 py-2.5 text-gray-200 focus:outline-none focus:border-red-500">
+                    <option value="">Tüm Meclis Oyları</option>
+                    <option value="Kabul">Kabul Oyu Verenler</option>
+                    <option value="Ret">Ret Oyu Verenler</option>
+                    <option value="Katılmadı">Oylamaya Katılmayanlar</option>
+                </select>
+
                 <select id="statusFilter" onchange="renderVekilData()" class="bg-gray-900 border border-gray-800 text-xs sm:text-sm rounded-xl px-3.5 py-2.5 text-gray-200 focus:outline-none focus:border-red-500">
                     <option value="">Tüm İmza Durumları</option>
-                    <option value="signed">İmza Verdi</option>
-                    <option value="pending">İmza Vermedi (Baskı Yap)</option>
+                    <option value="signed">İmzaladı / Destekliyor</option>
+                    <option value="pending">İmzalamadı (Baskı Yap)</option>
                 </select>
             </div>
 
@@ -108,9 +117,9 @@
                             <th class="px-4 py-3">Milletvekili</th>
                             <th class="px-4 py-3">Parti</th>
                             <th class="px-4 py-3">Seçim Çevresi</th>
-                            <th class="px-4 py-3 text-center">İmza Durumu</th>
-                            <th class="px-4 py-3 text-center">Durum Güncelle</th>
-                            <th class="px-4 py-3 text-center">Sosyal Medya Baskısı</th>
+                            <th class="px-4 py-3 text-center">7527 Oylaması (Önceki Oy)</th>
+                            <th class="px-4 py-3 text-center">Mevcut İmza / Tutum</th>
+                            <th class="px-4 py-3 text-center">Aksiyon</th>
                         </tr>
                     </thead>
                     <tbody id="vekilTableBody" class="divide-y divide-gray-800/60 font-medium"></tbody>
@@ -245,7 +254,7 @@
                 <div class="glass-card p-4 rounded-xl border-gray-800 space-y-2">
                     <h4 class="font-bold text-red-400 text-xs"><i class="fa-solid fa-scale-balanced mr-1"></i> Usul Bilgisi (AYM Notu)</h4>
                     <p class="text-xs text-gray-300 leading-relaxed">
-                        Kanunların iptal davasına konu edilebilmesi için meclis üye tam sayısının en az 1/5'inin (200 Vekil) imzası gereklidir. İletilen dilekçeler vekilleri bu imza usulüne sevk etmeyi amaçlar.
+                        Kanunların iptal davasına konu edilebilmesi için meclis üye tam sayısının en az 1/5'inin (200 Vekil) imzası gereklidir. İletilen dilekçeler vekillere bu sorumluluğu hatırlatır.
                     </p>
                 </div>
             </div>
@@ -258,15 +267,15 @@
     </footer>
 
     <script>
-        // Vekil Listesi
+        // Önceki Meclis Oyu (vote) Verileri Eklendi
         let vekiller = JSON.parse(localStorage.getItem('vekil_listesi')) || [
-            { id: 1, name: "Ahmet Yılmaz", party: "CHP", city: "İstanbul", signed: true },
-            { id: 2, name: "Mehmet Demir", party: "CHP", city: "Ankara", signed: true },
-            { id: 3, name: "Ayşe Kaya", party: "AK Parti", city: "İzmir", signed: false },
-            { id: 4, name: "Ali Can", party: "DEM Parti", city: "Diyarbakır", signed: true },
-            { id: 5, name: "Fatma Şahin", party: "Bağımsız", city: "Bursa", signed: false },
-            { id: 6, name: "Mustafa Çelik", party: "MHP", city: "Adana", signed: false },
-            { id: 7, name: "Zeynep Arslan", party: "İYİ Parti", city: "Antalya", signed: true }
+            { id: 1, name: "Ahmet Yılmaz", party: "CHP", city: "İstanbul", vote: "Ret", signed: true },
+            { id: 2, name: "Mehmet Demir", party: "CHP", city: "Ankara", vote: "Ret", signed: true },
+            { id: 3, name: "Ayşe Kaya", party: "AK Parti", city: "İzmir", vote: "Kabul", signed: false },
+            { id: 4, name: "Ali Can", party: "DEM Parti", city: "Diyarbakır", vote: "Ret", signed: true },
+            { id: 5, name: "Fatma Şahin", party: "AK Parti", city: "Bursa", vote: "Kabul", signed: false },
+            { id: 6, name: "Mustafa Çelik", party: "MHP", city: "Adana", vote: "Kabul", signed: false },
+            { id: 7, name: "Zeynep Arslan", party: "İYİ Parti", city: "Antalya", vote: "Katılmadı", signed: true }
         ];
 
         // Gönderim Akışı
@@ -286,6 +295,7 @@
             const mobileCards = document.getElementById("vekilMobileCards");
             const search = document.getElementById("searchInput").value.toLowerCase();
             const party = document.getElementById("partyFilter").value;
+            const vote = document.getElementById("voteFilter").value;
             const status = document.getElementById("statusFilter").value;
 
             tbody.innerHTML = "";
@@ -300,8 +310,9 @@
             const filtered = vekiller.filter(v => {
                 const matchesSearch = v.name.toLowerCase().includes(search) || v.party.toLowerCase().includes(search) || v.city.toLowerCase().includes(search);
                 const matchesParty = party === "" || v.party === party;
+                const matchesVote = vote === "" || v.vote === vote;
                 const matchesStatus = status === "" || (status === "signed" ? v.signed : !v.signed);
-                return matchesSearch && matchesParty && matchesStatus;
+                return matchesSearch && matchesParty && matchesVote && matchesStatus;
             });
 
             if (filtered.length === 0) {
@@ -312,25 +323,30 @@
             }
 
             filtered.forEach(v => {
+                // Oy rozeti stili
+                let voteBadge = "";
+                if (v.vote === "Kabul") voteBadge = `<span class="bg-red-950 text-red-400 border border-red-800 text-[11px] px-2 py-0.5 rounded font-bold">KABUL</span>`;
+                else if (v.vote === "Ret") voteBadge = `<span class="bg-emerald-950 text-emerald-400 border border-emerald-800 text-[11px] px-2 py-0.5 rounded font-bold">RET</span>`;
+                else voteBadge = `<span class="bg-gray-800 text-gray-400 border border-gray-700 text-[11px] px-2 py-0.5 rounded font-bold">KATILMADI</span>`;
+
                 const tr = document.createElement("tr");
                 tr.className = "hover:bg-gray-900/40 transition";
                 tr.innerHTML = `
                     <td class="px-4 py-3 font-semibold text-white">${v.name}</td>
                     <td class="px-4 py-3"><span class="bg-gray-800 text-gray-200 border border-gray-700 text-xs px-2 py-0.5 rounded">${v.party}</span></td>
                     <td class="px-4 py-3 text-gray-400">${v.city}</td>
+                    <td class="px-4 py-3 text-center">${voteBadge}</td>
                     <td class="px-4 py-3 text-center">
                         ${v.signed 
                             ? `<span class="text-emerald-400 font-bold flex items-center justify-center gap-1"><i class="fa-solid fa-circle-check"></i> İMZA VERDİ</span>` 
                             : `<span class="text-red-400 font-bold flex items-center justify-center gap-1"><i class="fa-solid fa-circle-xmark"></i> VERMEDİ</span>`}
                     </td>
-                    <td class="px-4 py-3 text-center">
-                        <button onclick="toggleSignature(${v.id})" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-200 px-2.5 py-1 rounded border border-gray-700 transition">
-                            ${v.signed ? "İmzayı Kaldır" : "İmzaladı İşaretle"}
+                    <td class="px-4 py-3 text-center flex items-center justify-center gap-2">
+                        <button onclick="toggleSignature(${v.id})" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-200 px-2 py-1 rounded border border-gray-700 transition">
+                            ${v.signed ? "Kaldır" : "İmzacı Yap"}
                         </button>
-                    </td>
-                    <td class="px-4 py-3 text-center">
-                        <button onclick="pressureVekil('${v.name}', '${v.party}')" class="text-xs bg-red-950/80 hover:bg-red-900 text-red-300 border border-red-800 px-2.5 py-1 rounded transition flex items-center justify-center gap-1 mx-auto">
-                            <i class="fa-brands fa-x-twitter"></i> Çağrı Yap
+                        <button onclick="pressureVekil('${v.name}', '${v.party}', '${v.vote}')" class="text-xs bg-red-950/80 hover:bg-red-900 text-red-300 border border-red-800 px-2 py-1 rounded transition flex items-center gap-1">
+                            <i class="fa-brands fa-x-twitter"></i> Çağrı
                         </button>
                     </td>
                 `;
@@ -345,15 +361,18 @@
                             <span class="text-gray-400">${v.city} — </span>
                             <span class="text-red-400 font-semibold">${v.party}</span>
                         </div>
-                        ${v.signed 
-                            ? `<span class="text-emerald-400 font-bold text-[11px]"><i class="fa-solid fa-circle-check"></i> İMZA VERDİ</span>` 
-                            : `<span class="text-red-400 font-bold text-[11px]"><i class="fa-solid fa-circle-xmark"></i> VERMEDİ</span>`}
+                        <div class="text-right space-y-1">
+                            <div>${voteBadge}</div>
+                            ${v.signed 
+                                ? `<span class="text-emerald-400 font-bold text-[10px] block"><i class="fa-solid fa-circle-check"></i> İMZA VERDİ</span>` 
+                                : `<span class="text-red-400 font-bold text-[10px] block"><i class="fa-solid fa-circle-xmark"></i> VERMEDİ</span>`}
+                        </div>
                     </div>
                     <div class="flex justify-between items-center pt-2 border-t border-gray-800">
                         <button onclick="toggleSignature(${v.id})" class="bg-gray-800 hover:bg-gray-700 text-white px-2.5 py-1 rounded border border-gray-700 transition">
-                            ${v.signed ? "İmzayı Kaldır" : "İmzaladı İşaretle"}
+                            ${v.signed ? "İmzayı Kaldır" : "İmzacı Yap"}
                         </button>
-                        <button onclick="pressureVekil('${v.name}', '${v.party}')" class="bg-red-950 text-red-300 border border-red-800 px-2.5 py-1 rounded flex items-center gap-1">
+                        <button onclick="pressureVekil('${v.name}', '${v.party}', '${v.vote}')" class="bg-red-950 text-red-300 border border-red-800 px-2.5 py-1 rounded flex items-center gap-1">
                             <i class="fa-brands fa-x-twitter"></i> Çağrı Yap
                         </button>
                     </div>
@@ -371,8 +390,9 @@
             }
         }
 
-        function pressureVekil(name, party) {
-            const tweet = encodeURIComponent(`Sayın ${name} (${party}), 7527 Sayılı Kanun'un durdurulması ve iptali için sesimizi duyun, gereğini yapın! #7527İptal #YaşamHakkı`);
+        function pressureVekil(name, party, prevVote) {
+            let voteNote = prevVote === "Kabul" ? "Meclis oylamasındaki Kabul oyunuza karşılık," : "";
+            const tweet = encodeURIComponent(`Sayın ${name} (${party}), ${voteNote} 7527 Sayılı Kanun'un sahadaki yıkıcı etkilerine karşı sesimizi duyun ve iptal dilekçesine imza atın! #7527İptal #YaşamHakkı`);
             window.open(`https://twitter.com/intent/tweet?text=${tweet}`, '_blank');
         }
 
