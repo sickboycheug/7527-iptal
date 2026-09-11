@@ -3,723 +3,299 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>7527 Sayılı Kanun İptal & TBMM İmza Takip Platformu</title>
+    <title>7527 İptal! İmzacısı Ol | Sivil Hareket & Dilekçe Platformu</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome İkonları -->
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Oswald:wght@700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- pdfMake (Vektörel PDF) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-    <!-- GoatCounter Analytics -->
-    <script data-goatcounter="https://7527-iptal.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
-
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&display=swap');
-        .dilekce-metni { font-family: 'Merriweather', serif; }
-        
-        @media print {
-            body { background: white !important; color: black !important; }
-            header, footer, .no-print { display: none !important; }
-            main { display: block !important; max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
-            #dilekceKutusu { border: none !important; box-shadow: none !important; background: white !important; padding: 0 !important; }
-        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .font-campaign { font-family: 'Oswald', sans-serif; }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col justify-between">
+<body class="bg-slate-50 text-slate-800 antialiased">
 
-    <!-- Header -->
-    <header class="bg-gradient-to-r from-red-900 via-red-800 to-slate-900 text-white shadow-lg no-print">
-        <div class="max-w-7xl mx-auto px-4 py-5 flex flex-col md:flex-row justify-between items-center gap-4">
-            <div>
-                <h1 class="text-xl md:text-2xl font-bold flex items-center gap-3">
-                    <i class="fa-solid fa-scale-balanced text-amber-400"></i>
-                    7527 Sayılı Kanun İptal & TBMM İmza Takip Platformu
-                </h1>
-                <p class="text-red-200 text-xs mt-1">
-                    Vatandaş Dilekçeleri, TBMM Kanun Teklifi Hazırlayıcı ve Vekil İmza Süreç Takibi
-                </p>
-            </div>
-            
-            <!-- Meclis İmza Sayacı Rozeti -->
-            <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl px-4 py-2 flex items-center gap-4">
-                <div class="text-center">
-                    <span class="text-[10px] uppercase tracking-wider text-slate-300 block font-semibold">Destekçi Vekil</span>
-                    <span id="imzaSayisiKafa" class="text-lg font-black text-amber-400">0 / 600</span>
+    <!-- TOP NAVIGATION -->
+    <header class="sticky top-0 z-50 bg-slate-900 text-white shadow-xl border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-red-600 p-2.5 rounded-xl text-white font-bold text-xl flex items-center justify-center">
+                    <i class="fa-solid fa-paw"></i>
                 </div>
-                <div class="w-24 bg-slate-700/60 h-2.5 rounded-full overflow-hidden">
-                    <div id="imzaBarKafa" class="bg-amber-400 h-full w-0 transition-all duration-500"></div>
+                <div>
+                    <span class="font-campaign text-2xl tracking-wider text-white uppercase block leading-none">YAŞAM HAKKI</span>
+                    <span class="text-xs text-red-400 font-semibold tracking-widest uppercase">Sivil Platform</span>
                 </div>
             </div>
+            <nav class="hidden md:flex items-center space-x-8 text-sm font-semibold text-slate-300">
+                <a href="#dashboard" class="hover:text-white transition">İmza Paneli</a>
+                <a href="#dilekceler" class="hover:text-white transition">Dilekçe & Teklifler</a>
+                <a href="#vekil-ara" class="hover:text-white transition">Vekiline Ulaş</a>
+            </nav>
+            <a href="#dilekceler" class="bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-2.5 rounded-xl shadow-lg shadow-red-600/30 transition flex items-center space-x-2">
+                <i class="fa-solid fa-file-pen"></i>
+                <span>İmza Ver / Dilekçe Oluştur</span>
+            </a>
         </div>
     </header>
 
-    <!-- Ana Gövde -->
-    <main class="max-w-7xl mx-auto w-full px-4 py-6 flex-grow space-y-6">
-
-        <!-- Mod Değiştirme Tabları -->
-        <div class="flex border-b border-slate-300 gap-2 no-print">
-            <button id="tabBtnDilekce" onclick="tabDegistir('dilekce')" class="py-2.5 px-5 font-bold text-sm border-b-2 border-red-700 text-red-800 flex items-center gap-2 bg-white rounded-t-lg shadow-sm">
-                <i class="fa-solid fa-file-contract"></i> Dilekçe & Kanun Teklifi Oluşturucu
-            </button>
-            <button id="tabBtnTakip" onclick="tabDegistir('takip')" class="py-2.5 px-5 font-semibold text-sm border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-2 rounded-t-lg hover:bg-slate-200/60 transition">
-                <i class="fa-solid fa-users-viewfinder text-amber-600"></i> Meclis İmza Takip Paneli
-            </button>
-        </div>
-
-        <!-- DİLEKÇE & KANUN TEKLİFİ MODU -->
-        <div id="dilekceModu" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
-            <!-- Sol Panel: Seçenekler -->
-            <section class="lg:col-span-1 bg-white p-5 rounded-2xl shadow-sm border border-slate-200 h-fit space-y-4 no-print">
-                <h2 class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
-                    <i class="fa-solid fa-sliders text-red-700"></i>
-                    Belge Türü & Parametreler
-                </h2>
-
-                <!-- 1. Belge Türü Seçimi -->
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Oluşturulacak Belge Türü:</label>
-                    <select id="dokumanTypeSelect" onchange="dokumanTipiDegisti()" class="w-full p-2.5 border rounded-lg bg-slate-50 border-slate-300 text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-red-500 focus:outline-none">
-                        <option value="1">1. Vekile Doğrudan Talep ve Taahhüt Dilekçesi</option>
-                        <option value="2">2. Cumhurbaşkanlığı / TBMM Resmi Yurttaş Dilekçesi</option>
-                        <option value="3">3. TBMM Kanun Teklifi ve Genel Gerekçe Metni</option>
-                        <option value="4">4. Kanun Teklifi Ortak İmza Sirküsü (Çarşaf Liste)</option>
-                        <option value="5">5. Vekilin Teklife Sonradan Katılma Dilekçesi</option>
-                    </select>
-                </div>
-
-                <hr class="border-slate-100">
-
-                <!-- 2. İl / Makam Seçimi -->
-                <div id="alanBolgeSelect">
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Gönderilecek İl / Makam:</label>
-                    <select id="bolgeSelect" onchange="bolgeDegisti()" class="w-full p-2 border rounded-lg bg-slate-50 border-slate-300 text-xs">
-                    </select>
-                </div>
-
-                <!-- 3. Vekil / Muhatap Seçimi -->
-                <div id="alanVekilSelect">
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Milletvekili / Muhatap:</label>
-                    <select id="vekilSelect" onchange="dilekceGuncelle()" class="w-full p-2 border rounded-lg bg-slate-50 border-slate-300 text-xs mb-1">
-                    </select>
-                    <input type="text" id="customVekil" placeholder="Listede yoksa Ad Soyad yazın..." oninput="dilekceGuncelle()" class="w-full p-2 border rounded border-slate-300 text-xs bg-slate-50">
-                </div>
-
-                <!-- Özel Ekstra Alanlar (Esas No / Sicil No) -->
-                <div id="alanEkstraVekil" class="hidden space-y-2 bg-slate-50 p-3 rounded-lg border border-slate-200">
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-600">Teklif Esas No:</label>
-                        <input type="text" id="inputEsasNo" value="2/1234" oninput="dilekceGuncelle()" class="w-full p-1.5 border rounded text-xs">
+    <!-- HERO BANNER (Görsel Temanızla Uyumlu Header) -->
+    <section class="relative bg-slate-950 text-white py-16 overflow-hidden">
+        <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#dc2626_1px,transparent_1px)] [background-size:16px_16px]"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid lg:grid-cols-12 gap-8 items-center">
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="inline-flex items-center space-x-2 bg-red-950/80 border border-red-800/50 text-red-400 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">
+                        <i class="fa-solid fa-bullhorn animate-pulse"></i>
+                        <span>Kanun İptal Mücadelesi</span>
                     </div>
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-600">Milletvekili TBMM Sicil No:</label>
-                        <input type="text" id="inputSicilNo" placeholder="Örn: 2841" oninput="dilekceGuncelle()" class="w-full p-1.5 border rounded text-xs">
+                    <h1 class="font-campaign text-5xl sm:text-7xl font-bold tracking-tight leading-none text-white">
+                        <span class="bg-red-600 px-3 py-1 text-white inline-block transform -rotate-1 shadow-lg">7527 İPTAL!</span><br>
+                        <span class="text-slate-100">İMZACISI OL!</span>
+                    </h1>
+                    <p class="text-xl font-bold text-slate-300 italic flex items-center space-x-2">
+                        <span>"Öldüren değil, yaşatan ol!"</span>
+                        <i class="fa-solid fa-paw text-red-500"></i>
+                    </p>
+                    <div class="pt-4 flex flex-wrap gap-3 border-t border-slate-800 text-sm font-semibold text-slate-400">
+                        <span class="flex items-center space-x-1.5"><i class="fa-solid fa-check text-red-500"></i><span>Yaşam Hakkı İçin</span></span>
+                        <span>•</span>
+                        <span class="flex items-center space-x-1.5"><i class="fa-solid fa-check text-red-500"></i><span>Hayvanlar İçin</span></span>
+                        <span>•</span>
+                        <span class="flex items-center space-x-1.5"><i class="fa-solid fa-check text-red-500"></i><span>Geleceğimiz İçin</span></span>
                     </div>
                 </div>
 
-                <!-- Vatandaş Bilgileri -->
-                <div id="alanVatandasBilgi" class="space-y-2 pt-1 border-t border-slate-100">
-                    <h3 class="text-xs font-bold text-slate-600 uppercase tracking-wider">Vatandaş / İmzacı Bilgileri</h3>
-                    <input type="text" id="inputAd" placeholder="Adınız Soyadınız" oninput="dilekceGuncelle()" class="w-full p-2 border rounded border-slate-300 text-xs">
-                    <input type="text" id="inputTC" maxlength="11" placeholder="T.C. Kimlik No (İsteğe Bağlı)" oninput="dilekceGuncelle()" class="w-full p-2 border rounded border-slate-300 text-xs">
-                    <input type="text" id="inputAdres" placeholder="İkamet Adresiniz / İl" oninput="dilekceGuncelle()" class="w-full p-2 border rounded border-slate-300 text-xs">
-                </div>
-
-                <!-- Sosyal Medya Gizlilik Modu Toggle -->
-                <div id="alanGizlilik" class="bg-amber-50/90 p-3 rounded-xl border border-amber-200">
-                    <label class="flex items-start gap-2 cursor-pointer">
-                        <input type="checkbox" id="gizlilikToggle" onchange="dilekceGuncelle()" class="w-4 h-4 mt-0.5 text-red-600 rounded border-slate-300 focus:ring-red-500">
+                <!-- TBMM CANLI İMZA DASHBOARD CARD -->
+                <div id="dashboard" class="lg:col-span-5 bg-slate-900/90 border border-slate-800 backdrop-blur-md rounded-2xl p-6 shadow-2xl">
+                    <div class="flex justify-between items-start mb-4">
                         <div>
-                            <span class="text-xs font-bold text-amber-900 block">
-                                <i class="fa-solid fa-user-shield text-amber-700 mr-1"></i>
-                                Sosyal Medya Gizlilik Modu
-                            </span>
-                            <span class="text-[10px] text-amber-800 block leading-tight mt-0.5">
-                                Ad, TC ve Adres bilgilerinizi maskeler; sosyal medyada güvenli paylaşım sağlar.
-                            </span>
+                            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">TBMM Canlı İlerleme</h3>
+                            <h4 class="text-xl font-bold text-white">Milletvekili Destek İmzaları</h4>
                         </div>
-                    </label>
-                </div>
-
-                <!-- Eylem Butonları -->
-                <div class="pt-2 space-y-2">
-                    <button onclick="pdfIndir(false)" class="w-full bg-red-700 hover:bg-red-800 text-white py-2.5 rounded-lg font-semibold flex items-center justify-center gap-2 shadow transition text-xs">
-                        <i class="fa-solid fa-file-pdf"></i> Resmî PDF İndir (Net Format)
-                    </button>
-
-                    <button onclick="pdfIndir(true)" class="w-full bg-slate-700 hover:bg-slate-800 text-white py-2 rounded-lg font-semibold flex items-center justify-center gap-2 shadow transition text-xs">
-                        <i class="fa-solid fa-shield-halved text-amber-400"></i> Sosyal Medya PDF'i (Maskeli)
-                    </button>
-
-                    <div class="grid grid-cols-2 gap-2">
-                        <button onclick="window.print()" class="bg-emerald-700 hover:bg-emerald-800 text-white py-2 rounded-lg font-semibold flex items-center justify-center gap-1.5 text-xs shadow">
-                            <i class="fa-solid fa-print"></i> Yazdır
-                        </button>
-                        <button onclick="epostaGonder()" class="bg-blue-700 hover:bg-blue-800 text-white py-2 rounded-lg font-semibold flex items-center justify-center gap-1.5 text-xs shadow">
-                            <i class="fa-solid fa-paper-plane"></i> E-Posta Gönder
-                        </button>
-                    </div>
-
-                    <button onclick="tweetAt()" class="w-full bg-sky-500 hover:bg-sky-600 text-white py-2 rounded-lg font-semibold flex items-center justify-center gap-2 text-xs shadow">
-                        <i class="fa-brands fa-x-twitter"></i> Twitter (X)'da Vekili Etiketle
-                    </button>
-                </div>
-            </section>
-
-            <!-- Sağ Panel: Canlı Kâğıt Önizlemesi -->
-            <section class="lg:col-span-2 bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
-                <div>
-                    <div class="flex justify-between items-center mb-4 border-b pb-3 no-print">
-                        <h2 class="text-sm font-bold text-slate-800 flex items-center gap-2">
-                            <i class="fa-solid fa-file-lines text-red-700"></i>
-                            Canlı Belge Önizlemesi
-                        </h2>
-                        <span id="gizlilikRozet" class="text-xs px-3 py-1 rounded-full border bg-slate-100 text-slate-600 font-medium">
-                            Normal Mod
+                        <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold px-2.5 py-1 rounded-full flex items-center space-x-1">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                            <span>Canlı Veri</span>
                         </span>
                     </div>
+                    
+                    <!-- Progress Bar -->
+                    <div class="space-y-2 my-6">
+                        <div class="flex justify-between text-sm font-bold">
+                            <span class="text-slate-300">Toplanan İmza: <strong class="text-red-500 text-lg">42</strong> / 600</span>
+                            <span class="text-slate-400">%7</span>
+                        </div>
+                        <div class="w-full bg-slate-800 rounded-full h-4 overflow-hidden p-0.5 border border-slate-700">
+                            <div class="bg-gradient-to-r from-red-600 to-orange-500 h-full rounded-full transition-all duration-1000" style="width: 7%"></div>
+                        </div>
+                        <p class="text-xs text-slate-400 text-right">Kanun teklifi sunumu için hedef: 200 Vekil</p>
+                    </div>
 
-                    <!-- Resmî Kâğıt Görünümü -->
-                    <div id="dilekceKutusu" class="p-8 md:p-12 bg-amber-50/10 border border-slate-300 rounded-lg shadow-sm font-serif space-y-6 text-slate-900 leading-relaxed min-h-[600px]">
-                        <!-- Dinamik İÇERİK JS TARAFINDAN YAZDIRILACAK -->
+                    <div class="grid grid-cols-2 gap-3 text-center border-t border-slate-800 pt-4">
+                        <div class="bg-slate-950/50 p-3 rounded-xl border border-slate-800/80">
+                            <span class="block text-2xl font-bold text-white">128.450</span>
+                            <span class="text-xs text-slate-400">Vatandaş Dilekçesi</span>
+                        </div>
+                        <div class="bg-slate-950/50 p-3 rounded-xl border border-slate-800/80">
+                            <span class="block text-2xl font-bold text-white">14</span>
+                            <span class="text-xs text-slate-400">Destekleyen Parti</span>
+                        </div>
                     </div>
                 </div>
-            </section>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN CONTENT: DİLEKÇE VE SÜREÇ YÖNETİMİ -->
+    <main id="dilekceler" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        
+        <!-- Tab Navigation Header -->
+        <div class="text-center max-w-3xl mx-auto mb-12">
+            <h2 class="text-3xl font-extrabold text-slate-900 sm:text-4xl">Dilekçe ve Yasal Metin Oluşturucu</h2>
+            <p class="mt-3 text-slate-600">Muhatabınızı seçin, formu doldurun. İster ıslak imzalı PDF olarak indirin, ister maskelenmiş sosyal medya görseli olarak paylaşın.</p>
         </div>
 
-        <!-- MECLİS İMZA TAKİP PANELİ MODU -->
-        <div id="takipModu" class="hidden space-y-6">
-            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b pb-4">
+        <!-- TAB BUTTONS -->
+        <div class="flex justify-center mb-8">
+            <div class="bg-slate-200 p-1.5 rounded-2xl inline-flex space-x-1 shadow-inner">
+                <button onclick="switchTab('vatandas')" id="tab-vatandas" class="tab-btn px-6 py-3 rounded-xl font-bold text-sm transition bg-white text-slate-900 shadow-sm">
+                    <i class="fa-solid fa-user-pen mr-2 text-red-600"></i>Vatandaş Dilekçeleri
+                </button>
+                <button onclick="switchTab('meclis')" id="tab-meclis" class="tab-btn px-6 py-3 rounded-xl font-bold text-sm transition text-slate-600 hover:text-slate-900">
+                    <i class="fa-solid fa-building-columns mr-2 text-red-600"></i>TBMM Kanun Teklifi & Metinler
+                </button>
+            </div>
+        </div>
+
+        <!-- TAB 1: VATANDAŞ DİLEKÇELERİ MODÜLÜ -->
+        <div id="content-vatandas" class="tab-content grid lg:grid-cols-12 gap-8">
+            <!-- Sol: Form -->
+            <div class="lg:col-span-6 bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200">
+                <h3 class="text-lg font-bold text-slate-900 mb-6 flex items-center justify-between">
+                    <span>1. Dilekçe Detayları</span>
+                    <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-lg">Adım 1/2</span>
+                </h3>
+                
+                <form class="space-y-4">
                     <div>
-                        <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-                            <i class="fa-solid fa-check-to-slot text-red-700"></i>
-                            TBMM 7527 İptal Teklifi Vekil İmza Süreç Takibi
-                        </h2>
-                        <p class="text-xs text-slate-500 mt-0.5">
-                            İptal teklifine destek veren, imzalayan ve henüz imza atmamış milletvekillerinin güncel listesi.
-                        </p>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Dilekçe Muhatabı</label>
+                        <select class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 font-semibold text-slate-800 focus:ring-2 focus:ring-red-600 focus:outline-none">
+                            <option>🏛️ TBMM Başkanlığına Dilekçe</option>
+                            <option>📜 Cumhurbaşkanlığına Dilekçe</option>
+                            <option>👥 Bölge Milletvekiline Çağrı Dilekçesi</option>
+                        </select>
                     </div>
 
-                    <!-- Filtreleme Araçları -->
-                    <div class="flex flex-wrap gap-2 w-full md:w-auto">
-                        <input type="text" id="takipArama" oninput="takipFiltrele()" placeholder="Vekil veya İl Ara..." class="p-2 border rounded-lg text-xs w-full md:w-48">
-                        <select id="takipPartiFiltre" onchange="takipFiltrele()" class="p-2 border rounded-lg text-xs bg-slate-50">
-                            <option value="ALL">Tüm Partiler</option>
-                            <option value="CHP">CHP</option>
-                            <option value="AKP">AKP</option>
-                            <option value="DEM">DEM</option>
-                            <option value="MHP">MHP</option>
-                            <option value="İYİ">İYİ Parti</option>
-                            <option value="TİP">TİP</option>
-                            <option value="BAĞIMSIZ">Bağımsız</option>
-                        </select>
-                        <select id="takipDurumFiltre" onchange="takipFiltrele()" class="p-2 border rounded-lg text-xs bg-slate-50">
-                            <option value="ALL">Tüm Durumlar</option>
-                            <option value="imzaladi">İmzaladı / İmzacı</option>
-                            <option value="bekliyor">Bekliyor / Talep Edildi</option>
-                        </select>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Ad Soyad</label>
+                            <input type="text" placeholder="Ahmet Yılmaz" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-red-600 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">T.C. Kimlik No</label>
+                            <input type="text" placeholder="12345678901" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-red-600 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Şehir / Adres</label>
+                        <input type="text" placeholder="İkametgah Şehri" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-red-600 focus:outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Dilekçe Notu / Ek Talep</label>
+                        <textarea rows="3" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-red-600 focus:outline-none" placeholder="7527 sayılı kanunun iptali ve sahipsiz hayvanların yaşam hakkının güvenceye alınması hususunda..."></textarea>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Sağ: Canlı Önizleme ve İndirme Seçenekleri -->
+            <div class="lg:col-span-6 bg-slate-900 text-white p-6 sm:p-8 rounded-2xl shadow-xl flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-sm font-bold text-red-400 uppercase tracking-wider"><i class="fa-solid fa-eye mr-2"></i>Canlı Önizleme</h3>
+                        <span class="text-xs text-slate-400">A4 Standart Format</span>
+                    </div>
+
+                    <!-- Dilekçe Önizleme Kutusu -->
+                    <div class="bg-slate-950 border border-slate-800 p-5 rounded-xl text-xs text-slate-300 font-mono space-y-3 leading-relaxed shadow-inner">
+                        <p class="text-center font-bold text-white uppercase border-b border-slate-800 pb-2">TÜRKIYE BÜYÜK MİLLET MECLİSİ BAŞKANLIĞINA</p>
+                        <p><strong>Konu:</strong> 7527 Sayılı Kanun'un İptali ve Sahipsiz Hayvanların Yaşam Hakkının Korunması Talebi Hk.</p>
+                        <p>7527 sayılı kanun kapsamında yürürlüğe giren düzenlemelerin vicdani ve hukuki açıdan telafisi imkansız zararlar doğurduğu aşikardır. Hayvanların yaşam hakkını savunmak sivil bir sorumluluktur...</p>
+                        <div class="pt-2 border-t border-slate-800 flex justify-between text-slate-500">
+                            <span>Gönderen: A**** Y*****</span>
+                            <span>T.C.: 123******01</span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- İmza İstatistik Özet Kartları -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center">
-                        <span class="text-xs text-slate-500 font-medium block">Toplam Milletvekili</span>
-                        <span class="text-xl font-extrabold text-slate-800">600</span>
-                    </div>
-                    <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-200 text-center">
-                        <span class="text-xs text-emerald-700 font-medium block">İmza Veren Vekil</span>
-                        <span id="statImzaladi" class="text-xl font-extrabold text-emerald-800">0</span>
-                    </div>
-                    <div class="bg-amber-50 p-4 rounded-xl border border-amber-200 text-center">
-                        <span class="text-xs text-amber-700 font-medium block">Bekleyen Vekil</span>
-                        <span id="statBekliyor" class="text-xl font-extrabold text-amber-800">600</span>
-                    </div>
-                    <div class="bg-blue-50 p-4 rounded-xl border border-blue-200 text-center">
-                        <span class="text-xs text-blue-700 font-medium block">İmza Oranı</span>
-                        <span id="statOran" class="text-xl font-extrabold text-blue-800">%0.0</span>
+                <!-- İNDİRME VE PAYLAŞIM AKSİYONLARI (PDF & MASKELİ PNG/JPG) -->
+                <div class="mt-8 pt-6 border-t border-slate-800 space-y-4">
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">İndirme ve Paylaşım Formatı Seçin</h4>
+                    
+                    <div class="grid sm:grid-cols-2 gap-3">
+                        <!-- Sosyal Medya (Maskeli PNG/JPG) -->
+                        <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 hover:border-red-500/50 transition">
+                            <div class="flex items-center space-x-2 text-white font-bold text-sm mb-1">
+                                <i class="fa-solid fa-image text-amber-400"></i>
+                                <span>Sosyal Medya (PNG/JPG)</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mb-3">T.C. No ve Adres maskelenir (KVKK Uyumlu). Instagram/X için idealdir.</p>
+                            <button class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-2 rounded-lg text-xs transition flex items-center justify-center space-x-1">
+                                <i class="fa-solid fa-download"></i>
+                                <span>Maskeli Görsel İndir</span>
+                            </button>
+                        </div>
+
+                        <!-- Posta / Resmi PDF (Eksiksiz) -->
+                        <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 hover:border-red-500/50 transition">
+                            <div class="flex items-center space-x-2 text-white font-bold text-sm mb-1">
+                                <i class="fa-solid fa-file-pdf text-red-400"></i>
+                                <span>Resmi Posta (PDF)</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mb-3">Islak imza ve tam kişisel veri içerir. PTT Posta ve CİMER içindir.</p>
+                            <button class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg text-xs transition flex items-center justify-center space-x-1">
+                                <i class="fa-solid fa-file-arrow-down"></i>
+                                <span>Eksiksiz PDF İndir</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <!-- Vekil İmza Tablosu -->
-                <div class="overflow-x-auto border rounded-xl border-slate-200">
-                    <table class="w-full text-left text-xs text-slate-700">
-                        <thead class="bg-slate-100 text-slate-800 font-bold uppercase tracking-wider border-b">
-                            <tr>
-                                <th class="p-3">Sıra</th>
-                                <th class="p-3">Milletvekili</th>
-                                <th class="p-3">Seçim Çevresi (İl)</th>
-                                <th class="p-3">Parti</th>
-                                <th class="p-3">İmza Durumu</th>
-                                <th class="p-3 text-right">Eylem / Baskı Yap</th>
-                            </tr>
-                        </thead>
-                        <tbody id="takipTabloGovde" class="divide-y divide-slate-200 bg-white">
-                            <!-- JS ile doldurulacak -->
-                        </tbody>
-                    </table>
+        <!-- TAB 2: MECLİS & VEKİL TEKLİFİ MODÜLÜ -->
+        <div id="content-meclis" class="tab-content hidden grid md:grid-cols-2 gap-8">
+            <!-- Kanun Teklifi & Genel Gerekçe Metni -->
+            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                <div>
+                    <div class="w-12 h-12 bg-red-100 text-red-600 rounded-xl flex items-center justify-center text-xl font-bold mb-4">
+                        <i class="fa-solid fa-scale-balanced"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">TBMM Kanun Teklifi ve Genel Gerekçe Metni</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed mb-4">
+                        Milletvekillerine sunulmak üzere hazırlanmış sivil yasa değişiklik taslağı ve gerekçesidir.
+                    </p>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs text-slate-700 font-mono space-y-2 mb-6">
+                        <p class="font-bold text-slate-900">📄 7527_Sayili_Kanun_Degisiklik_Teklifi.pdf</p>
+                        <p>• Genel Gerekçe Metni ve Madde Gerekçeleri</p>
+                        <p>• Anayasaya Uygunluk İncelemesi</p>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <button class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl text-sm transition">
+                        <i class="fa-solid fa-download mr-1"></i> Taslağı İndir (PDF)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Vekil Katılma Dilekçesi -->
+            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                <div>
+                    <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center text-xl font-bold mb-4">
+                        <i class="fa-solid fa-signature"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">Vekilin Teklife Katılma Dilekçesi</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed mb-4">
+                        Sivil teklifi desteklemek ve TBMM Başkanlığına sunmak isteyen milletvekillerinin imzalaması gereken resmi katılma formu.
+                    </p>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs text-slate-700 font-mono space-y-2 mb-6">
+                        <p class="font-bold text-slate-900">📝 Vekil_Katilma_ve_Sunma_Formu.docx</p>
+                        <p>• TBMM Başkanlığı Formatında Hazır Dilekçe</p>
+                        <p>• Islak İmza ve Temsilcilik Onay Alanı</p>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <button class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl text-sm transition">
+                        <i class="fa-solid fa-file-word mr-1"></i> Formu İndir (DOCX/PDF)
+                    </button>
                 </div>
             </div>
         </div>
 
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-slate-900 text-slate-400 text-center py-4 text-xs border-t border-slate-800 no-print">
-        <p>7527 Sayılı Kanun İptal & Yaşam Hakları Savunucuları Sivil İnisiyatifi - 2026</p>
-    </footer>
-
-    <!-- JS MANTIĞI -->
+    <!-- TAB SWITCHING JAVASCRIPT -->
     <script>
-        // 81 İl ve Seçim Bölgeleri
-        const iller81 = [
-            "CUMHURBAŞKANLIĞI MAKAMI", "TBMM BAŞKANLIĞI",
-            "Adana", "Adıyaman", "Afyonkarahisar", "Ağrı", "Amasya", "Ankara 1. Bölge", "Ankara 2. Bölge", "Ankara 3. Bölge",
-            "Antalya", "Artvin", "Aydın", "Balıkesir", "Bilecik", "Bingöl", "Bitlis", "Bolu", "Burdur", "Bursa 1. Bölge", "Bursa 2. Bölge",
-            "Çanakkale", "Çankırı", "Çorum", "Denizli", "Diyarbakır", "Edirne", "Elazığ", "Erzincan", "Erzurum", "Eskişehir",
-            "Gaziantep", "Giresun", "Gümüşhane", "Hakkari", "Hatay", "Isparta", "Mersin", "İstanbul 1. Bölge", "İstanbul 2. Bölge", "İstanbul 3. Bölge",
-            "İzmir 1. Bölge", "İzmir 2. Bölge", "Kars", "Kastamonu", "Kayseri", "Kırklareli", "Kırşehir", "Kocaeli", "Konya", "Kütahya",
-            "Malatya", "Manisa", "Kahramanmaraş", "Mardin", "Muğla", "Muş", "Nevşehir", "Niğde", "Ordu", "Rize", "Sakarya",
-            "Samsun", "Siirt", "Sinop", "Sivas", "Tekirdağ", "Tokat", "Trabzon", "Tunceli", "Şanlıurfa", "Uşak", "Van",
-            "Yozgat", "Zonguldak", "Aksaray", "Bayburt", "Karaman", "Kırıkkale", "Batman", "Şırnak", "Bartın", "Ardahan",
-            "Iğdır", "Yalova", "Karabük", "Kilis", "Osmaniye", "Düzce"
-        ];
-
-        // Veri Veritabanı (Örnek Temsili Veri Seti - İmza Durumları)
-        let meclisVekilListesi = [
-            { id: 1, bolge: "CUMHURBAŞKANLIĞI MAKAMI", isim: "Recep Tayyip Erdoğan (Cumhurbaşkanı)", parti: "CB", eposta: "cbiletisim@tccb.gov.tr", twitter: "RTErdogan", durum: "bekliyor" },
-            { id: 2, bolge: "TBMM BAŞKANLIĞI", isim: "Numan Kurtulmuş (TBMM Başkanı)", parti: "TBMM", eposta: "numan.kurtulmus@tbmm.gov.tr", twitter: "NumanKurtulmus", durum: "bekliyor" },
-            { id: 3, bolge: "Ankara 1. Bölge", isim: "Aliye Timisi Ersever", parti: "CHP", eposta: "aliye.timisiersever@tbmm.gov.tr", twitter: "AliyeErsever", durum: "imzaladi" },
-            { id: 4, bolge: "Ankara 2. Bölge", isim: "Murat Emir", parti: "CHP", eposta: "murat.emir@tbmm.gov.tr", twitter: "muratemirchp", durum: "imzaladi" },
-            { id: 5, bolge: "İstanbul 1. Bölge", isim: "Erkan Baş", parti: "TİP", eposta: "erkan.bas@tbmm.gov.tr", twitter: "erkanbas", durum: "imzaladi" },
-            { id: 6, bolge: "İzmir 1. Bölge", isim: "Murat Bakan", parti: "CHP", eposta: "murat.bakan@tbmm.gov.tr", twitter: "MuratBakan35", durum: "imzaladi" },
-            { id: 7, bolge: "Adana", isim: "Ömer Çelik", parti: "AKP", eposta: "omer.celik@tbmm.gov.tr", twitter: "omerrcelik", durum: "bekliyor" },
-            { id: 8, bolge: "Adana", isim: "Müzeyyen Şevkin", parti: "CHP", eposta: "muzeyyen.sevkin@tbmm.gov.tr", twitter: "MuzeyyenSevkin", durum: "imzaladi" },
-            { id: 9, bolge: "Antalya", isim: "Serap Yazıcı Özbudun", parti: "CHP", eposta: "serap.yazici@tbmm.gov.tr", twitter: "SerapYaziciOz", durum: "imzaladi" },
-            { id: 10, bolge: "İstanbul 1. Bölge", isim: "Murat Kurum", parti: "AKP", eposta: "murat.kurum@tbmm.gov.tr", twitter: "murat_kurum", durum: "bekliyor" }
-        ];
-
-        document.addEventListener("DOMContentLoaded", function() {
-            ilListesiDoldur();
-            imzaSayaciGuncelle();
-            takipTablosuCiz();
-            dokumanTipiDegisti();
-        });
-
-        function ilListesiDoldur() {
-            const select = document.getElementById('bolgeSelect');
-            select.innerHTML = '';
-            iller81.forEach(il => {
-                const opt = document.createElement('option');
-                opt.value = il;
-                opt.innerText = il;
-                select.appendChild(opt);
-            });
-            select.value = "Ankara 1. Bölge";
-            bolgeDegisti();
-        }
-
-        function bolgeDegisti() {
-            const secilenIl = document.getElementById('bolgeSelect').value;
-            const vekilSelect = document.getElementById('vekilSelect');
-            vekilSelect.innerHTML = '';
-
-            const eslesenler = meclisVekilListesi.filter(v => v.bolge === secilenIl);
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             
-            if (eslesenler.length > 0) {
-                eslesenler.forEach(v => {
-                    const opt = document.createElement('option');
-                    opt.value = v.isim;
-                    opt.innerText = `${v.isim} (${v.parti}) - [${v.durum === 'imzaladi' ? 'İmzaladı' : 'Bekliyor'}]`;
-                    opt.dataset.eposta = v.eposta;
-                    opt.dataset.twitter = v.twitter;
-                    vekilSelect.appendChild(opt);
-                });
-            }
-
-            const genelOpt = document.createElement('option');
-            genelOpt.value = `${secilenIl} Sayın Milletvekili`;
-            genelOpt.innerText = `${secilenIl} Milletvekilliği (Genel)`;
-            genelOpt.dataset.eposta = "ozelkalem@tbmm.gov.tr";
-            genelOpt.dataset.twitter = "TBMMResmi";
-            vekilSelect.appendChild(genelOpt);
-
-            document.getElementById('customVekil').value = '';
-            dilekceGuncelle();
-        }
-
-        function tbmmEpostaOlustur(isim) {
-            let trMap = { 'ç':'c', 'ğ':'g', 'ı':'i', 'ö':'o', 'ş':'s', 'ü':'u', 'Ç':'c', 'Ğ':'g', 'İ':'i', 'Ö':'o', 'Ş':'s', 'Ü':'u' };
-            let temiz = isim.replace(/[çğıöşüÇĞİÖŞÜ]/g, m => trMap[m]).toLowerCase().replace(/[^a-z\s]/g, '').trim();
-            let parca = temiz.split(/\s+/);
-            if (parca.length >= 2) return `${parca[0]}.${parca[parca.length-1]}@tbmm.gov.tr`;
-            return "ozelkalem@tbmm.gov.tr";
-        }
-
-        function maskeIsim(i) {
-            if (!i) return "........................";
-            return i.trim().split(" ").map(p => p.length <= 2 ? p[0] + "*" : p[0] + "*".repeat(p.length - 1)).join(" ");
-        }
-
-        function maskeTC(t) {
-            if (!t || t.length !== 11 || isNaN(t)) return "11***********";
-            return t.substring(0, 2) + "*******" + t.substring(9);
-        }
-
-        function maskeAdres(a) {
-            if (!a) return "........................";
-            let p = a.split('/');
-            return p.length > 1 ? "******* / " + p[p.length - 1].trim() : "***** (Gizlendi)";
-        }
-
-        function dokumanTipiDegisti() {
-            const tip = document.getElementById('dokumanTypeSelect').value;
-            const alanEkstra = document.getElementById('alanEkstraVekil');
-            const alanVatandas = document.getElementById('alanVatandasBilgi');
-
-            if (tip === "5") {
-                alanEkstra.classList.remove('hidden');
-                alanVatandas.classList.add('hidden');
-            } else {
-                alanEkstra.classList.add('hidden');
-                alanVatandas.classList.remove('hidden');
-            }
-            dilekceGuncelle();
-        }
-
-        function dilekceGuncelle() {
-            const tip = document.getElementById('dokumanTypeSelect').value;
-            const gizli = document.getElementById('gizlilikToggle').checked;
-            const rozet = document.getElementById('gizlilikRozet');
-            const kutu = document.getElementById('dilekceKutusu');
-            
-            rozet.innerText = gizli ? "Sosyal Medya Gizlilik Modu Aktif" : "Normal Mod (Bilgiler Açık)";
-            rozet.className = gizli 
-                ? "text-xs px-3 py-1 rounded-full border bg-amber-100 text-amber-800 font-bold border-amber-300"
-                : "text-xs px-3 py-1 rounded-full border bg-slate-100 text-slate-600 font-medium";
-
-            let ad = document.getElementById('inputAd').value.trim() || "........................";
-            let tc = document.getElementById('inputTC').value.trim() || "........................";
-            let adres = document.getElementById('inputAdres').value.trim() || "........................";
-
-            if (gizli) {
-                ad = maskeIsim(ad);
-                tc = maskeTC(tc);
-                adres = maskeAdres(adres);
-            }
-
-            const secilenIl = document.getElementById('bolgeSelect').value;
-            const customVekil = document.getElementById('customVekil').value.trim();
-            const vekilSelect = document.getElementById('vekilSelect');
-            let muhatapIsmi = customVekil || (vekilSelect.options[vekilSelect.selectedIndex] ? vekilSelect.options[vekilSelect.selectedIndex].value : "Milletvekili");
-
-            const tarih = new Date().toLocaleDateString('tr-TR');
-
-            // BELGE 1: Vekile Doğrudan Talep Dilekçesi
-            if (tip === "1") {
-                kutu.innerHTML = `
-                    <div class="text-center font-bold tracking-wide uppercase text-sm md:text-base space-y-1 border-b pb-4">
-                        <p>SAYIN ${muhatapIsmi.toUpperCase()}</p>
-                        <p class="text-xs font-normal text-slate-600 lowercase capitalize">${secilenIl} Milletvekiline</p>
-                    </div>
-
-                    <div class="font-sans text-xs font-bold border-l-4 border-red-700 pl-3 py-1 my-3 bg-slate-50">
-                        KONU: 7527 Sayılı Kanun’un Yaratmış Olduğu Katliam ve Toplumsal Tahribat Karşısında İptal Kanun Teklifine İmzacı Olunması ve Yasama Görevinin İfası Talebidir.
-                    </div>
-
-                    <div class="space-y-4 text-xs md:text-sm leading-relaxed text-justify dilekce-metni">
-                        <p>30 Temmuz 2024 tarihinde kabul edilen 7527 sayılı Kanun; sokak hayvanlarını korumayı değil, belediyeler ve yetkili kurumlar eliyle toplu katliamların, tecritin ve cezasızlığın önünü açmayı yasal bir kılıfa büründürmüştür. Arka planda rant ve ihale çarklarını döndüren bu yasa; sahadaki uygulamalarıyla toplumsal vicdanı yok etmiş, şiddeti cezasız bırakarak okullara, sokaklara ve evlerin içine kadar yayılan ağır bir toplumsal çürümeyi tetiklemiştir.</p>
-                        <p><strong>Seçim bölgenizdeki bir yurttaşınız ve seçmeniniz olarak size hatırlatırım:</strong> Sokaklarda, toplama kamplarında ve tecrit alanlarında yaşanan bu vahşet, "popülasyon yönetimi" kılıfıyla gizlenemeyecek kadar açık bir kitlesel kıyımdır.</p>
-                        <p>Bu süreçte sergileyeceğiniz tutum, doğrudan siyasi ve vicdani sicilinizi belirleyecektir. Meclis’e sunulacak olan <strong>"7527 Sayılı Kanun'un Mülga Edilmesi ve 5199 Sayılı Kanun Esaslarınca Etkin Kısırlaştırma, Yerinde Yaşatma İlkesinin Yeniden Tesisi Hakkında Kanun Teklifi"ne resmi olarak İMZA ATMANIZI</strong> talep ediyorum.</p>
-                        <p>Bu teklife imza vermeyen, sessiz kalan veya kaçınan her vekil; sahada yaşanan her tekil katliamın doğrudan faili ve sorumlusu olarak dijital arşivlere kaydolacaktır. Seçim döneminde halkın karşısına çıkmadan önce, bu kanlı hatadan derhal dönmenizi ve hazırlanan iptal teklifine amasız, fakatsız imzanızı koymanızı arz ve talep ederim.</p>
-                    </div>
-
-                    <div class="pt-6 grid grid-cols-2 gap-4 border-t font-sans">
-                        <div class="text-xs space-y-1">
-                            <p class="font-bold text-slate-700">Talep Eden Yurttaş:</p>
-                            <p><strong>Ad Soyad:</strong> ${ad}</p>
-                            <p><strong>T.C. No:</strong> ${tc}</p>
-                            <p class="break-words"><strong>Adres:</strong> ${adres}</p>
-                        </div>
-                        <div class="border border-dashed p-3 text-center flex flex-col justify-between h-24">
-                            <span class="text-[10px] text-slate-400 font-bold uppercase">Islak İmza</span>
-                            <div class="text-xs font-bold">${ad}</div>
-                        </div>
-                    </div>
-                `;
-            } 
-            // BELGE 2: CB & TBMM Resmi Yurttaş Dilekçesi
-            else if (tip === "2") {
-                kutu.innerHTML = `
-                    <div class="text-center font-bold uppercase text-sm md:text-base border-b pb-4">
-                        <p>TÜRKİYE BÜYÜK MİLLET MECLİSİ BAŞKANLIĞINA / T.C. CUMHURBAŞKANLIĞINA</p>
-                    </div>
-                    <div class="text-xs font-bold text-slate-600">EVRAK TALEBİ: 3071 Sayılı Dilekçe Hakkının Kullanılmasına Dair Kanun Kapsamındadır.</div>
-                    <div class="font-sans text-xs font-bold border-l-4 border-red-700 pl-3 py-1 my-2 bg-slate-50">
-                        KONU: 7527 Sayılı Kanun ile Yaratılan Hukuki, Vicdani ve Toplumsal Tahribatın Giderilmesi; Kanun’un Tüm Hükümleriyle İlga Edilerek 5199 Sayılı Kanun’un "Etkin Kısırlaştırma, Aşılat, Yerinde Yaşat" İlkelerinin Yeniden Yasal Güvenceye Kavuşturulması Talebidir.
-                    </div>
-                    <div class="space-y-3 text-xs md:text-sm text-justify dilekce-metni">
-                        <p><strong>AÇIKLAMALAR:</strong></p>
-                        <p>1. 30.07.2024 tarihli ve 7527 sayılı Hayvanları Koruma Kanununda Değişiklik Yapılmasına Dair Kanun, yürürlüğe girdiği günden bu yana uygulamada kamu düzenini sağlamak yerine, yerel yönetimler (belediyeler) eliyle toplu imhalara, vahşete ve cezasızlığa zemin hazırlamıştır.</p>
-                        <p>2. Barınak veya bakımevi adı verilen yapılar, rehabilitasyon merkezi işlevini kaybetmiş; hayvanların açlık, hastalık ve doğrudan müdahalelerle yok edildiği tecrit merkezlerine dönüşmüştür.</p>
-                        <p>3. Çözüm, canları yok etmek değil; bilimsel ve etik ilke olan "Etkin Kısırlaştırma, Aşılat, Aldığı Ortama Geri Bırak / Yerinde Yaşat" modelini devlet eliyle uygulamaktır.</p>
-                        <p><strong>SONUÇ VE TALEP:</strong> 7527 sayılı Yasa’nın tamamen iptal edilerek yürürlükten kaldırılmasını; 5199 sayılı Kanun'un ruhuna uygun olarak kısırlaştırma seferberliği ve yerinde yaşatma esasını zorunlu kılan düzenlemelerin ivedilikle Meclis gündemine alınarak yasalaştırılmasını arz ederim.</p>
-                    </div>
-                    <div class="pt-6 grid grid-cols-2 gap-4 border-t font-sans">
-                        <div class="text-xs space-y-1">
-                            <p><strong>Ad Soyad:</strong> ${ad}</p>
-                            <p><strong>T.C. No:</strong> ${tc}</p>
-                            <p><strong>Adres:</strong> ${adres}</p>
-                        </div>
-                        <div class="border border-dashed p-3 text-center flex flex-col justify-between h-24">
-                            <span class="text-[10px] text-slate-400 font-bold">İmza</span>
-                            <div class="text-xs font-bold">${ad}</div>
-                        </div>
-                    </div>
-                `;
-            }
-            // BELGE 3: Resmi Kanun Teklifi ve Gerekçesi (TBMM Formatı)
-            else if (tip === "3") {
-                kutu.innerHTML = `
-                    <div class="text-center font-bold uppercase text-sm md:text-base border-b pb-3">
-                        TÜRKİYE BÜYÜK MİLLET MECLİSİ BAŞKANLIĞINA
-                    </div>
-                    <p class="text-xs text-justify">Hayvanları Koruma Kanununda Değişiklik Yapılmasına Dair Kanun Teklifi ve Genel Gerekçesi ilişikte sunulmuştur. Gereğini arz ederim.</p>
-                    <div class="text-right text-xs font-bold uppercase my-2">
-                        <p>${muhatapIsmi}</p>
-                        <p>${secilenIl} Milletvekili</p>
-                    </div>
-                    <div class="border-t pt-2 space-y-2 text-xs text-justify font-sans">
-                        <p class="font-bold text-center uppercase tracking-wider text-red-800">GENEL GEREKÇE</p>
-                        <p>30.07.2024 tarih ve 7527 sayılı Kanun ile yapılan değişiklikler sahadaki veriler ışığında insanlık dışı koşullar ve ağır bir sosyolojik kriz yaratmıştır. Sokak hayvanları sorununun tek bilimsel ve insani çözümü; merkezi ve yerel yönetimlerin ortak bütçeyle yürüteceği "Etkin Kısırlaştırma, Aşılat, Yerinde Yaşat" modelidir.</p>
-                        <p class="font-bold text-slate-800 mt-2">HAYVANLARI KORUMA KANUNUNDA DEĞİŞİKLİK YAPILMASINA DAİR KANUN TEKLİFİ</p>
-                        <p><strong>MADDE 1-</strong> 30/7/2024 tarihli ve 7527 sayılı Kanun tüm maddeleriyle yürürlükten kaldırılmıştır.</p>
-                        <p><strong>MADDE 2-</strong> 5199 sayılı Kanun'un 6 ncı maddesinin 4. fıkrası yeniden düzenlenerek; rehabilitasyon süreci tamamlanan hayvanların alındıkları ortama geri bırakılması ve yerinde yaşatılması esası getirilmiştir. Belediyelerin yıllık bütçelerinin en az %0,5’ini bu amaca ayırması zorunlu kılınmıştır.</p>
-                        <p><strong>MADDE 3-</strong> Yürürlük maddesidir. | <strong>MADDE 4-</strong> Yürütme maddesidir.</p>
-                    </div>
-                `;
-            }
-            // BELGE 4: Ortak İmza Sirküsü (Çarşaf Liste)
-            else if (tip === "4") {
-                kutu.innerHTML = `
-                    <div class="text-center font-bold uppercase text-sm border-b pb-2">
-                        TÜRKİYE BÜYÜK MİLLET MECLİSİ BAŞKANLIĞINA
-                    </div>
-                    <p class="text-xs text-justify">Aşağıda adı, soyadı ve seçim çevresi belirtilen biz milletvekilleri; "7527 Sayılı Kanun’un Mülga Edilmesi ve 5199 Sayılı Kanun Esaslarınca Etkin Kısırlaştırma, Yerinde Yaşatma İlkesinin Yeniden Tesisi Hakkında Kanun Teklifi"ni benimsiyor ve ortak imzamızı sunuyoruz.</p>
-                    <table class="w-full text-[11px] border-collapse border border-slate-300 font-sans my-4">
-                        <thead class="bg-slate-100 font-bold">
-                            <tr>
-                                <th class="border border-slate-300 p-1">Sıra</th>
-                                <th class="border border-slate-300 p-1">Adı Soyadı</th>
-                                <th class="border border-slate-300 p-1">Seçim Çevresi (İli)</th>
-                                <th class="border border-slate-300 p-1">Parti</th>
-                                <th class="border border-slate-300 p-1">Islak İmza</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${[1,2,3,4,5,6,7,8].map(s => `
-                                <tr>
-                                    <td class="border border-slate-300 p-1 text-center font-bold">${s} ${s===1?'(İlk İmza)':''}</td>
-                                    <td class="border border-slate-300 p-1">${s===1 ? muhatapIsmi : '........................'}</td>
-                                    <td class="border border-slate-300 p-1">${s===1 ? secilenIl : '........................'}</td>
-                                    <td class="border border-slate-300 p-1">...........</td>
-                                    <td class="border border-slate-300 p-1 text-center text-slate-400 font-serif italic">imza</td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                `;
-            }
-            // BELGE 5: Vekil Sonradan Katılma Dilekçesi
-            else if (tip === "5") {
-                const esasNo = document.getElementById('inputEsasNo').value || "2/1234";
-                const sicilNo = document.getElementById('inputSicilNo').value || "..............";
-
-                kutu.innerHTML = `
-                    <div class="text-center font-bold uppercase text-sm md:text-base border-b pb-4">
-                        TÜRKİYE BÜYÜK MİLLET MECLİSİ BAŞKANLIĞINA
-                    </div>
-                    <div class="font-sans text-xs font-bold border-l-4 border-red-700 pl-3 py-1 my-4 bg-slate-50">
-                        KONU: Kanun Teklifine İmzacı Olarak Katılma Talebidir.
-                    </div>
-                    <div class="space-y-4 text-xs md:text-sm text-justify dilekce-metni my-6">
-                        <p>Başkanlığınızın <strong>[Esas No: ${esasNo}]</strong> Esas Numarasında kayıtlı bulunan, 7527 Sayılı Kanun’un mülga edilerek 5199 Sayılı Hayvanları Koruma Kanununda Değişiklik Yapılmasına Dair Kanun Teklifi ve gerekçesini incelemiş bulunmaktayım.</p>
-                        <p>Söz konusu kanun teklifine <strong>İMZACI / ORTAK İMZA SAHİBİ</strong> olarak katılmak istiyorum.</p>
-                        <p>İmzamın ilgili kanun teklifi dosyasına eklenmesi hususunda gereğini arz ederim.</p>
-                    </div>
-                    <div class="pt-8 grid grid-cols-2 gap-4 border-t font-sans">
-                        <div class="text-xs space-y-1">
-                            <p><strong>Tarih:</strong> ${tarih}</p>
-                            <p><strong>TBMM Sicil No:</strong> ${sicilNo}</p>
-                        </div>
-                        <div class="border border-dashed p-3 text-center flex flex-col justify-between h-28">
-                            <span class="text-[10px] text-slate-400 font-bold">Milletvekili Islak İmza</span>
-                            <div>
-                                <p class="text-xs font-bold">${muhatapIsmi}</p>
-                                <p class="text-[10px] text-slate-500">${secilenIl} Milletvekili</p>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-        }
-
-        // PDF İndirme (pdfMake ile Vektörel Metin Çıktısı)
-        function pdfIndir(gizliMi = false) {
-            const gizli = gizliMi || document.getElementById('gizlilikToggle').checked;
-            let ad = document.getElementById('inputAd').value.trim() || "........................";
-            let tc = document.getElementById('inputTC').value.trim() || "........................";
-            let adres = document.getElementById('inputAdres').value.trim() || "........................";
-
-            if (gizli) {
-                ad = maskeIsim(ad);
-                tc = maskeTC(tc);
-                adres = maskeAdres(adres);
-            }
-
-            const secilenIl = document.getElementById('bolgeSelect').value;
-            const customVekil = document.getElementById('customVekil').value.trim();
-            const vekilSelect = document.getElementById('vekilSelect');
-            let muhatapIsmi = customVekil || (vekilSelect.options[vekilSelect.selectedIndex] ? vekilSelect.options[vekilSelect.selectedIndex].value : "Milletvekili");
-
-            const docDefinition = {
-                pageSize: 'A4',
-                pageMargins: [40, 45, 40, 45],
-                content: [
-                    { text: `SAYIN ${muhatapIsmi.toUpperCase()}, ${secilenIl.toUpperCase()} MİLLETVEKİLİNE`, style: 'header' },
-                    { text: `Tarih: ${new Date().toLocaleDateString('tr-TR')}`, style: 'date' },
-                    { text: "KONU: 7527 Sayılı Kanun’un Yaratmış Olduğu Katliam Karşısında İptal Teklifine İmzacı Olunması Talebidir.", style: 'subject' },
-                    { text: "30 Temmuz 2024 tarihinde kabul edilen 7527 sayılı Kanun; sokak hayvanlarını korumayı değil, belediyeler ve yetkili kurumlar eliyle toplu katliamların ve tecritin önünü açmıştır.", style: 'paragraph' },
-                    { text: "Seçim bölgenizdeki bir yurttaşınız olarak, Meclis’e sunulacak olan 7527 Sayılı Kanun'un Mülga Edilmesi ve Etkin Kısırlaştırma, Yerinde Yaşatma Hakkında Kanun Teklifi'ne resmi olarak İMZA ATMANIZI talep ediyorum.", style: 'paragraph' },
-                    {
-                        margin: [0, 30, 0, 0],
-                        columns: [
-                            { stack: [{ text: `Ad Soyad: ${ad}` }, { text: `T.C. No: ${tc}` }, { text: `Adres: ${adres}` }], fontSize: 10 },
-                            { stack: [{ text: 'Islak İmza', alignment: 'center', fontSize: 9 }, { text: `\n\n${ad}`, alignment: 'center', bold: true, fontSize: 10 }] }
-                        ]
-                    }
-                ],
-                styles: {
-                    header: { fontSize: 12, bold: true, alignment: 'center', margin: [0, 0, 0, 15] },
-                    date: { fontSize: 9, alignment: 'right', margin: [0, 0, 0, 10] },
-                    subject: { fontSize: 10, bold: true, margin: [0, 0, 0, 12] },
-                    paragraph: { fontSize: 10, lineHeight: 1.3, alignment: 'justify', margin: [0, 0, 0, 8] }
-                }
-            };
-
-            pdfMake.createPdf(docDefinition).download(`7527_Iptal_Talep_Belgesi.pdf`);
-        }
-
-        // Tab Değiştirme
-        function tabDegistir(tab) {
-            const btnDilekce = document.getElementById('tabBtnDilekce');
-            const btnTakip = document.getElementById('tabBtnTakip');
-            const modDilekce = document.getElementById('dilekceModu');
-            const modTakip = document.getElementById('takipModu');
-
-            if (tab === 'dilekce') {
-                modDilekce.classList.remove('hidden');
-                modTakip.classList.add('hidden');
-                btnDilekce.className = "py-2.5 px-5 font-bold text-sm border-b-2 border-red-700 text-red-800 flex items-center gap-2 bg-white rounded-t-lg shadow-sm";
-                btnTakip.className = "py-2.5 px-5 font-semibold text-sm border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-2 rounded-t-lg hover:bg-slate-200/60 transition";
-            } else {
-                modDilekce.classList.add('hidden');
-                modTakip.classList.remove('hidden');
-                btnTakip.className = "py-2.5 px-5 font-bold text-sm border-b-2 border-red-700 text-red-800 flex items-center gap-2 bg-white rounded-t-lg shadow-sm";
-                btnDilekce.className = "py-2.5 px-5 font-semibold text-sm border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-2 rounded-t-lg hover:bg-slate-200/60 transition";
-            }
-        }
-
-        // Meclis İmza Takip Mantığı
-        function imzaSayaciGuncelle() {
-            const imzalayanlar = meclisVekilListesi.filter(v => v.durum === 'imzaladi').length;
-            const toplam = meclisVekilListesi.length;
-            const oran = ((imzalayanlar / toplam) * 100).toFixed(1);
-
-            document.getElementById('imzaSayisiKafa').innerText = `${imzalayanlar} / 600`;
-            document.getElementById('imzaBarKafa').style.width = `${Math.min(oran * 5, 100)}%`;
-
-            document.getElementById('statImzaladi').innerText = imzalayanlar;
-            document.getElementById('statBekliyor').innerText = 600 - imzalayanlar;
-            document.getElementById('statOran').innerText = `%${oran}`;
-        }
-
-        function takipTablosuCiz() {
-            const govde = document.getElementById('takipTabloGovde');
-            govde.innerHTML = '';
-
-            const arama = document.getElementById('takipArama').value.toLowerCase();
-            const parti = document.getElementById('takipPartiFiltre').value;
-            const durum = document.getElementById('takipDurumFiltre').value;
-
-            const filtrelenmis = meclisVekilListesi.filter(v => {
-                const uyanArama = v.isim.toLowerCase().includes(arama) || v.bolge.toLowerCase().includes(arama);
-                const uyanParti = parti === 'ALL' || v.parti === parti;
-                const uyanDurum = durum === 'ALL' || v.durum === durum;
-                return uyanArama && uyanParti && uyanDurum;
+            // Reset tab button styles
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'text-slate-900', 'shadow-sm');
+                btn.classList.add('text-slate-600');
             });
 
-            filtrelenmis.forEach((v, index) => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 transition";
-                tr.innerHTML = `
-                    <td class="p-3 font-bold text-slate-500">${index + 1}</td>
-                    <td class="p-3 font-semibold text-slate-900">${v.isim}</td>
-                    <td class="p-3">${v.bolge}</td>
-                    <td class="p-3"><span class="px-2 py-0.5 rounded font-bold text-[10px] bg-slate-200 text-slate-700">${v.parti}</span></td>
-                    <td class="p-3">
-                        ${v.durum === 'imzaladi' 
-                            ? `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300"><i class="fa-solid fa-check mr-1"></i> İptal Teklifini İMZALADI</span>`
-                            : `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300"><i class="fa-solid fa-clock mr-1"></i> İmza Bekleniyor</span>`
-                        }
-                    </td>
-                    <td class="p-3 text-right space-x-1">
-                        <button onclick="vekilTweetAt('${v.twitter}', '${v.isim}')" class="bg-sky-500 hover:bg-sky-600 text-white px-2 py-1 rounded text-[11px] font-semibold">
-                            <i class="fa-brands fa-x-twitter"></i> Tweet
-                        </button>
-                        <button onclick="vekilEpostaGonder('${v.eposta}', '${v.isim}')" class="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded text-[11px] font-semibold">
-                            <i class="fa-solid fa-envelope"></i> E-Posta
-                        </button>
-                    </td>
-                `;
-                govde.appendChild(tr);
-            });
-        }
+            // Show target tab content
+            document.getElementById('content-' + tabName).classList.remove('hidden');
 
-        function takipFiltrele() {
-            takipTablosuCiz();
-        }
-
-        function vekilTweetAt(handle, isim) {
-            const tw = handle ? `@${handle}` : isim;
-            const metin = encodeURIComponent(`${tw} Sayın Vekilim, 7527 sayılı Kanun'un iptali için hazırlanan Meclis Kanun Teklifine İMZA ATMANIZI talep ediyoruz! #7527SayılıKanunİptalEdilsin`);
-            window.open(`https://twitter.com/intent/tweet?text=${metin}`, '_blank');
-        }
-
-        function vekilEpostaGonder(eposta, isim) {
-            const ad = document.getElementById('inputAd').value.trim() || "Vatandaş";
-            const konu = encodeURIComponent("7527 Sayılı Kanun İptal Teklifine İmzacı Olunması Talebi");
-            const icerik = encodeURIComponent(`Sayın ${isim},\n\nSeçim bölgenizden bir seçmen olarak, 7527 sayılı kanunun mülga edilmesi için hazırlanan TBMM kanun teklifine imza koymanızı ve yasama görevinizi ifa etmenizi talep ediyorum.\n\nSaygılarımla,\n${ad}`);
-            window.location.href = `mailto:${eposta}?subject=${konu}&body=${icerik}`;
-        }
-
-        function epostaGonder() {
-            const customVekil = document.getElementById('customVekil').value.trim();
-            const vekilSelect = document.getElementById('vekilSelect');
-            const secilenOpt = vekilSelect.options[vekilSelect.selectedIndex];
-            let eposta = customVekil ? tbmmEpostaOlustur(customVekil) : (secilenOpt ? secilenOpt.dataset.eposta : "ozelkalem@tbmm.gov.tr");
-            let isim = customVekil || (secilenOpt ? secilenOpt.value : "Milletvekili");
-            vekilEpostaGonder(eposta, isim);
-        }
-
-        function tweetAt() {
-            const customVekil = document.getElementById('customVekil').value.trim();
-            const vekilSelect = document.getElementById('vekilSelect');
-            const secilenOpt = vekilSelect.options[vekilSelect.selectedIndex];
-            let handle = (!customVekil && secilenOpt) ? secilenOpt.dataset.twitter : "";
-            vekilTweetAt(handle, customVekil || "Milletvekili");
+            // Active button style
+            const activeBtn = document.getElementById('tab-' + tabName);
+            activeBtn.classList.add('bg-white', 'text-slate-900', 'shadow-sm');
+            activeBtn.classList.remove('text-slate-600');
         }
     </script>
 </body>
