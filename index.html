@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,294 +9,561 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Oswald:wght@700&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- html2canvas: HTML ögesini PNG/JPG olarak indirmek için -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .font-campaign { font-family: 'Oswald', sans-serif; }
+        
+        /* Yazıcı Çıktısı (PDF) için özel stiller */
+        @media print {
+            body * { visibility: hidden; }
+            #printable-area, #printable-area * { visibility: visible; }
+            #printable-area { 
+                position: absolute; 
+                left: 0; 
+                top: 0; 
+                width: 100%; 
+                padding: 20px;
+                color: #000 !important;
+                background: #fff !important;
+            }
+            .no-print { display: none !important; }
+        }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased">
+<body class="bg-slate-900 text-slate-100 antialiased selection:bg-red-600 selection:text-white">
 
     <!-- TOP NAVIGATION -->
-    <header class="sticky top-0 z-50 bg-slate-900 text-white shadow-xl border-b border-slate-800">
+    <header class="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-md border-b border-slate-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <div class="bg-red-600 p-2.5 rounded-xl text-white font-bold text-xl flex items-center justify-center">
+                <div class="bg-red-600 p-2.5 rounded-xl text-white font-bold text-xl flex items-center justify-center shadow-lg shadow-red-600/30">
                     <i class="fa-solid fa-paw"></i>
                 </div>
                 <div>
                     <span class="font-campaign text-2xl tracking-wider text-white uppercase block leading-none">YAŞAM HAKKI</span>
-                    <span class="text-xs text-red-400 font-semibold tracking-widest uppercase">Sivil Platform</span>
+                    <span class="text-xs text-red-500 font-bold tracking-widest uppercase">7527 İptal Platformu</span>
                 </div>
             </div>
             <nav class="hidden md:flex items-center space-x-8 text-sm font-semibold text-slate-300">
-                <a href="#dashboard" class="hover:text-white transition">İmza Paneli</a>
-                <a href="#dilekceler" class="hover:text-white transition">Dilekçe & Teklifler</a>
-                <a href="#vekil-ara" class="hover:text-white transition">Vekiline Ulaş</a>
+                <a href="#dashboard" class="hover:text-red-400 transition">İmza Paneli</a>
+                <a href="#dilekce-generator" class="hover:text-red-400 transition">Dilekçe & Metin Oluştur</a>
+                <a href="#vekil-listesi" class="hover:text-red-400 transition">Vekil Listesi</a>
             </nav>
-            <a href="#dilekceler" class="bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-2.5 rounded-xl shadow-lg shadow-red-600/30 transition flex items-center space-x-2">
-                <i class="fa-solid fa-file-pen"></i>
-                <span>İmza Ver / Dilekçe Oluştur</span>
+            <a href="#dilekce-generator" class="bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-2.5 rounded-xl shadow-lg shadow-red-600/40 transition flex items-center space-x-2 text-sm">
+                <i class="fa-solid fa-pen-to-square"></i>
+                <span>Dilekçe Oluştur</span>
             </a>
         </div>
     </header>
 
-    <!-- HERO BANNER (Görsel Temanızla Uyumlu Header) -->
-    <section class="relative bg-slate-950 text-white py-16 overflow-hidden">
-        <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#dc2626_1px,transparent_1px)] [background-size:16px_16px]"></div>
+    <!-- HERO BANNER (Görselinizdeki Kampanya Temasına Uygun) -->
+    <section class="relative bg-slate-950 text-white py-16 overflow-hidden border-b border-slate-800">
+        <div class="absolute inset-0 opacity-15 bg-[radial-gradient(#dc2626_1px,transparent_1px)] [background-size:20px_20px]"></div>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="grid lg:grid-cols-12 gap-8 items-center">
-                <div class="lg:col-span-7 space-y-6">
-                    <div class="inline-flex items-center space-x-2 bg-red-950/80 border border-red-800/50 text-red-400 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">
+            <div class="grid lg:grid-cols-12 gap-10 items-center">
+                
+                <!-- Sol Kolon: Başlık ve Slogan -->
+                <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                    <div class="inline-flex items-center space-x-2 bg-red-950/80 border border-red-800/80 text-red-400 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">
                         <i class="fa-solid fa-bullhorn animate-pulse"></i>
-                        <span>Kanun İptal Mücadelesi</span>
+                        <span>Sivil Yasal Mücadele</span>
                     </div>
+                    
+                    <!-- Kırmızı Banner Vurgulu Ana Başlık -->
                     <h1 class="font-campaign text-5xl sm:text-7xl font-bold tracking-tight leading-none text-white">
-                        <span class="bg-red-600 px-3 py-1 text-white inline-block transform -rotate-1 shadow-lg">7527 İPTAL!</span><br>
+                        <span class="bg-red-600 px-4 py-1.5 text-white inline-block transform -rotate-1 shadow-2xl shadow-red-600/50 my-1">7527 İPTAL!</span><br>
                         <span class="text-slate-100">İMZACISI OL!</span>
                     </h1>
-                    <p class="text-xl font-bold text-slate-300 italic flex items-center space-x-2">
+                    
+                    <p class="text-2xl font-bold text-slate-300 italic flex items-center justify-center lg:justify-start space-x-3">
                         <span>"Öldüren değil, yaşatan ol!"</span>
                         <i class="fa-solid fa-paw text-red-500"></i>
                     </p>
-                    <div class="pt-4 flex flex-wrap gap-3 border-t border-slate-800 text-sm font-semibold text-slate-400">
-                        <span class="flex items-center space-x-1.5"><i class="fa-solid fa-check text-red-500"></i><span>Yaşam Hakkı İçin</span></span>
-                        <span>•</span>
-                        <span class="flex items-center space-x-1.5"><i class="fa-solid fa-check text-red-500"></i><span>Hayvanlar İçin</span></span>
-                        <span>•</span>
-                        <span class="flex items-center space-x-1.5"><i class="fa-solid fa-check text-red-500"></i><span>Geleceğimiz İçin</span></span>
+
+                    <!-- Alt Slogan Şeridi -->
+                    <div class="pt-4 border-t border-slate-800/80 flex flex-wrap justify-center lg:justify-start items-center gap-2 text-xs sm:text-sm font-extrabold tracking-wider text-slate-300 uppercase">
+                        <span class="bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg flex items-center gap-1.5"><i class="fa-solid fa-paw text-red-500"></i> YAŞAM HAKKI İÇİN</span>
+                        <span class="bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg flex items-center gap-1.5"><i class="fa-solid fa-paw text-red-500"></i> HAYVANLAR İÇİN</span>
+                        <span class="bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg flex items-center gap-1.5"><i class="fa-solid fa-paw text-red-500"></i> GELECEĞİMİZ İÇİN</span>
                     </div>
                 </div>
 
-                <!-- TBMM CANLI İMZA DASHBOARD CARD -->
-                <div id="dashboard" class="lg:col-span-5 bg-slate-900/90 border border-slate-800 backdrop-blur-md rounded-2xl p-6 shadow-2xl">
-                    <div class="flex justify-between items-start mb-4">
+                <!-- Sağ Kolon: TBMM Canlı İmza Takip Paneli -->
+                <div id="dashboard" class="lg:col-span-5 bg-slate-900/90 border border-slate-800 backdrop-blur-xl rounded-3xl p-6 sm:p-8 shadow-2xl relative">
+                    <div class="flex justify-between items-start mb-6">
                         <div>
-                            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">TBMM Canlı İlerleme</h3>
-                            <h4 class="text-xl font-bold text-white">Milletvekili Destek İmzaları</h4>
+                            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">TBMM Canlı Durum</h3>
+                            <h4 class="text-2xl font-bold text-white mt-1">Milletvekili İmzaları</h4>
                         </div>
-                        <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold px-2.5 py-1 rounded-full flex items-center space-x-1">
+                        <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold px-3 py-1 rounded-full flex items-center space-x-1.5">
                             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                            <span>Canlı Veri</span>
+                            <span>Anlık Takip</span>
                         </span>
                     </div>
-                    
-                    <!-- Progress Bar -->
-                    <div class="space-y-2 my-6">
+
+                    <!-- İlerleme Çubuğu -->
+                    <div class="space-y-3 my-6">
                         <div class="flex justify-between text-sm font-bold">
-                            <span class="text-slate-300">Toplanan İmza: <strong class="text-red-500 text-lg">42</strong> / 600</span>
-                            <span class="text-slate-400">%7</span>
+                            <span class="text-slate-300">Toplanan İmzalı Teklif: <strong class="text-red-500 text-xl">42</strong> / 600</span>
+                            <span class="text-red-400 font-mono text-base">%7</span>
                         </div>
-                        <div class="w-full bg-slate-800 rounded-full h-4 overflow-hidden p-0.5 border border-slate-700">
-                            <div class="bg-gradient-to-r from-red-600 to-orange-500 h-full rounded-full transition-all duration-1000" style="width: 7%"></div>
+                        <div class="w-full bg-slate-950 rounded-full h-4 overflow-hidden p-0.5 border border-slate-800">
+                            <div class="bg-gradient-to-r from-red-600 via-orange-500 to-amber-500 h-full rounded-full transition-all duration-1000" style="width: 7%"></div>
                         </div>
-                        <p class="text-xs text-slate-400 text-right">Kanun teklifi sunumu için hedef: 200 Vekil</p>
+                        <p class="text-xs text-slate-400 text-right">TBMM Başkanlığına sunum için gerekli hedef: <strong>200 Vekil</strong></p>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-3 text-center border-t border-slate-800 pt-4">
-                        <div class="bg-slate-950/50 p-3 rounded-xl border border-slate-800/80">
-                            <span class="block text-2xl font-bold text-white">128.450</span>
-                            <span class="text-xs text-slate-400">Vatandaş Dilekçesi</span>
+                    <div class="grid grid-cols-2 gap-4 border-t border-slate-800/80 pt-6">
+                        <div class="bg-slate-950/60 p-4 rounded-2xl border border-slate-800">
+                            <span class="block text-3xl font-extrabold text-white">128.450</span>
+                            <span class="text-xs text-slate-400 font-medium">Vatandaş Dilekçesi</span>
                         </div>
-                        <div class="bg-slate-950/50 p-3 rounded-xl border border-slate-800/80">
-                            <span class="block text-2xl font-bold text-white">14</span>
-                            <span class="text-xs text-slate-400">Destekleyen Parti</span>
+                        <div class="bg-slate-950/60 p-4 rounded-2xl border border-slate-800">
+                            <span class="block text-3xl font-extrabold text-white">14</span>
+                            <span class="text-xs text-slate-400 font-medium">Destek Veren Parti</span>
                         </div>
                     </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN INTERACTIVE SECTION: DİLEKÇE VE METİN OLUŞTURUCU -->
+    <main id="dilekce-generator" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        
+        <div class="text-center max-w-3xl mx-auto mb-12">
+            <h2 class="text-3xl font-extrabold text-white sm:text-4xl">Dilekçe & Metin Oluşturucu</h2>
+            <p class="mt-3 text-slate-400 text-sm sm:text-base">Aşağıdan dilekçe türünü seçin, bilgilerinizi girin. Sosyal medya için <strong>Maskeli Görsel (PNG/JPG)</strong> veya resmi makamlar için <strong>Posta PDF'i</strong> oluşturun.</p>
+        </div>
+
+        <div class="grid lg:grid-cols-12 gap-8 items-start">
+            
+            <!-- SOL TARAFI: FORM & DOKÜMAN SEÇİMİ -->
+            <div class="lg:col-span-5 bg-slate-950 border border-slate-800 p-6 sm:p-8 rounded-3xl space-y-6 shadow-xl">
+                
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">1. Belge / Dilekçe Türü Seçin</label>
+                    <select id="docTypeSelect" onchange="updateDocType()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm font-bold text-white focus:ring-2 focus:ring-red-600 focus:outline-none">
+                        <optgroup label="Vatandaş Dilekçeleri">
+                            <option value="cumhurbaskani">📜 Cumhurbaşkanlığına Dilekçe</option>
+                            <option value="meclis_baskani">🏛️ TBMM Başkanlığına Dilekçe</option>
+                            <option value="vekil_cagri">👥 Bölge Milletvekiline Çağrı Dilekçesi</option>
+                        </optgroup>
+                        <optgroup label="Meclis & Vekil Yasal Metinleri">
+                            <option value="kanun_teklifi">⚖️ TBMM Kanun Teklifi ve Genel Gerekçe Metni</option>
+                            <option value="vekil_katilma">✍️ Vekil Teklife Katılma / Sunma Formu</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <!-- Form Girdileri -->
+                <div class="space-y-4 pt-4 border-t border-slate-800">
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider">2. Kişisel / Bilgi Alanları</label>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <span class="block text-xs text-slate-400 mb-1">Ad Soyad</span>
+                            <input type="text" id="inputName" oninput="renderPreview()" placeholder="Ahmet Yılmaz" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:ring-1 focus:ring-red-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <span class="block text-xs text-slate-400 mb-1">T.C. Kimlik No</span>
+                            <input type="text" id="inputTC" oninput="renderPreview()" maxlength="11" placeholder="12345678901" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:ring-1 focus:ring-red-500 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <span class="block text-xs text-slate-400 mb-1">Şehir / İkamet</span>
+                            <input type="text" id="inputCity" oninput="renderPreview()" placeholder="Ankara / Çankaya" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:ring-1 focus:ring-red-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <span class="block text-xs text-slate-400 mb-1">Telefon</span>
+                            <input type="text" id="inputPhone" oninput="renderPreview()" placeholder="0532 000 00 00" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:ring-1 focus:ring-red-500 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <div id="vekilNameGroup" class="hidden">
+                        <span class="block text-xs text-slate-400 mb-1">Hedef Milletvekili Adı</span>
+                        <input type="text" id="inputVekilName" oninput="renderPreview()" placeholder="Örn: Sayın Ali CAN" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:ring-1 focus:ring-red-500 focus:outline-none">
+                    </div>
+
+                    <div>
+                        <span class="block text-xs text-slate-400 mb-1">Özel Talep / Notunuz (İsteğe Bağlı)</span>
+                        <textarea id="inputNote" oninput="renderPreview()" rows="3" placeholder="Metne eklemek istediğiniz özel gerekçeniz..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:ring-1 focus:ring-red-500 focus:outline-none"></textarea>
+                    </div>
+                </div>
+
+                <!-- KVKK MASKELEME ANAHTARI -->
+                <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-white block">🔒 Sosyal Medya Maskelemesi (KVKK)</span>
+                        <span class="text-[11px] text-slate-400">T.C. No ve adres bilgilerinizi gizler.</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="maskToggle" onchange="renderPreview()" class="sr-only peer" checked>
+                        <div class="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
+                    </label>
+                </div>
+
+            </div>
+
+            <!-- SAĞ TARAFI: CANLI CANLI A4 ÖNİZLEME VE İNDİRME AKSİYONLARI -->
+            <div class="lg:col-span-7 space-y-6">
+                
+                <!-- İndirme Butonları Üst Barı -->
+                <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 flex flex-wrap items-center justify-between gap-3">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-eye text-red-500"></i>
+                        <span>A4 Canlı Baskı Önizlemesi</span>
+                    </span>
+
+                    <div class="flex items-center gap-2">
+                        <!-- PNG/JPG İndir (Sosyal Medya) -->
+                        <button onclick="downloadAsImage('png')" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-3 py-2 rounded-xl text-xs transition flex items-center gap-1.5 shadow-lg shadow-amber-600/20">
+                            <i class="fa-solid fa-file-image"></i>
+                            <span>PNG İndir</span>
+                        </button>
+                        <button onclick="downloadAsImage('jpeg')" class="bg-orange-600 hover:bg-orange-700 text-white font-bold px-3 py-2 rounded-xl text-xs transition flex items-center gap-1.5 shadow-lg shadow-orange-600/20">
+                            <i class="fa-solid fa-image"></i>
+                            <span>JPG İndir</span>
+                        </button>
+                        <!-- PDF İndir (Resmi Posta) -->
+                        <button onclick="downloadAsPDF()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-2 rounded-xl text-xs transition flex items-center gap-1.5 shadow-lg shadow-red-600/30">
+                            <i class="fa-solid fa-file-pdf"></i>
+                            <span>Posta PDF'i İndir</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- A4 SAYFA KARTI (html2canvas veya print için taranan alan) -->
+                <div class="overflow-x-auto">
+                    <div id="printable-area" class="w-[680px] min-h-[880px] mx-auto bg-white text-slate-900 p-10 rounded-2xl shadow-2xl relative text-xs font-serif leading-relaxed border border-slate-300">
+                        
+                        <!-- Sosyal Medya Maskeli Görsel Filigranı -->
+                        <div id="maskBadge" class="absolute top-4 right-4 bg-red-100 border border-red-300 text-red-700 text-[10px] font-sans font-bold px-3 py-1 rounded-full flex items-center gap-1">
+                            <i class="fa-solid fa-user-shield"></i>
+                            <span>KVKK MASKELEDİR - SOSYAL MEDYA İÇİN</span>
+                        </div>
+
+                        <!-- Dinamik İçerik Alanı -->
+                        <div id="dilekceContent" class="space-y-4 pt-6">
+                            <!-- JS Tarafından Doldurulacak -->
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- MECLİS İMZA MİLLETVEKİLİ LİSTESİ VE ARAMA PANELİ -->
+    <section id="vekil-listesi" class="bg-slate-950 border-t border-slate-800 py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-white">TBMM Milletvekili İmza & Takip Paneli</h2>
+                    <p class="text-xs text-slate-400 mt-1">Hangi vekilin kanun teklifini imzaladığını inceleyin, kendi bölge vekilinize doğrudan dilekçe gönderin.</p>
+                </div>
+                
+                <!-- Arama Kutusu -->
+                <div class="relative w-full md:w-72">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-500 text-xs"></i>
+                    <input type="text" id="mpSearch" oninput="filterMPs()" placeholder="Vekil adı veya şehir ara..." class="w-full bg-slate-900 border border-slate-800 rounded-xl pl-9 pr-4 py-2 text-xs text-white focus:ring-1 focus:ring-red-500 focus:outline-none">
+                </div>
+            </div>
+
+            <!-- Vekil Kartları Izgarası -->
+            <div id="mpGrid" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Örnek Vekil Kartı 1 -->
+                <div class="mp-card bg-slate-900 border border-slate-800 p-4 rounded-2xl flex flex-col justify-between space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] bg-slate-800 text-slate-300 font-bold px-2 py-0.5 rounded">ANKARA</span>
+                        <span class="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold px-2 py-0.5 rounded">İMZALADI</span>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-white text-sm">Sayın Vekil A</h4>
+                        <p class="text-xs text-slate-400">TBMM Milletvekili</p>
+                    </div>
+                    <button onclick="selectVekilForPetition('Sayın Vekil A')" class="w-full bg-slate-800 hover:bg-red-600 text-white font-bold py-1.5 rounded-xl text-xs transition">
+                        Dilekçe Yaz
+                    </button>
+                </div>
+
+                <!-- Örnek Vekil Kartı 2 -->
+                <div class="mp-card bg-slate-900 border border-slate-800 p-4 rounded-2xl flex flex-col justify-between space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] bg-slate-800 text-slate-300 font-bold px-2 py-0.5 rounded">İSTANBUL</span>
+                        <span class="text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/20 font-bold px-2 py-0.5 rounded">GÖRÜŞÜLÜYOR</span>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-white text-sm">Sayın Vekil B</h4>
+                        <p class="text-xs text-slate-400">TBMM Milletvekili</p>
+                    </div>
+                    <button onclick="selectVekilForPetition('Sayın Vekil B')" class="w-full bg-slate-800 hover:bg-red-600 text-white font-bold py-1.5 rounded-xl text-xs transition">
+                        Dilekçe Yaz
+                    </button>
+                </div>
+
+                <!-- Örnek Vekil Kartı 3 -->
+                <div class="mp-card bg-slate-900 border border-slate-800 p-4 rounded-2xl flex flex-col justify-between space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] bg-slate-800 text-slate-300 font-bold px-2 py-0.5 rounded">İZMİR</span>
+                        <span class="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold px-2 py-0.5 rounded">İMZALADI</span>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-white text-sm">Sayın Vekil C</h4>
+                        <p class="text-xs text-slate-400">TBMM Milletvekili</p>
+                    </div>
+                    <button onclick="selectVekilForPetition('Sayın Vekil C')" class="w-full bg-slate-800 hover:bg-red-600 text-white font-bold py-1.5 rounded-xl text-xs transition">
+                        Dilekçe Yaz
+                    </button>
+                </div>
+
+                <!-- Örnek Vekil Kartı 4 -->
+                <div class="mp-card bg-slate-900 border border-slate-800 p-4 rounded-2xl flex flex-col justify-between space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] bg-slate-800 text-slate-300 font-bold px-2 py-0.5 rounded">ANTALYA</span>
+                        <span class="text-[10px] bg-slate-700 text-slate-400 font-bold px-2 py-0.5 rounded">BEKLENİYOR</span>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-white text-sm">Sayın Vekil D</h4>
+                        <p class="text-xs text-slate-400">TBMM Milletvekili</p>
+                    </div>
+                    <button onclick="selectVekilForPetition('Sayın Vekil D')" class="w-full bg-slate-800 hover:bg-red-600 text-white font-bold py-1.5 rounded-xl text-xs transition">
+                        Dilekçe Yaz
+                    </button>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- MAIN CONTENT: DİLEKÇE VE SÜREÇ YÖNETİMİ -->
-    <main id="dilekceler" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        
-        <!-- Tab Navigation Header -->
-        <div class="text-center max-w-3xl mx-auto mb-12">
-            <h2 class="text-3xl font-extrabold text-slate-900 sm:text-4xl">Dilekçe ve Yasal Metin Oluşturucu</h2>
-            <p class="mt-3 text-slate-600">Muhatabınızı seçin, formu doldurun. İster ıslak imzalı PDF olarak indirin, ister maskelenmiş sosyal medya görseli olarak paylaşın.</p>
-        </div>
-
-        <!-- TAB BUTTONS -->
-        <div class="flex justify-center mb-8">
-            <div class="bg-slate-200 p-1.5 rounded-2xl inline-flex space-x-1 shadow-inner">
-                <button onclick="switchTab('vatandas')" id="tab-vatandas" class="tab-btn px-6 py-3 rounded-xl font-bold text-sm transition bg-white text-slate-900 shadow-sm">
-                    <i class="fa-solid fa-user-pen mr-2 text-red-600"></i>Vatandaş Dilekçeleri
-                </button>
-                <button onclick="switchTab('meclis')" id="tab-meclis" class="tab-btn px-6 py-3 rounded-xl font-bold text-sm transition text-slate-600 hover:text-slate-900">
-                    <i class="fa-solid fa-building-columns mr-2 text-red-600"></i>TBMM Kanun Teklifi & Metinler
-                </button>
-            </div>
-        </div>
-
-        <!-- TAB 1: VATANDAŞ DİLEKÇELERİ MODÜLÜ -->
-        <div id="content-vatandas" class="tab-content grid lg:grid-cols-12 gap-8">
-            <!-- Sol: Form -->
-            <div class="lg:col-span-6 bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200">
-                <h3 class="text-lg font-bold text-slate-900 mb-6 flex items-center justify-between">
-                    <span>1. Dilekçe Detayları</span>
-                    <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-lg">Adım 1/2</span>
-                </h3>
-                
-                <form class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Dilekçe Muhatabı</label>
-                        <select class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 font-semibold text-slate-800 focus:ring-2 focus:ring-red-600 focus:outline-none">
-                            <option>🏛️ TBMM Başkanlığına Dilekçe</option>
-                            <option>📜 Cumhurbaşkanlığına Dilekçe</option>
-                            <option>👥 Bölge Milletvekiline Çağrı Dilekçesi</option>
-                        </select>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Ad Soyad</label>
-                            <input type="text" placeholder="Ahmet Yılmaz" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-red-600 focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">T.C. Kimlik No</label>
-                            <input type="text" placeholder="12345678901" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-red-600 focus:outline-none">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Şehir / Adres</label>
-                        <input type="text" placeholder="İkametgah Şehri" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-red-600 focus:outline-none">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Dilekçe Notu / Ek Talep</label>
-                        <textarea rows="3" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-red-600 focus:outline-none" placeholder="7527 sayılı kanunun iptali ve sahipsiz hayvanların yaşam hakkının güvenceye alınması hususunda..."></textarea>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Sağ: Canlı Önizleme ve İndirme Seçenekleri -->
-            <div class="lg:col-span-6 bg-slate-900 text-white p-6 sm:p-8 rounded-2xl shadow-xl flex flex-col justify-between">
-                <div>
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-sm font-bold text-red-400 uppercase tracking-wider"><i class="fa-solid fa-eye mr-2"></i>Canlı Önizleme</h3>
-                        <span class="text-xs text-slate-400">A4 Standart Format</span>
-                    </div>
-
-                    <!-- Dilekçe Önizleme Kutusu -->
-                    <div class="bg-slate-950 border border-slate-800 p-5 rounded-xl text-xs text-slate-300 font-mono space-y-3 leading-relaxed shadow-inner">
-                        <p class="text-center font-bold text-white uppercase border-b border-slate-800 pb-2">TÜRKIYE BÜYÜK MİLLET MECLİSİ BAŞKANLIĞINA</p>
-                        <p><strong>Konu:</strong> 7527 Sayılı Kanun'un İptali ve Sahipsiz Hayvanların Yaşam Hakkının Korunması Talebi Hk.</p>
-                        <p>7527 sayılı kanun kapsamında yürürlüğe giren düzenlemelerin vicdani ve hukuki açıdan telafisi imkansız zararlar doğurduğu aşikardır. Hayvanların yaşam hakkını savunmak sivil bir sorumluluktur...</p>
-                        <div class="pt-2 border-t border-slate-800 flex justify-between text-slate-500">
-                            <span>Gönderen: A**** Y*****</span>
-                            <span>T.C.: 123******01</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- İNDİRME VE PAYLAŞIM AKSİYONLARI (PDF & MASKELİ PNG/JPG) -->
-                <div class="mt-8 pt-6 border-t border-slate-800 space-y-4">
-                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">İndirme ve Paylaşım Formatı Seçin</h4>
-                    
-                    <div class="grid sm:grid-cols-2 gap-3">
-                        <!-- Sosyal Medya (Maskeli PNG/JPG) -->
-                        <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 hover:border-red-500/50 transition">
-                            <div class="flex items-center space-x-2 text-white font-bold text-sm mb-1">
-                                <i class="fa-solid fa-image text-amber-400"></i>
-                                <span>Sosyal Medya (PNG/JPG)</span>
-                            </div>
-                            <p class="text-xs text-slate-400 mb-3">T.C. No ve Adres maskelenir (KVKK Uyumlu). Instagram/X için idealdir.</p>
-                            <button class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-2 rounded-lg text-xs transition flex items-center justify-center space-x-1">
-                                <i class="fa-solid fa-download"></i>
-                                <span>Maskeli Görsel İndir</span>
-                            </button>
-                        </div>
-
-                        <!-- Posta / Resmi PDF (Eksiksiz) -->
-                        <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 hover:border-red-500/50 transition">
-                            <div class="flex items-center space-x-2 text-white font-bold text-sm mb-1">
-                                <i class="fa-solid fa-file-pdf text-red-400"></i>
-                                <span>Resmi Posta (PDF)</span>
-                            </div>
-                            <p class="text-xs text-slate-400 mb-3">Islak imza ve tam kişisel veri içerir. PTT Posta ve CİMER içindir.</p>
-                            <button class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg text-xs transition flex items-center justify-center space-x-1">
-                                <i class="fa-solid fa-file-arrow-down"></i>
-                                <span>Eksiksiz PDF İndir</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- TAB 2: MECLİS & VEKİL TEKLİFİ MODÜLÜ -->
-        <div id="content-meclis" class="tab-content hidden grid md:grid-cols-2 gap-8">
-            <!-- Kanun Teklifi & Genel Gerekçe Metni -->
-            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
-                <div>
-                    <div class="w-12 h-12 bg-red-100 text-red-600 rounded-xl flex items-center justify-center text-xl font-bold mb-4">
-                        <i class="fa-solid fa-scale-balanced"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-slate-900 mb-2">TBMM Kanun Teklifi ve Genel Gerekçe Metni</h3>
-                    <p class="text-slate-600 text-sm leading-relaxed mb-4">
-                        Milletvekillerine sunulmak üzere hazırlanmış sivil yasa değişiklik taslağı ve gerekçesidir.
-                    </p>
-                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs text-slate-700 font-mono space-y-2 mb-6">
-                        <p class="font-bold text-slate-900">📄 7527_Sayili_Kanun_Degisiklik_Teklifi.pdf</p>
-                        <p>• Genel Gerekçe Metni ve Madde Gerekçeleri</p>
-                        <p>• Anayasaya Uygunluk İncelemesi</p>
-                    </div>
-                </div>
-                <div class="flex gap-2">
-                    <button class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl text-sm transition">
-                        <i class="fa-solid fa-download mr-1"></i> Taslağı İndir (PDF)
-                    </button>
-                </div>
-            </div>
-
-            <!-- Vekil Katılma Dilekçesi -->
-            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
-                <div>
-                    <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center text-xl font-bold mb-4">
-                        <i class="fa-solid fa-signature"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-slate-900 mb-2">Vekilin Teklife Katılma Dilekçesi</h3>
-                    <p class="text-slate-600 text-sm leading-relaxed mb-4">
-                        Sivil teklifi desteklemek ve TBMM Başkanlığına sunmak isteyen milletvekillerinin imzalaması gereken resmi katılma formu.
-                    </p>
-                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs text-slate-700 font-mono space-y-2 mb-6">
-                        <p class="font-bold text-slate-900">📝 Vekil_Katilma_ve_Sunma_Formu.docx</p>
-                        <p>• TBMM Başkanlığı Formatında Hazır Dilekçe</p>
-                        <p>• Islak İmza ve Temsilcilik Onay Alanı</p>
-                    </div>
-                </div>
-                <div class="flex gap-2">
-                    <button class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl text-sm transition">
-                        <i class="fa-solid fa-file-word mr-1"></i> Formu İndir (DOCX/PDF)
-                    </button>
-                </div>
-            </div>
-        </div>
-
-    </main>
-
-    <!-- TAB SWITCHING JAVASCRIPT -->
+    <!-- JAVASCRIPT MANTIĞI -->
     <script>
-        function switchTab(tabName) {
-            // Hide all tab contents
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+        // Belge türü değiştiğinde
+        function updateDocType() {
+            const docType = document.getElementById('docTypeSelect').value;
+            const vekilGroup = document.getElementById('vekilNameGroup');
             
-            // Reset tab button styles
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('bg-white', 'text-slate-900', 'shadow-sm');
-                btn.classList.add('text-slate-600');
-            });
-
-            // Show target tab content
-            document.getElementById('content-' + tabName).classList.remove('hidden');
-
-            // Active button style
-            const activeBtn = document.getElementById('tab-' + tabName);
-            activeBtn.classList.add('bg-white', 'text-slate-900', 'shadow-sm');
-            activeBtn.classList.remove('text-slate-600');
+            if (docType === 'vekil_cagri') {
+                vekilGroup.classList.remove('hidden');
+            } else {
+                vekilGroup.classList.add('hidden');
+            }
+            
+            renderPreview();
         }
+
+        // Canlı A4 Önizleme Oluşturucu
+        function renderPreview() {
+            const docType = document.getElementById('docTypeSelect').value;
+            const isMasked = document.getElementById('maskToggle').checked;
+            
+            // Bilgiler
+            const rawName = document.getElementById('inputName').value.trim() || "Ahmet Yılmaz";
+            const rawTC = document.getElementById('inputTC').value.trim() || "12345678901";
+            const rawCity = document.getElementById('inputCity').value.trim() || "Ankara / Çankaya";
+            const rawPhone = document.getElementById('inputPhone').value.trim() || "0532 000 00 00";
+            const vekilName = document.getElementById('inputVekilName').value.trim() || "Bölge Milletvekili";
+            const note = document.getElementById('inputNote').value.trim();
+
+            // Maskeleme Fonksiyonları
+            const name = isMasked ? maskText(rawName) : rawName;
+            const tc = isMasked ? (rawTC.substring(0,3) + "*****" + rawTC.substring(8)) : rawTC;
+            const city = isMasked ? (rawCity.split('/')[0] + " / *****") : rawCity;
+            const phone = isMasked ? (rawPhone.substring(0,4) + " *** ** " + rawPhone.substring(9)) : rawPhone;
+
+            // Filigran Göster/Gizle
+            const maskBadge = document.getElementById('maskBadge');
+            if (isMasked) {
+                maskBadge.classList.remove('hidden');
+            } else {
+                maskBadge.classList.add('hidden');
+            }
+
+            const container = document.getElementById('dilekceContent');
+            const dateStr = new Date().toLocaleDateString('tr-TR');
+
+            let html = '';
+
+            // 1. CUMHURBAŞKANLIĞI DİLEKÇESİ
+            if (docType === 'cumhurbaskani') {
+                html = `
+                    <p class="text-right font-sans font-bold text-slate-500">${dateStr}</p>
+                    <h3 class="text-center font-bold text-base tracking-wider uppercase border-b pb-3 border-slate-300">T.C. CUMHURBAŞKANLIĞI YÜKSEK MAKAMINA</h3>
+                    <p><strong>KONU:</strong> 7527 Sayılı Kanun'un Uygulanmasının Durdurulması ve Yaşam Hakkı İhlallerinin Önlenmesi Talebi Hk.</p>
+                    <p class="indent-6">Sayın Cumhurbaşkanım,</p>
+                    <p class="indent-6">Kamuoyunda 7527 sayılı kanun olarak bilinen düzenleme, sahipsiz hayvanların yaşam hakkını ve toplumsal vicdanı ağır bir şekilde zedelemektedir. Anayasamızın güvence altına aldığı yaşam hakkı ve taraf olduğumuz uluslararası sözleşmeler gereğince toplu uyutma ve itlaf uygulamaları kabul edilemez.</p>
+                    <p class="indent-6">Sivil bir vatandaş olarak, söz konusu uygulamaların derhal durdurulmasını, kısırlaştır-aşılat-yerinde yaşat modelinin etkin bir şekilde yürütülmesini ve 7527 sayılı kanunun yeniden düzenlenmesini yüksek makamınızdan arz ve talep ederim.</p>
+                    ${note ? `<p class="bg-slate-50 p-3 rounded border border-slate-200 italic"><strong>Özel Not:</strong> ${note}</p>` : ''}
+                    <div class="pt-8 flex justify-between items-end border-t border-slate-200 mt-12">
+                        <div class="space-y-1">
+                            <p><strong>Talep Eden:</strong> ${name}</p>
+                            <p><strong>T.C. No:</strong> ${tc}</p>
+                            <p><strong>Adres:</strong> ${city}</p>
+                            <p><strong>İletişim:</strong> ${phone}</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="mb-8 font-sans font-bold text-slate-400">${isMasked ? '[ 🔒 KVKK MASKELEME ]' : 'İmza:'}</p>
+                            <p><strong>${name}</strong></p>
+                        </div>
+                    </div>
+                `;
+            } 
+            // 2. MECLİS BAŞKANLIĞINA DİLEKÇE
+            else if (docType === 'meclis_baskani') {
+                html = `
+                    <p class="text-right font-sans font-bold text-slate-500">${dateStr}</p>
+                    <h3 class="text-center font-bold text-base tracking-wider uppercase border-b pb-3 border-slate-300">TÜRKİYE BÜYÜK MİLLET MECLİSİ BAŞKANLIĞINA<br><span class="text-xs font-normal">(Dilekçe Komisyonu Başkanlığına)</span></h3>
+                    <p><strong>KONU:</strong> 7527 Sayılı Kanun'un İptali ve Yeniden Düzenlenmesi Amacıyla Yasal Süreç Başlatılması Talebi.</p>
+                    <p class="indent-6">Yüksek Başkanlığınıza,</p>
+                    <p class="indent-6">7527 sayılı kanun kapsamında yürürlüğe giren sahipsiz hayvanlara yönelik tedbirler kamu vicdanında büyük yaralar açmıştır. Sivil toplum kuruluşları ve yurttaşlar olarak meclisimizin yaşam hakkını koruyan bilimsel ilkelere geri dönmesini talep etmekteyiz.</p>
+                    <p class="indent-6">TBMM Dilekçe Komisyonu tarafından konunun öncelikle ele alınmasını ve kanunun iptali yönünde gerekli yasal çalışmaların başlatılmasını arz ederim.</p>
+                    ${note ? `<p class="bg-slate-50 p-3 rounded border border-slate-200 italic"><strong>Özel Not:</strong> ${note}</p>` : ''}
+                    <div class="pt-8 flex justify-between items-end border-t border-slate-200 mt-12">
+                        <div class="space-y-1">
+                            <p><strong>Dilekçe Sahibi:</strong> ${name}</p>
+                            <p><strong>T.C. No:</strong> ${tc}</p>
+                            <p><strong>Şehir:</strong> ${city}</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="mb-8 font-sans font-bold text-slate-400">${isMasked ? '[ 🔒 KVKK MASKELEME ]' : 'İmza:'}</p>
+                            <p><strong>${name}</strong></p>
+                        </div>
+                    </div>
+                `;
+            }
+            // 3. VEKİLE ÇAĞRI DİLEKÇESİ
+            else if (docType === 'vekil_cagri') {
+                html = `
+                    <p class="text-right font-sans font-bold text-slate-500">${dateStr}</p>
+                    <h3 class="text-center font-bold text-base tracking-wider uppercase border-b pb-3 border-slate-300">${vekilName.toUpperCase()} MİLLETVEKİLİNE</h3>
+                    <p><strong>KONU:</strong> Seçmeniniz Olarak 7527 Sayılı Kanun'un İptal Teklifini Desteklemeniz Talebi Hk.</p>
+                    <p class="indent-6">Sayın Milletvekilim,</p>
+                    <p class="indent-6">Bölgemizden seçilerek mecliste bizleri temsil etme yetkisi aldınız. Kamuoyunda 7527 sayılı kanun olarak bilinen ve sahipsiz hayvanların yaşam hakkını tehdit eden düzenlemenin iptali için hazırlanan sivil kanun teklifine imza vererek destek olmanızı seçmeniniz olarak talep ediyorum.</p>
+                    <p class="indent-6">Sizleri öldüren değil, yaşatan yasaların mecliste destekçisi olmaya davet ediyor, gereğini saygılarımla arz ediyorum.</p>
+                    ${note ? `<p class="bg-slate-50 p-3 rounded border border-slate-200 italic"><strong>Özel Not:</strong> ${note}</p>` : ''}
+                    <div class="pt-8 flex justify-between items-end border-t border-slate-200 mt-12">
+                        <div class="space-y-1">
+                            <p><strong>Seçmen:</strong> ${name}</p>
+                            <p><strong>Bölge:</strong> ${city}</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="mb-8 font-sans font-bold text-slate-400">${isMasked ? '[ 🔒 KVKK MASKELEME ]' : 'İmza:'}</p>
+                            <p><strong>${name}</strong></p>
+                        </div>
+                    </div>
+                `;
+            }
+            // 4. TBMM KANUN TEKLİFİ VE GENEL GEREKÇE METNİ
+            else if (docType === 'kanun_teklifi') {
+                html = `
+                    <h3 class="text-center font-bold text-base tracking-wider uppercase border-b pb-3 border-slate-300">TÜRKİYE BÜYÜK MİLLET MECLİSİ BAŞKANLIĞINA</h3>
+                    <p class="text-center font-bold text-sm my-2">7527 SAYILI KANUNDA DEĞİŞİKLİK YAPILMASINA DAİR KANUN TEKLİFİ VE GENEL GEREKÇESİ</p>
+                    <p class="font-bold border-b pb-1 mt-4">GENEL GEREKÇE:</p>
+                    <p class="indent-6">7527 sayılı kanun ile getirilen düzenlemeler, Anayasa'nın 56. maddesinde yer alan çevre ve yaşam koruma ilkeleri ile bağdaşmamaktadır. Dünya Hayvan Hakları Bildirgesi ve bilimsel veriler, sahipsiz hayvan populasyonunun kontrolünde tek insani ve efektif yöntemin 'Kısırlaştır-Aşılat-Yerinde Yaşat' olduğunu kanıtlamıştır.</p>
+                    <p class="indent-6">Bu kanun teklifi ile 7527 sayılı kanunun getirdiği katı tedbirlerin iptali, barınak standartlarının yükseltilmesi ve kısırlaştırma seferberliğinin zorunlu kılınması amaçlanmaktadır.</p>
+                    <p class="font-bold border-b pb-1 mt-4">MADDE GEREKÇELERİ VE TEKLİF MADDELERİ:</p>
+                    <p><strong>Madde 1:</strong> 5199 sayılı kanunda yapılan değişiklikle çıkarılan koruma hükümleri yeniden eklenmiş, uyutma yetkileri iptal edilmiştir.</p>
+                    <p><strong>Madde 2:</strong> Bu kanun yayımı tarihinde yürürlüğe girer.</p>
+                    <div class="pt-6 border-t border-slate-200 mt-8 text-slate-500 text-[10px]">
+                        <p>* Bu metin Sivil İnisiyatif Hukuk Kurulu tarafından TBMM Milletvekillerinin imzasına sunulmak üzere hazırlanmıştır.</p>
+                    </div>
+                `;
+            }
+            // 5. VEKİL KATILMA DİLEKÇESİ
+            else if (docType === 'vekil_katilma') {
+                html = `
+                    <p class="text-right font-sans font-bold text-slate-500">${dateStr}</p>
+                    <h3 class="text-center font-bold text-base tracking-wider uppercase border-b pb-3 border-slate-300">TÜRKİYE BÜYÜK MİLLET MECLİSİ BAŞKANLIĞINA</h3>
+                    <p><strong>KONU:</strong> 7527 Sayılı Kanun Değişiklik Teklifine Katılma ve Sunma Beyanı Hk.</p>
+                    <p class="indent-6">Sivil toplum kuruluşları ve yurttaşlar tarafından hazırlanan 7527 Sayılı Kanunda Değişiklik Yapılmasına Dair Kanun Teklifi ve Genel Gerekçe metnini incelemiş bulunmaktayım.</p>
+                    <p class="indent-6">Anayasal yaşam hakkı ve toplumsal vicdan ilkesi gereğince söz konusu kanun teklifini TBMM Milletvekili sıfatımla imzalayarak TBMM Başkanlığına sunmayı kabul ve beyan ederim.</p>
+                    <div class="pt-12 flex justify-between items-end border-t border-slate-200 mt-16">
+                        <div class="space-y-1">
+                            <p><strong>Teklif Sahibi Vekil:</strong> .....................................</p>
+                            <p><strong>Seçim Çevresi:</strong> .....................................</p>
+                            <p><strong>Partisi:</strong> .....................................</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="mb-10 font-sans font-bold text-slate-400">Milletvekili Islak İmza / Mühür</p>
+                            <p><strong>TBMM Milletvekili</strong></p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        // İsim Maskeleme Yardımcısı
+        function maskText(str) {
+            return str.split(' ').map(part => {
+                if(part.length <= 1) return part;
+                return part[0] + '*'.repeat(part.length - 1);
+            }).join(' ');
+        }
+
+        // Vekil Kartından Dilekçeye Hızlı Geçiş
+        function selectVekilForPetition(vekilName) {
+            document.getElementById('docTypeSelect').value = 'vekil_cagri';
+            updateDocType();
+            document.getElementById('inputVekilName').value = vekilName;
+            renderPreview();
+            window.location.href = '#dilekce-generator';
+        }
+
+        // Vekil Arama Filtresi
+        function filterMPs() {
+            const query = document.getElementById('mpSearch').value.toLowerCase();
+            const cards = document.querySelectorAll('.mp-card');
+            cards.forEach(card => {
+                const text = card.innerText.toLowerCase();
+                if(text.includes(query)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // GÖRSEL (PNG/JPG) İNDİRME İŞLEVİ (html2canvas kütüphanesi ile)
+        function downloadAsImage(format) {
+            const target = document.getElementById('printable-area');
+            
+            html2canvas(target, {
+                scale: 2, // Yüksek çözünürlük
+                useCORS: true,
+                backgroundColor: '#ffffff'
+            }).then(canvas => {
+                const image = canvas.toDataURL(format === 'png' ? 'image/png' : 'image/jpeg', 0.95);
+                const link = document.createElement('a');
+                link.download = `7527_iptal_dilekce_${new Date().getTime()}.${format}`;
+                link.href = image;
+                link.click();
+            });
+        }
+
+        // POSTA PDF İNDİRME İŞLEVİ (Tarayıcı Yazdırma Penceresi)
+        function downloadAsPDF() {
+            // PDF için maskeyi kaldırıp yazdırma penceresini açıyoruz
+            document.getElementById('maskToggle').checked = false;
+            renderPreview();
+            setTimeout(() => {
+                window.print();
+            }, 300);
+        }
+
+        // Sayfa Yüklendiğinde Varsayılan Önizlemeyi Çalıştır
+        window.onload = function() {
+            renderPreview();
+        };
     </script>
 </body>
 </html>
