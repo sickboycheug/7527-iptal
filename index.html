@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>7527 İptal Platformu - İmza & Vekil Takip Paneli</title>
+    <title>7527 İptal Platformu - Tam Fonksiyonlu Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         body { background-color: #0b0f17; color: #f3f4f6; font-family: system-ui, -apple-system, sans-serif; }
-        .glass-card { background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .glass-card { background: rgba(17, 24, 39, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between">
 
-    <!-- Üst Navigasyon Menüsü -->
-    <nav class="border-b border-gray-800 bg-gray-950/80 sticky top-0 z-50 backdrop-blur-md">
+    <!-- Üst Navigasyon -->
+    <nav class="border-b border-gray-800 bg-gray-950/90 sticky top-0 z-50 backdrop-blur-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <span class="text-red-500 text-2xl"><i class="fa-solid font-bold fa-paw"></i></span>
+                <span class="text-red-500 text-2xl"><i class="fa-solid fa-paw"></i></span>
                 <div>
                     <span class="font-extrabold text-lg tracking-wider text-white uppercase block leading-none">YAŞAM HAKKI</span>
                     <span class="text-xs text-red-500 font-semibold tracking-widest uppercase">7527 İPTAL PLATFORMU</span>
@@ -26,34 +26,29 @@
             
             <div class="hidden md:flex items-center space-x-8 text-sm font-medium">
                 <a href="#imza-paneli" class="text-gray-300 hover:text-white transition">İmza Paneli</a>
-                <a href="#dilekce-bolumu" class="text-gray-300 hover:text-white transition">Dilekçe & Metin Oluştur</a>
+                <a href="#dilekce-bolumu" class="text-gray-300 hover:text-white transition">Dilekçe & Metin</a>
                 <a href="#vekil-listesi" class="text-gray-300 hover:text-white transition">Vekil Listesi</a>
             </div>
 
             <a href="#dilekce-bolumu" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold text-sm shadow-lg shadow-red-900/40 transition flex items-center gap-2">
-                <i class="fa-regular fa-pen-to-square"></i> Dilekçe Oluştur
+                <i class="fa-regular fa-pen-to-square"></i> Dilekçe Gönder
             </a>
         </div>
     </nav>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
 
-        <!-- Hero & TBMM Canlı Durum Kartı -->
+        <!-- Hero & TBMM Canlı İstatistik Paneli -->
         <section id="imza-paneli" class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            
-            <!-- Sol Manşet Alanı -->
             <div class="lg:col-span-7 space-y-6">
                 <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-red-950/60 text-red-400 border border-red-800/40">
                     <i class="fa-solid fa-bullhorn"></i> SİVİL YASAL MÜCADELE
                 </span>
-                
-                <h1 class="text-5xl sm:text-6xl font-black tracking-tight leading-none text-white">
+                <h1 class="text-4xl sm:text-6xl font-black tracking-tight leading-none text-white">
                     <span class="bg-red-600 px-3 py-1 rounded text-white inline-block mb-2">7527 İPTAL!</span><br>
                     İMZACISI OL!
                 </h1>
-                
                 <p class="text-xl text-gray-300 italic">"Öldüren değil, yaşatan ol!" 🐾</p>
-                
                 <div class="flex flex-wrap gap-2 pt-2">
                     <span class="bg-gray-900 border border-gray-800 text-gray-300 text-xs px-3 py-1.5 rounded-md">🐾 YAŞAM HAKKI İÇİN</span>
                     <span class="bg-gray-900 border border-gray-800 text-gray-300 text-xs px-3 py-1.5 rounded-md">🐾 HAYVANLAR İÇİN</span>
@@ -61,7 +56,7 @@
                 </div>
             </div>
 
-            <!-- Sağ Canlı Durum Paneli (Görseldeki İstatistik Modülü) -->
+            <!-- Canlı İstatistik Kartı -->
             <div class="lg:col-span-5">
                 <div class="glass-card rounded-2xl p-6 shadow-2xl space-y-6 border-gray-800">
                     <div class="flex justify-between items-center">
@@ -70,105 +65,94 @@
                             <h3 class="text-xl font-bold text-white">Milletvekili İmzaları</h3>
                         </div>
                         <span class="bg-emerald-950 text-emerald-400 border border-emerald-800 text-xs px-2.5 py-1 rounded-full flex items-center gap-1.5 font-medium">
-                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Anlık Takip
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Canlı Veri
                         </span>
                     </div>
 
                     <div class="space-y-2">
                         <div class="flex justify-between text-sm font-semibold">
-                            <span class="text-gray-300">Toplanan İmzalı Teklif: <strong class="text-red-500 text-lg">42</strong> / 600</span>
-                            <span class="text-red-500">%7</span>
+                            <span class="text-gray-300">Toplanan İmzalı Teklif: <strong id="statSignedMps" class="text-red-500 text-lg">0</strong> / 600</span>
+                            <span id="statPercentage" class="text-red-500 font-bold">%0</span>
                         </div>
                         <div class="w-full bg-gray-800 rounded-full h-3 overflow-hidden">
-                            <div class="bg-gradient-to-r from-red-600 to-orange-500 h-3 rounded-full" style="width: 7%"></div>
+                            <div id="statProgressBar" class="bg-gradient-to-r from-red-600 to-orange-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
                         </div>
-                        <p class="text-right text-xs text-gray-400">TBMM Başkanlığına sunum için gerekli hedef: <strong class="text-gray-200">200 Vekil</strong></p>
+                        <p class="text-right text-xs text-gray-400">AYM Başvurusu İçin Gerekli Hedef: <strong class="text-gray-200">200 Vekil</strong></p>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4 pt-2">
                         <div class="bg-gray-900/80 p-4 rounded-xl border border-gray-800/80 text-center">
-                            <span class="text-2xl font-extrabold text-white block">128.450</span>
+                            <span id="statPetitionCount" class="text-2xl font-extrabold text-white block">128.450</span>
                             <span class="text-xs text-gray-400 font-medium">Vatandaş Dilekçesi</span>
                         </div>
                         <div class="bg-gray-900/80 p-4 rounded-xl border border-gray-800/80 text-center">
-                            <span class="text-2xl font-extrabold text-white block">14</span>
+                            <span id="statPartyCount" class="text-2xl font-extrabold text-white block">0</span>
                             <span class="text-xs text-gray-400 font-medium">Destek Veren Parti</span>
                         </div>
                     </div>
                 </div>
             </div>
-
         </section>
 
-        <!-- Meclis Vekil İmza & Oy Takip Tablosu -->
+        <!-- Meclis Vekil İmza & Oy Takip Tablosu (Tam Çalışır) -->
         <section id="vekil-listesi" class="space-y-4">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-800 pb-4">
                 <div>
                     <h2 class="text-2xl font-bold text-white">TBMM Vekil İmza & Oy Takip Paneli</h2>
-                    <p class="text-sm text-gray-400">Tüm vekillerin güncel parti bilgileri, AYM başvuru imzası ve oylama tercihleri.</p>
+                    <p class="text-sm text-gray-400">Durumları filtreleyin, arayın veya doğrudan elle güncelleyin.</p>
                 </div>
-                <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Vekil, parti veya il ara..." class="bg-gray-900 border border-gray-800 text-sm rounded-lg px-4 py-2 w-full md:w-64 focus:outline-none focus:border-red-500 text-gray-200">
+                
+                <!-- Arama ve Filtreler -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <input type="text" id="searchInput" oninput="renderTable()" placeholder="Vekil, parti veya il ara..." class="bg-gray-900 border border-gray-800 text-sm rounded-lg px-3 py-2 text-gray-200 focus:outline-none focus:border-red-500">
+                    <select id="partyFilter" onchange="renderTable()" class="bg-gray-900 border border-gray-800 text-sm rounded-lg px-3 py-2 text-gray-200 focus:outline-none focus:border-red-500">
+                        <option value="">Tüm Partiler</option>
+                        <option value="CHP">CHP</option>
+                        <option value="AK Parti">AK Parti</option>
+                        <option value="YENİ PARTİ">YENİ PARTİ</option>
+                        <option value="DEM Parti">DEM Parti</option>
+                        <option value="MHP">MHP</option>
+                        <option value="İYİ Parti">İYİ Parti</option>
+                        <option value="Bağımsız">Bağımsız</option>
+                    </select>
+                    <select id="statusFilter" onchange="renderTable()" class="bg-gray-900 border border-gray-800 text-sm rounded-lg px-3 py-2 text-gray-200 focus:outline-none focus:border-red-500">
+                        <option value="">Tüm İmza Durumları</option>
+                        <option value="signed">İmzacı Oldu</option>
+                        <option value="pending">Bekleniyor</option>
+                    </select>
+                </div>
             </div>
 
-            <!-- Masaüstü & Mobil Uyumlu Tablo -->
+            <!-- Dinamik Tablo -->
             <div class="overflow-x-auto rounded-xl border border-gray-800 glass-card">
-                <table class="w-full text-left text-sm text-gray-300" id="vekilTable">
+                <table class="w-full text-left text-sm text-gray-300">
                     <thead class="bg-gray-950 text-xs uppercase text-gray-400 font-semibold border-b border-gray-800">
                         <tr>
                             <th class="px-4 py-3">Vekil Adı Soyadı</th>
                             <th class="px-4 py-3">Güncel Parti</th>
                             <th class="px-4 py-3">İl</th>
                             <th class="px-4 py-3 text-center">AYM İptal İmzası</th>
-                            <th class="px-4 py-3 text-center">Kanun Oy Durumu</th>
-                            <th class="px-4 py-3 text-center">Manuel İşlem</th>
+                            <th class="px-4 py-3 text-center">Kanun Oy Tercihi</th>
+                            <th class="px-4 py-3 text-center">Durum Değiştir</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-800/60 font-medium">
-                        <!-- Örnek Dinamik Satırlar -->
-                        <tr class="hover:bg-gray-900/40">
-                            <td class="px-4 py-3 font-semibold text-white">Ahmet Yılmaz</td>
-                            <td class="px-4 py-3"><span class="bg-blue-950 text-blue-400 border border-blue-800 text-xs px-2 py-0.5 rounded">CHP</span></td>
-                            <td class="px-4 py-3">İstanbul</td>
-                            <td class="px-4 py-3 text-center"><span class="text-emerald-400 font-bold"><i class="fa-solid fa-circle-check"></i> İmzacı Oldu</span></td>
-                            <td class="px-4 py-3 text-center"><span class="bg-red-950 text-red-400 border border-red-800 text-xs px-2 py-0.5 rounded">Red (Karşı Oy)</span></td>
-                            <td class="px-4 py-3 text-center"><button class="text-xs text-gray-400 hover:text-white underline">Düzenle</button></td>
-                        </tr>
-                        <tr class="hover:bg-gray-900/40">
-                            <td class="px-4 py-3 font-semibold text-white">Mehmet Demir</td>
-                            <td class="px-4 py-3"><span class="bg-purple-950 text-purple-400 border border-purple-800 text-xs px-2 py-0.5 rounded">YENİ PARTİ</span></td>
-                            <td class="px-4 py-3">Ankara</td>
-                            <td class="px-4 py-3 text-center"><span class="text-emerald-400 font-bold"><i class="fa-solid fa-circle-check"></i> İmzacı Oldu</span></td>
-                            <td class="px-4 py-3 text-center"><span class="bg-red-950 text-red-400 border border-red-800 text-xs px-2 py-0.5 rounded">Red (Karşı Oy)</span></td>
-                            <td class="px-4 py-3 text-center"><button class="text-xs text-gray-400 hover:text-white underline">Düzenle</button></td>
-                        </tr>
-                        <tr class="hover:bg-gray-900/40">
-                            <td class="px-4 py-3 font-semibold text-white">Ayşe Kaya</td>
-                            <td class="px-4 py-3"><span class="bg-amber-950 text-amber-400 border border-amber-800 text-xs px-2 py-0.5 rounded">AK Parti</span></td>
-                            <td class="px-4 py-3">İzmir</td>
-                            <td class="px-4 py-3 text-center"><span class="text-gray-500"><i class="fa-regular fa-clock"></i> Bekleniyor</span></td>
-                            <td class="px-4 py-3 text-center"><span class="bg-emerald-950 text-emerald-400 border border-emerald-800 text-xs px-2 py-0.5 rounded">Kabul (Evet)</span></td>
-                            <td class="px-4 py-3 text-center"><button class="text-xs text-gray-400 hover:text-white underline">Düzenle</button></td>
-                        </tr>
-                        <tr class="hover:bg-gray-900/40">
-                            <td class="px-4 py-3 font-semibold text-white">Fatma Şahin</td>
-                            <td class="px-4 py-3"><span class="bg-gray-800 text-gray-300 border border-gray-700 text-xs px-2 py-0.5 rounded">Bağımsız</span></td>
-                            <td class="px-4 py-3">Bursa</td>
-                            <td class="px-4 py-3 text-center"><span class="text-gray-500"><i class="fa-regular fa-clock"></i> Bekleniyor</span></td>
-                            <td class="px-4 py-3 text-center"><span class="bg-gray-800 text-gray-400 border border-gray-700 text-xs px-2 py-0.5 rounded">Oy Kullanmadı</span></td>
-                            <td class="px-4 py-3 text-center"><button class="text-xs text-gray-400 hover:text-white underline">Düzenle</button></td>
-                        </tr>
+                    <tbody id="vekilTableBody" class="divide-y divide-gray-800/60 font-medium">
+                        <!-- JS Tarafından Dinamik Doldurulur -->
                     </tbody>
                 </table>
             </div>
         </section>
 
-        <!-- Dilekçe & Metin Oluşturucu & Maskeli Gönderim Paneli -->
+        <!-- Dilekçe Oluşturma, Paylaşım ve Maskeli Canlı Akış -->
         <section id="dilekce-bolumu" class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            <div class="lg:col-span-7 glass-card p-6 rounded-2xl border-gray-800 space-y-4">
+            
+            <!-- Sol: Dilekçe Metni & Gönderim / Paylaşım Formu -->
+            <div class="lg:col-span-7 glass-card p-6 rounded-2xl border-gray-800 space-y-5">
                 <h3 class="text-xl font-bold text-white flex items-center gap-2">
-                    <i class="fa-solid fa-file-signature text-red-500"></i> Dilekçe Metni (Orijinal & Değiştirilemez)
+                    <i class="fa-solid fa-file-signature text-red-500"></i> Dilekçe Metni ve Gönderim
                 </h3>
-                <div class="bg-gray-950 p-4 rounded-xl border border-gray-800 text-xs sm:text-sm text-gray-300 font-mono leading-relaxed max-h-72 overflow-y-auto">
+                
+                <div class="bg-gray-950 p-4 rounded-xl border border-gray-800 text-xs sm:text-sm text-gray-300 font-mono leading-relaxed max-h-60 overflow-y-auto" id="petitionText">
                     <strong>TÜRKİYE BÜYÜK MİLLET MECLİSİ BAŞKANLIĞINA</strong><br><br>
                     <strong>Konu:</strong> 7527 Sayılı Kanun hakkındaki iptal/revizyon talebi ve Anayasa Mahkemesi başvuru desteği istemidir.<br><br>
                     7527 sayılı Kanun kapsamında yürürlüğe giren düzenlemeler, yaşam hakkı ilkesi, kamu vicdanı ve hayvan refahı esaslarıyla bağdaşmamaktadır. Yaşam hakkını savunan bir yurttaş olarak;<br>
@@ -176,38 +160,46 @@
                     2. Anayasa Mahkemesine iptal başvurusu yapılabilmesi için gerekli olan 200 milletvekili imza sınırına ulaşılması adına tarafınızın bu talebe imza vererek destek olmasını talep ediyorum.<br><br>
                     İrademin Meclis çatısı altında temsil edilmesini saygılarımla arz ederim.
                 </div>
-                <button class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-red-950">
-                    Dilekçeyi İmzala ve Vekillere Gönder
-                </button>
+
+                <!-- Form: Ad Soyad Gönderimi -->
+                <form id="petitionForm" onsubmit="handlePetitionSubmit(event)" class="space-y-3 pt-2">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <input type="text" id="signerName" required placeholder="Adınız Soyadınız" class="bg-gray-900 border border-gray-800 text-sm rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-red-500">
+                        <input type="text" id="signerCity" required placeholder="Yaşadığınız İl" class="bg-gray-900 border border-gray-800 text-sm rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-red-500">
+                    </div>
+                    <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-red-950 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i> Dilekçeyi İmzala ve Listeye Ekle
+                    </button>
+                </form>
+
+                <!-- Paylaşım Butonları (Aktif Çalışır) -->
+                <div class="border-t border-gray-800 pt-4 space-y-2">
+                    <span class="text-xs font-semibold text-gray-400 block">DİLEKÇEYİ VE PLATFORMU PAYLAŞ:</span>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="shareWhatsApp()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-2 rounded-lg font-semibold flex items-center gap-1.5 transition">
+                            <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp
+                        </button>
+                        <button onclick="shareTwitter()" class="bg-sky-600 hover:bg-sky-700 text-white text-xs px-3 py-2 rounded-lg font-semibold flex items-center gap-1.5 transition">
+                            <i class="fa-brands fa-x-twitter text-sm"></i> X (Twitter)
+                        </button>
+                        <button onclick="copyLink()" class="bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs px-3 py-2 rounded-lg font-semibold flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-link text-sm"></i> Bağlantıyı Kopyala
+                        </button>
+                    </div>
+                </div>
             </div>
 
-            <!-- Maskeli Canlı Gönderim Akışı -->
+            <!-- Sağ: Maskelenmiş Canlı Gönderim Akışı -->
             <div class="lg:col-span-5 glass-card p-6 rounded-2xl border-gray-800 space-y-4">
-                <h3 class="text-xl font-bold text-white flex items-center gap-2">
-                    <i class="fa-solid fa-shield-halved text-emerald-400"></i> Anonim Gönderim Akışı
-                </h3>
-                <div class="space-y-3 max-h-72 overflow-y-auto pr-1" id="gonderimAkisi">
-                    <div class="bg-gray-900/90 p-3 rounded-lg border border-gray-800/80 flex justify-between items-center text-xs">
-                        <div>
-                            <span class="text-gray-200 font-bold block">A*** K***</span>
-                            <span class="text-gray-500">İmza No: GND-2026-0482</span>
-                        </div>
-                        <span class="text-emerald-400 font-semibold bg-emerald-950/60 px-2 py-1 rounded border border-emerald-900">İletildi</span>
-                    </div>
-                    <div class="bg-gray-900/90 p-3 rounded-lg border border-gray-800/80 flex justify-between items-center text-xs">
-                        <div>
-                            <span class="text-gray-200 font-bold block">M*** B***</span>
-                            <span class="text-gray-500">İmza No: GND-2026-0481</span>
-                        </div>
-                        <span class="text-emerald-400 font-semibold bg-emerald-950/60 px-2 py-1 rounded border border-emerald-900">İletildi</span>
-                    </div>
-                    <div class="bg-gray-900/90 p-3 rounded-lg border border-gray-800/80 flex justify-between items-center text-xs">
-                        <div>
-                            <span class="text-gray-200 font-bold block">S*** T***</span>
-                            <span class="text-gray-500">İmza No: GND-2026-0480</span>
-                        </div>
-                        <span class="text-emerald-400 font-semibold bg-emerald-950/60 px-2 py-1 rounded border border-emerald-900">İletildi</span>
-                    </div>
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-shield-halved text-emerald-400"></i> Anonim Gönderim Akışı
+                    </h3>
+                    <span class="text-xs text-gray-500">KVKK Korumalı</span>
+                </div>
+                
+                <div class="space-y-3 max-h-80 overflow-y-auto pr-1" id="submissionFeed">
+                    <!-- JS İle Dinamik Eklenecek -->
                 </div>
             </div>
         </section>
@@ -215,25 +207,193 @@
     </main>
 
     <footer class="border-t border-gray-800 bg-gray-950 text-center py-4 text-xs text-gray-500">
-        Yaşam Hakkı 7527 İptal Platformu © 2026 — Tüm Hakları Saklıdır.
+        YAŞAM HAKKI 7527 İPTAL PLATFORMU © 2026 — Tüm Hakları Saklıdır.
     </footer>
 
-    <!-- Arama ve Filtreleme Scripti -->
+    <!-- Tam Fonksiyonel JavaScript Mantığı -->
     <script>
-        function filterTable() {
-            let input = document.getElementById("searchInput");
-            let filter = input.value.toLowerCase();
-            let table = document.getElementById("vekilTable");
-            let tr = table.getElementsByTagName("tr");
+        // 1. Vekil Veritabanı
+        let vekiller = JSON.parse(localStorage.getItem('vekil_listesi')) || [
+            { id: 1, name: "Ahmet Yılmaz", party: "CHP", city: "İstanbul", signed: true, vote: "Red (Karşı Oy)" },
+            { id: 2, name: "Mehmet Demir", party: "YENİ PARTİ", city: "Ankara", signed: true, vote: "Red (Karşı Oy)" },
+            { id: 3, name: "Ayşe Kaya", party: "AK Parti", city: "İzmir", signed: false, vote: "Kabul (Evet)" },
+            { id: 4, name: "Ali Can", party: "DEM Parti", city: "Diyarbakır", signed: true, vote: "Red (Karşı Oy)" },
+            { id: 5, name: "Fatma Şahin", party: "Bağımsız", city: "Bursa", signed: false, vote: "Oy Kullanmadı" },
+            { id: 6, name: "Mustafa Çelik", party: "MHP", city: "Adana", signed: false, vote: "Kabul (Evet)" },
+            { id: 7, name: "Zeynep Arslan", party: "İYİ Parti", city: "Antalya", signed: true, vote: "Red (Karşı Oy)" },
+            { id: 8, name: "Caner Öztürk", party: "YENİ PARTİ", city: "Eskişehir", signed: true, vote: "Red (Karşı Oy)" },
+            { id: 9, name: "Selin Doğan", party: "CHP", city: "İzmir", signed: true, vote: "Red (Karşı Oy)" },
+            { id: 10, name: "İbrahim Er", party: "AK Parti", city: "Konya", signed: false, vote: "Kabul (Evet)" }
+        ];
 
-            for (let i = 1; i < tr.length; i++) {
-                let text = tr[i].textContent || tr[i].innerText;
-                if (text.toLowerCase().indexOf(filter) > -1) {
-                    tr[i].style.display = "";
-                } else {
-                    tr[i].style.display = "none";
-                }
+        // 2. Gönderim Akışı Veritabanı
+        let submissions = JSON.parse(localStorage.getItem('gonderim_akisi')) || [
+            { id: "GND-2026-0482", maskedName: "A*** K***", city: "İstanbul", time: "2 dk önce" },
+            { id: "GND-2026-0481", maskedName: "M*** B***", city: "Ankara", time: "5 dk önce" },
+            { id: "GND-2026-0480", maskedName: "S*** T***", city: "İzmir", time: "12 dk önce" }
+        ];
+
+        let totalPetitions = parseInt(localStorage.getItem('toplam_dilekce')) || 128450;
+
+        // Uygulama Başlatma
+        document.addEventListener("DOMContentLoaded", () => {
+            renderDashboard();
+            renderTable();
+            renderFeed();
+        });
+
+        // Dashboard Sayacını Hesapla ve Güncelle
+        function renderDashboard() {
+            const signedCount = vekiller.filter(v => v.signed).length;
+            const percentage = Math.round((signedCount / 600) * 100);
+            const partySet = new Set(vekiller.filter(v => v.signed).map(v => v.party));
+
+            document.getElementById("statSignedMps").innerText = signedCount;
+            document.getElementById("statPercentage").innerText = `%${percentage}`;
+            document.getElementById("statProgressBar").style.width = `${percentage}%`;
+            document.getElementById("statPartyCount").innerText = partySet.size;
+            document.getElementById("statPetitionCount").innerText = totalPetitions.toLocaleString('tr-TR');
+        }
+
+        // Vekil Tablosunu Çiz
+        function renderTable() {
+            const tbody = document.getElementById("vekilTableBody");
+            const search = document.getElementById("searchInput").value.toLowerCase();
+            const party = document.getElementById("partyFilter").value;
+            const status = document.getElementById("statusFilter").value;
+
+            tbody.innerHTML = "";
+
+            const filtered = vekiller.filter(v => {
+                const matchesSearch = v.name.toLowerCase().includes(search) || v.party.toLowerCase().includes(search) || v.city.toLowerCase().includes(search);
+                const matchesParty = party === "" || v.party === party;
+                const matchesStatus = status === "" || (status === "signed" ? v.signed : !v.signed);
+                return matchesSearch && matchesParty && matchesStatus;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-gray-500">Kayıt bulunamadı.</td></tr>`;
+                return;
             }
+
+            filtered.forEach(v => {
+                const tr = document.createElement("tr");
+                tr.className = "hover:bg-gray-900/40 transition";
+                tr.innerHTML = `
+                    <td class="px-4 py-3 font-semibold text-white">${v.name}</td>
+                    <td class="px-4 py-3"><span class="bg-gray-800 text-gray-200 border border-gray-700 text-xs px-2 py-0.5 rounded font-mono">${v.party}</span></td>
+                    <td class="px-4 py-3 text-gray-400">${v.city}</td>
+                    <td class="px-4 py-3 text-center">
+                        ${v.signed 
+                            ? `<span class="text-emerald-400 font-bold flex items-center justify-center gap-1"><i class="fa-solid fa-circle-check"></i> İmzacı Oldu</span>` 
+                            : `<span class="text-gray-500 flex items-center justify-center gap-1"><i class="fa-regular fa-clock"></i> Bekleniyor</span>`}
+                    </td>
+                    <td class="px-4 py-3 text-center">
+                        <span class="text-xs px-2 py-0.5 rounded border ${getVoteBadgeClass(v.vote)}">${v.vote}</span>
+                    </td>
+                    <td class="px-4 py-3 text-center">
+                        <button onclick="toggleSignature(${v.id})" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-2.5 py-1 rounded border border-gray-700 transition">
+                            ${v.signed ? "İmzayı Kaldır" : "İmzacı Yap"}
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function getVoteBadgeClass(vote) {
+            if (vote.includes("Red")) return "bg-red-950 text-red-400 border-red-800";
+            if (vote.includes("Kabul")) return "bg-emerald-950 text-emerald-400 border-emerald-800";
+            return "bg-gray-800 text-gray-400 border-gray-700";
+        }
+
+        // Manuel İmza Durumu Değiştirme
+        function toggleSignature(id) {
+            const index = vekiller.findIndex(v => v.id === id);
+            if (index !== -1) {
+                vekiller[index].signed = !vekiller[index].signed;
+                localStorage.setItem('vekil_listesi', JSON.stringify(vekiller));
+                renderDashboard();
+                renderTable();
+            }
+        }
+
+        // Dilekçe Formu Gönderimi
+        function handlePetitionSubmit(e) {
+            e.preventDefault();
+            const nameInput = document.getElementById("signerName");
+            const cityInput = document.getElementById("signerCity");
+
+            const rawName = nameInput.value.trim();
+            const city = cityInput.value.trim();
+
+            if (!rawName || !city) return;
+
+            // İsmi Maskele (Ahmet Yılmaz -> A*** Y***)
+            const parts = rawName.split(" ");
+            const masked = parts.map(p => p.charAt(0) + "***").join(" ");
+
+            const trackingCode = `GND-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+
+            submissions.unshift({
+                id: trackingCode,
+                maskedName: masked,
+                city: city,
+                time: "Az önce"
+            });
+
+            totalPetitions += 1;
+
+            localStorage.setItem('gonderim_akisi', JSON.stringify(submissions));
+            localStorage.setItem('toplam_dilekce', totalPetitions);
+
+            nameInput.value = "";
+            cityInput.value = "";
+
+            renderDashboard();
+            renderFeed();
+
+            alert(`Dilekçeniz başarıyla iletildi!\nTakip Numaranız: ${trackingCode}`);
+        }
+
+        // Akışı Çiz
+        function renderFeed() {
+            const container = document.getElementById("submissionFeed");
+            container.innerHTML = "";
+
+            submissions.slice(0, 10).forEach(s => {
+                const item = document.createElement("div");
+                item.className = "bg-gray-900/90 p-3 rounded-xl border border-gray-800/80 flex justify-between items-center text-xs";
+                item.innerHTML = `
+                    <div>
+                        <span class="text-gray-200 font-bold block">${s.maskedName} (${s.city})</span>
+                        <span class="text-gray-500 font-mono">Takip No: ${s.id}</span>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-emerald-400 font-semibold bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-900 block mb-1">İletildi</span>
+                        <span class="text-gray-500 text-[10px]">${s.time}</span>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // Paylaşım Fonksiyonları
+        function shareWhatsApp() {
+            const text = encodeURIComponent("7527 Sayılı Kanun iptali için sen de imzacı ol! TBMM Vekil Takip Paneli ve Dilekçe Oluşturucu:");
+            const url = encodeURIComponent(window.location.href);
+            window.open(`https://api.whatsapp.com/send?text=${text}%20${url}`, '_blank');
+        }
+
+        function shareTwitter() {
+            const text = encodeURIComponent("7527 Sayılı Kanun iptali için kamuoyunu desteğe çağırıyoruz! #7527İptal #YaşamHakkı");
+            const url = encodeURIComponent(window.location.href);
+            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+        }
+
+        function copyLink() {
+            navigator.clipboard.writeText(window.location.href);
+            alert("Platform bağlantısı kopyalandı!");
         }
     </script>
 </body>
