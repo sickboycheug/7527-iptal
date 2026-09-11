@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>7527 İptal Teklifi - Vekil Baskı ve Bireysel Dilekçe Ağı</title>
+    <style>
+        :root { 
+            --bg: #121212; 
+            --card: #1a1a1a; 
+            --accent: #c62828; 
+            --accent-hover: #b71c1c; 
+            --text: #e0e0e0; 
+            --input-bg: #262626; 
+            --border: #333;
+        }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; 
+            background: var(--bg); 
+            color: var(--text); 
+            margin: 0; 
+            padding: 20px; 
+            display: flex; 
+            justify-content: center; 
+            line-height: 1.5;
+        }
+        .container { max-width: 850px; width: 100%; }
+        header { 
+            border-bottom: 3px solid var(--accent); 
+            padding-bottom: 15px; 
+            margin-bottom: 25px; 
+        }
+        h1 { color: #fff; margin: 0 0 10px 0; font-size: 1.6rem; letter-spacing: -0.5px; }
+        p.subtitle { color: #aaa; margin: 0; font-size: 0.95rem; }
+        .card { 
+            background: var(--card); 
+            padding: 20px; 
+            border-radius: 8px; 
+            margin-bottom: 20px; 
+            border: 1px solid var(--border); 
+        }
+        .card-title {
+            font-size: 1.1rem;
+            color: #fff;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-weight: 700;
+            border-left: 4px solid var(--accent);
+            padding-left: 10px;
+        }
+        label { display: block; margin-top: 12px; font-weight: 600; font-size: 0.88rem; color: #ccc; }
+        input, select, textarea { 
+            width: 100%; 
+            padding: 11px; 
+            margin-top: 6px; 
+            background: var(--input-bg); 
+            border: 1px solid var(--border); 
+            color: #fff; 
+            border-radius: 5px; 
+            box-sizing: border-box; 
+            font-size: 0.95rem;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        textarea { height: 220px; font-family: "Courier New", Courier, monospace; font-size: 0.85rem; line-height: 1.4; }
+        .btn-group { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+        button, a.btn { 
+            flex: 1; 
+            min-width: 180px; 
+            padding: 14px; 
+            background: var(--accent); 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            text-align: center; 
+            text-decoration: none; 
+            display: inline-block; 
+            box-sizing: border-box; 
+            font-size: 0.95rem;
+            transition: background 0.2s;
+        }
+        button.secondary, a.btn.secondary { background: #2d2d2d; border: 1px solid #444; color: #fff; }
+        button:hover, a.btn:hover { background: var(--accent-hover); }
+        button.secondary:hover, a.btn.secondary:hover { background: #3d3d3d; }
+        .disclaimer { font-size: 0.78rem; color: #777; margin-top: 12px; line-height: 1.3; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        @media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>7527 İPTAL TALEBİ: MİLLETVEKİLİ BİREYSEL BASKI AĞI</h1>
+        <p class="subtitle">Seçim bölgenizdeki vekili seçin, resmi dilekçenizi oluşturun, e-posta ve ıslak imzalı kargo ile katliam yasasının iptal teklifine imza atmaya zorlayın.</p>
+    </header>
+    
+    <div class="card">
+        <div class="card-title">1. Hedef Milletvekili Seçimi</div>
+        <div class="grid-2">
+            <div>
+                <label for="citySelect">Seçim Bölgesi / İl:</label>
+                <select id="citySelect" onchange="updateMps()">
+                    <option value="">-- Bölge Seçin --</option>
+                    <option value="ankara1">Ankara 1. Bölge</option>
+                    <option value="ankara2">Ankara 2. Bölge</option>
+                    <option value="ankara3">Ankara 3. Bölge</option>
+                    <option value="istanbul1">İstanbul 1. Bölge (Anadolu)</option>
+                    <option value="istanbul2">İstanbul 2. Bölge (Avrupa)</option>
+                    <option value="istanbul3">İstanbul 3. Bölge (Avrupa Batı)</option>
+                    <option value="izmir1">İzmir 1. Bölge</option>
+                    <option value="izmir2">İzmir 2. Bölge</option>
+                    <option value="bursa">Bursa</option>
+                    <option value="antalya">Antalya</option>
+                    <option value="adana">Adana</option>
+                </select>
+            </div>
+            <div>
+                <label for="mpSelect">Milletvekili:</label>
+                <select id="mpSelect" onchange="generatePetition()">
+                    <option value="">-- Önce Bölge Seçin --</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">2. Seçmen İletişim Bilgileriniz (Resmi Evrak Kaydı İçin)</div>
+        <div class="grid-2">
+            <div>
+                <label for="userName">Adınız Soyadınız:</label>
+                <input type="text" id="userName" placeholder="Örn: Ahmet Yılmaz" oninput="generatePetition()">
+            </div>
+            <div>
+                <label for="userTc">T.C. Kimlik No:</label>
+                <input type="text" id="userTc" placeholder="11 Haneli T.C. No" maxlength="11" oninput="generatePetition()">
+            </div>
+        </div>
+        <label for="userAddress">İkamet Adresiniz / Seçim İlçeniz:</label>
+        <input type="text" id="userAddress" placeholder="Örn: Çankaya / Ankara" oninput="generatePetition()">
+    </div>
+
+    <div class="card">
+        <div class="card-title">3. Oluşturulan Resmi Talep Metni</div>
+        <textarea id="petitionText" readonly></textarea>
+
+        <div class="btn-group">
+            <a id="emailBtn" href="#" class="btn">E-Posta İle Gönder</a>
+            <a id="tweetBtn" href="#" target="_blank" class="btn secondary">X (Twitter)'da Etiketle</a>
+            <button class="secondary" onclick="window.print()">Yazdır / PDF İndir (Kargo İçin)</button>
+        </div>
+        <p class="disclaimer">* Kişisel verileriniz (T.C. Kimlik No ve Adres) sunucularımızda saklanmaz. Bilgiler doğrudan cihazınızın tarayıcısında işlenerek kişiselleştirilmiş dilekçe çıktısı üretilir.</p>
+    </div>
+</div>
+
+<script>
+// TBMM Vekil Veri Tabanı
+const mpData = {
+    ankara1: [
+        { name: "Aliye Timisi Ersever", email: "aliye.timisiersever@tbmm.gov.tr", twitter: "AliyeErsever", party: "CHP" },
+        { name: "Deniz Demir", email: "deniz.demir@tbmm.gov.tr", twitter: "denizdemi_r", party: "CHP" },
+        { name: "Yıldırım Tuğrul Türkeş", email: "tugrul.turkes@tbmm.gov.tr", twitter: "TugrulTurkes", party: "AKP" },
+        { name: "Koray Aydın", email: "koray.aydin@tbmm.gov.tr", twitter: "KorayAydinSiyasi", party: "BAĞIMSIZ" }
+    ],
+    ankara2: [
+        { name: "Murat Emir", email: "murat.emir@tbmm.gov.tr", twitter: "muratemirchp", party: "CHP" },
+        { name: "Lütfiye Selva Çam", email: "selva.cam@tbmm.gov.tr", twitter: "LutfiyeSelvaCam", party: "AKP" }
+    ],
+    ankara3: [
+        { name: "Tekin Bingöl", email: "tekin.bingol@tbmm.gov.tr", twitter: "TekinBingolCHP", party: "CHP" },
+        { name: "Fuat Oktay", email: "fuat.oktay@tbmm.gov.tr", twitter: "fuatoktay", party: "AKP" }
+    ],
+    istanbul1: [
+        { name: "Oğuz Kaan Salıcı", email: "oguzkaan.salici@tbmm.gov.tr", twitter: "oguzksalici", party: "CHP" },
+        { name: "Gamze Akkuş İlgezdi", email: "gamze.ilgezdi@tbmm.gov.tr", twitter: "gamzeilgezdi", party: "CHP" },
+        { name: "Murat Kurum", email: "murat.kurum@tbmm.gov.tr", twitter: "murat_kurum", party: "AKP" }
+    ],
+    istanbul2: [
+        { name: "Gökan Zeybek", email: "gokan.zeybek@tbmm.gov.tr", twitter: "gokanzeybekCHP", party: "CHP" },
+        { name: "Süleyman Soylu", email: "suleyman.soylu@tbmm.gov.tr", twitter: "suleymansoylu", party: "AKP" }
+    ],
+    istanbul3: [
+        { name: "Engin Altay", email: "engin.altay@tbmm.gov.tr", twitter: "enginaltaychp", party: "CHP" },
+        { name: "Numan Kurtulmuş", email: "numan.kurtulmus@tbmm.gov.tr", twitter: "NumanKurtulmus", party: "AKP" }
+    ],
+    izmir1: [
+        { name: "Murat Bakan", email: "murat.bakan@tbmm.gov.tr", twitter: "MuratBakan35", party: "CHP" },
+        { name: "Sevda Erdan Kılıç", email: "sevda.kilic@tbmm.gov.tr", twitter: "SEVDAERDAN", party: "CHP" },
+        { name: "Mehmet Kasapoğlu", email: "mehmet.kasapoglu@tbmm.gov.tr", twitter: "kasapoglu", party: "AKP" }
+    ],
+    izmir2: [
+        { name: "Tuncay Özkan", email: "tuncay.ozkan@tbmm.gov.tr", twitter: "ATuncayOzkan", party: "CHP" },
+        { name: "Deniz Yücel", email: "deniz.yucel@tbmm.gov.tr", twitter: "edenizyucel", party: "CHP" }
+    ],
+    bursa: [
+        { name: "Kayıhan Pala", email: "kayihan.pala@tbmm.gov.tr", twitter: "KayiPala", party: "CHP" },
+        { name: "Efkan Ala", email: "efkan.ala@tbmm.gov.tr", twitter: "efkanala", party: "AKP" }
+    ],
+    antalya: [
+        { name: "Sururi Çorabatır", email: "sururi.corabatir@tbmm.gov.tr", twitter: "SCorabatir", party: "CHP" },
+        { name: "Mevlüt Çavuşoğlu", email: "mevlut.cavusoglu@tbmm.gov.tr", twitter: "MevlutCavusoglu", party: "AKP" }
+    ],
+    adana: [
+        { name: "Müzeyyen Şevkin", email: "muzeyyen.sevkin@tbmm.gov.tr", twitter: "MuzeyyenSevkin", party: "CHP" },
+        { name: "Ömer Çelik", email: "omer.celik@tbmm.gov.tr", twitter: "omerrcelik", party: "AKP" }
+    ]
+};
+
+function updateMps() {
+    const city = document.getElementById("citySelect").value;
+    const mpSelect = document.getElementById("mpSelect");
+    mpSelect.innerHTML = '<option value="">-- Vekil Seçin --</option>';
+
+    if (city && mpData[city]) {
+        mpData[city].forEach((mp, index) => {
+            const opt = document.createElement("option");
+            opt.value = index;
+            opt.textContent = `${mp.name} (${mp.party})`;
+            mpSelect.appendChild(opt);
+        });
+    }
+    generatePetition();
+}
+
+function generatePetition() {
+    const city = document.getElementById("citySelect").value;
+    const mpIndex = document.getElementById("mpSelect").value;
+    const name = document.getElementById("userName").value || "[ADINIZ SOYADINIZ]";
+    const tc = document.getElementById("userTc").value || "[T.C. KİMLİK NO]";
+    const address = document.getElementById("userAddress").value || "[ADRESİNİZ]";
+
+    let mpName = "[MİLLETVEKİLİ ADI]";
+    let mpEmail = "";
+    let mpTwitter = "";
+
+    if (city && mpIndex !== "" && mpData[city][mpIndex]) {
+        const mp = mpData[city][mpIndex];
+        mpName = mp.name;
+        mpEmail = mp.email;
+        mpTwitter = mp.twitter;
+    }
+
+    const text = `SAYIN ${mpName.toUpperCase()},\n\n` +
+        `Seçim bölgenizdeki bir seçmeniniz olarak size yazıyorum.\n\n` +
+        `30 Temmuz 2024 tarihinde kabul edilen 7527 sayılı Kanun; sokak hayvanlarını korumak yerine belediyeler ve yetkili kurumlar eliyle toplu katliamların, tecritin ve cezasızlığın önünü açmıştır. Sahada yaşanan vahşet ve çürüme toplumun vicdanını ağır şekilde yaralamaktadır.\n\n` +
+        `Sizden bir seçmen olarak somut ve net talebimdir:\n` +
+        `TBMM Başkanlığı'na sunulacak olan "7527 Sayılı Kanun'un Mülga Edilmesi ve 5199 Sayılı Kanun Esaslarınca Etkin Kısırlaştırma, Yerinde Yaşatma İlkesinin Yeniden Tesisi Hakkında Kanun Teklifi"ne RESMİ İMZA ATMANIZDIR.\n\n` +
+        `Bu talebe sessiz kalan, katliam yasasının iptali için sorumluluk almayan her milletvekili, sahada yaşanan kıyımların ve toplumsal tahribatın doğrudan siyasi sorumlusu olarak anılacaktır. Seçim dönemi öncesinde bu kanlı hatadan dönülmesi için gereğini arz ve talep ederim.\n\n` +
+        `Tarih: ${new Date().toLocaleDateString('tr-TR')}\n` +
+        `Talep Eden Seçmen: ${name}\n` +
+        `T.C. Kimlik No: ${tc}\n` +
+        `Seçim Bölgesi / Adres: ${address}`;
+
+    document.getElementById("petitionText").value = text;
+
+    // E-Posta Bağlantısı
+    const mailSubject = encodeURIComponent("ACİL: 7527 Sayılı Kanun İptal Teklifine İmzacı Olunması Talebi");
+    const mailBody = encodeURIComponent(text);
+    document.getElementById("emailBtn").href = `mailto:${mpEmail}?subject=${mailSubject}&body=${mailBody}`;
+
+    // X (Twitter) Bağlantısı
+    const tweetText = encodeURIComponent(`Sayın @${mpTwitter}, seçim bölgenizden seçmeniniz olarak talep ediyorum: 7527 sayılı kanunun iptal teklifine imza atın! Katliama göz yummayın. #7527İptalEdilsin`);
+    document.getElementById("tweetBtn").href = `https://x.com/intent/tweet?text=${tweetText}`;
+}
+
+generatePetition();
+</script>
+</body>
+</html>
