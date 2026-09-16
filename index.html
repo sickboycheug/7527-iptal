@@ -3,136 +3,376 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>7527 İPTAL! İMZACISI OL!</title>
+    <title>7527 İPTAL! İMZACISI OL! - Doğrudan Eylem Platformu</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
         .font-impact { font-family: 'Oswald', sans-serif; }
-        .brush-bg {
-            background-color: #dc2626;
-            transform: rotate(-1deg);
+        
+        /* Yazdırma (Print) Ayarları - Sadece Dilekçeler A4 Olarak Çıkar */
+        @media print {
+            body * { visibility: hidden; }
+            #printable-petitions, #printable-petitions * { visibility: visible; }
+            #printable-petitions { position: absolute; left: 0; top: 0; width: 100%; color: #000; background: #fff; }
+            .petition-page { page-break-after: always; padding: 20mm; font-size: 11pt; line-height: 1.5; color: #000 !important; background: #fff !important; border: none !important; }
+            .no-print { display: none !important; }
         }
     </style>
 </head>
 <body class="bg-zinc-950 text-zinc-100 antialiased min-h-screen flex flex-col justify-between">
 
-    <!-- HERO / SLOGAN BÖLÜMÜ -->
-    <header class="relative overflow-hidden border-b border-zinc-800 py-12 px-4 text-center bg-zinc-900/50">
-        <div class="max-w-4xl mx-auto space-y-6">
-            <div class="inline-block brush-bg px-6 py-3 shadow-2xl rounded-sm">
-                <h1 class="font-impact text-4xl md:text-6xl tracking-wider text-white uppercase italic">
+    <!-- ÜST BAŞLIK (HERO) -->
+    <header class="no-print border-b border-zinc-800 py-8 px-4 text-center bg-zinc-900/60">
+        <div class="max-w-5xl mx-auto space-y-4">
+            <div class="inline-block bg-red-600 -rotate-1 px-6 py-2 shadow-xl rounded-sm">
+                <h1 class="font-impact text-3xl md:text-5xl tracking-wider text-white uppercase italic">
                     7527 İPTAL! İMZACISI OL!
                 </h1>
             </div>
-            
-            <p class="text-2xl md:text-3xl font-extrabold text-zinc-200 tracking-tight">
+            <p class="text-xl md:text-2xl font-extrabold text-zinc-200">
                 Öldüren değil, yaşatan ol!
             </p>
-
-            <div class="flex items-center justify-center gap-2 text-sm md:text-base font-semibold text-red-500 uppercase tracking-widest pt-2">
-                <span>YAŞAM HAKKI İÇİN</span>
-                <span>🐾</span>
-                <span>HAYVANLAR İÇİN</span>
-                <span>🐾</span>
-                <span>GELECEĞİMİZ İÇİN</span>
-            </div>
+            <p class="text-xs md:text-sm font-semibold text-red-500 uppercase tracking-widest">
+                YAŞAM HAKKI İÇİN 🐾 HAYVANLAR İÇİN 🐾 GELECEĞİMİZ İÇİN
+            </p>
         </div>
     </header>
 
-    <!-- ANA İÇERİK: MEKTUP VE EYLEM FORMU -->
-    <main class="max-w-5xl mx-auto px-4 py-10 grid grid-cols-1 lg:grid-cols-12 gap-10">
+    <!-- ANA İÇERİK PANELS -->
+    <main class="max-w-7xl mx-auto px-4 py-8 w-full grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        <!-- SOL KOLON: AÇIK MEKTUP METNİ -->
-        <article class="lg:col-span-7 bg-zinc-900/80 p-6 md:p-8 rounded-xl border border-zinc-800 space-y-4 text-zinc-300 leading-relaxed text-sm md:text-base shadow-xl">
-            <h2 class="text-xl font-bold text-white border-b border-zinc-800 pb-3">Sevgili Yol Arkadaşlarım, Değerli Vatandaşlarımız,</h2>
+        <!-- SOL KOLON: KİŞİSEL BİLGİ FORMU & EYLEM BUTONLARI -->
+        <section class="no-print lg:col-span-4 space-y-6">
             
-            <p>Sokakta her gün yüzünü gördüğün, başını okşadığın o canın bir sabah yerinde olmadığını görmek... Barınak duvarlarının arkasındaki katliam çığlıklarına karşı çaresizce kapılarda boğuşmak, eve dönüp <em>"Bugün birini kurtardım ama arkada yüzlercesi kaldı"</em> diye için için erimek... Küçücük bir kedi yavrusunun maruz kaldığı o tecavüzü, işkenceyi, hayvan düşmanlarının gözü dönmüşçesine kaybettiğimiz canlarımızı görmek... Hatta evindeki, bahçesindeki sahipli hayvanı bile koparıp ölüme götürmek için fırsat kollayan bu zihniyetle burun buruna gelmek... Bu boğazdaki yumruyu, bu kahreden çaresizliği ve öfkeyi çok iyi biliyorum.</p>
-
-            <p class="font-semibold text-red-400 bg-red-950/40 p-3 border-l-4 border-red-600 rounded-r">
-                Yenildik. Bunu önce kendi içimizde kabul etmek zorundayız. Etmezsek aynı şekilde devam edeceğiz; aynı cılız eylemlerle, bizi oyalayan etkisiz yollarla kendimizi kandırmayı sürdüreceğiz.
-            </p>
-
-            <p>7527 sayılı kanun ne bilimsel bir ihtiyaçtır ne de kamu düzeni. Bu yasa; hayvan düşmanlığıyla gözü dönmüş olanları cesaretlendiren, barınak katliamlarını meşrulaştıran, sahipli canlılarımızın bile can güvenliğini tehdit eden politik bir silahtır. Milyonlarca canlıyı tecride ve ölüm kamplarına tıkmayı çözüm diye yutturmaya çalışanlar, hepimizin vicdanını ve yaşam hakkını hedef alıyor.</p>
-
-            <p>Birbirimize ağıt yakmayı da tek başımıza çırpınmayı da bırakalım. 7527 sayılı yasa derhal iptal edilene, yaşamı esas alan 5199 ile tüm canlarımızı güvenceye alana kadar bu vebalin sahiplerini rahat bırakmayacağız.</p>
-
-            <p class="font-bold text-white pt-2">
-                Gelin bu yolu beraber yürüyelim. Yasayı iptal ettirip bütün canlarımızı kurtaralım!
-            </p>
-        </article>
-
-        <!-- SAĞ KOLON: FİZİKİ EYLEM & ÖRGÜTLENME FORMU -->
-        <aside class="lg:col-span-5 space-y-6">
-            
-            <!-- ISLAK İMZA & DİLEKÇE İNDİRME KARTI -->
-            <div class="bg-red-950/30 border-2 border-red-600/80 rounded-xl p-6 space-y-4">
-                <h3 class="text-lg font-bold text-red-400 flex items-center gap-2">
-                    <span>📄</span> ISLAK İMZALI DİLEKÇE FORMUNU İNDİR
-                </h3>
+            <!-- FORM KARTI -->
+            <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-4 shadow-2xl">
+                <h2 class="text-lg font-bold text-white border-b border-zinc-800 pb-2 flex items-center gap-2">
+                    <span>✍️</span> BİLGİLERİNİ GİR (3 DİLEKÇEYE İŞLENSİN)
+                </h2>
                 <p class="text-xs text-zinc-400">
-                    Sanal imzalar görmezden gelinebilir ancak TBMM kayıtlarına giren fiziki dilekçeler yasal sorumluluk yaratır. Dilekçeyi indirin, imzalayın ve bölgenizdeki eylem komitesine teslim edin.
+                    Bilgilerini bir kez doldur; TBMM, Seçim Bölgesi Vekilleri ve Belediye Başkanlığı dilekçelerine otomatik aktarılsın.
                 </p>
-                <a href="#dilekce-pdf" class="block w-full text-center bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition shadow-lg text-sm uppercase">
-                    Dilekçe PDF'ini İndir (.PDF)
-                </a>
+
+                <div class="space-y-3 text-sm">
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-400 mb-1">AD SOYAD *</label>
+                        <input type="text" id="input-name" oninput="updatePetitions()" placeholder="Ümit Güzel" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-zinc-100 focus:border-red-600 focus:outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-400 mb-1">T.C. KİMLİK NO (Opsiyonel / Resmi İnceleme İçin)</label>
+                        <input type="text" id="input-tc" oninput="updatePetitions()" maxlength="11" placeholder="12345678901" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-zinc-100 focus:border-red-600 focus:outline-none">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-semibold text-zinc-400 mb-1">ŞEHİR *</label>
+                            <select id="input-city" onchange="filterMPsByCity(); updatePetitions();" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-2 text-zinc-100 focus:border-red-600 focus:outline-none">
+                                <option value="İstanbul">İstanbul</option>
+                                <option value="Ankara">Ankara</option>
+                                <option value="İzmir">İzmir</option>
+                                <option value="Rize">Rize</option>
+                                <option value="Kahramanmaraş">Kahramanmaraş</option>
+                                <option value="Afyonkarahisar">Afyonkarahisar</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-zinc-400 mb-1">İLEÇE *</label>
+                            <input type="text" id="input-district" oninput="updatePetitions()" placeholder="Ümraniye" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-zinc-100 focus:border-red-600 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-400 mb-1">İKAME ADRESİ *</label>
+                        <textarea id="input-address" oninput="updatePetitions()" rows="2" placeholder="Mahalle, Cadde, Sokak No..." class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-zinc-100 focus:border-red-600 focus:outline-none text-xs"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-400 mb-1">TELEFON / E-POSTA</label>
+                        <input type="text" id="input-contact" oninput="updatePetitions()" placeholder="05XX XXX XX XX / umit@example.com" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-zinc-100 focus:border-red-600 focus:outline-none">
+                    </div>
+                </div>
             </div>
 
-            <!-- SAHA ÖRGÜTLENME FORMU -->
-            <form class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-4">
-                <h3 class="text-lg font-bold text-white border-b border-zinc-800 pb-2">
-                    Mücadele Ağına Katıl
-                </h3>
-                <p class="text-xs text-zinc-400">
-                    Saha eylemleri, stant kurulumları ve vekil baskı grupları için il/ilçe örgütlenmesine dahil ol.
-                </p>
-
-                <div>
-                    <label class="block text-xs font-semibold text-zinc-400 mb-1">AD SOYAD</label>
-                    <input type="text" required placeholder="Adınız Soyadınız" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-red-600">
-                </div>
-
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block text-xs font-semibold text-zinc-400 mb-1">İL</label>
-                        <input type="text" required placeholder="İl" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-red-600">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-zinc-400 mb-1">İLÇE</label>
-                        <input type="text" required placeholder="İlçe" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-red-600">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-zinc-400 mb-1">TELEFON (WHATSAPP)</label>
-                    <input type="tel" required placeholder="05XX XXX XX XX" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-red-600">
-                </div>
-
-                <div class="space-y-2 pt-2">
-                    <label class="flex items-start gap-2 text-xs text-zinc-400 cursor-pointer">
-                        <input type="checkbox" class="mt-0.5 accent-red-600">
-                        <span>Bölgemde fiziki stant açıp ıslak imza toplamak istiyorum.</span>
-                    </label>
-                    <label class="flex items-start gap-2 text-xs text-zinc-400 cursor-pointer">
-                        <input type="checkbox" class="mt-0.5 accent-red-600">
-                        <span>Bölgemdeki milletvekillerinin takibi ve baskı eylemlerine katılmak istiyorum.</span>
-                    </label>
-                </div>
-
-                <button type="submit" class="w-full bg-zinc-100 hover:bg-white text-zinc-950 font-bold py-3 px-4 rounded-lg transition text-sm uppercase">
-                    Mücadeleye Dahil Ol
+            <!-- EYLEM VE İŞLEM BUTONLARI -->
+            <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-3">
+                <h3 class="text-sm font-bold text-white uppercase tracking-wider">Aksiyon Al & Paylaş</h3>
+                
+                <button onclick="window.print()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition shadow-lg text-sm uppercase flex items-center justify-center gap-2">
+                    <span>🖨️ / 📄</span> 3 Dilekçeyi İndir / Yazdır (PDF)
                 </button>
-            </form>
 
-        </aside>
+                <button onclick="sendDirectEmail()" class="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-bold py-3 px-4 rounded-lg transition text-sm uppercase flex items-center justify-center gap-2 border border-zinc-700">
+                    <span>✉️</span> Seçili Vekillere E-Posta Gönder
+                </button>
+
+                <button onclick="shareCampaign()" class="w-full bg-emerald-700 hover:bg-emerald-600 text-white font-bold py-3 px-4 rounded-lg transition text-sm uppercase flex items-center justify-center gap-2">
+                    <span>💬</span> WhatsApp / Sosyal Medya Paylaş
+                </button>
+            </div>
+
+        </section>
+
+        <!-- SAĞ KOLON: MİLLETVEKİLİ OY LİSTESİ VE DİLEKÇE ÖNİZLEMELERİ -->
+        <section class="lg:col-span-8 space-y-8">
+            
+            <!-- MILLETVEKİLİ OY LİSTESİ VE ARAMA TABLOSU -->
+            <div class="no-print bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-4">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-800 pb-3">
+                    <div>
+                        <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                            <span>🏛️</span> MILLETVEKİLLERİ VE 7527 OY DURUMLARI
+                        </h2>
+                        <p class="text-xs text-zinc-400">Vekilinizin kanuna ne oy verdiğini inceleyin, sorumluluğunu yüzüne vurun.</p>
+                    </div>
+                    <input type="text" id="mp-search" onkeyup="filterMPTable()" placeholder="Vekil veya Parti Ara..." class="bg-zinc-950 border border-zinc-800 rounded px-3 py-1.5 text-xs text-zinc-200 focus:border-red-600 focus:outline-none">
+                </div>
+
+                <div class="overflow-x-auto max-h-56 overflow-y-auto rounded border border-zinc-800">
+                    <table class="w-full text-left text-xs text-zinc-300">
+                        <thead class="bg-zinc-950 text-zinc-400 uppercase text-[10px] tracking-wider sticky top-0">
+                            <tr>
+                                <th class="p-2.5">Şehir</th>
+                                <th class="p-2.5">Milletvekili</th>
+                                <th class="p-2.5">Parti</th>
+                                <th class="p-2.5">7527 Oy Kullanımı</th>
+                                <th class="p-2.5">E-Posta</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mp-table-body" class="divide-y divide-zinc-800/50">
+                            <!-- JS ile Dinamik Doldurulur -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 3 DİLEKÇENİN DİNAMİK ÖNİZLEMESİ (YAZDIRILABİLİR ALAN) -->
+            <div id="printable-petitions" class="space-y-8">
+                
+                <!-- DİLEKÇE 1: TBMM DİLEKÇE KOMİSYONU -->
+                <div class="petition-page bg-zinc-900 border border-zinc-800 p-8 rounded-xl shadow-2xl text-zinc-200 space-y-4 text-xs md:text-sm">
+                    <div class="text-center font-bold space-y-1 uppercase tracking-wide">
+                        <p>T.C. TÜRKIYE BÜYÜK MİLLET MECLİSİ</p>
+                        <p>DİLEKÇE KOMİSYONU BAŞKANLIĞI'NA</p>
+                        <p class="text-zinc-500 font-normal">ANKARA</p>
+                    </div>
+
+                    <div class="pt-4 space-y-1 text-xs">
+                        <p><strong>BAŞVURAN (DİLEKÇE SAHİBİ):</strong> <span class="val-name font-semibold text-red-400">[Ad Soyad Giriniz]</span></p>
+                        <p><strong>T.C. KİMLİK NO:</strong> <span class="val-tc">[Kimlik No]</span></p>
+                        <p><strong>ADRES:</strong> <span class="val-address">[Adres Giriniz]</span>, <span class="val-district">[İlçe]</span> / <span class="val-city">[Şehir]</span></p>
+                        <p><strong>İLETİŞİM:</strong> <span class="val-contact">[Telefon/E-Posta]</span></p>
+                        <p><strong>TARİH:</strong> <span class="val-date">17.09.2026</span></p>
+                    </div>
+
+                    <p><strong>KONU:</strong> 7527 Sayılı Kanun’un Oluşturduğu Kapasite Yetersizliği, Etik İhlaller ve Toplu İmha Riski Sebebiyle Derhal İptali ve 5199 Sayılı Kanun’un Yaşam Hakkı Esas Alınarak Yeniden Yürürlüğe Konulması Talebidir.</p>
+
+                    <p><strong>AÇIKLAMALAR:</strong></p>
+                    <p class="leading-relaxed text-justify">
+                        Ülkemizdeki toplam barınak kapasitesi yaklaşık 105 bin civarındayken, milyonlarca canlıyı tecrit ve ölüm kamplarına sokmayı öngören 7527 sayılı kanun ne bilimsel bir ihtiyaçtır ne de kamu düzenine hizmet etmektedir. Hayvanların yaşam hakkını gaspeden bu yasa; bilimsel kısırlaştırma ve etik koruma ilkelerini yok saymış, toplumsal vicdanda derin yaralar açmıştır.
+                    </p>
+                    <p class="leading-relaxed text-justify">
+                        Saha eylemleri ve somut veriler göstermektedir ki, tecrit odaklı uygulamalar katliamları ve usulsüzlükleri meşrulaştırmaktadır. 2019 TBMM Hayvan Hakları Araştırma Komisyonu Raporu'nda partilerin ortak mutabakatıyla vurgulanan "Kısırlaştır, Aşılat, Yerinde Yaşat" ilkesine dönülmesi zorunludur.
+                    </p>
+
+                    <p><strong>TALEP VE SONUÇ:</strong> 7527 Sayılı Kanun'un uygulamalarının derhal durdurularak iptal edilmesi, 5199 Sayılı Kanun'un bilimsel kısırlaştırma ve yerinde yaşatma esaslarıyla güçlendirilerek uygulanması hususunu gereği için arz ederim.</p>
+
+                    <div class="pt-6 flex justify-between items-end">
+                        <div>
+                            <p class="text-[10px] text-zinc-500">İmza / Saygılarımla</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-bold uppercase val-name">[Ad Soyad Giriniz]</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DİLEKÇE 2: SEÇİM BÖLGESİ MİLLETVEKİLLERİNE SEÇMEN İHTARNAMESİ -->
+                <div class="petition-page bg-zinc-900 border border-zinc-800 p-8 rounded-xl shadow-2xl text-zinc-200 space-y-4 text-xs md:text-sm">
+                    <div class="text-center font-bold space-y-1 uppercase tracking-wide">
+                        <p>SEÇİM BÖLGESİ MİLLETVEKİLLERİNE</p>
+                        <p class="text-red-500">(<span class="val-city uppercase">İSTANBUL</span> MİLLETVEKİLLERİNİN DİKKATİNE)</p>
+                    </div>
+
+                    <div class="pt-4 space-y-1 text-xs">
+                        <p><strong>SEÇMEN / YURTTAŞ:</strong> <span class="val-name font-semibold text-red-400">[Ad Soyad Giriniz]</span></p>
+                        <p><strong>SEÇİM BÖLGESİ:</strong> <span class="val-district">[İlçe]</span> / <span class="val-city">[Şehir]</span></p>
+                        <p><strong>TARİH:</strong> <span class="val-date">17.09.2026</span></p>
+                    </div>
+
+                    <p><strong>KONU:</strong> 7527 Sayılı Kanun Sorumluluğu ve Seçmen İradesi Vebal Deklarasyonu.</p>
+
+                    <p><strong>SAYIN MİLLETVEKİLİ,</strong></p>
+                    <p class="leading-relaxed text-justify">
+                        Seçim bölgeniz olan <span class="val-city font-bold">[Şehir]</span> ilinde ikamet eden bir seçmeniniz olarak; hiçbir bilimsel ve vicdani temeli olmayan 7527 sayılı yasa kapsamında yaşanan katliamların ve tecrit vahşetinin vebalini hatırlatıyorum. 
+                    </p>
+                    <p class="leading-relaxed text-justify">
+                        Ankara'da onaylanan bu yasa, kendi memleketinizde ve seçim bölgenizde masum canların yok edilmesine, sahipli-sahipsiz hayvanların yaşam haklarının gasp edilmesine yol açmaktadır. Oyunuz veya sessizliğinizle ortak olduğunuz bu kanlı sürecin takipçisi olacağımı, seçim bölgenizde bu vebalin siyasi ve moral sorumluluğunu her zaman karşınıza çıkaracağımı beyan ederim. Yasayı iptal ettirmek için TBMM'de derhal girişimde bulunmanızı talep ediyorum.
+                    </p>
+
+                    <div class="pt-6 flex justify-between items-end">
+                        <div>
+                            <p class="text-[10px] text-zinc-500">Seçmen Beyanı ve İmza</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-bold uppercase val-name">[Ad Soyad Giriniz]</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DİLEKÇE 3: BELEDİYE BAŞKANLIĞI'NA MÜRACAAT -->
+                <div class="petition-page bg-zinc-900 border border-zinc-800 p-8 rounded-xl shadow-2xl text-zinc-200 space-y-4 text-xs md:text-sm">
+                    <div class="text-center font-bold space-y-1 uppercase tracking-wide">
+                        <p><span class="val-district uppercase">[İLÇE]</span> BELEDİYE BAŞKANLIĞI'NA</p>
+                        <p><span class="val-city uppercase">[ŞEHİR]</span></p>
+                    </div>
+
+                    <div class="pt-4 space-y-1 text-xs">
+                        <p><strong>BAŞVURAN İLÇE SAKİNİ:</strong> <span class="val-name font-semibold text-red-400">[Ad Soyad Giriniz]</span></p>
+                        <p><strong>ADRES:</strong> <span class="val-address">[Adres]</span></p>
+                        <p><strong>TARİH:</strong> <span class="val-date">17.09.2026</span></p>
+                    </div>
+
+                    <p><strong>KONU:</strong> İlçemiz Sınırlarında Etik Kısırlaştırma, Aşılama ve Yerinde Yaşatma Odaklı Hizmet Verilmesi; Hukuka Aykırı Toplama ve Katliamların Önlenmesi Talebi.</p>
+
+                    <p><strong>AÇIKLAMALAR:</strong></p>
+                    <p class="leading-relaxed text-justify">
+                        İlçemiz <span class="val-district font-bold">[İlçe]</span> sınırlarında yaşayan bir yurttaş olarak, 7527 sayılı yasanın getirdiği tecrit ve toplu imha odaklı uygulamaların belediyeniz tarafından yürütülmesini kabul etmiyorum.
+                    </p>
+                    <p class="leading-relaxed text-justify">
+                        Belediyenizi; bilimsel, etik ve veterinerlik ilkelerine uygun olarak kisirlastirma, asilama ve yerinde yaşatma seferberliğine davet ediyorum. Toplama adı altında canların bilinmeze ve ölüme sürüklenmesine ortak olmamanızı, mahallemizdeki canların yaşam hakkını korumanızı talep ediyorum.
+                    </p>
+
+                    <div class="pt-6 flex justify-between items-end">
+                        <div>
+                            <p class="text-[10px] text-zinc-500">İlçe Sakini İmza</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-bold uppercase val-name">[Ad Soyad Giriniz]</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
     </main>
 
     <!-- FOOTER -->
-    <footer class="border-t border-zinc-800 bg-zinc-950 py-6 text-center text-xs text-zinc-500">
+    <footer class="no-print border-t border-zinc-800 bg-zinc-950 py-6 text-center text-xs text-zinc-500">
         <p class="font-bold text-zinc-400 uppercase tracking-widest">
-            YAŞAM HAKKI İÇİN 🐾 HAYVANLAR İÇİN 🐾 GELECEĞİMİZ İÇİN
+            7527 İPTAL! İMZACISI OL! 🐾 ÖLDÜREN DEĞİL, YAŞATAN OL!
         </p>
     </footer>
 
+    <!-- DİNAMİK VERİ VE SCRIPT KODLARI -->
+    <script>
+        // MİLLETVEKİLİ VERİ TABANI (Örnek Liste)
+        const mpDatabase = [
+            { city: "İstanbul", name: "Numan Kurtulmuş", party: "AK Parti", vote: "KABUL", email: "numan.kurtulmus@tbmm.gov.tr" },
+            { city: "İstanbul", name: "Süleyman Soylu", party: "AK Parti", vote: "KABUL", email: "suleyman.soylu@tbmm.gov.tr" },
+            { city: "İstanbul", name: "Özgür Karabat", party: "CHP", vote: "RED", email: "ozgur.karabat@tbmm.gov.tr" },
+            { city: "İstanbul", name: "Sera Kadıgil", party: "TİP", vote: "RED", email: "sera.kadigil@tbmm.gov.tr" },
+            { city: "Ankara", name: "Fuat Oktay", party: "AK Parti", vote: "KABUL", email: "fuat.oktay@tbmm.gov.tr" },
+            { city: "Ankara", name: "Murat Emir", party: "CHP", vote: "RED", email: "murat.emir@tbmm.gov.tr" },
+            { city: "İzmir", name: "Hamza Dağ", party: "AK Parti", vote: "KABUL", email: "hamza.dag@tbmm.gov.tr" },
+            { city: "İzmir", name: "Deniz Yücel", party: "CHP", vote: "RED", email: "deniz.yucel@tbmm.gov.tr" },
+            { city: "Rize", name: "Muhammet Avcı", party: "AK Parti", vote: "KABUL", email: "muhammet.avci@tbmm.gov.tr" },
+            { city: "Rize", name: "Tahsin Ocaklı", party: "CHP", vote: "RED", email: "tahsin.ocakli@tbmm.gov.tr" },
+            { city: "Kahramanmaraş", name: "Vahit Kirişci", party: "AK Parti", vote: "KABUL", email: "vahit.kirisci@tbmm.gov.tr" },
+            { city: "Afyonkarahisar", name: "Ali Özkaya", party: "AK Parti", vote: "KABUL", email: "ali.ozkaya@tbmm.gov.tr" }
+        ];
+
+        // SAYFA YÜKLENDİĞİNDE
+        document.addEventListener("DOMContentLoaded", () => {
+            filterMPsByCity();
+            updatePetitions();
+        });
+
+        // FORM VERİLERİNİ 3 DİLEKÇEYE BİRDEN AKTAR
+        function updatePetitions() {
+            const name = document.getElementById("input-name").value.trim() || "[Ad Soyad Giriniz]";
+            const tc = document.getElementById("input-tc").value.trim() || "[Kimlik No]";
+            const city = document.getElementById("input-city").value;
+            const district = document.getElementById("input-district").value.trim() || "[İlçe]";
+            const address = document.getElementById("input-address").value.trim() || "[Adres Giriniz]";
+            const contact = document.getElementById("input-contact").value.trim() || "[Telefon/E-Posta]";
+
+            // Tüm Sınıf Etiketlerini Güncelle
+            document.querySelectorAll(".val-name").forEach(el => el.textContent = name);
+            document.querySelectorAll(".val-tc").forEach(el => el.textContent = tc);
+            document.querySelectorAll(".val-city").forEach(el => el.textContent = city);
+            document.querySelectorAll(".val-district").forEach(el => el.textContent = district);
+            document.querySelectorAll(".val-address").forEach(el => el.textContent = address);
+            document.querySelectorAll(".val-contact").forEach(el => el.textContent = contact);
+        }
+
+        // ŞEHRE GÖRE VEKİLLERİ TABLOYA DÖK
+        function filterMPsByCity() {
+            const selectedCity = document.getElementById("input-city").value;
+            const tbody = document.getElementById("mp-table-body");
+            tbody.innerHTML = "";
+
+            const filtered = mpDatabase.filter(mp => mp.city === selectedCity || selectedCity === "Tümü");
+
+            filtered.forEach(mp => {
+                const badgeColor = mp.vote === "KABUL" ? "bg-red-950 text-red-400 border-red-800" :
+                                   mp.vote === "RED" ? "bg-emerald-950 text-emerald-400 border-emerald-800" :
+                                   "bg-zinc-800 text-zinc-400 border-zinc-700";
+
+                const tr = document.createElement("tr");
+                tr.className = "hover:bg-zinc-800/40 transition";
+                tr.innerHTML = `
+                    <td class="p-2.5 font-semibold text-zinc-300">${mp.city}</td>
+                    <td class="p-2.5 font-bold text-white">${mp.name}</td>
+                    <td class="p-2.5 text-zinc-400">${mp.party}</td>
+                    <td class="p-2.5"><span class="px-2 py-0.5 rounded border text-[10px] font-bold ${badgeColor}">${mp.vote}</span></td>
+                    <td class="p-2.5 text-zinc-500 font-mono">${mp.email}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // TABLODA METİN İLE ARAMA
+        function filterMPTable() {
+            const query = document.getElementById("mp-search").value.toLowerCase();
+            const rows = document.querySelectorAll("#mp-table-body tr");
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(query) ? "" : "none";
+            });
+        }
+
+        // DOĞRUDAN E-POSTA GÖNDERME
+        function sendDirectEmail() {
+            const selectedCity = document.getElementById("input-city").value;
+            const cityMPs = mpDatabase.filter(mp => mp.city === selectedCity);
+            const emails = cityMPs.map(mp => mp.email).join(",");
+            const name = document.getElementById("input-name").value || "Seçmeniniz";
+
+            const subject = encodeURIComponent(`7527 Sayılı Yasa Hakkında Seçmen İhtarı - ${selectedCity}`);
+            const body = encodeURIComponent(
+                `Sayın Milletvekili,\n\n` +
+                `7527 sayılı kanun kapsamında yaşanan katliamların ve tecrit vahşetinin seçim bölgenizde yaşayan bir seçmeniniz olarak takipçisiyim.\n\n` +
+                `Hiçbir bilimsel ve etik altyapısı olmayan bu yasanın iptal edilmesi ve 5199 sayılı kanunun yaşam haklarıyla geri dönmesi için Meclis'te derhal adım atmanızı talep ediyorum.\n\n` +
+                `Saygılarımla,\n${name}\nİkamet: ${selectedCity}`
+            );
+
+            window.location.href = `mailto:${emails}?subject=${subject}&body=${body}`;
+        }
+
+        // SOSYAL MEDYA / WHATSAPP PAYLAŞIM
+        function shareCampaign() {
+            const text = "7527 İPTAL! İMZACISI OL! Öldüren değil, yaşatan ol! Islak imzalı 3 dilekçeni oluştur, vekiline tepkini göster:";
+            const url = window.location.href;
+            if (navigator.share) {
+                navigator.share({ title: '7527 İptal Kampanyası', text: text, url: url });
+            } else {
+                window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text + " " + url)}`, '_blank');
+            }
+        }
+    </script>
 </body>
 </html>
