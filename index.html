@@ -42,9 +42,44 @@
     <!-- MAIN CONTAINER -->
     <main class="max-w-7xl mx-auto px-4 py-8 w-full grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        <!-- FORM VE DOKUNMATİK İMZA -->
+        <!-- SOL BÖLME: SAYAÇLAR, FORM VE İMZA -->
         <section class="no-print lg:col-span-4 space-y-6">
             
+            <!-- CANLI İMZA SAYAÇLARI BLOGU -->
+            <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-4 shadow-2xl">
+                <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+                    <h2 class="text-xs font-bold text-zinc-300 uppercase tracking-wider flex items-center gap-1.5">
+                        <span>📊</span> KAMPANYA CANLI DURUMU
+                    </h2>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-red-950 text-red-400 border border-red-800/80 animate-pulse">
+                        ● CANLI
+                    </span>
+                </div>
+
+                <!-- VATANDAŞ İMZA SAYACI -->
+                <div class="space-y-1.5">
+                    <div class="flex justify-between items-baseline text-xs">
+                        <span class="font-semibold text-zinc-300">Vatandaş Dilekçe İmzası</span>
+                        <span class="font-bold text-red-500 font-mono text-sm" id="cnt-citizen">0 / 0</span>
+                    </div>
+                    <div class="w-full bg-zinc-950 rounded-full h-2.5 overflow-hidden border border-zinc-800">
+                        <div id="bar-citizen" class="bg-gradient-to-r from-red-700 to-red-500 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- MECLİS İMZA SAYACI -->
+                <div class="space-y-1.5 pt-2 border-t border-zinc-800/60">
+                    <div class="flex justify-between items-baseline text-xs">
+                        <span class="font-semibold text-zinc-300">Meclis İptal İmzası (M.V.)</span>
+                        <span class="font-bold text-emerald-400 font-mono text-sm" id="cnt-mp">0 / 0</span>
+                    </div>
+                    <div class="w-full bg-zinc-950 rounded-full h-2.5 overflow-hidden border border-zinc-800">
+                        <div id="bar-mp" class="bg-gradient-to-r from-emerald-600 to-emerald-400 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FORM VE DOKUNMATİK İMZA -->
             <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-4 shadow-2xl">
                 <h2 class="text-lg font-bold text-white border-b border-zinc-800 pb-2 flex items-center gap-2">
                     <span>✍️</span> BİLGİLERİNİ VE İMZANI GİR
@@ -63,9 +98,9 @@
 
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="block text-xs font-semibold text-zinc-400 mb-1">ŞEHİR (SEÇMELİ 81 İL) *</label>
+                            <label class="block text-xs font-semibold text-zinc-400 mb-1">ŞEHİR (81 İL) *</label>
                             <select id="input-city" onchange="filterMPTable(); updatePetitions();" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-2 text-zinc-100 focus:border-red-600 focus:outline-none">
-                                <!-- 81 İL SEÇENEKLERİ JS İLE EKLENİR -->
+                                <!-- 81 İL JS İLE DOLDURULUR -->
                             </select>
                         </div>
                         <div>
@@ -281,8 +316,16 @@
         </p>
     </footer>
 
-    <!-- SCRIPT ALTYAPISI VE KOD İÇİ VERİTABANI -->
+    <!-- SCRIPT ALTYAPISI -->
     <script>
+        // SAYAÇ DEĞERLERİ (BURADAN VEYA APİ'DEN DEĞİŞTİREBİLİRSİNİZ)
+        const statsData = {
+            citizenCurrent: 54320,
+            citizenTarget: 100000,
+            mpCurrent: 48,
+            mpTarget: 120
+        };
+
         // 81 İL SEÇENEKLERİ
         const citiesList = [
             "Adana", "Adıyaman", "Afyonkarahisar", "Ağrı", "Amasya", "Ankara", "Antalya", "Artvin", "Aydın", "Balıkesir",
@@ -295,15 +338,27 @@
             "Kırıkkale", "Batman", "Şırnak", "Bartın", "Ardahan", "Iğdır", "Yalova", "Karabük", "Kilis", "Osmaniye", "Düzce"
         ];
 
-        // TÜM PARTİLER VE 81 İLE YAYILMIŞ MİLLETVEKİLİ VERİTABANI (KOD İÇİ GÖMÜLÜ)
+        // TÜM PARTİLER VE 81 İLE YAYILMIŞ MİLLETVEKİLİ VERİTABANI
         const mpDatabase = buildCompleteMPDatabase();
 
         document.addEventListener("DOMContentLoaded", () => {
+            updateCounters();
             populateCityDropdown();
             updatePetitions();
             filterMPTable();
             initSignaturePad();
         });
+
+        // SAYAÇLARI GÜNCELLEME VE YÜZDE HESAPLAMA
+        function updateCounters() {
+            document.getElementById("cnt-citizen").textContent = `${statsData.citizenCurrent.toLocaleString('tr-TR')} / ${statsData.citizenTarget.toLocaleString('tr-TR')}`;
+            const citizenPercent = Math.min(100, Math.round((statsData.citizenCurrent / statsData.citizenTarget) * 100));
+            document.getElementById("bar-citizen").style.width = citizenPercent + "%";
+
+            document.getElementById("cnt-mp").textContent = `${statsData.mpCurrent} / ${statsData.mpTarget}`;
+            const mpPercent = Math.min(100, Math.round((statsData.mpCurrent / statsData.mpTarget) * 100));
+            document.getElementById("bar-mp").style.width = mpPercent + "%";
+        }
 
         function populateCityDropdown() {
             const select = document.getElementById("input-city");
@@ -317,7 +372,6 @@
             });
         }
 
-        // 81 İL VE TÜM PARTİLERDEN 600 VEKİLLİK YAPILANDIRMA
         function buildCompleteMPDatabase() {
             const parties = [
                 { name: "AK Parti", vote: "KABUL" },
@@ -377,7 +431,6 @@
             document.querySelectorAll(".val-contact").forEach(el => el.textContent = contact);
         }
 
-        // TABLO FİLTRELEME MANTIĞI (PARTİ, ŞEHİR VE İSME GÖRE)
         function filterMPTable() {
             const selectedCity = document.getElementById("input-city").value;
             const partyFilter = document.getElementById("filter-party").value;
