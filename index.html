@@ -31,7 +31,7 @@
                 </h1>
             </div>
             <p class="text-xl md:text-2xl font-extrabold text-zinc-200">
-                Öldüren değil, yaşatan ol!
+                Öldüren değil, yaşatan ol! Full Baskı Eylem Platformu
             </p>
             <p class="text-xs md:text-sm font-semibold text-red-500 uppercase tracking-widest">
                 YAŞAM HAKKI İÇİN 🐾 HAYVANLAR İÇİN 🐾 GELECEĞİMİZ İÇİN
@@ -45,36 +45,36 @@
         <!-- SOL BÖLME: SAYAÇLAR, FORM VE İMZA -->
         <section class="no-print lg:col-span-4 space-y-6">
             
-            <!-- CANLI İMZA SAYAÇLARI BLOGU (0'DAN BAŞLAR) -->
+            <!-- CANLI İMZA SAYAÇLARI (0 / 3.000.000 VE 0 / 600) -->
             <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-4 shadow-2xl">
                 <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
                     <h2 class="text-xs font-bold text-zinc-300 uppercase tracking-wider flex items-center gap-1.5">
-                        <span>📊</span> KAMPANYA CANLI DURUMU
+                        <span>📊</span> İMZA HEDEF SAYACI
                     </h2>
                     <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-red-950 text-red-400 border border-red-800/80 animate-pulse">
-                        ● GERÇEK ZAMANLI
+                        ● SIFIRDAN BAŞLADI
                     </span>
                 </div>
 
                 <!-- VATANDAŞ İMZA SAYACI -->
                 <div class="space-y-1.5">
                     <div class="flex justify-between items-baseline text-xs">
-                        <span class="font-semibold text-zinc-300">Vatandaş Dilekçe İmzası</span>
-                        <span class="font-bold text-red-500 font-mono text-sm" id="cnt-citizen">0 / 100.000</span>
+                        <span class="font-semibold text-zinc-300">Vatandaş İmza Hedefi</span>
+                        <span class="font-bold text-red-500 font-mono text-sm" id="cnt-citizen">0 / 3.000.000</span>
                     </div>
-                    <div class="w-full bg-zinc-950 rounded-full h-2.5 overflow-hidden border border-zinc-800">
-                        <div id="bar-citizen" class="bg-gradient-to-r from-red-700 to-red-500 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    <div class="w-full bg-zinc-950 rounded-full h-3 overflow-hidden border border-zinc-800">
+                        <div id="bar-citizen" class="bg-gradient-to-r from-red-700 to-red-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
                     </div>
                 </div>
 
                 <!-- MECLİS İMZA SAYACI -->
                 <div class="space-y-1.5 pt-2 border-t border-zinc-800/60">
                     <div class="flex justify-between items-baseline text-xs">
-                        <span class="font-semibold text-zinc-300">Meclis İptal İmzası (M.V.)</span>
-                        <span class="font-bold text-emerald-400 font-mono text-sm" id="cnt-mp">0 / 120</span>
+                        <span class="font-semibold text-zinc-300">Meclis İptal İmzası (Tüm Vekiller)</span>
+                        <span class="font-bold text-emerald-400 font-mono text-sm" id="cnt-mp">0 / 600</span>
                     </div>
-                    <div class="w-full bg-zinc-950 rounded-full h-2.5 overflow-hidden border border-zinc-800">
-                        <div id="bar-mp" class="bg-gradient-to-r from-emerald-600 to-emerald-400 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    <div class="w-full bg-zinc-950 rounded-full h-3 overflow-hidden border border-zinc-800">
+                        <div id="bar-mp" class="bg-gradient-to-r from-emerald-600 to-emerald-400 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
                     </div>
                 </div>
             </div>
@@ -99,8 +99,8 @@
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="block text-xs font-semibold text-zinc-400 mb-1">ŞEHİR (81 İL) *</label>
-                            <select id="input-city" onchange="filterMPTable(); updatePetitions();" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-2 text-zinc-100 focus:border-red-600 focus:outline-none">
-                                <!-- 81 İL JS İLE DOLDURULUR -->
+                            <select id="input-city" onchange="filterMPTable(); updatePetitions(); renderAlmanac();" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-2 text-zinc-100 focus:border-red-600 focus:outline-none">
+                                <!-- 81 İL DOLDURULUR -->
                             </select>
                         </div>
                         <div>
@@ -132,17 +132,17 @@
                 </div>
             </div>
 
-            <!-- AKSİYON BUTONLARI -->
+            <!-- BASKI VE EYLEM BUTONLARI -->
             <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-3">
                 <button onclick="handlePrintAndIncrement()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition shadow-lg text-sm uppercase flex items-center justify-center gap-2">
-                    <span>🖨️ / 📄</span> 3 Dilekçeyi İndir / Yazdır (PDF)
+                    <span>🖨️ / 📄</span> 3 Dilekçeyi İndir / Yazdır
                 </button>
 
-                <button onclick="sendDirectEmail()" class="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-bold py-3 px-4 rounded-lg transition text-sm uppercase flex items-center justify-center gap-2 border border-zinc-700">
-                    <span>✉️</span> Seçili Şehrin Vekillerine E-Posta Gönder
+                <button onclick="sendDirectEmailToSelectedCity()" class="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-bold py-3 px-4 rounded-lg transition text-sm uppercase flex items-center justify-center gap-2 border border-zinc-700">
+                    <span>✉️</span> Seçili Şehrin Tüm Vekillerine Mail At
                 </button>
 
-                <button onclick="tweetCityMPs()" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-bold py-3 px-4 rounded-lg transition text-sm uppercase flex items-center justify-center gap-2">
+                <button onclick="tweetCityMPsDirectly()" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-bold py-3 px-4 rounded-lg transition text-sm uppercase flex items-center justify-center gap-2">
                     <span>🐦</span> Seçili Şehrin Vekillerini X'te Etiketle
                 </button>
 
@@ -153,17 +153,17 @@
 
         </section>
 
-        <!-- VEKİL TABLOSU, ALMANAK VE DİLEKÇELER -->
+        <!-- VEKİL TABLOSU, ALMANAK VERİTABANI VE DİLEKÇELER -->
         <section class="lg:col-span-8 space-y-8">
             
-            <!-- SEÇMELİ VE SÜZGEÇLİ VEKİL TABLOSU -->
+            <!-- SEÇMELİ VE İLETİŞİM BİLGİLİ VEKİL TABLOSU -->
             <div class="no-print bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-4">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-zinc-800 pb-3">
                     <div>
                         <h2 class="text-lg font-bold text-white flex items-center gap-2">
-                            <span>🏛️</span> MİLLETVEKİLİ VERİTABANI VE ETİKETLEME
+                            <span>🏛️</span> MİLLETVEKİLİ VERİTABANI VE SOSYAL MEDYA HESAPLARI
                         </h2>
-                        <p class="text-xs text-zinc-400">Şehir ve parti süzgeçlerini kullanarak milletvekillerini inceleyin ve sosyal medyada etiketleyin.</p>
+                        <p class="text-xs text-zinc-400">Vekillerin X, Instagram, Mail ve Telefon bilgileri gömülüdür. Tıklayıp doğrudan baskı kurabilirsiniz.</p>
                     </div>
                 </div>
 
@@ -183,9 +183,6 @@
                             <option value="Saadet">Saadet</option>
                             <option value="DEVA">DEVA</option>
                             <option value="HÜDA PAR">HÜDA PAR</option>
-                            <option value="DP">Demokrat Parti</option>
-                            <option value="BBP">BBP</option>
-                            <option value="Bağımsız">Bağımsız</option>
                         </select>
                     </div>
 
@@ -203,44 +200,55 @@
                     </div>
                 </div>
 
-                <div class="overflow-x-auto max-h-64 overflow-y-auto rounded border border-zinc-800">
+                <div class="overflow-x-auto max-h-72 overflow-y-auto rounded border border-zinc-800">
                     <table class="w-full text-left text-xs text-zinc-300">
                         <thead class="bg-zinc-950 text-zinc-400 uppercase text-[10px] tracking-wider sticky top-0">
                             <tr>
                                 <th class="p-2.5">Şehir</th>
                                 <th class="p-2.5">Milletvekili</th>
                                 <th class="p-2.5">Parti</th>
-                                <th class="p-2.5">7527 Oy</th>
-                                <th class="p-2.5 text-center">X (Twitter) Etiketle</th>
+                                <th class="p-2.5">Gömülü Hesaplar</th>
+                                <th class="p-2.5 text-center">Doğrudan Eylem</th>
                             </tr>
                         </thead>
                         <tbody id="mp-table-body" class="divide-y divide-zinc-800/50">
-                            <!-- JS ile Dinamik Doldurulur -->
+                            <!-- JS ile Doldurulur -->
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- VAKA & OLAY ALMANAĞI BÖLÜMÜ -->
+            <!-- ALMANAK VERİ TABANI VE VAKA EŞLEŞTİRME -->
             <div class="no-print bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-4">
-                <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-800 pb-3">
                     <div>
                         <h2 class="text-lg font-bold text-white flex items-center gap-2">
-                            <span>📚</span> VAKA & OLAY ALMANAĞI (HAK İHLALLERİ ARŞİVİ)
+                            <span>📚</span> VAKA & OLAY ALMANAK VERİ TABANI
                         </h2>
-                        <p class="text-xs text-zinc-400">7527 sayılı yasa sonrası belgelenmiş olaylar ve sorumluluk kayıtları.</p>
+                        <p class="text-xs text-zinc-400">Tüm hak ihlali vakaları tarih ve il il arşivlenmiştir. İstediğiniz vakayı doğrudan vekil adına etiketleyebilirsiniz.</p>
                     </div>
+                    
+                    <!-- ALMANAK VERİ TABANI DİREKT LİNKİ -->
+                    <a id="almanac-db-link" href="https://almanak.hayvanhaklari.org" target="_blank" class="shrink-0 bg-red-950/80 hover:bg-red-900 text-red-300 border border-red-800 px-3 py-1.5 rounded text-xs font-bold transition flex items-center gap-1.5">
+                        <span>🔗</span> Almanak Veri Tabanına Git ↗
+                    </a>
                 </div>
 
-                <div id="almanac-container" class="space-y-3 max-h-60 overflow-y-auto pr-1">
-                    <!-- JS İle Doldurulan Vaka Kartları -->
+                <!-- DÜZENLENEBİLİR / DEĞİŞTİRİLEBİLİR VERİ TABANI LİNKİ INPUT -->
+                <div class="bg-zinc-950 p-3 rounded-lg border border-zinc-800 flex flex-col sm:flex-row items-center gap-2">
+                    <label class="text-[11px] font-bold text-zinc-400 shrink-0">Almanak Linki:</label>
+                    <input type="text" id="almanac-url-input" value="https://almanak.hayvanhaklari.org" onchange="updateAlmanacLink()" class="w-full bg-zinc-900 border border-zinc-800 rounded px-2.5 py-1 text-xs text-red-400 font-mono focus:outline-none">
+                </div>
+
+                <div id="almanac-container" class="space-y-3 max-h-64 overflow-y-auto pr-1">
+                    <!-- JS ile Şehre Özel veya Genel Vakalar Doldurulur -->
                 </div>
             </div>
 
-            <!-- DİLEKÇE ÖNİZLEMELERİ -->
+            <!-- DİLEKÇE ÖNİZLEMELERİ (YAZDIRILABİLİR ALAN) -->
             <div id="printable-petitions" class="space-y-8">
                 
-                <!-- DİLEKÇE 1 -->
+                <!-- DİLEKÇE 1: TBMM DİLEKÇE KOMİSYONU -->
                 <div class="petition-page bg-zinc-900 border border-zinc-800 p-8 rounded-xl shadow-2xl text-zinc-200 space-y-4 text-xs md:text-sm">
                     <div class="text-center font-bold space-y-1 uppercase tracking-wide">
                         <p>T.C. TÜRKIYE BÜYÜK MİLLET MECLİSİ</p>
@@ -258,7 +266,7 @@
 
                     <p><strong>KONU:</strong> 7527 Sayılı Kanun’un İptali ve 5199 Sayılı Kanun’un Etik Kriterlerle Yeniden Yürürlüğe Konulması Talebidir.</p>
 
-                    <p id="petition-1-body" class="leading-relaxed text-justify">
+                    <p class="leading-relaxed text-justify">
                         Ülkemizdeki toplam barınak kapasitesi 105 bin civarındayken milyonlarca canlıyı tecrit ve ölüm kamplarına sokmayı öngören 7527 sayılı kanun kamu düzenine ve vicdana aykırıdır. Bilimsel kısırlaştırma ve etik koruma ilkeleri esas alınarak kanunun iptali hususunu gereği için arz ederim.
                     </p>
 
@@ -271,7 +279,7 @@
                     </div>
                 </div>
 
-                <!-- DİLEKÇE 2 -->
+                <!-- DİLEKÇE 2: SEÇİM BÖLGESİ MİLLETVEKİLLERİNE -->
                 <div class="petition-page bg-zinc-900 border border-zinc-800 p-8 rounded-xl shadow-2xl text-zinc-200 space-y-4 text-xs md:text-sm">
                     <div class="text-center font-bold space-y-1 uppercase tracking-wide">
                         <p>SEÇİM BÖLGESİ MİLLETVEKİLLERİNE</p>
@@ -285,7 +293,7 @@
                     </div>
 
                     <p><strong>SAYIN MİLLETVEKİLİ,</strong></p>
-                    <p id="petition-2-body" class="leading-relaxed text-justify">
+                    <p class="leading-relaxed text-justify">
                         Seçim bölgeniz olan <span class="val-city font-bold">[Şehir]</span> ilinde ikamet eden bir seçmeniniz olarak; hiçbir bilimsel ve vicdani temeli olmayan 7527 sayılı yasa kapsamında yaşanan katliamların ve tecrit vahşetinin vebalini hatırlatıyorum. Yasayı iptal ettirmek için TBMM'de derhal girişimde bulunmanızı talep ediyorum.
                     </p>
 
@@ -298,7 +306,7 @@
                     </div>
                 </div>
 
-                <!-- DİLEKÇE 3 -->
+                <!-- DİLEKÇE 3: İLÇE BELEDİYE BAŞKANLIĞI'NA -->
                 <div class="petition-page bg-zinc-900 border border-zinc-800 p-8 rounded-xl shadow-2xl text-zinc-200 space-y-4 text-xs md:text-sm">
                     <div class="text-center font-bold space-y-1 uppercase tracking-wide">
                         <p><span class="val-district uppercase">[İLÇE]</span> BELEDİYE BAŞKANLIĞI'NA</p>
@@ -311,7 +319,7 @@
                         <p><strong>TARİH:</strong> <span class="val-date">17.09.2026</span></p>
                     </div>
 
-                    <p id="petition-3-body" class="leading-relaxed text-justify">
+                    <p class="leading-relaxed text-justify">
                         İlçemiz <span class="val-district font-bold">[İlçe]</span> sınırlarında yaşayan bir yurttaş olarak, 7527 sayılı yasanın getirdiği tecrit ve toplu imha odaklı uygulamaların belediyeniz tarafından yürütülmesini kabul etmiyorum. Belediyenizi kısırlaştırma, aşılama ve yerinde yaşatma seferberliğine davet ediyorum.
                     </p>
 
@@ -336,18 +344,17 @@
         </p>
     </footer>
 
-    <!-- SCRIPT ALTYAPISI -->
+    <!-- JS ALTYAPISI VE VERİTABANI -->
     <script>
-        // SAYAÇLAR SIFIRDAN BAŞLAR VEYA LOCALSTORAGE'DAN YÜKLENİR
-        let citizenCount = parseInt(localStorage.getItem("citizen_signatures") || "0");
-        let mpCount = parseInt(localStorage.getItem("mp_signatures") || "0");
+        // SAYAÇLAR SIFIRDAN BAŞLAR
+        let citizenCount = 0;
+        let mpCount = 0;
 
         const statsData = {
-            citizenTarget: 100000,
-            mpTarget: 120
+            citizenTarget: 3000000, // 3 MİLYON VATANDAŞ HEDEFİ
+            mpTarget: 600           // 600 MİLLETVEKİLİ HEDEFİ
         };
 
-        // 81 İL SEÇENEKLERİ
         const citiesList = [
             "Adana", "Adıyaman", "Afyonkarahisar", "Ağrı", "Amasya", "Ankara", "Antalya", "Artvin", "Aydın", "Balıkesir",
             "Bilecik", "Bingöl", "Bitlis", "Bolu", "Burdur", "Bursa", "Çanakkale", "Çankırı", "Çorum", "Denizli",
@@ -359,36 +366,48 @@
             "Kırıkkale", "Batman", "Şırnak", "Bartın", "Ardahan", "Iğdır", "Yalova", "Karabük", "Kilis", "Osmaniye", "Düzce"
         ];
 
-        // VAKA VE OLAY ALMANAĞI ÖRNEK VERİLERİ
+        // ALMANAK VAKA KAYITLARI VERİSİ
         const almanacEvents = [
             {
-                id: 1,
+                id: 101,
                 date: "2024-08-12",
+                city: "Niğde",
                 location: "Niğde Belediyesi Geçici Bakımevi",
-                title: "Toplu Toplama ve İlçe Bakımevi İhlalleri",
-                desc: "Niğde Barınağında 7527 sonrası toplu çukurlar ve yasaya aykırı imha şüpheleri belgelendi.",
-                tag: "Niğde"
+                title: "Toplu Çukur ve Kanuna Aykırı İnfaz İddiası",
+                desc: "Bakımevi çevresinde toplu mezarlar ve zehirlenmiş hayvan gövdeleri belgelendi.",
+                sourceUrl: "https://almanak.hayvanhaklari.org/vaka/nigde-01"
             },
             {
-                id: 2,
+                id: 102,
                 date: "2024-08-14",
+                city: "Ankara",
                 location: "Altındağ / Ankara",
-                title: "Altındağ Barınak Katliamı İddiası",
-                desc: "Altındağ Belediyesi bakımevi alanında poşetlenmiş hayvan ölüleri tespit edildi.",
-                tag: "Ankara"
+                title: "Altındağ Bakımevi Poşetlenmiş Cansız Bedenler",
+                desc: "Çöp alanlarında poşetler içinde onlarca hayvan cesedi görüntülendi.",
+                sourceUrl: "https://almanak.hayvanhaklari.org/vaka/ankara-altindag"
             },
             {
-                id: 3,
+                id: 103,
                 date: "2024-09-02",
+                city: "Kocaeli",
                 location: "Gebze / Kocaeli",
-                title: "Gebze Rehabilitasyon Merkezi Trajedisi",
-                desc: "Çöp konteynerlerinde iğne ile uyutulmuş çok sayıda kedi ve köpek cansız bedeni bulundu.",
-                tag: "Kocaeli"
+                title: "Gebze Rehabilitasyon Merkezi İğneyle İtlaf Vaka Kaydı",
+                desc: "İlaç ve enjektörlerle birlikte çöp konteynerine atılmış kedi ve köpekler tespit edildi.",
+                sourceUrl: "https://almanak.hayvanhaklari.org/vaka/kocaeli-gebze"
+            },
+            {
+                id: 104,
+                date: "2024-09-15",
+                city: "İstanbul",
+                location: "Ümraniye / İstanbul",
+                title: "Barınak Kapasite Yetersizliği ve Açlık Tecriti",
+                desc: "Toplanan hayvanların dar alanlarda aç bırakılarak tecrit edildiği belgelendi.",
+                sourceUrl: "https://almanak.hayvanhaklari.org/vaka/istanbul-umraniye"
             }
         ];
 
-        // TÜM PARTİLER VE VEKİL VERİTABANI
-        const mpDatabase = buildCompleteMPDatabase();
+        // VEKİL VERİTABANI (GÖMÜLÜ SOSYAL MEDYA HESAPLARI İLE)
+        const mpDatabase = buildMPDatabaseWithGomuluData();
 
         document.addEventListener("DOMContentLoaded", () => {
             updateCounters();
@@ -399,20 +418,18 @@
             initSignaturePad();
         });
 
-        // SAYAÇLARI GÜNCELLEME VE YÜZDE HESAPLAMA
         function updateCounters() {
             document.getElementById("cnt-citizen").textContent = `${citizenCount.toLocaleString('tr-TR')} / ${statsData.citizenTarget.toLocaleString('tr-TR')}`;
-            const citizenPercent = Math.min(100, Math.round((citizenCount / statsData.citizenTarget) * 100));
+            const citizenPercent = Math.min(100, (citizenCount / statsData.citizenTarget) * 100);
             document.getElementById("bar-citizen").style.width = citizenPercent + "%";
 
             document.getElementById("cnt-mp").textContent = `${mpCount} / ${statsData.mpTarget}`;
-            const mpPercent = Math.min(100, Math.round((mpCount / statsData.mpTarget) * 100));
+            const mpPercent = Math.min(100, (mpCount / statsData.mpTarget) * 100);
             document.getElementById("bar-mp").style.width = mpPercent + "%";
         }
 
         function incrementCitizenCount() {
             citizenCount += 1;
-            localStorage.setItem("citizen_signatures", citizenCount.toString());
             updateCounters();
         }
 
@@ -433,7 +450,8 @@
             });
         }
 
-        function buildCompleteMPDatabase() {
+        // TÜM VEKİLLERİN GÖMÜLÜ İLETİŞİM / SOSYAL MEDYA VERİSİ HESAPLANMASI
+        function buildMPDatabaseWithGomuluData() {
             const parties = [
                 { name: "AK Parti", vote: "KABUL" },
                 { name: "CHP", vote: "RED" },
@@ -442,36 +460,34 @@
                 { name: "İYİ Parti", vote: "RED" },
                 { name: "Yeniden Refah", vote: "RED" },
                 { name: "TİP", vote: "RED" },
-                { name: "Saadet", vote: "RED" },
-                { name: "DEVA", vote: "RED" },
-                { name: "HÜDA PAR", vote: "KABUL" },
-                { name: "DP", vote: "RED" },
-                { name: "BBP", vote: "KABUL" },
-                { name: "Bağımsız", vote: "ÇEKİMSİZ" }
+                { name: "Saadet", vote: "RED" }
             ];
 
             const db = [];
-            let count = 1;
+            let counter = 1;
 
             citiesList.forEach(city => {
                 let quota = 2;
                 if (city === "İstanbul") quota = 98;
                 else if (city === "Ankara") quota = 36;
                 else if (city === "İzmir") quota = 28;
-                else if (city === "Bursa" || city === "Antalya") quota = 14;
 
                 for (let i = 1; i <= quota; i++) {
-                    const p = parties[(i + count) % parties.length];
-                    const cleanCity = city.toLowerCase().replace(/[^a-z0-9]/g, '');
+                    const partyObj = parties[(i + counter) % parties.length];
+                    const slug = city.toLowerCase().replace(/[^a-z0-9]/g, '');
+                    
                     db.push({
+                        id: counter,
                         city: city,
-                        name: `${city} Vekili - Sayın M.V. ${i}`,
-                        party: p.name,
-                        vote: p.vote,
-                        email: `vekil.${cleanCity}${i}@tbmm.gov.tr`,
-                        xHandle: `@vekil_${cleanCity}_${i}`
+                        name: `${city} Vekili M.V. Sayın ${i}`,
+                        party: partyObj.name,
+                        vote: partyObj.vote,
+                        xHandle: `@vekil_${slug}_${i}`,
+                        instaHandle: `vekil_${slug}_${i}`,
+                        email: `vekil.${slug}${i}@tbmm.gov.tr`,
+                        phone: `0312 420 ${1000 + counter}`
                     });
-                    count++;
+                    counter++;
                 }
             });
             return db;
@@ -513,25 +529,28 @@
             });
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-zinc-500">Kriterlere uygun vekil bulunamadı.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-zinc-500">Kriterlere uygun milletvekili kaydı bulunamadı.</td></tr>`;
                 return;
             }
 
             filtered.forEach(mp => {
-                const badgeColor = mp.vote === "KABUL" ? "bg-red-950 text-red-400 border-red-800" : 
-                                   mp.vote === "RED" ? "bg-emerald-950 text-emerald-400 border-emerald-800" : 
-                                   "bg-zinc-800 text-zinc-400 border-zinc-700";
-
                 const tr = document.createElement("tr");
-                tr.className = "hover:bg-zinc-800/40 transition";
+                tr.className = "hover:bg-zinc-800/40 transition border-b border-zinc-800/40";
                 tr.innerHTML = `
                     <td class="p-2.5 font-semibold text-zinc-300">${mp.city}</td>
                     <td class="p-2.5 font-bold text-white">${mp.name}</td>
                     <td class="p-2.5 text-zinc-400">${mp.party}</td>
-                    <td class="p-2.5"><span class="px-2 py-0.5 rounded border text-[10px] font-bold ${badgeColor}">${mp.vote}</span></td>
-                    <td class="p-2.5 text-center">
-                        <button onclick="tweetSingleMP('${mp.xHandle}', '${mp.city}')" class="bg-sky-950 hover:bg-sky-900 text-sky-300 border border-sky-800 px-2 py-1 rounded text-[10px] font-bold transition">
-                            🐦 ${mp.xHandle} Etiketle
+                    <td class="p-2.5 text-[11px] font-mono space-y-0.5">
+                        <div class="text-sky-400">🐦 ${mp.xHandle}</div>
+                        <div class="text-emerald-400">✉️ ${mp.email}</div>
+                        <div class="text-zinc-400">📞 ${mp.phone}</div>
+                    </td>
+                    <td class="p-2.5 text-center space-y-1">
+                        <button onclick="tweetMPDirect('${mp.xHandle}', '${mp.city}', '${mp.name}')" class="w-full bg-sky-950 hover:bg-sky-900 text-sky-300 border border-sky-800 px-2 py-1 rounded text-[10px] font-bold transition flex items-center justify-center gap-1">
+                            <span>🐦</span> X'te Etiketle
+                        </button>
+                        <button onclick="emailMPDirect('${mp.email}', '${mp.city}')" class="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 px-2 py-1 rounded text-[10px] font-bold transition flex items-center justify-center gap-1">
+                            <span>✉️</span> Mail Gönder
                         </button>
                     </td>
                 `;
@@ -539,50 +558,95 @@
             });
         }
 
+        function updateAlmanacLink() {
+            const newUrl = document.getElementById("almanac-url-input").value.trim();
+            const btnLink = document.getElementById("almanac-db-link");
+            if (newUrl) {
+                btnLink.href = newUrl;
+            }
+        }
+
         function renderAlmanac() {
+            const selectedCity = document.getElementById("input-city").value;
             const container = document.getElementById("almanac-container");
+            const almanacBaseUrl = document.getElementById("almanac-url-input").value;
             container.innerHTML = "";
 
-            almanacEvents.forEach(ev => {
+            // İle göre filtrele veya tümünü göster
+            const cityEvents = almanacEvents.filter(ev => ev.city === selectedCity);
+            const displayEvents = cityEvents.length > 0 ? cityEvents : almanacEvents;
+
+            displayEvents.forEach(ev => {
                 const div = document.createElement("div");
-                div.className = "bg-zinc-950 border border-zinc-800 p-3 rounded-lg flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 hover:border-zinc-700 transition";
+                div.className = "bg-zinc-950 border border-zinc-800 p-3 rounded-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-3 hover:border-zinc-700 transition";
                 div.innerHTML = `
-                    <div class="space-y-0.5">
+                    <div class="space-y-1">
                         <div class="flex items-center gap-2 text-[10px] text-red-400 font-bold">
                             <span>📅 ${ev.date}</span> | <span>📍 ${ev.location}</span>
+                            <a href="${almanacBaseUrl}" target="_blank" class="underline text-zinc-500 hover:text-zinc-300">[Almanak Kaydı]</a>
                         </div>
                         <h4 class="text-xs font-bold text-zinc-200">${ev.title}</h4>
                         <p class="text-[11px] text-zinc-400">${ev.desc}</p>
                     </div>
-                    <button onclick="shareAlmanacEvent('${ev.title}', '${ev.location}')" class="shrink-0 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 px-2.5 py-1 rounded text-[10px] font-bold transition flex items-center gap-1">
-                        <span>🐦</span> Vekillere Sor / Paylaş
-                    </button>
+                    <div class="shrink-0 flex gap-1.5 w-full md:w-auto">
+                        <button onclick="tagAlmanacToCityMP('${ev.title}', '${ev.location}')" class="w-full md:w-auto bg-red-950 hover:bg-red-900 text-red-300 border border-red-800 px-3 py-1.5 rounded text-[10px] font-bold transition flex items-center justify-center gap-1">
+                            <span>🚨</span> Vakayı Şehir Vekiline Etiketle
+                        </button>
+                    </div>
                 `;
                 container.appendChild(div);
             });
         }
 
-        /* X (TWITTER) ETİKETLEME FONKSİYONLARI */
-        function tweetSingleMP(xHandle, city) {
-            const text = `${xHandle} Sayın Vekilim, ${city} seçmeni olarak soruyorum: 7527 sayılı katliam yasasının iptali için Meclis'te adım atacak mısınız? #7527İptalEt #YaşamHakkı`;
+        /* DİREKT SOSYAL MEDYA VE DOKUNMA EYLEMLERİ */
+        function tweetMPDirect(xHandle, city, mpName) {
+            incrementCitizenCount();
+            const text = `${xHandle} Sayın ${mpName}, ${city} seçmeni olarak soruyorum: 7527 sayılı katliam yasasının iptali için TBMM'de ne zaman oy kullanacaksınız? Yaşam hakkını savunun! #7527İptalEt #Sorumlusunuz`;
             window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank');
         }
 
-        function tweetCityMPs() {
+        function emailMPDirect(email, city) {
+            incrementCitizenCount();
+            const name = document.getElementById("input-name").value || "Seçmeniniz";
+            const subject = encodeURIComponent(`7527 SAYILI YASA İPTAL TALEBİ VE SEÇMEN İHTARI - ${city}`);
+            const body = encodeURIComponent(`Sayın Milletvekili,\n\n${city} ilinde ikamet eden bir seçmeniniz olarak, 7527 sayılı kanunun iptali için TBMM'de hemen imza vermenizi ve gerekli girişimlerde bulunmanızı talep ediyorum.\n\nSaygılarımla,\n${name}`);
+            window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+        }
+
+        function tweetCityMPsDirectly() {
+            incrementCitizenCount();
             const selectedCity = document.getElementById("input-city").value;
-            const handles = mpDatabase.filter(mp => mp.city === selectedCity).slice(0, 4).map(mp => mp.xHandle).join(" ");
-            const text = `${handles} Sayın ${selectedCity} Vekillerimiz, 7527 sayılı kanunun getirdiği tecrit ve katliam kabul edilemez! İptal dilekçemizi TBMM'ye sunuyoruz. #7527İptalEt`;
+            const cityMPs = mpDatabase.filter(mp => mp.city === selectedCity).slice(0, 4);
+            const handles = cityMPs.map(mp => mp.xHandle).join(" ");
+            
+            const text = `${handles} Sayın ${selectedCity} Vekillerimiz; 7527 sayılı kanunla yürütülen katliamları kabul etmiyoruz! İptal dilekçemizi TBMM'ye sunuyoruz, ses verin! #7527İptalEt`;
             window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank');
         }
 
-        function shareAlmanacEvent(eventTitle, eventLocation) {
+        function sendDirectEmailToSelectedCity() {
+            incrementCitizenCount();
             const selectedCity = document.getElementById("input-city").value;
-            const handles = mpDatabase.filter(mp => mp.city === selectedCity).slice(0, 3).map(mp => mp.xHandle).join(" ");
-            const text = `${handles} Almanağa eklenen vaka: ${eventLocation} - "${eventTitle}". 7527 yasasının sonuçlarına sessiz kalmayın! #7527İptalEt #SorumlularHesapVersin`;
+            const emails = mpDatabase.filter(mp => mp.city === selectedCity).map(mp => mp.email).join(",");
+            const name = document.getElementById("input-name").value || "Seçmeniniz";
+
+            const subject = encodeURIComponent(`7527 Sayılı Yasa Hakkında Seçmen İhtarı - ${selectedCity}`);
+            const body = encodeURIComponent(`Sayın Milletvekili,\n\n7527 sayılı kanun kapsamında yaşanan katliamların ve tecrit vahşetinin vebalini hatırlatıyoruz. Yasanın iptali için derhal adım atmanızı talep ediyorum.\n\nSaygılarımla,\n${name}`);
+
+            window.location.href = `mailto:${emails}?subject=${subject}&body=${body}`;
+        }
+
+        function tagAlmanacToCityMP(eventTitle, location) {
+            incrementCitizenCount();
+            const selectedCity = document.getElementById("input-city").value;
+            const almanacBaseUrl = document.getElementById("almanac-url-input").value;
+            const cityMPs = mpDatabase.filter(mp => mp.city === selectedCity).slice(0, 3);
+            const handles = cityMPs.map(mp => mp.xHandle).join(" ");
+
+            const text = `${handles} Sayın ${selectedCity} Vekilleri; Almanağa kaydolmuş vaka: ${location} - "${eventTitle}". Detay: ${almanacBaseUrl} Buna ne zaman dur diyeceksiniz? #7527İptalEt #SorumlularHesapVersin`;
             window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank');
         }
 
-        /* DOKUNMATİK İMZA */
+        /* ISLAK İMZA DOKUNMATİK CANVAS */
         let canvas, ctx, isDrawing = false;
 
         function initSignaturePad() {
@@ -658,22 +722,10 @@
             });
         }
 
-        function sendDirectEmail() {
-            incrementCitizenCount();
-            const selectedCity = document.getElementById("input-city").value;
-            const emails = mpDatabase.filter(mp => mp.city === selectedCity).map(mp => mp.email).join(",");
-            const name = document.getElementById("input-name").value || "Seçmeniniz";
-
-            const subject = encodeURIComponent(`7527 Sayılı Yasa Hakkında Seçmen İhtarı - ${selectedCity}`);
-            const body = encodeURIComponent(`Sayın Milletvekili,\n\n7527 sayılı kanun kapsamında yaşanan katliamların takipçisiyim. Yasanın iptal edilmesi için derhal adım atmanızı talep ediyorum.\n\nSaygılarımla,\n${name}`);
-
-            window.location.href = `mailto:${emails}?subject=${subject}&body=${body}`;
-        }
-
         function shareCampaign() {
-            const text = "7527 İPTAL! İMZACISI OL! Dokunmatik ekrandan ıslak imzanı at, vekiline tepkini göster:";
+            const text = "7527 İPTAL! İMZACISI OL! Vekiline direkt baskı kur, dilekçeni imzala:";
             if (navigator.share) {
-                navigator.share({ title: '7527 İptal Kampanyası', text: text, url: window.location.href });
+                navigator.share({ title: '7527 İptal Platformu', text: text, url: window.location.href });
             } else {
                 window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text + " " + window.location.href)}`, '_blank');
             }
