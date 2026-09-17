@@ -243,8 +243,8 @@ select[sinone;appearance:none;}
 </footer>
 
 <script>
-const CITIZEN_SIGNED_KEY='sign7527_citizen_signed';
-const CITIZEN_COUNT_KEY='sign7527_citizen_count';
+const CITIZEN_SIGNED_KEY='sign7527_citizen_signed_v2';
+const CITIZEN_COUNT_KEY='sign7527_citizen_count_v2';
 const MP_SIGNATURES_KEY='sign7527_mp_signatures';
 let citizenCount=parseInt(localStorage.getItem(CITIZEN_COUNT_KEY)||'0',10);
 let citizenHasSigned=localStorage.getItem(CITIZEN_SIGNED_KEY)==='true';
@@ -1033,20 +1033,18 @@ function getMPInitials(name){return name.split(/\s+/).filter(Boolean).map(part=>
 function getMPMessage(mp){return `Kayıt kodu: ${getMPRecordCode(mp)}\n${mp.city} seçmeni olarak 7527 sayılı kanunun iptali için gereğini yapmanızı talep ediyorum. #7527İptalEt`}
 function tweetSelectedMPsDirectly(){
 const sel=getSelectedMPsFromTable();if(!sel.length){alert("Lütfen en az 1 vekil seçin!");return;}
-registerCitizenSignatureOnce();
 const mp=sel[0];
 window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(`${mp.xHandle} Sayın ${mp.name}, ${getMPMessage(mp)}`)}`,'_blank');
 if(sel.length>1) alert(`${mp.name} için paylaşım açıldı. Diğer vekillere tek tek göndermek için tablodaki X düğmelerini kullanın.`);
 }
 function sendDirectEmailToSelectedMPs(){
 const sel=getSelectedMPsFromTable();if(!sel.length){alert("Lütfen en az 1 vekil seçin!");return;}
-registerCitizenSignatureOnce();
 const mp=sel[0];
 window.location.href=`mailto:${mp.email}?subject=${encodeURIComponent(`7527 İptal Talebi - ${getMPRecordCode(mp)}`)}&body=${encodeURIComponent(`Sayın ${mp.name},\n\n${getMPMessage(mp)}`)}`;
 if(sel.length>1) alert(`${mp.name} için e-posta açıldı. Diğer vekillere tek tek göndermek için tablodaki Mail düğmelerini kullanın.`);
 }
-function tweetMPDirect(h,c,n){registerCitizenSignatureOnce();const mp=mpDatabase.find(m=>m.xHandle===h&&m.city===c&&m.name===n);const code=mp?getMPRecordCode(mp):"7527";const t=`${h} Sayın ${n}, Kayıt kodu: ${code}. ${c} seçmeni olarak 7527'nin iptalini istiyoruz! #7527İptalEt`;window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(t)}`,'_blank');}
-function emailMPDirect(e,c){registerCitizenSignatureOnce();const mp=mpDatabase.find(m=>m.email===e&&m.city===c);const code=mp?getMPRecordCode(mp):"7527";const name=mp?mp.name:"Sayın Milletvekili";window.location.href=`mailto:${e}?subject=${encodeURIComponent(`7527 İptal Talebi - ${code}`)}&body=${encodeURIComponent(`${name},\n\nKayıt kodu: ${code}\n${c} seçmeni olarak 7527'nin iptalini talep ediyorum. #7527İptalEt`)}`;}
+function tweetMPDirect(h,c,n){const mp=mpDatabase.find(m=>m.xHandle===h&&m.city===c&&m.name===n);const code=mp?getMPRecordCode(mp):"7527";const t=`${h} Sayın ${n}, Kayıt kodu: ${code}. ${c} seçmeni olarak 7527'nin iptalini istiyoruz! #7527İptalEt`;window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(t)}`,'_blank');}
+function emailMPDirect(e,c){const mp=mpDatabase.find(m=>m.email===e&&m.city===c);const code=mp?getMPRecordCode(mp):"7527";const name=mp?mp.name:"Sayın Milletvekili";window.location.href=`mailto:${e}?subject=${encodeURIComponent(`7527 İptal Talebi - ${code}`)}&body=${encodeURIComponent(`${name},\n\nKayıt kodu: ${code}\n${c} seçmeni olarak 7527'nin iptalini talep ediyorum. #7527İptalEt`)}`;}
 
 function initCitizenSignaturePad(){
 canvas=document.getElementById("signature-pad");if(!canvas)return;ctx=canvas.getContext("2d");
@@ -1167,7 +1165,6 @@ container.appendChild(div);
 function tagAlmanacToCityMP(title,location){
 const sel=getSelectedMPsFromTable();
 if(!sel.length){alert("Lütfen önce tablodan vekil seçin!");return;}
-registerCitizenSignatureOnce();
 const base=document.getElementById("almanac-url-input").value;
 const h=sel.map(m=>m.xHandle).join(" ");
 const t=`${h} Sayın Vekiller; Almanağa kaydolmuş vaka: ${location} - "${title}". Detay: ${base} Buna ne zaman dur diyeceksiniz? #7527İptalEt #SorumlularHesapVersin`;
