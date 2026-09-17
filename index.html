@@ -178,11 +178,11 @@
                         <select id="filter-party" onchange="filterMPTable()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs text-zinc-200 focus:border-red-600 focus:outline-none">
                             <option value="TÜMÜ">Tüm Partiler</option>
                             <option value="AK Parti">AK Parti</option>
-                            <option value="YENİ Parti">YENİ Parti</option>
                             <option value="CHP">CHP</option>
                             <option value="MHP">MHP</option>
                             <option value="DEM Parti">DEM Parti</option>
                             <option value="İYİ Parti">İYİ Parti</option>
+                            <option value="Yeniden Refah">Yeniden Refah</option>
                             <option value="TİP">TİP</option>
                             <option value="DEVA">DEVA</option>
                             <option value="Saadet">Saadet</option>
@@ -382,7 +382,7 @@
             "Kırıkkale", "Batman", "Şırnak", "Bartın", "Ardahan", "Iğdır", "Yalova", "Karabük", "Kilis", "Osmaniye", "Düzce"
         ];
 
-        // 81 İLİN TBMM RESMİ KOTALARINA GÖRE TAM 600 MİLLETVEKİLİ LİSTESİ
+        // 81 İLİN TBMM RESMİ SANDALYE DAĞILIMINA GÖRE TAM 600 MİLLETVEKİLİ KOTASI
         const cityQuotaMap = {
             "İstanbul": 98, "Ankara": 36, "İzmir": 28, "Bursa": 20, "Antalya": 17, "Adana": 15, "Konya": 15,
             "Gaziantep": 14, "Şanlıurfa": 14, "Kocaeli": 14, "Mersin": 13, "Diyarbakır": 12, "Hatay": 11,
@@ -399,17 +399,17 @@
         };
 
         const knownMPs = [
-            // İSTANBUL (98 MİLLETVEKİLİNDEN ÖNEMLİ BAŞLIKLAR VE GÜNCEL KADRO)
-            { city: "İstanbul", name: "Özgür Karabat", party: "YENİ Parti", xHandle: "@OzgurKarabatCHP", email: "ozgur.karabat@tbmm.gov.tr", vote: "RET" },
-            { city: "İstanbul", name: "Gökan Zeybek", party: "YENİ Parti", xHandle: "@gokanzeybekCHP", email: "gokan.zeybek@tbmm.gov.tr", vote: "RET" },
-            { city: "İstanbul", name: "Türkan Elçi", party: "YENİ Parti", xHandle: "@TurkanElci", email: "turkan.elci@tbmm.gov.tr", vote: "RET" },
-            { city: "İstanbul", name: "Cemal Enginyurt", party: "YENİ Parti", xHandle: "@cenginyurt52", email: "cemal.enginyurt@tbmm.gov.tr", vote: "RET" },
-            { city: "İstanbul", name: "Sera Kadıgil", party: "TİP", xHandle: "@serakadigil", email: "sera.kadigil@tbmm.gov.tr", vote: "RET" },
-            { city: "İstanbul", name: "Erkan Baş", party: "TİP", xHandle: "@erkbas", email: "erkan.bas@tbmm.gov.tr", vote: "RET" },
-            { city: "İstanbul", name: "Ahmet Şık", party: "TİP", xHandle: "@ahmetsik", email: "ahmet.sik@tbmm.gov.tr", vote: "RET" },
+            // İSTANBUL (98 MİLLETVEKİLİ KADROSU - ÖNEMLİ İSİMLER VE TAM LİSTE ALTYAPISI)
             { city: "İstanbul", name: "Numan Kurtulmuş", party: "AK Parti", xHandle: "@NumanKurtulmus", email: "numan.kurtulmus@tbmm.gov.tr", vote: "KABUL" },
             { city: "İstanbul", name: "Süleyman Soylu", party: "AK Parti", xHandle: "@suleymansoylu", email: "suleyman.soylu@tbmm.gov.tr", vote: "KABUL" },
             { city: "İstanbul", name: "Halit Yerebakan", party: "AK Parti", xHandle: "@hyerebakan", email: "halit.yerebakan@tbmm.gov.tr", vote: "KABUL" },
+            { city: "İstanbul", name: "Özgür Karabat", party: "CHP", xHandle: "@OzgurKarabatCHP", email: "ozgur.karabat@tbmm.gov.tr", vote: "RET" },
+            { city: "İstanbul", name: "Gökan Zeybek", party: "CHP", xHandle: "@gokanzeybekCHP", email: "gokan.zeybek@tbmm.gov.tr", vote: "RET" },
+            { city: "İstanbul", name: "Türkan Elçi", party: "CHP", xHandle: "@TurkanElci", email: "turkan.elci@tbmm.gov.tr", vote: "RET" },
+            { city: "İstanbul", name: "Cemal Enginyurt", party: "Demokrat Parti", xHandle: "@cenginyurt52", email: "cemal.enginyurt@tbmm.gov.tr", vote: "RET" },
+            { city: "İstanbul", name: "Sera Kadıgil", party: "TİP", xHandle: "@serakadigil", email: "sera.kadigil@tbmm.gov.tr", vote: "RET" },
+            { city: "İstanbul", name: "Erkan Baş", party: "TİP", xHandle: "@erkbas", email: "erkan.bas@tbmm.gov.tr", vote: "RET" },
+            { city: "İstanbul", name: "Ahmet Şık", party: "TİP", xHandle: "@ahmetsik", email: "ahmet.sik@tbmm.gov.tr", vote: "RET" },
             { city: "İstanbul", name: "Engin Altay", party: "CHP", xHandle: "@EnginAltayCHP", email: "engin.altay@tbmm.gov.tr", vote: "RET" },
             { city: "İstanbul", name: "Faik Öztrak", party: "CHP", xHandle: "@faikoztrak", email: "faik.oztrak@tbmm.gov.tr", vote: "RET" },
             { city: "İstanbul", name: "Gamze Akkuş İlgezdi", party: "CHP", xHandle: "@gamzeilgezdi", email: "gamze.ilgezdi@tbmm.gov.tr", vote: "RET" },
@@ -421,37 +421,37 @@
             { city: "İstanbul", name: "Mustafa Yeneroğlu", party: "DEVA", xHandle: "@myeneroglu", email: "mustafa.yeneroglu@tbmm.gov.tr", vote: "RET" },
             { city: "İstanbul", name: "Birol Aydın", party: "Saadet", xHandle: "@birolaydin34", email: "birol.aydin@tbmm.gov.tr", vote: "RET" },
 
-            // ANKARA
-            { city: "Ankara", name: "Murat Emir", party: "YENİ Parti", xHandle: "@muratemirchp", email: "murat.emir@tbmm.gov.tr", vote: "RET" },
-            { city: "Ankara", name: "Umut Akdoğan", party: "YENİ Parti", xHandle: "@umutakdogan", email: "umut.akdogan@tbmm.gov.tr", vote: "RET" },
-            { city: "Ankara", name: "Tekin Bingöl", party: "YENİ Parti", xHandle: "@TekinBingolCHP", email: "tekin.bingol@tbmm.gov.tr", vote: "RET" },
+            // ANKARA (36 MİLLETVEKİLİ)
             { city: "Ankara", name: "Fuat Oktay", party: "AK Parti", xHandle: "@fuatoktay", email: "fuat.oktay@tbmm.gov.tr", vote: "KABUL" },
+            { city: "Ankara", name: "Murat Emir", party: "CHP", xHandle: "@muratemirchp", email: "murat.emir@tbmm.gov.tr", vote: "RET" },
+            { city: "Ankara", name: "Umut Akdoğan", party: "CHP", xHandle: "@umutakdogan", email: "umut.akdogan@tbmm.gov.tr", vote: "RET" },
+            { city: "Ankara", name: "Tekin Bingöl", party: "CHP", xHandle: "@TekinBingolCHP", email: "tekin.bingol@tbmm.gov.tr", vote: "RET" },
             { city: "Ankara", name: "Sadullah Ergin", party: "DEVA", xHandle: "@sadullahergin", email: "sadullah.ergin@tbmm.gov.tr", vote: "KATILMADI" },
             { city: "Ankara", name: "Kürşad Zorlu", party: "İYİ Parti", xHandle: "@kursadzorlu", email: "kursad.zorlu@tbmm.gov.tr", vote: "RET" },
 
-            // İZMİR
-            { city: "İzmir", name: "Murat Bakan", party: "YENİ Parti", xHandle: "@MuratBakan35", email: "murat.bakan@tbmm.gov.tr", vote: "RET" },
-            { city: "İzmir", name: "Deniz Yücel", party: "YENİ Parti", xHandle: "@avdenizyucel", email: "deniz.yucel@tbmm.gov.tr", vote: "RET" },
-            { city: "İzmir", name: "Ümit Özlale", party: "YENİ Parti", xHandle: "@umitozlale", email: "umit.ozlale@tbmm.gov.tr", vote: "RET" },
-            { city: "İzmir", name: "Yüksel Taşkın", party: "YENİ Parti", xHandle: "@yükseltaskin", email: "yuksel.taskin@tbmm.gov.tr", vote: "RET" },
+            // İZMİR (28 MİLLETVEKİLİ)
             { city: "İzmir", name: "Hamza Dağ", party: "AK Parti", xHandle: "@hamzadag", email: "hamza.dag@tbmm.gov.tr", vote: "KABUL" },
+            { city: "İzmir", name: "Murat Bakan", party: "CHP", xHandle: "@MuratBakan35", email: "murat.bakan@tbmm.gov.tr", vote: "RET" },
+            { city: "İzmir", name: "Deniz Yücel", party: "CHP", xHandle: "@avdenizyucel", email: "deniz.yucel@tbmm.gov.tr", vote: "RET" },
+            { city: "İzmir", name: "Ümit Özlale", party: "İYİ Parti", xHandle: "@umitozlale", email: "umit.ozlale@tbmm.gov.tr", vote: "RET" },
+            { city: "İzmir", name: "Yüksel Taşkın", party: "CHP", xHandle: "@yükseltaskin", email: "yuksel.taskin@tbmm.gov.tr", vote: "RET" },
             { city: "İzmir", name: "Sevda Erdan Kılıç", party: "CHP", xHandle: "@SevdaErdan", email: "sevda.erdan@tbmm.gov.tr", vote: "RET" },
             { city: "İzmir", name: "Müsavat Dervişoğlu", party: "İYİ Parti", xHandle: "@MusavatDervisogl", email: "musavat.dervisoglu@tbmm.gov.tr", vote: "RET" },
 
-            // ÇANAKKALE (4 VEKİL)
+            // ÇANAKKALE (4 MİLLETVEKİLİ)
             { city: "Çanakkale", name: "İsmet Güneşhan", party: "CHP", xHandle: "@IsmetGuneshan", email: "ismet.guneshan@tbmm.gov.tr", vote: "RET" },
             { city: "Çanakkale", name: "Özgür Ceylan", party: "CHP", xHandle: "@ozgurceylanchp", email: "ozgur.ceylan@tbmm.gov.tr", vote: "RET" },
             { city: "Çanakkale", name: "Ayhan Gider", party: "AK Parti", xHandle: "@ayhangider", email: "ayhan.gider@tbmm.gov.tr", vote: "KABUL" },
             { city: "Çanakkale", name: "Rıdvan Uz", party: "İYİ Parti", xHandle: "@RidvanUz317", email: "ridvan.uz@tbmm.gov.tr", vote: "RET" },
 
             // DİĞER ÖNEMLİ İLLER
-            { city: "Manisa", name: "Özgür Özel", party: "YENİ Parti", xHandle: "@eczozgurozel", email: "ozgur.ozel@tbmm.gov.tr", vote: "RET" },
-            { city: "Mersin", name: "Ali Mahir Başarır", party: "YENİ Parti", xHandle: "@alimahir", email: "ali.mahir.basarir@tbmm.gov.tr", vote: "RET" },
-            { city: "Malatya", name: "Veli Ağbaba", party: "YENİ Parti", xHandle: "@veliagbaba", email: "veli.agbaba@tbmm.gov.tr", vote: "RET" },
-            { city: "Erzincan", name: "Mustafa Sarıgül", party: "YENİ Parti", xHandle: "@M_Sarigul", email: "mustafa.sarigul@tbmm.gov.tr", vote: "RET" },
-            { city: "Diyarbakır", name: "Mustafa Sezgin Tanrıkulu", party: "YENİ Parti", xHandle: "@MSTanrikulu", email: "sezgin.tanrikulu@tbmm.gov.tr", vote: "RET" },
-            { city: "Zonguldak", name: "Deniz Yavuzyılmaz", party: "YENİ Parti", xHandle: "@yavuzyilmazd", email: "deniz.yavuzyilmaz@tbmm.gov.tr", vote: "RET" },
-            { city: "Kocaeli", name: "Harun Özgür Yıldızlı", party: "YENİ Parti", xHandle: "@harunozguryildiz", email: "harun.yildizli@tbmm.gov.tr", vote: "RET" },
+            { city: "Manisa", name: "Özgür Özel", party: "CHP", xHandle: "@eczozgurozel", email: "ozgur.ozel@tbmm.gov.tr", vote: "RET" },
+            { city: "Mersin", name: "Ali Mahir Başarır", party: "CHP", xHandle: "@alimahir", email: "ali.mahir.basarir@tbmm.gov.tr", vote: "RET" },
+            { city: "Malatya", name: "Veli Ağbaba", party: "CHP", xHandle: "@veliagbaba", email: "veli.agbaba@tbmm.gov.tr", vote: "RET" },
+            { city: "Erzincan", name: "Mustafa Sarıgül", party: "CHP", xHandle: "@M_Sarigul", email: "mustafa.sarigul@tbmm.gov.tr", vote: "RET" },
+            { city: "Diyarbakır", name: "Mustafa Sezgin Tanrıkulu", party: "CHP", xHandle: "@MSTanrikulu", email: "sezgin.tanrikulu@tbmm.gov.tr", vote: "RET" },
+            { city: "Zonguldak", name: "Deniz Yavuzyılmaz", party: "CHP", xHandle: "@yavuzyilmazd", email: "deniz.yavuzyilmaz@tbmm.gov.tr", vote: "RET" },
+            { city: "Kocaeli", name: "Harun Özgür Yıldızlı", party: "CHP", xHandle: "@harunozguryildiz", email: "harun.yildizli@tbmm.gov.tr", vote: "RET" },
             { city: "Rize", name: "Tahsin Ocaklı", party: "CHP", xHandle: "@tahsinocakli", email: "tahsin.ocakli@tbmm.gov.tr", vote: "RET" },
             { city: "Rize", name: "Muhammet Avcı", party: "AK Parti", xHandle: "@M_Avci53", email: "muhammet.avci@tbmm.gov.tr", vote: "KABUL" }
         ];
@@ -466,7 +466,6 @@
 
             const partiesPool = [
                 { party: "AK Parti", vote: "KABUL" },
-                { party: "YENİ Parti", vote: "RET" },
                 { party: "CHP", vote: "RET" },
                 { party: "MHP", vote: "KABUL" },
                 { party: "DEM Parti", vote: "RET" },
