@@ -26,7 +26,7 @@ body *{visibility:hidden;}
 <div class="inline-block bg-red-600 -rotate-1 px-6 py-2 shadow-xl rounded-sm">
 <h1 class="font-impact text-3xl md:text-5xl tracking-wider text-white uppercase italic">7527 İPTAL! İMZACISI OL!</h1>
 </div>
-<p class="text-xl md:text-2xl font-extrabold text-zinc-200">Öldüren değil, yaşatan ol! Full Baskı Eylem Platformu</p>
+<p class="text-xl md:text-2xl font-extrabold text-zinc-200">Öldüren değil, yaşatan ol!</p>
 <p class="text-xs md:text-sm font-semibold text-red-500 uppercase tracking-widest">YAŞAM HAKKI İÇİN 🐾 HAYVANLAR İÇİN 🐾 GELECEĞİMİZ İÇİN</p>
 </div>
 </header>
@@ -39,7 +39,6 @@ body *{visibility:hidden;}
 <h2 class="text-xs font-bold text-zinc-300 uppercase tracking-wider flex items-center gap-1.5"><span>📊</span> İMZA HEDEF SAYACI</h2>
 <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-red-950 text-red-400 border border-red-800/80 animate-pulse">● CANLI</span>
 </div>
-
 <div class="space-y-1.5">
 <div class="flex justify-between items-baseline text-xs">
 <span class="font-semibold text-zinc-300">Vatandaş İmza Hedefi</span>
@@ -48,18 +47,17 @@ body *{visibility:hidden;}
 <div class="w-full bg-zinc-950 rounded-full h-3 overflow-hidden border border-zinc-800">
 <div id="bar-citizen" class="bg-gradient-to-r from-red-700 to-red-500 h-3 rounded-full transition-all duration-500" style="width:0%"></div>
 </div>
-<p class="text-[10px] text-zinc-500 pt-1">Her vatandaş sadece 1 kez imza sayılır. Farklı vekillere mail/tweet atsanız da sayı artmaz.</p>
+<p class="text-[10px] text-zinc-500 pt-1">Her vatandaş sadece 1 kez imza sayılır.</p>
 </div>
-
 <div class="space-y-1.5 pt-2 border-t border-zinc-800/60">
 <div class="flex justify-between items-baseline text-xs">
 <span class="font-semibold text-zinc-300">Meclis İptal İmzası (Milletvekilleri)</span>
-<span class="font-bold text-emerald-400 font-mono text-sm" id="cnt-mp">0 / <span id="mp-target">0</span></span>
+<span class="font-bold text-emerald-400 font-mono text-sm" id="cnt-mp">0 / 0</span>
 </div>
 <div class="w-full bg-zinc-950 rounded-full h-3 overflow-hidden border border-zinc-800">
 <div id="bar-mp" class="bg-gradient-to-r from-emerald-600 to-emerald-400 h-3 rounded-full transition-all duration-500" style="width:0%"></div>
 </div>
-<p class="text-[10px] text-zinc-500 pt-1">Bu sayaç mecliste imza süreci açıldığında eşzamanlı olarak güncellenecektir. Şu an <span class="text-emerald-400 font-bold">0</span>'dır.</p>
+<p class="text-[10px] text-zinc-500 pt-1">Mecliste imza süreci açıldığında eşzamanlı olarak güncellenecektir.</p>
 </div>
 </div>
 
@@ -109,7 +107,6 @@ body *{visibility:hidden;}
 <button onclick="sendDirectEmailToSelectedMPs()" class="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-bold py-3 px-4 rounded-lg transition text-sm uppercase flex items-center justify-center gap-2 border border-zinc-700"><span>✉️</span> Seçili Vekillere Mail At</button>
 <button onclick="tweetSelectedMPsDirectly()" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-bold py-3 px-4 rounded-lg transition text-sm uppercase flex items-center justify-center gap-2"><span>🐦</span> Seçili Vekilleri X'te Etiketle</button>
 <button onclick="shareCampaign()" class="w-full bg-emerald-700 hover:bg-emerald-600 text-white font-bold py-3 px-4 rounded-lg transition text-sm uppercase flex items-center justify-center gap-2"><span>💬</span> WhatsApp / Sosyal Medya Paylaş</button>
-<button onclick="resetMySignature()" class="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-400 py-2 px-4 rounded-lg transition text-xs uppercase border border-zinc-700">İmzamı Sıfırla (Test için)</button>
 </div>
 </section>
 
@@ -119,6 +116,25 @@ body *{visibility:hidden;}
 <h2 class="text-lg font-bold text-white flex items-center gap-2"><span>🏛️</span> TBMM MİLLETVEKİLİ TAM LİSTESİ</h2>
 <p class="text-xs text-zinc-400" id="mp-count-info">Liste yükleniyor...</p>
 </div>
+
+<!-- 8 BOŞ KOLTUK BİLGİ KUTUSU -->
+<details class="bg-zinc-950 border border-amber-900/50 rounded-lg p-3 text-xs">
+<summary class="cursor-pointer font-bold text-amber-400 flex items-center gap-2">⚠️ TBMM'de Boş Olan 8 Koltuk — Bu Kişiler Listede Yoktur (Tıkla)</summary>
+<div class="pt-3 space-y-1 text-zinc-300 leading-relaxed">
+<p class="text-zinc-400">Meclis üye tam sayısı 600 olup, aşağıdaki 8 vekillik çeşitli nedenlerle boşalmıştır. Bu nedenle listede <strong>592 vekil</strong> bulunmaktadır:</p>
+<ul class="list-disc pl-5 space-y-1 pt-2">
+<li><strong>Hasan Bitmez</strong> (SAADET Partisi / Kocaeli) — <span class="text-red-400">Vefat</span></li>
+<li><strong>Sırrı Süreyya Önder</strong> (DEM PARTİ / İstanbul) — <span class="text-red-400">Vefat</span></li>
+<li><strong>Şerafettin Can Atalay</strong> (TİP / Hatay) — <span class="text-red-400">Milletvekilliği düşürüldü</span></li>
+<li><strong>Murat Kurum</strong> (AK Parti / İstanbul) — <span class="text-amber-400">Bakan atandı, istifa</span></li>
+<li><strong>Burcu Köksal</strong> (CHP / Afyonkarahisar) — <span class="text-amber-400">Belediye Başkanı seçildi, istifa</span></li>
+<li><strong>Abdurrahman Tutdere</strong> (CHP / Adıyaman) — <span class="text-amber-400">Belediye Başkanı seçildi, istifa</span></li>
+<li><strong>Hasan Baltacı</strong> (CHP / Kastamonu) — <span class="text-amber-400">Belediye Başkanı seçildi, istifa</span></li>
+<li><strong>Ahmet Önal</strong> (CHP / Kırıkkale) — <span class="text-amber-400">Belediye Başkanı seçildi, istifa</span></li>
+</ul>
+</div>
+</details>
+
 <div class="grid grid-cols-1 sm:grid-cols-4 gap-2">
 <div>
 <label class="block text-[10px] text-zinc-400 mb-1 font-bold">PARTİ</label>
@@ -258,29 +274,13 @@ body *{visibility:hidden;}
 </footer>
 
 <script>
-/* ============================================================
-   SAYAÇ MANTIĞI:
-   - Vatandaş imzası: Kişi başı 1 kez (localStorage). Mail/tweet birden fazla
-     atılsa bile vatandaş sayacı ARTMAZ.
-   - Vekil imzası: Şu an 0. Mecliste imza süreci açıldığında vekil "tamam"
-     dedikçe MP_SIGNED_COUNT değeri elle güncellenecek. Bu script otomatik
-     olarak vekil imzası SAYMAZ.
-============================================================ */
-
-// === VEKİL İMZA SAYACI (ŞU AN SIFIR) ===
-// Meclis imzaya açıldığında bu sayıyı elle güncelle (veya bir backend'e bağla):
 let MP_SIGNED_COUNT = 0;
-
-// Vatandaş sayacı localStorage'dan okunur (kişi başı 1 imza).
 const CITIZEN_SIGNED_KEY = 'sign7527_citizen_signed';
 const CITIZEN_COUNT_KEY  = 'sign7527_citizen_count';
 let citizenCount = parseInt(localStorage.getItem(CITIZEN_COUNT_KEY) || '0', 10);
 let citizenHasSigned = localStorage.getItem(CITIZEN_SIGNED_KEY) === 'true';
-
 const statsData = { citizenTarget: 3000000 };
 
-// === SENİN LİSTEN (il|ad soyad|parti) ===
-// SENİN DOSYANDAKİ TÜM SATIRLAR BİREBİR.
 const rawMPText = `Adana|Abdullah DOĞRU|AK Parti
 Adana|Ahmet ZENBİLCİ|BAĞIMSIZ
 Adana|Ayhan BARUT|Yeni Parti
@@ -886,24 +886,11 @@ const city = parts[0].trim(), name = parts[1].trim(), party = parts[2].trim();
 const cleanName = name.toLowerCase()
 .replace(/ı/g,'i').replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ş/g,'s').replace(/ö/g,'o').replace(/ç/g,'c')
 .replace(/[^a-z]/g,'').replace(/\s+/g,'.');
-return {
-no: i+1, id: i+1,
-city, name, party,
-xHandle: '@'+cleanName,
-email: cleanName+'@tbmm.gov.tr',
-vote: defaultVoteForParty(party)
-};
+return { no: i+1, id: i+1, city, name, party, xHandle: '@'+cleanName, email: cleanName+'@tbmm.gov.tr', vote: defaultVoteForParty(party) };
 });
 
-const MP_TARGET = mpDatabase.length; // Dinamik hedef - senin listendeki gerçek sayı
+const MP_TARGET = mpDatabase.length;
 const citiesList = [...new Set(mpDatabase.map(m=>m.city))];
-
-const almanacEvents = [
-{id:101,date:"2024-08-12",city:"Niğde",location:"Niğde Belediyesi Geçici Bakımevi",title:"Toplu Çukur ve Kanuna Aykırı İnfaz İddiası",desc:"Bakımevi çevresinde toplu mezarlar ve zehirlenmiş hayvan gövdeleri belgelendi."},
-{id:102,date:"2024-08-14",city:"Ankara",location:"Altındağ / Ankara",title:"Altındağ Bakımevi Poşetlenmiş Cansız Bedenler",desc:"Çöp alanlarında poşetler içinde onlarca hayvan cesedi görüntülendi."},
-{id:103,date:"2024-09-02",city:"Kocaeli",location:"Gebze / Kocaeli",title:"Gebze Rehabilitasyon Merkezi İğneyle İtlaf Vaka Kaydı",desc:"İlaç ve enjektörlerle birlikte çöp konteynerine atılmış kedi ve köpekler tespit edildi."},
-{id:104,date:"2024-09-15",city:"İstanbul",location:"Ümraniye / İstanbul",title:"Barınak Kapasite Yetersizliği ve Açlık Tecriti",desc:"Toplanan hayvanların dar alanlarda aç bırakılarak tecrit edildiği belgelendi."}
-];
 
 document.addEventListener("DOMContentLoaded", () => {
 updateCounters();
@@ -912,21 +899,16 @@ updatePetitions();
 filterMPTable();
 initSignaturePad();
 const info = document.getElementById("mp-count-info");
-if(info) info.textContent = `Toplam ${mpDatabase.length} milletvekili listelendi (${citiesList.length} il). Sıralama 1'den ${mpDatabase.length}'e kadardır.`;
+if(info) info.textContent = `Listede ${mpDatabase.length} milletvekili (${citiesList.length} il) bulunmaktadır. Mecliste 8 koltuk boş olduğu için toplam 600 değil ${mpDatabase.length}'dir.`;
 });
 
 function updateCounters(){
-// Vatandaş
 document.getElementById("cnt-citizen").textContent = `${citizenCount.toLocaleString('tr-TR')} / ${statsData.citizenTarget.toLocaleString('tr-TR')}`;
 document.getElementById("bar-citizen").style.width = Math.min(100,(citizenCount/statsData.citizenTarget)*100)+"%";
-
-// Vekil - DİNAMİK hedef
-document.getElementById("mp-target").textContent = MP_TARGET;
-document.getElementById("cnt-mp").innerHTML = `${MP_SIGNED_COUNT} / <span id="mp-target">${MP_TARGET}</span>`;
+document.getElementById("cnt-mp").textContent = `${MP_SIGNED_COUNT} / ${MP_TARGET}`;
 document.getElementById("bar-mp").style.width = Math.min(100,(MP_SIGNED_COUNT/MP_TARGET)*100)+"%";
 }
 
-// VATANDAŞ imza - sadece 1 kez sayılır
 function registerCitizenSignatureOnce(){
 if(citizenHasSigned) return false;
 citizenHasSigned = true;
@@ -937,18 +919,7 @@ updateCounters();
 return true;
 }
 
-function resetMySignature(){
-if(confirm("Bu tarayıcıdaki imza kaydınız silinsin mi? (Test amaçlıdır)")){
-localStorage.removeItem(CITIZEN_SIGNED_KEY);
-citizenHasSigned = false;
-alert("İmza kaydınız sıfırlandı. Sayfayı yenileyin.");
-}
-}
-
-function handlePrintAndIncrement(){
-registerCitizenSignatureOnce();
-window.print();
-}
+function handlePrintAndIncrement(){registerCitizenSignatureOnce();window.print();}
 
 function populateCityDropdown(){
 const sel = document.getElementById("input-city");
@@ -985,7 +956,6 @@ const q = (document.getElementById("mp-search").value||"").toLowerCase();
 const tb = document.getElementById("mp-table-body");
 tb.innerHTML = "";
 document.getElementById("select-all-mps").checked = false;
-
 const list = mpDatabase.filter(m=>{
 const mC = mode==="ALL" || m.city===city;
 const mP = partyF==="TÜMÜ" || m.party===partyF;
@@ -993,9 +963,7 @@ const mV = voteF==="TÜMÜ" || m.vote===voteF;
 const mQ = m.name.toLowerCase().includes(q) || m.city.toLowerCase().includes(q) || m.party.toLowerCase().includes(q);
 return mC && mP && mV && mQ;
 });
-
 if(list.length===0){tb.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-zinc-500">Sonuç yok.</td></tr>`;return;}
-
 list.forEach(m=>{
 let badge = "";
 if(m.vote==="KABUL") badge = `<span class="bg-red-950 text-red-400 border border-red-800 px-2 py-0.5 rounded text-[10px] font-bold">KABUL</span>`;
@@ -1031,7 +999,6 @@ return mpDatabase.filter(m=>ids.includes(m.id));
 function tweetSelectedMPsDirectly(){
 const sel = getSelectedMPsFromTable();
 if(!sel.length){alert("Lütfen en az 1 vekil seçin!");return;}
-// Vatandaş sadece 1 kez imza sayılır (zaten imzalamışsa artmaz)
 registerCitizenSignatureOnce();
 const h = sel.map(m=>m.xHandle).join(" ");
 const t = `${h} Sayın Vekillerimiz; 7527 sayılı kanunun iptali için seçmeniniz olarak talepte bulunuyoruz! #7527İptalEt`;
