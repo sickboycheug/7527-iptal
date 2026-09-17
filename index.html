@@ -45,14 +45,14 @@
         <!-- SOL BÖLME: SAYAÇLAR, FORM VE İMZA -->
         <section class="no-print lg:col-span-4 space-y-6">
             
-            <!-- CANLI İMZA SAYAÇLARI (0 / 3.000.000 VE 0 / 600) -->
+            <!-- SAYAÇLAR (0 / 3.000.000 VE 0 / 600) -->
             <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-4 shadow-2xl">
                 <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
                     <h2 class="text-xs font-bold text-zinc-300 uppercase tracking-wider flex items-center gap-1.5">
-                        <span>📊</span> CANLI İMZA HEDEF SAYACI
+                        <span>📊</span> İMZA HEDEF SAYACI
                     </h2>
                     <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-red-950 text-red-400 border border-red-800/80 animate-pulse">
-                        ● CANLI BAŞLANGIÇ: 0
+                        ● CANLI: 0
                     </span>
                 </div>
 
@@ -70,7 +70,7 @@
                 <!-- MECLİS İMZA SAYACI -->
                 <div class="space-y-1.5 pt-2 border-t border-zinc-800/60">
                     <div class="flex justify-between items-baseline text-xs">
-                        <span class="font-semibold text-zinc-300">Meclis İptal İmzası (Tüm Vekiller)</span>
+                        <span class="font-semibold text-zinc-300">Meclis İptal İmzası (Milletvekilleri)</span>
                         <span class="font-bold text-emerald-400 font-mono text-sm" id="cnt-mp">0 / 600</span>
                     </div>
                     <div class="w-full bg-zinc-950 rounded-full h-3 overflow-hidden border border-zinc-800">
@@ -160,9 +160,9 @@
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-zinc-800 pb-3">
                     <div>
                         <h2 class="text-lg font-bold text-white flex items-center gap-2">
-                            <span>🏛️</span> GERÇEK MİLLETVEKİLİ VERİTABANI VE İLETİŞİM LİSTESİ
+                            <span>🏛️</span> GERÇEK MİLLETVEKİLİ LİSTESİ VE SOSYAL MEDYA TABLOSU
                         </h2>
-                        <p class="text-xs text-zinc-400">İşlem yapmak istediğiniz vekilleri tablodan **kendiniz seçin**. Hiçbir vekil otomatik seçilmez.</p>
+                        <p class="text-xs text-zinc-400">İşlem yapmak istediğiniz gerçek vekillerin **kutucuğunu işaretleyin**.</p>
                     </div>
                 </div>
 
@@ -182,7 +182,6 @@
                             <option value="TİP">TİP</option>
                             <option value="DEVA">DEVA</option>
                             <option value="Saadet">Saadet</option>
-                            <option value="HÜDA PAR">HÜDA PAR</option>
                         </select>
                     </div>
 
@@ -196,7 +195,7 @@
 
                     <div>
                         <label class="block text-[10px] text-zinc-400 mb-1 font-bold">İSİM İLE ARAMA</label>
-                        <input type="text" id="mp-search" onkeyup="filterMPTable()" placeholder="Vekil Adı Yazın..." class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-1.5 text-xs text-zinc-200 focus:border-red-600 focus:outline-none">
+                        <input type="text" id="mp-search" onkeyup="filterMPTable()" placeholder="Gerçek Vekil Adı Yazın..." class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-1.5 text-xs text-zinc-200 focus:border-red-600 focus:outline-none">
                     </div>
                 </div>
 
@@ -208,9 +207,9 @@
                                     <input type="checkbox" id="select-all-mps" onclick="toggleSelectAllMPs(this)" class="rounded accent-red-600 cursor-pointer">
                                 </th>
                                 <th class="p-2.5">Şehir</th>
-                                <th class="p-2.5">Milletvekili Adı</th>
+                                <th class="p-2.5">Milletvekili Adı Soyadı</th>
                                 <th class="p-2.5">Partisi</th>
-                                <th class="p-2.5">Gerçek X ve E-Posta Bilgisi</th>
+                                <th class="p-2.5">X Kullanıcı Adı ve E-Posta</th>
                                 <th class="p-2.5 text-center">Tekil Eylem</th>
                             </tr>
                         </thead>
@@ -236,7 +235,7 @@
                 </div>
 
                 <div class="bg-zinc-950 p-3 rounded-lg border border-zinc-800 flex flex-col sm:flex-row items-center gap-2">
-                    <label class="text-[11px] font-bold text-zinc-400 shrink-0">Almanak Bağlantı Linki:</label>
+                    <label class="text-[11px] font-bold text-zinc-400 shrink-0">Almanak Linki:</label>
                     <input type="text" id="almanac-url-input" value="https://almanak.hayvanhaklari.org" onchange="updateAlmanacLink()" class="w-full bg-zinc-900 border border-zinc-800 rounded px-2.5 py-1 text-xs text-red-400 font-mono focus:outline-none">
                 </div>
 
@@ -345,7 +344,7 @@
 
     <!-- JS ALTYAPISI -->
     <script>
-        // SAYAÇLAR KESİNLİKLE SIFIRDAN BAŞLAR
+        // SAYAÇLAR SIFIRDAN BAŞLAR
         let citizenCount = 0;
         let mpCount = 0;
 
@@ -365,9 +364,9 @@
             "Kırıkkale", "Batman", "Şırnak", "Bartın", "Ardahan", "Iğdır", "Yalova", "Karabük", "Kilis", "Osmaniye", "Düzce"
         ];
 
-        // GERÇEK MECLİS MİLLETVEKİLİ VERİTABANI
+        // SADECE VE SADECE GERÇEK MİLLETVEKİLİ ADLARI VE HESAPLARI
         const mpDatabase = [
-            // İSTANBUL VEKİLLERİ
+            // İSTANBUL
             { id: 1, city: "İstanbul", name: "Özgür Karabat", party: "YENİ Parti", xHandle: "@OzgurKarabatCHP", email: "ozgur.karabat@tbmm.gov.tr" },
             { id: 2, city: "İstanbul", name: "Gökan Zeybek", party: "YENİ Parti", xHandle: "@gokanzeybekCHP", email: "gokan.zeybek@tbmm.gov.tr" },
             { id: 3, city: "İstanbul", name: "Türkan Elçi", party: "YENİ Parti", xHandle: "@TurkanElci", email: "turkan.elci@tbmm.gov.tr" },
@@ -380,40 +379,44 @@
             { id: 10, city: "İstanbul", name: "Faik Öztrak", party: "CHP", xHandle: "@faikoztrak", email: "faik.oztrak@tbmm.gov.tr" },
             { id: 11, city: "İstanbul", name: "Gamze Akkuş İlgezdi", party: "CHP", xHandle: "@gamzeilgezdi", email: "gamze.ilgezdi@tbmm.gov.tr" },
             { id: 12, city: "İstanbul", name: "Kadri Enis Berberoğlu", party: "CHP", xHandle: "@enisberberoglu1", email: "enis.berberoglu@tbmm.gov.tr" },
+            { id: 13, city: "İstanbul", name: "Celal Adan", party: "MHP", xHandle: "@CelalAdan", email: "celal.adan@tbmm.gov.tr" },
+            { id: 14, city: "İstanbul", name: "Erkan Baş", party: "TİP", xHandle: "@erkbas", email: "erkan.bas@tbmm.gov.tr" },
 
-            // ANKARA VEKİLLERİ
-            { id: 13, city: "Ankara", name: "Murat Emir", party: "YENİ Parti", xHandle: "@muratemirchp", email: "murat.emir@tbmm.gov.tr" },
-            { id: 14, city: "Ankara", name: "Umut Akdoğan", party: "YENİ Parti", xHandle: "@umutakdogan", email: "umut.akdogan@tbmm.gov.tr" },
-            { id: 15, city: "Ankara", name: "Tekin Bingöl", party: "YENİ Parti", xHandle: "@TekinBingolCHP", email: "tekin.bingol@tbmm.gov.tr" },
-            { id: 16, city: "Ankara", name: "Fuat Oktay", party: "AK Parti", xHandle: "@fuatoktay", email: "fuat.oktay@tbmm.gov.tr" },
-            { id: 17, city: "Ankara", name: "Jale Nur Süllü", party: "CHP", xHandle: "@jalenursullu", email: "jale.sullu@tbmm.gov.tr" },
-            { id: 18, city: "Ankara", name: "Sadullah Ergin", party: "DEVA", xHandle: "@sadullahergin", email: "sadullah.ergin@tbmm.gov.tr" },
+            // ANKARA
+            { id: 15, city: "Ankara", name: "Murat Emir", party: "YENİ Parti", xHandle: "@muratemirchp", email: "murat.emir@tbmm.gov.tr" },
+            { id: 16, city: "Ankara", name: "Umut Akdoğan", party: "YENİ Parti", xHandle: "@umutakdogan", email: "umut.akdogan@tbmm.gov.tr" },
+            { id: 17, city: "Ankara", name: "Tekin Bingöl", party: "YENİ Parti", xHandle: "@TekinBingolCHP", email: "tekin.bingol@tbmm.gov.tr" },
+            { id: 18, city: "Ankara", name: "Fuat Oktay", party: "AK Parti", xHandle: "@fuatoktay", email: "fuat.oktay@tbmm.gov.tr" },
+            { id: 19, city: "Ankara", name: "Jale Nur Süllü", party: "CHP", xHandle: "@jalenursullu", email: "jale.sullu@tbmm.gov.tr" },
+            { id: 20, city: "Ankara", name: "Sadullah Ergin", party: "DEVA", xHandle: "@sadullahergin", email: "sadullah.ergin@tbmm.gov.tr" },
+            { id: 21, city: "Ankara", name: "Kürşad Zorlu", party: "İYİ Parti", xHandle: "@kursadzorlu", email: "kursad.zorlu@tbmm.gov.tr" },
 
-            // İZMİR VEKİLLERİ
-            { id: 19, city: "İzmir", name: "Murat Bakan", party: "YENİ Parti", xHandle: "@MuratBakan35", email: "murat.bakan@tbmm.gov.tr" },
-            { id: 20, city: "İzmir", name: "Deniz Yücel", party: "YENİ Parti", xHandle: "@avdenizyucel", email: "deniz.yucel@tbmm.gov.tr" },
-            { id: 21, city: "İzmir", name: "Ümit Özlale", party: "YENİ Parti", xHandle: "@umitozlale", email: "umit.ozlale@tbmm.gov.tr" },
-            { id: 22, city: "İzmir", name: "Yüksel Taşkın", party: "YENİ Parti", xHandle: "@yükseltaskin", email: "yuksel.taskin@tbmm.gov.tr" },
-            { id: 23, city: "İzmir", name: "Hamza Dağ", party: "AK Parti", xHandle: "@hamzadag", email: "hamza.dag@tbmm.gov.tr" },
-            { id: 24, city: "İzmir", name: "Sevda Erdan Kılıç", party: "CHP", xHandle: "@SevdaErdan", email: "sevda.erdan@tbmm.gov.tr" },
+            // İZMİR
+            { id: 22, city: "İzmir", name: "Murat Bakan", party: "YENİ Parti", xHandle: "@MuratBakan35", email: "murat.bakan@tbmm.gov.tr" },
+            { id: 23, city: "İzmir", name: "Deniz Yücel", party: "YENİ Parti", xHandle: "@avdenizyucel", email: "deniz.yucel@tbmm.gov.tr" },
+            { id: 24, city: "İzmir", name: "Ümit Özlale", party: "YENİ Parti", xHandle: "@umitozlale", email: "umit.ozlale@tbmm.gov.tr" },
+            { id: 25, city: "İzmir", name: "Yüksel Taşkın", party: "YENİ Parti", xHandle: "@yükseltaskin", email: "yuksel.taskin@tbmm.gov.tr" },
+            { id: 26, city: "İzmir", name: "Hamza Dağ", party: "AK Parti", xHandle: "@hamzadag", email: "hamza.dag@tbmm.gov.tr" },
+            { id: 27, city: "İzmir", name: "Sevda Erdan Kılıç", party: "CHP", xHandle: "@SevdaErdan", email: "sevda.erdan@tbmm.gov.tr" },
+            { id: 28, city: "İzmir", name: "Müsavat Dervişoğlu", party: "İYİ Parti", xHandle: "@MusavatDervisogl", email: "musavat.dervisoglu@tbmm.gov.tr" },
 
-            // MANİSA VEKİLLERİ
-            { id: 25, city: "Manisa", name: "Özgür Özel", party: "YENİ Parti", xHandle: "@eczozgurozel", email: "ozgur.ozel@tbmm.gov.tr" },
-            { id: 26, city: "Manisa", name: "Ahmet Vehbi Bakırlıoğlu", party: "YENİ Parti", xHandle: "@AVBakirlioglu", email: "vehbi.bakirlioglu@tbmm.gov.tr" },
-
-            // MERSİN VEKİLLERİ
-            { id: 27, city: "Mersin", name: "Ali Mahir Başarır", party: "YENİ Parti", xHandle: "@alimahir", email: "ali.mahir.basarir@tbmm.gov.tr" },
-            { id: 28, city: "Mersin", name: "Gülcan Kış", party: "CHP", xHandle: "@GulcanKis", email: "gulcan.kis@tbmm.gov.tr" },
-
-            // MALATYA / ERZİNCAN / DİYARBAKIR / ZONGULDAK / KOCAELİ
-            { id: 29, city: "Malatya", name: "Veli Ağbaba", party: "YENİ Parti", xHandle: "@veliagbaba", email: "veli.agbaba@tbmm.gov.tr" },
-            { id: 30, city: "Erzincan", name: "Mustafa Sarıgül", party: "YENİ Parti", xHandle: "@M_Sarigul", email: "mustafa.sarigul@tbmm.gov.tr" },
-            { id: 31, city: "Diyarbakır", name: "Mustafa Sezgin Tanrıkulu", party: "YENİ Parti", xHandle: "@MSTanrikulu", email: "sezgin.tanrikulu@tbmm.gov.tr" },
-            { id: 32, city: "Zonguldak", name: "Deniz Yavuzyılmaz", party: "YENİ Parti", xHandle: "@yavuzyilmazd", email: "deniz.yavuzyilmaz@tbmm.gov.tr" },
-            { id: 33, city: "Kocaeli", name: "Harun Özgür Yıldızlı", party: "YENİ Parti", xHandle: "@harunozguryildiz", email: "harun.yildizli@tbmm.gov.tr" },
-            { id: 34, city: "Rize", name: "Tahsin Ocaklı", party: "CHP", xHandle: "@tahsinocakli", email: "tahsin.ocakli@tbmm.gov.tr" },
-            { id: 35, city: "Kahramanmaraş", name: "Vahit Kirişci", party: "AK Parti", xHandle: "@VahitKirisci", email: "vahit.kirisci@tbmm.gov.tr" },
-            { id: 36, city: "Afyonkarahisar", name: "Ali Özkaya", party: "AK Parti", xHandle: "@aliozkaya", email: "ali.ozkaya@tbmm.gov.tr" }
+            // MANİSA / MERSİN / MALATYA / ERZİNCAN / DİYARBAKIR / ZONGULDAK / KOCAELİ / RİZE / KAHRAMANMARAŞ / AFYONKARAHİSAR
+            { id: 29, city: "Manisa", name: "Özgür Özel", party: "YENİ Parti", xHandle: "@eczozgurozel", email: "ozgur.ozel@tbmm.gov.tr" },
+            { id: 30, city: "Manisa", name: "Ahmet Vehbi Bakırlıoğlu", party: "YENİ Parti", xHandle: "@AVBakirlioglu", email: "vehbi.bakirlioglu@tbmm.gov.tr" },
+            { id: 31, city: "Mersin", name: "Ali Mahir Başarır", party: "YENİ Parti", xHandle: "@alimahir", email: "ali.mahir.basarir@tbmm.gov.tr" },
+            { id: 32, city: "Mersin", name: "Gülcan Kış", party: "CHP", xHandle: "@GulcanKis", email: "gulcan.kis@tbmm.gov.tr" },
+            { id: 33, city: "Malatya", name: "Veli Ağbaba", party: "YENİ Parti", xHandle: "@veliagbaba", email: "veli.agbaba@tbmm.gov.tr" },
+            { id: 34, city: "Erzincan", name: "Mustafa Sarıgül", party: "YENİ Parti", xHandle: "@M_Sarigul", email: "mustafa.sarigul@tbmm.gov.tr" },
+            { id: 35, city: "Diyarbakır", name: "Mustafa Sezgin Tanrıkulu", party: "YENİ Parti", xHandle: "@MSTanrikulu", email: "sezgin.tanrikulu@tbmm.gov.tr" },
+            { id: 36, city: "Zonguldak", name: "Deniz Yavuzyılmaz", party: "YENİ Parti", xHandle: "@yavuzyilmazd", email: "deniz.yavuzyilmaz@tbmm.gov.tr" },
+            { id: 37, city: "Kocaeli", name: "Harun Özgür Yıldızlı", party: "YENİ Parti", xHandle: "@harunozguryildiz", email: "harun.yildizli@tbmm.gov.tr" },
+            { id: 38, city: "Rize", name: "Tahsin Ocaklı", party: "CHP", xHandle: "@tahsinocakli", email: "tahsin.ocakli@tbmm.gov.tr" },
+            { id: 39, city: "Rize", name: "Muhammet Avcı", party: "AK Parti", xHandle: "@M_Avci53", email: "muhammet.avci@tbmm.gov.tr" },
+            { id: 40, city: "Kahramanmaraş", name: "Vahit Kirişci", party: "AK Parti", xHandle: "@VahitKirisci", email: "vahit.kirisci@tbmm.gov.tr" },
+            { id: 41, city: "Afyonkarahisar", name: "Ali Özkaya", party: "AK Parti", xHandle: "@aliozkaya", email: "ali.ozkaya@tbmm.gov.tr" },
+            { id: 42, city: "Trabzon", name: "Sibel Suiçmez", party: "CHP", xHandle: "@SibelSuicmez", email: "sibel.suicmez@tbmm.gov.tr" },
+            { id: 43, city: "Bursa", name: "Hasan Öztürk", party: "YENİ Parti", xHandle: "@hasanozturkchp", email: "hasan.ozturk@tbmm.gov.tr" },
+            { id: 44, city: "Antalya", name: "Sururi Çorabatır", party: "YENİ Parti", xHandle: "@SururiCorabatir", email: "sururi.corabatir@tbmm.gov.tr" }
         ];
 
         const almanacEvents = [
@@ -529,7 +532,7 @@
             });
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-zinc-500">Seçilen filtrelere uygun milletvekili bulunamadı. "81 İlin Tamamı" moduna geçebilirsiniz.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-zinc-500">Bu şehir/parti filtrelerinde kayıtlı vekil yok. "81 İlin Tamamı" moduna geçebilirsiniz.</td></tr>`;
                 return;
             }
 
@@ -564,7 +567,6 @@
             document.querySelectorAll(".mp-checkbox").forEach(cb => cb.checked = masterCB.checked);
         }
 
-        // BİZZAT İŞARETLENEN VEKİLLERİ DÖNDÜRÜR
         function getSelectedMPsFromTable() {
             const checkedBoxes = document.querySelectorAll(".mp-checkbox:checked");
             const selectedIds = Array.from(checkedBoxes).map(cb => parseInt(cb.value));
