@@ -897,10 +897,8 @@ tk.className='px-5 py-2.5 rounded-lg font-bold text-sm uppercase tracking-wider 
 pv.classList.add('hidden');pk.classList.remove('hidden');
 tk.className='px-5 py-2.5 rounded-lg font-bold text-sm uppercase tracking-wider transition border-2 bg-emerald-600 border-emerald-600 text-white shadow-lg';
 tv.className='px-5 py-2.5 rounded-lg font-bold text-sm uppercase tracking-wider transition border-2 bg-zinc-900 border-zinc-700 text-zinc-400 hover:text-white';
-setTimeout(()=>{if(mpCanvas){mpCanvas.width=mpCanvas.offsetWidth;mpCanvas.height=mpCanvas.offsetHeight;}},60);
+setTimeout(()=>{if(mpCanvas){var w=mpCanvas.offsetWidth,h=mpCanvas.offsetHeight;if(w>0&&h>0){mpCanvas.width=w;mpCanvas.height=h;mpCtx.fillStyle="#ffffff";mpCtx.fillRect(0,0,w,h);mpCtx.strokeStyle="#000000";mpCtx.lineWidth=2.5;mpCtx.lineCap="round";}}},120);
 }
-}
-
 let canvas,ctx,isDrawing=false;
 let mpCanvas,mpCtx,mpIsDrawing=false;
 let selectedMPId=null;
@@ -1253,40 +1251,27 @@ b.width=canvas.width||1;b.height=canvas.height||1;
 return canvas.toDataURL()===b.toDataURL();
 }catch(_){return true;}
 }
-function downloadSignaturePNG(){
-if(!canvas){return false;}
-try{
-const data=canvas.toDataURL('image/png');
-const a=document.createElement('a');
-a.download='7527-islak-imza.png';
-a.href=data;
-document.body.appendChild(a);
-a.click();
-document.body.removeChild(a);
-return true;
-}catch(_){return false;}
+function sendMailWithOptionalPDF(email,subject,body){
+var url='mailto:'+email+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+var pdfIste=confirm('İmzalı dilekçeyi PDF olarak da indirmek ister misiniz?\n\nTamam: Önce PDF indir, sonra mail aç\nİptal: Sadece mail aç');
+if(!pdfIste){window.location.href=url;return;}
+var gonderildi=false;
+function acMail(){if(gonderildi)return;gonderildi=true;window.location.href=url;}
+window.addEventListener('afterprint',function(){setTimeout(acMail,500);},{once:true});
+setTimeout(acMail,12000);
+setTimeout(function(){window.print();},200);
 }
 function mailToCB(){
 if(!validateCitizenForm())return;
-const body=buildPetition("T.C. CUMHURBAŞKANLIĞI MAKAMINA","Sayın Recep Tayyip ERDOĞAN");
-const url=`mailto:${leaders.cb.email}?subject=${encodeURIComponent(`7527 İptal Talebi - ${getCitizenCode()}`)}&body=${encodeURIComponent(body)}`;
-window.location.href=url;
-setTimeout(()=>{
-if(downloadSignaturePNG()){
-alert("✅ Dilekçeniz mail olarak hazırlandı.\n\n📎 Islak imzanız '7527-islak-imza.png' olarak indirildi.\n\nAçılan mail penceresinde bu dosyayı ek olarak ekleyin ve gönderin.");
-}
-},400);
+registerCitizenSignatureOnce();
+var body=buildPetition("T.C. CUMHURBAŞKANLIĞI MAKAMINA","Sayın Recep Tayyip ERDOĞAN");
+sendMailWithOptionalPDF(leaders.cb.email,'7527 İptal Talebi - '+getCitizenCode(),body);
 }
 function mailToMB(){
 if(!validateCitizenForm())return;
-const body=buildPetition("T.C. TBMM BAŞKANLIĞINA","Sayın Numan KURTULMUŞ");
-const url=`mailto:${leaders.mb.email}?subject=${encodeURIComponent(`7527 İptal Talebi - ${getCitizenCode()}`)}&body=${encodeURIComponent(body)}`;
-window.location.href=url;
-setTimeout(()=>{
-if(downloadSignaturePNG()){
-alert("✅ Dilekçeniz mail olarak hazırlandı.\n\n📎 Islak imzanız '7527-islak-imza.png' olarak indirildi.\n\nAçılan mail penceresinde bu dosyayı ek olarak ekleyin ve gönderin.");
-}
-},400);
+registerCitizenSignatureOnce();
+var body=buildPetition("T.C. TBMM BAŞKANLIĞINA","Sayın Numan KURTULMUŞ");
+sendMailWithOptionalPDF(leaders.mb.email,'7527 İptal Talebi - '+getCitizenCode(),body);
 }
 function shareCampaign(){
 const t="7527 İPTAL! İMZACISI OL! Öldüren değil, yaşatan ol!";
