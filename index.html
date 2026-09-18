@@ -9,8 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 body{font-family:'Inter',sans-serif}.font-impact{font-family:'Oswald',sans-serif}
-@media print{body *{visibility:hidden}#printable-petitions,#printable-petitions *{visibility:visible}#printable-petitions{position:absolute;left:0;top:0;width:100%;color:#000;background:#fff}.petition-page{page-break-after:always;padding:20mm;font-size:11pt;line-height:1.5;color:#000!important;background:#fff!important;border:none!important}.no-print{display:none!important}.val-signature{display:block!important;filter:invert(1) brightness(0)!important;max-height:48px!important;margin-left:auto!important}}
-</style>
+@media print{body *{visibility:hidden}#printable-petitions,#printable-petitions *{visibility:visible}#printable-petitions{position:absolute;left:0;top:0;width:100%;color:#000;background:#fff}.petition-page{page-break-after:always;padding:20mm;font-size:11pt;line-height:1.5;color:#000!important;background:#fff!important;border:none!important}.no-print{display:none!important}.val-signature{display:block!important;max-height:48px!important;margin-left:auto!important}} </style>
 </head>
 <body class="bg-zinc-950 text-zinc-100 antialiased min-h-screen flex flex-col">
 
@@ -67,8 +66,7 @@ body{font-family:'Inter',sans-serif}.font-impact{font-family:'Oswald',sans-serif
 <div><label class="block text-xs font-semibold text-zinc-400 mb-1">TELEFON / E-POSTA</label><input type="text" id="input-contact" oninput="updatePetitions()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-zinc-100 focus:border-red-600 focus:outline-none"></div>
 <div class="pt-2">
 <div class="flex justify-between items-center mb-1"><label class="block text-xs font-semibold text-red-400">ISLAK İMZA</label><button type="button" onclick="clearSignature()" class="text-[10px] text-zinc-400 hover:text-white underline">Temizle</button></div>
-<div class="relative border border-zinc-700 bg-zinc-950 rounded-lg overflow-hidden touch-none"><canvas id="signature-pad" class="w-full h-28 cursor-crosshair block"></canvas></div>
-</div>
+<div class="relative border border-zinc-700 bg-white rounded-lg overflow-hidden touch-none"><canvas id="signature-pad" class="w-full h-28 cursor-crosshair block"></canvas></div>
 </div>
 </div>
 
@@ -203,8 +201,7 @@ body{font-family:'Inter',sans-serif}.font-impact{font-family:'Oswald',sans-serif
 </div>
 <div class="pt-2">
 <div class="flex justify-between items-center mb-1"><label class="block text-xs font-semibold text-emerald-400">ISLAK İMZA (VEKİL)</label><button type="button" onclick="clearMPSignature()" class="text-[10px] text-zinc-400 hover:text-white underline">Temizle</button></div>
-<div class="relative border border-emerald-800/50 bg-zinc-950 rounded-lg overflow-hidden touch-none"><canvas id="mp-signature-pad" class="w-full h-32 cursor-crosshair block"></canvas></div>
-</div>
+<div class="relative border border-emerald-800/50 bg-white rounded-lg overflow-hidden touch-none"><canvas id="mp-signature-pad" class="w-full h-32 cursor-crosshair block"></canvas></div>
 <button onclick="signAsMP()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg text-xs uppercase">✍️ DİLEKÇEYİ İMZALA VE MECLİSE SUN</button>
 </div>
 </div>
@@ -910,8 +907,8 @@ if(info) info.textContent=`Listede ${mpDatabase.length} milletvekili (${citiesLi
 if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',initPage);}else{initPage();}
 
 window.addEventListener('resize',()=>{
-if(canvas){canvas.width=canvas.offsetWidth;canvas.height=canvas.offsetHeight;}
-if(mpCanvas){mpCanvas.width=mpCanvas.offsetWidth;mpCanvas.height=mpCanvas.offsetHeight;}
+if(canvas){canvas.width=canvas.offsetWidth;canvas.height=canvas.offsetHeight;ctx.fillStyle="#ffffff";ctx.fillRect(0,0,canvas.width,canvas.height);ctx.strokeStyle="#000000";ctx.lineWidth=2.5;ctx.lineCap="round";}
+if(mpCanvas){mpCanvas.width=mpCanvas.offsetWidth;mpCanvas.height=mpCanvas.offsetHeight;mpCtx.fillStyle="#ffffff";mpCtx.fillRect(0,0,mpCanvas.width,mpCanvas.height);mpCtx.strokeStyle="#000000";mpCtx.lineWidth=2.5;mpCtx.lineCap="round";}
 });
 
 function updateCounters(){
@@ -1048,7 +1045,8 @@ function emailMPDirect(e,c){const mp=mpDatabase.find(m=>m.email===e&&m.city===c)
 function initCitizenSignaturePad(){
 canvas=document.getElementById("signature-pad");if(!canvas)return;ctx=canvas.getContext("2d");
 canvas.width=canvas.offsetWidth;canvas.height=canvas.offsetHeight;
-ctx.strokeStyle="#fff";ctx.lineWidth=2.5;ctx.lineCap="round";
+ctx.fillStyle="#ffffff";ctx.fillRect(0,0,canvas.width,canvas.height);
+ctx.strokeStyle="#000000";ctx.lineWidth=2.5;ctx.lineCap="round";
 canvas.addEventListener("mousedown",startDrawing);
 canvas.addEventListener("mousemove",draw);
 canvas.addEventListener("mouseup",stopDrawing);
@@ -1061,9 +1059,8 @@ function getPos(e){const r=canvas.getBoundingClientRect();return{x:e.clientX-r.l
 function startDrawing(e){isDrawing=true;const p=getPos(e);ctx.beginPath();ctx.moveTo(p.x,p.y);}
 function draw(e){if(!isDrawing)return;const p=getPos(e);ctx.lineTo(p.x,p.y);ctx.stroke();syncSig();}
 function stopDrawing(){if(isDrawing){isDrawing=false;ctx.closePath();syncSig();}}
-function clearSignature(){if(!ctx)return;ctx.clearRect(0,0,canvas.width,canvas.height);document.querySelectorAll(".val-signature").forEach(i=>{i.src="";i.classList.add("hidden");});}
+function clearSignature(){if(!ctx)return;ctx.fillStyle="#ffffff";ctx.fillRect(0,0,canvas.width,canvas.height);document.querySelectorAll(".val-signature").forEach(i=>{i.src="";i.classList.add("hidden");});}function syncSig(){const d=canvas.toDataURL("image/png");document.querySelectorAll(".val-signature").forEach(i=>{i.src=d;i.classList.remove("hidden");});}
 function syncSig(){const d=canvas.toDataURL("image/png");document.querySelectorAll(".val-signature").forEach(i=>{i.src=d;i.classList.remove("hidden");});}
-
 function populateVekilSelect(){
 const sel=document.getElementById("mp-select");if(!sel)return;sel.innerHTML="";
 mpDatabase.forEach(m=>{const o=document.createElement("option");o.value=m.id;o.textContent=`${m.name} — ${m.city} — ${m.party}`;sel.appendChild(o);});
@@ -1090,7 +1087,8 @@ if(petition)petition.textContent=`${mp.name} - ${mp.city} / ${mp.party}`;
 function initMPSignaturePad(){
 mpCanvas=document.getElementById("mp-signature-pad");if(!mpCanvas)return;mpCtx=mpCanvas.getContext("2d");
 mpCanvas.width=mpCanvas.offsetWidth||300;mpCanvas.height=mpCanvas.offsetHeight||120;
-mpCtx.strokeStyle="#fff";mpCtx.lineWidth=2.5;mpCtx.lineCap="round";
+mpCtx.fillStyle="#ffffff";mpCtx.fillRect(0,0,mpCanvas.width,mpCanvas.height);
+mpCtx.strokeStyle="#000000";mpCtx.lineWidth=2.5;mpCtx.lineCap="round";
 mpCanvas.addEventListener("mousedown",startMPDrawing);
 mpCanvas.addEventListener("mousemove",drawMP);
 mpCanvas.addEventListener("mouseup",stopMPDrawing);
@@ -1103,7 +1101,7 @@ function getMPPos(e){const r=mpCanvas.getBoundingClientRect();return{x:e.clientX
 function startMPDrawing(e){mpIsDrawing=true;const p=getMPPos(e);mpCtx.beginPath();mpCtx.moveTo(p.x,p.y);}
 function drawMP(e){if(!mpIsDrawing)return;const p=getMPPos(e);mpCtx.lineTo(p.x,p.y);mpCtx.stroke();}
 function stopMPDrawing(){if(mpIsDrawing){mpIsDrawing=false;mpCtx.closePath();}}
-function clearMPSignature(){if(!mpCtx)return;mpCtx.clearRect(0,0,mpCanvas.width,mpCanvas.height);}
+function clearMPSignature(){if(!mpCtx)return;mpCtx.fillStyle="#ffffff";mpCtx.fillRect(0,0,mpCanvas.width,mpCanvas.height);}
 function isMPSignatureEmpty(){if(!mpCanvas)return true;const b=document.createElement('canvas');b.width=mpCanvas.width;b.height=mpCanvas.height;return mpCanvas.toDataURL()===b.toDataURL();}
 function signAsMP(){
 const sel=document.getElementById("mp-select");
@@ -1117,7 +1115,7 @@ if(!mp){alert("Vekil bulunamadı!");return;}
 const sigData=mpCanvas.toDataURL("image/png");
 const now=new Date();
 const tarih=now.toLocaleDateString('tr-TR')+' '+now.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
-mpSignatures.push({id:mp.id,city:mp.city,party:mp.party,vote,date:tarih,signature:sigData,recordCode:getMPRecordCode(mp),initials:getMPInitials(mp.name)});
+mpSignatures.push({id:mp.id,city:mp.city,party:mp.party,vote,date:tarih,signature:sigData,recordCode:getMPRecordCode(mp),initials:mp.name});
 localStorage.setItem(MP_SIGNATURES_KEY,JSON.stringify(mpSignatures));
 clearMPSignature();
 updateCounters();
