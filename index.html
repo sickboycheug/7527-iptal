@@ -1194,7 +1194,7 @@ if(!c){c='7527-C'+String(Date.now()).slice(-5);localStorage.setItem(CITIZEN_CODE
 return c;
 }
 function v(id){return (document.getElementById(id)?.value||'').trim();}
-ffunction buildPetition(kime,hitap){
+function buildPetition(kime,hitap){
 const code=getCitizenCode();
 const ad=v('input-name')||'[Ad Soyad]';
 const tc=v('input-tc')||'[TC]';
