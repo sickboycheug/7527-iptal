@@ -1092,7 +1092,7 @@ if(petition)petition.textContent=`${mp.name} - ${mp.city} / ${mp.party}`;
 function initMPSignaturePad(){
 mpCanvas=document.getElementById("mp-signature-pad");if(!mpCanvas)return;mpCtx=mpCanvas.getContext("2d");
 mpCanvas.width=mpCanvas.offsetWidth||300;mpCanvas.height=mpCanvas.offsetHeight||120;
-mpCtx.strokeStyle="#34d399";mpCtx.lineWidth=2.5;mpCtx.lineCap="round";
+mpCtx.strokeStyle="#fff";mpCtx.lineWidth=2.5;mpCtx.lineCap="round";
 mpCanvas.addEventListener("mousedown",startMPDrawing);
 mpCanvas.addEventListener("mousemove",drawMP);
 mpCanvas.addEventListener("mouseup",stopMPDrawing);
