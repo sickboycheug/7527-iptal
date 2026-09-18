@@ -1195,44 +1195,38 @@ if(!c){c='7527-C'+String(Date.now()).slice(-5);localStorage.setItem(CITIZEN_CODE
 return c;
 }
 function v(id){return (document.getElementById(id)?.value||'').trim();}
-function buildPetition(kime,hitap){
-const code=getCitizenCode();
-const ad=v('input-name')||'[Ad Soyad]';
-const tc=v('input-tc')||'[TC]';
-const sehir=document.getElementById('input-city')?.value||'';
-const ilce=v('input-district')||'[İlçe]';
-const adres=v('input-address')||'[Adres]';
-const iletisim=v('input-contact')||'[İletişim]';
-return `${kime}
-${hitap}
-ANKARA
-
-BAŞVURAN YURTTAŞ : ${ad}
-T.C. KİMLİK NO    : ${tc}
-ADRES            : ${adres}, ${ilce} / ${sehir}
-İLETİŞİM         : ${iletisim}
-DİLEKÇE KODU     : ${code}
-
-KONU: 7527 Sayılı Kanun'un İptali ve 5199 Sayılı Kanun'un Etik Kriterlerle Yeniden Yürürlüğe Konulması Talebidir.
-
-Sayın Yetkili;
-
-Ülkemizdeki toplam barınak kapasitesi 105 bin civarındayken, milyonlarca canlıyı tecrit ve ölüm kamplarına sokmayı öngören 7527 sayılı kanun; kamu düzenine, toplum vicdanına ve Anayasa'nın yaşam hakkını teminat altına alan ilkelerine aykırıdır.
-
-Bilimsel kısırlaştırma, etik koruma ve yaşatma ilkeleri esas alınarak;
-
-1) 7527 Sayılı Kanun'un yürürlükten kaldırılmasını,
-2) 5199 Sayılı Hayvanları Koruma Kanunu'nun yaşam hakkını önceleyen hükümleriyle yeniden yürürlüğe konulmasını,
-3) Mevzuatın bilimsel ve etik esaslar çerçevesinde revize edilmesini,
-
-saygılarımla arz ederim.
-
-Saygılarımla,
-${ad}
-Dilekçe Kodu: ${code}
-
----
-NOT: Bu dilekçe, elektronik ortamda düzenlenmiş ve ıslak imza ile teyit edilmiştir. Islak imza görseli mail ekinde yer almaktadır.`;
+function buildPetition(tip){
+var code=getCitizenCode();
+var ad=v('input-name')||'[Ad Soyad]';
+var tc=v('input-tc')||'[TC]';
+var sehir=(document.getElementById('input-city')||{}).value||'';
+var ilce=v('input-district')||'[İlçe]';
+var adres=v('input-address')||'[Adres]';
+var iletisim=v('input-contact')||'[İletişim]';
+var bas='BAŞVURAN YURTTAŞ : '+ad+'\nT.C. KİMLİK NO    : '+tc+'\nADRES            : '+adres+', '+ilce+' / '+sehir+'\nİLETİŞİM         : '+iletisim+'\nDİLEKÇE KODU     : '+code+'\n\n';
+var imza='\n\nSaygılarımla,\n'+ad+'\nDilekçe Kodu: '+code;
+if(tip==='cb'){
+return 'T.C. CUMHURBAŞKANLIĞI MAKAMINA\nSayın Recep Tayyip ERDOĞAN\nANKARA\n\n'+bas+
+'KONU: 7527 Sayılı Kanun Uygulamalarının Durdurulması ve Yasal Düzenlemenin Yeniden Değerlendirilmesi İstemidir.\n\n'+
+'Sayın Cumhurbaşkanım;\n\n'+
+'7527 sayılı kanunun yürürlüğe girmesiyle birlikte ülke genelinde yaşanan toplu tecrit ve yaşam hakkı ihlalleri toplum vicdanını derinden yaralamaktadır. Ülkemizdeki barınak kapasitesi 105 bin civarındayken milyonlarca canlının tecride ve ölüme terk edilmesi kabul edilemez.\n\n'+
+'Anayasa\'nın yaşam hakkını teminat altına alan ilkeleri doğrultusunda; mevzuatın bilimsel kısırlaştırma ve etik koruma esasları çerçevesinde revize edilmesi, 7527 sayılı kanunun uygulamalarının durdurulması için gerekli idari ve yasal adımların atılmasını saygılarımla arz ederim.'+imza;
+}
+if(tip==='mb'){
+return 'T.C. TÜRKİYE BÜYÜK MİLLET MECLİSİ BAŞKANLIĞI\'NA\nSayın Numan KURTULMUŞ\nANKARA\n\n'+bas+
+'KONU: 7527 Sayılı Kanun\'un İptali ve 5199 Sayılı Kanun\'un Etik Kriterlerle Yeniden Yürürlüğe Konulması Talebidir.\n\n'+
+'Sayın Başkan;\n\n'+
+'Ülkemizdeki toplam barınak kapasitesi 105 bin civarındayken milyonlarca canlıyı tecrit ve ölüm kamplarına sokmayı öngören 7527 sayılı kanun; kamu düzenine, toplum vicdanına ve Anayasa\'nın yaşam hakkını teminat altına alan ilkelerine aykırıdır.\n\n'+
+'Bilimsel kısırlaştırma, etik koruma ve yaşatma ilkeleri esas alınarak; 7527 Sayılı Kanun\'un yürürlükten kaldırılması, 5199 Sayılı Hayvanları Koruma Kanunu\'nun yaşam hakkını önceleyen hükümleriyle yeniden yürürlüğe konulması ve mevzuatın bilimsel ve etik esaslar çerçevesinde revize edilmesi için TBMM çatısı altında gerekli girişimlerin başlatılmasını saygılarımla arz ederim.'+imza;
+}
+if(tip==='mp'){
+return 'SEÇİM BÖLGESİ MİLLETVEKİLİNE\nSayın '+v('mp-name')+'\n\n'+bas+
+'KONU: 7527 Sayılı Kanun\'un İptali İçin TBMM\'de Girişim Talebidir.\n\n'+
+'Sayın Milletvekili;\n\n'+
+'Seçim bölgeniz olan '+sehir+' ilinde ikamet eden bir seçmeniniz olarak; hiçbir bilimsel ve vicdani temeli olmayan 7527 sayılı yasa kapsamında yaşanan toplu tecrit ve yaşam hakkı ihlallerinin vebalini hatırlatıyorum.\n\n'+
+'Bilimsel kısırlaştırma ve etik koruma ilkeleri esas alınarak 7527 sayılı kanunun iptal edilmesi için TBMM çatısı altında derhal girişimde bulunmanızı, bu konuyu gündeme taşımanızı ve gerekli yasal düzenlemelerin başlatılması için çaba göstermenizi saygılarımla arz ederim.'+imza;
+}
+return '';
 }
 function validateCitizenForm(){
 const ad=v('input-name');
