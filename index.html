@@ -1194,7 +1194,7 @@ if(!c){c='7527-C'+String(Date.now()).slice(-5);localStorage.setItem(CITIZEN_CODE
 return c;
 }
 function v(id){return (document.getElementById(id)?.value||'').trim();}
-function buildPetition(kime,hitap){
+ffunction buildPetition(kime,hitap){
 const code=getCitizenCode();
 const ad=v('input-name')||'[Ad Soyad]';
 const tc=v('input-tc')||'[TC]';
@@ -1206,19 +1206,32 @@ return `${kime}
 ${hitap}
 ANKARA
 
-BAŞVURAN: ${ad}
-T.C. KİMLİK NO: ${tc}
-ADRES: ${adres}, ${ilce} / ${sehir}
-İLETİŞİM: ${iletisim}
-DİLEKÇE KODU: ${code}
+BAŞVURAN YURTTAŞ : ${ad}
+T.C. KİMLİK NO    : ${tc}
+ADRES            : ${adres}, ${ilce} / ${sehir}
+İLETİŞİM         : ${iletisim}
+DİLEKÇE KODU     : ${code}
 
 KONU: 7527 Sayılı Kanun'un İptali ve 5199 Sayılı Kanun'un Etik Kriterlerle Yeniden Yürürlüğe Konulması Talebidir.
 
-Sayın Yetkili; Ülkemizdeki toplam barınak kapasitesi 105 bin civarındayken milyonlarca canlıyı tecrit ve ölüm kamplarına sokmayı öngören 7527 sayılı kanun kamu düzenine ve vicdana aykırıdır. Bilimsel kısırlaştırma ve etik koruma ilkeleri esas alınarak kanunun iptali için gerekli girişimlerin başlatılmasını saygılarımla arz ederim.
+Sayın Yetkili;
+
+Ülkemizdeki toplam barınak kapasitesi 105 bin civarındayken, milyonlarca canlıyı tecrit ve ölüm kamplarına sokmayı öngören 7527 sayılı kanun; kamu düzenine, toplum vicdanına ve Anayasa'nın yaşam hakkını teminat altına alan ilkelerine aykırıdır.
+
+Bilimsel kısırlaştırma, etik koruma ve yaşatma ilkeleri esas alınarak;
+
+1) 7527 Sayılı Kanun'un yürürlükten kaldırılmasını,
+2) 5199 Sayılı Hayvanları Koruma Kanunu'nun yaşam hakkını önceleyen hükümleriyle yeniden yürürlüğe konulmasını,
+3) Mevzuatın bilimsel ve etik esaslar çerçevesinde revize edilmesini,
+
+saygılarımla arz ederim.
 
 Saygılarımla,
 ${ad}
-Dilekçe Kodu: ${code}`;
+Dilekçe Kodu: ${code}
+
+---
+NOT: Bu dilekçe, elektronik ortamda düzenlenmiş ve ıslak imza ile teyit edilmiştir. Islak imza görseli mail ekinde yer almaktadır.`;
 }
 function validateCitizenForm(){
 const ad=v('input-name');
@@ -1240,15 +1253,40 @@ b.width=canvas.width||1;b.height=canvas.height||1;
 return canvas.toDataURL()===b.toDataURL();
 }catch(_){return true;}
 }
+function downloadSignaturePNG(){
+if(!canvas){return false;}
+try{
+const data=canvas.toDataURL('image/png');
+const a=document.createElement('a');
+a.download='7527-islak-imza.png';
+a.href=data;
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+return true;
+}catch(_){return false;}
+}
 function mailToCB(){
 if(!validateCitizenForm())return;
 const body=buildPetition("T.C. CUMHURBAŞKANLIĞI MAKAMINA","Sayın Recep Tayyip ERDOĞAN");
-window.location.href=`mailto:${leaders.cb.email}?subject=${encodeURIComponent(`7527 İptal Talebi - ${getCitizenCode()}`)}&body=${encodeURIComponent(body)}`;
+const url=`mailto:${leaders.cb.email}?subject=${encodeURIComponent(`7527 İptal Talebi - ${getCitizenCode()}`)}&body=${encodeURIComponent(body)}`;
+window.location.href=url;
+setTimeout(()=>{
+if(downloadSignaturePNG()){
+alert("✅ Dilekçeniz mail olarak hazırlandı.\n\n📎 Islak imzanız '7527-islak-imza.png' olarak indirildi.\n\nAçılan mail penceresinde bu dosyayı ek olarak ekleyin ve gönderin.");
+}
+},400);
 }
 function mailToMB(){
 if(!validateCitizenForm())return;
 const body=buildPetition("T.C. TBMM BAŞKANLIĞINA","Sayın Numan KURTULMUŞ");
-window.location.href=`mailto:${leaders.mb.email}?subject=${encodeURIComponent(`7527 İptal Talebi - ${getCitizenCode()}`)}&body=${encodeURIComponent(body)}`;
+const url=`mailto:${leaders.mb.email}?subject=${encodeURIComponent(`7527 İptal Talebi - ${getCitizenCode()}`)}&body=${encodeURIComponent(body)}`;
+window.location.href=url;
+setTimeout(()=>{
+if(downloadSignaturePNG()){
+alert("✅ Dilekçeniz mail olarak hazırlandı.\n\n📎 Islak imzanız '7527-islak-imza.png' olarak indirildi.\n\nAçılan mail penceresinde bu dosyayı ek olarak ekleyin ve gönderin.");
+}
+},400);
 }
 function shareCampaign(){
 const t="7527 İPTAL! İMZACISI OL! Öldüren değil, yaşatan ol!";
