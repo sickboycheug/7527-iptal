@@ -1220,11 +1220,33 @@ Saygılarımla,
 ${ad}
 Dilekçe Kodu: ${code}`;
 }
+function validateCitizenForm(){
+const ad=v('input-name');
+const tc=v('input-tc');
+const ilce=v('input-district');
+const adres=v('input-address');
+if(!ad){alert("Lütfen AD SOYAD girin.");document.getElementById('input-name').focus();return false;}
+if(!/^\d{11}$/.test(tc)){alert("Lütfen 11 haneli T.C. KİMLİK NO girin.");document.getElementById('input-tc').focus();return false;}
+if(!ilce){alert("Lütfen İLÇE girin.");document.getElementById('input-district').focus();return false;}
+if(!adres){alert("Lütfen İKAME ADRESİ girin.");document.getElementById('input-address').focus();return false;}
+if(typeof isMPSignatureEmpty==='function'&&isCitizenSignatureEmpty()){alert("Lütfen ISLAK İMZANIZI atın.");return false;}
+return true;
+}
+function isCitizenSignatureEmpty(){
+if(!canvas)return true;
+try{
+const b=document.createElement('canvas');
+b.width=canvas.width||1;b.height=canvas.height||1;
+return canvas.toDataURL()===b.toDataURL();
+}catch(_){return true;}
+}
 function mailToCB(){
+if(!validateCitizenForm())return;
 const body=buildPetition("T.C. CUMHURBAŞKANLIĞI MAKAMINA","Sayın Recep Tayyip ERDOĞAN");
 window.location.href=`mailto:${leaders.cb.email}?subject=${encodeURIComponent(`7527 İptal Talebi - ${getCitizenCode()}`)}&body=${encodeURIComponent(body)}`;
 }
 function mailToMB(){
+if(!validateCitizenForm())return;
 const body=buildPetition("T.C. TBMM BAŞKANLIĞINA","Sayın Numan KURTULMUŞ");
 window.location.href=`mailto:${leaders.mb.email}?subject=${encodeURIComponent(`7527 İptal Talebi - ${getCitizenCode()}`)}&body=${encodeURIComponent(body)}`;
 }
