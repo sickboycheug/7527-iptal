@@ -86,6 +86,22 @@ body{font-family:'Inter',sans-serif}.font-impact{font-family:'Oswald',sans-serif
 </section>
 
 <section class="contents lg:block lg:col-span-8 lg:space-y-8">
+<div class="order-2 no-print bg-gradient-to-br from-amber-950 via-zinc-900 to-red-950 p-6 rounded-xl border-2 border-amber-700 space-y-4 shadow-2xl">
+<div class="border-b border-amber-800/50 pb-3">
+<h2 class="text-lg font-bold text-white">⭐ CUMHURBAŞKANI ve TBMM BAŞKANI'na DİLEKÇE GÖNDER</h2>
+<p class="text-xs text-amber-300 mt-1">Bu iki makama ayrı ayrı, tek tıkla dilekçe gönderebilirsiniz.</p>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+<button onclick="mailToCB()" class="bg-amber-700 hover:bg-amber-600 text-white font-bold py-4 px-4 rounded-lg text-sm uppercase border border-amber-500 shadow-lg">
+🏛️ CUMHURBAŞKANINA GÖNDER
+<div class="text-[10px] font-normal mt-1">Sayın Recep Tayyip ERDOĞAN</div>
+</button>
+<button onclick="mailToMB()" class="bg-amber-700 hover:bg-amber-600 text-white font-bold py-4 px-4 rounded-lg text-sm uppercase border border-amber-500 shadow-lg">
+🏛️ TBMM BAŞKANINA GÖNDER
+<div class="text-[10px] font-normal mt-1">Sayın Numan KURTULMUŞ</div>
+</button>
+</div>
+</div>
 <div class="no-print order-3 bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-4">
 <div class="border-b border-zinc-800 pb-3">
 <h2 class="text-lg font-bold text-white">🏛️ TBMM MİLLETVEKİLİ TAM LİSTESİ</h2>
@@ -1166,6 +1182,51 @@ const base=document.getElementById("almanac-url-input").value;
 const h=sel.map(m=>m.xHandle).join(" ");
 const t=`${h} Sayın Vekiller; Almanağa kaydolmuş vaka: ${location} - "${title}". Detay: ${base} Buna ne zaman dur diyeceksiniz? #7527İptalEt #SorumlularHesapVersin`;
 window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(t)}`,'_blank');
+}
+const CITIZEN_CODE_KEY='sign7527_citizen_code_v2';
+const leaders={
+cb:{email:'iletisim@tccb.gov.tr',name:'Recep Tayyip ERDOĞAN'},
+mb:{email:'numan.kurtulmus@tbmm.gov.tr',name:'Numan KURTULMUŞ'}
+};
+function getCitizenCode(){
+let c=localStorage.getItem(CITIZEN_CODE_KEY);
+if(!c){c='7527-C'+String(Date.now()).slice(-5);localStorage.setItem(CITIZEN_CODE_KEY,c);}
+return c;
+}
+function v(id){return (document.getElementById(id)?.value||'').trim();}
+function buildPetition(kime,hitap){
+const code=getCitizenCode();
+const ad=v('input-name')||'[Ad Soyad]';
+const tc=v('input-tc')||'[TC]';
+const sehir=document.getElementById('input-city')?.value||'';
+const ilce=v('input-district')||'[İlçe]';
+const adres=v('input-address')||'[Adres]';
+const iletisim=v('input-contact')||'[İletişim]';
+return `${kime}
+${hitap}
+ANKARA
+
+BAŞVURAN: ${ad}
+T.C. KİMLİK NO: ${tc}
+ADRES: ${adres}, ${ilce} / ${sehir}
+İLETİŞİM: ${iletisim}
+DİLEKÇE KODU: ${code}
+
+KONU: 7527 Sayılı Kanun'un İptali ve 5199 Sayılı Kanun'un Etik Kriterlerle Yeniden Yürürlüğe Konulması Talebidir.
+
+Sayın Yetkili; Ülkemizdeki toplam barınak kapasitesi 105 bin civarındayken milyonlarca canlıyı tecrit ve ölüm kamplarına sokmayı öngören 7527 sayılı kanun kamu düzenine ve vicdana aykırıdır. Bilimsel kısırlaştırma ve etik koruma ilkeleri esas alınarak kanunun iptali için gerekli girişimlerin başlatılmasını saygılarımla arz ederim.
+
+Saygılarımla,
+${ad}
+Dilekçe Kodu: ${code}`;
+}
+function mailToCB(){
+const body=buildPetition("T.C. CUMHURBAŞKANLIĞI MAKAMINA","Sayın Recep Tayyip ERDOĞAN");
+window.location.href=`mailto:${leaders.cb.email}?subject=${encodeURIComponent(`7527 İptal Talebi - ${getCitizenCode()}`)}&body=${encodeURIComponent(body)}`;
+}
+function mailToMB(){
+const body=buildPetition("T.C. TBMM BAŞKANLIĞINA","Sayın Numan KURTULMUŞ");
+window.location.href=`mailto:${leaders.mb.email}?subject=${encodeURIComponent(`7527 İptal Talebi - ${getCitizenCode()}`)}&body=${encodeURIComponent(body)}`;
 }
 function shareCampaign(){
 const t="7527 İPTAL! İMZACISI OL! Öldüren değil, yaşatan ol!";
