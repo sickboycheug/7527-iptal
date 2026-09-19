@@ -192,14 +192,38 @@ body > header,body > main,body > footer,body > #thanks-modal,body > #confirm-mod
 <p class="text-[11px] text-amber-300 text-center">Gönder: PDF inecek + mail açılacak + PDF'i ek olarak ekleyip gönderin + onay sonrası sayaç artar</p>
 </div>
 
-<div class="no-print bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-4">
+<div class="no-print order-6 bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-4">
 <div class="border-b border-zinc-800 pb-3">
-<h2 class="text-lg font-bold text-white">📚 VAKA & OLAY ALMANAK</h2>
+<h2 class="text-lg font-bold text-white">📚 VAKA & OLAY ALMANAK VERİ TABANI</h2>
+<p class="text-xs text-zinc-400 mt-1">2025 yılı hayvan hakları ihlalleri. Şehrine göre filtrele, seçili vekillere etiketle ve baskı kur.</p>
 </div>
-<div class="bg-zinc-950 p-3 rounded-lg border border-zinc-800">
-<input type="text" id="almanac-url-input" value="https://almanak.hayvanhaklari.org" class="w-full bg-zinc-900 border border-zinc-800 rounded px-2.5 py-1 text-xs text-red-400 font-mono">
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+<div><label class="block text-xs font-semibold text-zinc-400 mb-1">ŞEHİR</label>
+<select id="almanac-city-filter" onchange="filterAlmanac()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-2 text-zinc-100 focus:border-red-600 focus:outline-none"></select></div><div><label class="block text-[10px] text-zinc-400 mb-1 font-bold">KATEGORİ</label>
+<select id="almanac-cat-filter" onchange="filterAlmanac()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-[10px] text-zinc-200"></select></div>
+<div><label class="block text-[10px] text-zinc-400 mb-1 font-bold">SIRALAMA</label>
+<select id="almanac-sort-filter" onchange="filterAlmanac()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-[10px] text-zinc-200">
+<option value="recent">En yeni</option>
+<option value="old">En eski</option>
+</select></div>
+<div><label class="block text-[10px] text-zinc-400 mb-1 font-bold">ARA</label>
+<input type="text" id="almanac-search" oninput="filterAlmanac()" placeholder="Şehir/başlık" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-[10px] text-zinc-200"></div>
 </div>
-<div id="almanac-container" class="space-y-3"></div>
+<div class="grid grid-cols-3 gap-2 text-center">
+<div class="bg-zinc-950 rounded p-2 border border-red-900/40">
+<div class="text-[9px] text-red-400 font-bold">SEÇİLİ ŞEHİRDE</div>
+<div class="text-red-400 font-mono text-base font-bold" id="almanac-city-count">0</div>
+</div>
+<div class="bg-zinc-950 rounded p-2 border border-amber-900/40">
+<div class="text-[9px] text-amber-400 font-bold">GÖRÜNTÜLENEN</div>
+<div class="text-amber-400 font-mono text-base font-bold" id="almanac-shown-count">0</div>
+</div>
+<div class="bg-zinc-950 rounded p-2 border border-zinc-800">
+<div class="text-[9px] text-zinc-400 font-bold">ÜLKE GENELİ</div>
+<div class="text-zinc-200 font-mono text-base font-bold" id="almanac-total-count">0</div>
+</div>
+</div>
+<div id="almanac-container" class="space-y-3 max-h-96 overflow-y-auto pr-1"></div>
 </div>
 </section>
 </main>
@@ -896,11 +920,83 @@ return{no:i+1,id:i+1,city:city,name:name,party:party,xHandle:'@'+cleanName,email
 const MP_TARGET=mpDatabase.length||592;
 const citiesList=[...new Set(mpDatabase.map(function(m){return m.city;}))];
 
+// ═══ ALMANAK VERİ TABANI ═══
+// 2025 yılı Ocak-Haziran arası raporlardan derlenen gerçek vakalar.
+// Yeni vaka eklemek için aynı formatta yeni bir { ... } satırı ekleyin.
+// Kategoriler: Yaşam Hakkı, İşkence, Zehirlenme, Araç Çarpma, Ateşli Silah,
+//              Yasa Dışı Avcılık, Dövüştürme, Cinsel Şiddet, Kamu İhlali,
+//              Kapatılma, Bilinmeyen
 const almanacEvents=[
-{id:101,date:"2024-08-12",city:"Niğde",location:"Niğde Belediyesi Geçici Bakımevi",title:"Toplu Çukur ve Kanuna Aykırı İnfaz İddiası",desc:"Bakımevi çevresinde toplu mezarlar ve zehirlenmiş hayvan gövdeleri belgelendi."},
-{id:102,date:"2024-08-14",city:"Ankara",location:"Altındağ / Ankara",title:"Altındağ Bakımevi Poşetlenmiş Cansız Bedenler",desc:"Çöp alanlarında poşetler içinde onlarca hayvan cesedi görüntülendi."},
-{id:103,date:"2024-09-02",city:"Kocaeli",location:"Gebze / Kocaeli",title:"Gebze Rehabilitasyon Merkezi İğneyle İtlah Vaka Kaydı",desc:"İlaç ve enjektörlerle birlikte çöp konteynerine atılmış kedi ve köpekler tespit edildi."},
-{id:104,date:"2024-09-15",city:"İstanbul",location:"Ümraniye / İstanbul",title:"Barınak Kapasite Yetersizliği ve Açlık Tecriti",desc:"Toplanan hayvanların dar alanlarda aç bırakılarak tecrit edildiği belgelendi."}
+{id:1,date:"2025-02-04",city:"Erzincan",location:"Erzincan Belediyesi",category:"Kamu İhlali",title:"Belediye köpekleri canlı canlı gömdü",desc:"Erzincan Belediyesi hayvan toplama aracından çıkarılan 8 köpeğin belediyeye ait çöp arıtma tesisinde açılan çukura canlı halde gömüldüğü görüntülendi.",source:"https://medyascope.tv/2025/02/04/erzincanda-hayvan-katliami-iddiasi-kopekler-canli-canli-gomuldu/"},
+{id:2,date:"2025-02-20",city:"Osmaniye",location:"Osmaniye Hayvan Barınağı",category:"Kamu İhlali",title:"Barınakta onlarca köpek canlı gömüldü",desc:"Osmaniye'de hayvan barınağında onlarca köpeğin canlı halde gömüldüğü, yavruların memeden ayrılmadığı ve anne köpeklerin süt dolu olduğu görüntülendi.",source:"https://haber.mynet.com/goruntuler-herkesin-kanini-dondurdu-osmaniye-de-onlarca-kopek-katledildi"},
+{id:3,date:"2025-09-15",city:"Gaziantep",location:"Gaziantep Hayvanat Bahçesi",category:"Kamu İhlali",title:"Bir günde 37 köpek öldü, sağlıklı köpekler yırtıcılara canlı yem",desc:"Gaziantep Büyükşehir Belediyesi barınağında bir günde 37 köpeğin öldüğü ve sağlıklı hayvanların yırtıcılara canlı yem verildiği iddia edildi.",source:"https://medyascope.tv/2025/09/15/gaziantepte-hayvan-katliami-iddiasi-bir-gunde-37-kopek-oldu/"},
+{id:4,date:"2025-07-16",city:"Bolu",location:"Bolu İl Özel İdaresi",category:"Kamu İhlali",title:"650 sokak köpeği öldürüldü iddiası",desc:"Bolu İl Özel İdaresi'nin 650 sokak köpeğini öldürdüğü iddiası gündeme geldi.",source:"https://www.bolugundem.com/haber/25527132/"},
+{id:5,date:"2025-05-15",city:"Bursa",location:"Osmangazi Belediyesi Barınağı",category:"Kamu İhlali",title:"Barınakta onlarca köpek ilaçla öldürüldü",desc:"Bursa Osmangazi Belediyesi'ne ait hayvan barınağında onlarca köpeğin ilaçla öldürüldüğü iddia edildi.",source:"https://www.sondakika.com/3-sayfa/haber-bursa-da-hayvan-barinaginda-katliam-onlarca-kopek-ilacla-olduruldu-18630624/"},
+{id:6,date:"2025-04-27",city:"Ankara",location:"Ankara",category:"Cinsel Şiddet",title:"Doktor 8 yavru köpeği istismar etti, 26 köpek kayıp",desc:"Ankara'da bir doktorun sahiplenme bahanesiyle eve aldığı en az 8 yavru köpeği istismar ederek öldürdüğü, 26 köpeğin kayıp olduğu ortaya çıktı.",source:"https://www.nefes.com.tr/doktor-sahiplenme-bahanesiyle-evine-aldigi-hayvanlari-katletti-31448"},
+{id:7,date:"2025-05-10",city:"Konya",location:"Ardıçlı TOKİ / Konya",category:"Cinsel Şiddet",title:"Köpeğe cinsel istismar ve katliam",desc:"Konya Ardıçlı TOKİ'de makatında tahribat olan bir köpeğin ölü bulunduğu, cinsel istismar edildiği tespit edildi.",source:"https://anadoludabugun.com.tr/konya-haberlerI/ozel-haber-konya-ardicli-tokide-kan-donduran-iddia-tecavuz-edilip-katledildi/242515"},
+{id:8,date:"2025-03-20",city:"Mersin",location:"Mersin",category:"Zehirlenme",title:"77 küçükbaş hayvan zehirli ekmekle öldürüldü",desc:"Adana/Mersin hattında husumetlilerin zehirli ekmekle hayvanları öldürdüğü, 77 küçükbaş hayvanın telef olduğu bildirildi.",source:"https://www.ntv.com.tr/galeri/turkiye/husumetlileri-zehirli-ekmekle-katliam-yapti-adanada-77-hayvan-oldu"},
+{id:9,date:"2025-04-29",city:"Manisa",location:"Manisa TOKİ",category:"Zehirlenme",title:"2 ayda 24 köpek zehirlendi",desc:"Manisa TOKİ'de son 2 ayda 24 köpeğin zehirlendiği, sistematik bir katliam yürütüldüğü bildirildi.",source:"https://www.manisahaberleri.com/manisa-tokide-kopek-katliami-iddiasi-son-2-ayda-24-kopek-zehirlendi"},
+{id:10,date:"2025-04-28",city:"Sakarya",location:"Sakarya Tarım Arazisi",category:"Zehirlenme",title:"8 köpek tavuk parçasıyla zehirlendi",desc:"Sakarya'da tarım arazisinde 8 köpeğin tavuk parçasıyla zehirlenerek öldürüldüğü tespit edildi.",source:"https://www.evrensel.net/haber/551641/"},
+{id:11,date:"2025-06-26",city:"Kastamonu",location:"Kastamonu",category:"Zehirlenme",title:"56 arı kovanı zehirlendi, ~1 milyon arı öldü",desc:"Kastamonu'da 56 arı kovanının önleri kapatılarak zehirlendi, yaklaşık 1 milyon arı telef oldu.",source:"https://karadenizgazete.com.tr/gundem/kastamonuda-56-ari-kovani-zehirlendi-1-milyona-yakin-ari-telef-oldu/577829"},
+{id:12,date:"2025-08-23",city:"Batman",location:"Batman Çayı",category:"Kamu İhlali",title:"BOTAŞ petrol hattı çalışması milyonlarca balığı öldürdü",desc:"Batman Çayı'nda petrol boru hattı yenileme çalışması sırasında çayın yönünün değiştirilmesi nedeniyle milyonlarca balık ve su canlısı öldü.",source:"https://www.batmansonsoz.net/mobil/haber/batman-cayinda-balik-katliami-95791.html"},
+{id:13,date:"2025-06-30",city:"Konya",location:"Konya",category:"Kamu İhlali",title:"Baraj için dereler kurutuldu, yüz binlerce balık öldü",desc:"Konya'da barajda su tutulması amacıyla dereler kurutuldu, yüz binlerce balık telef oldu.",source:"https://www.sozcu.com.tr/amp/baraj-icin-dereyi-kurutular-yuz-binlerce-balik-telef-oldu-p189295"},
+{id:14,date:"2025-07-07",city:"İstanbul",location:"Maltepe / İstanbul",category:"Zehirlenme",title:"Atık su şüphesiyle binlerce balık öldü",desc:"İstanbul Maltepe'de atık su şüphesiyle binlerce balığın öldüğü, 20 yıldır ilk defa bu boyutta bir olay yaşandığı belirtildi.",source:"https://www.ntv.com.tr/galeri/turkiye/maltepede-supheli-balik-olumleri"},
+{id:15,date:"2025-07-16",city:"Erzurum",location:"Erzurum",category:"Kamu İhlali",title:"Klorlama 300.000 alabalık yavrusunu öldürdü",desc:"Erzurum'da Su ve Kanalizasyon İdaresi ekiplerinin klorlama yapması sebebiyle 300.000 alabalık yavrusu telef oldu.",source:"https://www.gazetepusula.net/erzurum-da-yuzbinlerce-balik-telef-oldu-isletmeci-sikayetci/364083/"},
+{id:16,date:"2025-04-11",city:"İstanbul",location:"İstanbul Kimya Deposu",category:"Kapatılma",title:"Yangında 500-600 kurbanlık hayvan öldü",desc:"İstanbul'da kimya deposunda çıkan yangında 500-600 kurbanlık hayvan telef oldu.",source:"https://www.turkiyegazetesi.com.tr/3-sayfa/istanbulda-kimya-deposunda-korkutan-yangin-1108097"},
+{id:17,date:"2025-06-04",city:"Ankara",location:"Ankara Yumurta Tesisi",category:"Kapatılma",title:"Yumurta tesisinde 150.000 tavuk yanarak öldü",desc:"Ankara'da bir yumurta üretim tesisinde çıkan yangında 150.000 tavuk telef oldu.",source:"https://www.haberturk.com/yumurta-tesisi-alevlere-teslim-150-bin-tavuk-oldu-3796943"},
+{id:18,date:"2025-03-01",city:"Isparta",location:"Isparta",category:"Kamu İhlali",title:"Kuş gribi bahanesiyle 200.000+ tavuk itlaf edildi",desc:"Isparta'da kuş gribi vakaları sebebiyle 200.000'den fazla tavuğun itlaf edildiği bildirildi.",source:"https://www.son32.com/haber/24004574/kus-gribi-vakasi-yuz-binlercesi-itlaf-edildi"},
+{id:19,date:"2025-08-08",city:"Çorum",location:"Çorum Mandıra",category:"Kapatılma",title:"Mandıra yangınında 100+ kuzu öldü",desc:"Çorum'da mandırada çıkan yangında 100'den fazla kuzu telef oldu.",source:"https://www.ahaber.com.tr/viral/tikla/corumda-mandirada-yangin-faciasi-100den-fazla-kuzu-telef-6208421"},
+{id:20,date:"2025-06-18",city:"Konya",location:"Tuz Gölü",category:"Kamu İhlali",title:"Tuz Gölü'nde 2.000 yavru flamingo susuzluktan öldü",desc:"Konya Tuz Gölü'nde yavru flamingoların susuzluktan öldüğü, su yönetiminin yanlış yapıldığı belgelendi.",source:"https://www.sozcu.com.tr/tuz-golu-ndeki-2-bin-flamingo-susuzluktan-oldu-p185239"},
+{id:21,date:"2025-06-22",city:"Batman",location:"Batman Kırsalı",category:"Ateşli Silah",title:"10 yaban atı vurularak öldürüldü",desc:"Batman'da 10 yaban atının vurularak öldürüldüğü bildirildi.",source:"https://www.rudaw.net/turkish/middleeast/turkey/220620258"},
+{id:22,date:"2025-02-20",city:"Muğla",location:"Muğla",category:"Ateşli Silah",title:"Yasak avda canlı mühre kullanıldı",desc:"Muğla'da yasa dışı avda canlı mühre kullanıldığı tespit edildi.",source:"https://www.haberturk.com/kayseri-haberleri/36942295-kayseride-yasa-disi-avlanan-3-kisiye-idari-islem-uygulandi"},
+{id:23,date:"2025-06-21",city:"Muğla",location:"Muğla",category:"İşkence",title:"Caretta carettalar iple bağlanarak ölüme terk edildi",desc:"Muğla'da nesli koruma altındaki caretta carettaların iple bağlanarak ölüme terk edildiği iddia edildi.",source:"https://www.sabah.com.tr/yasam/muglada-skandal-iddia-nesli-koruma-altindaki-caretta-carettalar-iple-baglanarak-olume-terk-ediliyor-7373843"},
+{id:24,date:"2025-06-07",city:"Muğla",location:"Bodrum Şehir Parkı",category:"İşkence",title:"Kedilerin kuyrukları kesildi, karınları yarıldı",desc:"Bodrum Şehir Parkı'nda kedilerin kuyruklarının kesilerek ve karınları yarılarak öldürüldüğü, savcılığın soruşturma başlattığı bildirildi.",source:"https://bodrumolay.com/sehir-parkinda-kedilerin-iskence-edilerek-oldurulmesine-savcilik-sorusturma-baslatti/"},
+{id:25,date:"2025-05-25",city:"Çorum",location:"Çorum",category:"Kapatılma",title:"Su kuyusuna düşen 7 köpek öldü",desc:"Çorum'da su kuyusuna düşen 7 köpeğin öldüğü bildirildi.",source:"https://www.corumtime.com/su-kuyusuna-dusen-yavru-kopekler-oldu/"},
+{id:26,date:"2025-04-21",city:"Bursa",location:"Gemlik / Bursa",category:"İşkence",title:"8 yavru kedi kesici aletle öldürüldü",desc:"Bursa Gemlik'te apartman bahçesindeki 8 yavru kedinin kesici aletle öldürüldüğü tespit edildi.",source:"https://www.dha.com.tr/yerel-haberler/bursa/gemlik/apartman-bahcesindeki-8-yavru-kedi-kesici-alet-2623964"},
+{id:27,date:"2025-04-20",city:"Karaman",location:"Karaman",category:"Kapatılma",title:"Ahır kundaklandı, 11 küçükbaş hayvan öldü",desc:"Karaman'da gece yarısı ahırın kundaklanması sonucu 11 küçükbaş hayvan telef oldu.",source:"https://www.karamangundem.com/karamanda-gece-yarisi-kundaklama-11-hayvan-telef-oldu"},
+{id:28,date:"2025-03-08",city:"Van",location:"Van",category:"Kapatılma",title:"Soğukta 100 kovan arı öldü",desc:"Van'da soğuk hava nedeniyle kovanların içinde tutulan arıların öldüğü, 100 kovanın telef olduğu bildirildi.",source:"https://dogurehberi.com/haber/vanda-100-kovan-ari-telef-oldu-2752245.html"},
+{id:29,date:"2025-02-18",city:"Eskişehir",location:"Eskişehir",category:"İşkence",title:"Yavru köpeklerin boynuna taş bağlanıp suya atıldı",desc:"Eskişehir'de yavru köpeklerin boynuna taş bağlanarak suya atıldığı, 2 köpeğin öldüğü bildirildi.",source:"https://www.milliyet.com.tr/gundem/eskisehirde-yurek-sizlatan-olay-yavru-kopeklerin-boynuna-tas-baglayip-suya-attilar-7311012"},
+{id:30,date:"2025-01-26",city:"Edirne",location:"Edirne",category:"Kamu İhlali",title:"Belediye personeli 4 köpeği poşetle çöpe attı",desc:"Edirne'de belediye personelinin 4 yavru köpeği poşet içinde çöp konteynerine attığı görüntülendi.",source:"https://www.haberler.com/guncel/edirne-de-sokak-hayvanlarina-skandal-muamele-4-yavru-kopek-cop-tenekesine-atildi-18304494-haberi/"},
+{id:31,date:"2025-05-21",city:"Ankara",location:"Çankaya / Ankara",category:"Kamu İhlali",title:"Çankaya Belediyesi köpeği uyuşturucu iğneyle öldürdü",desc:"Ankara Çankaya Belediyesi'nin sokaktan aldığı köpeğin uyuşturucu iğneyle öldürüldüğü, hak savunucularının belediye önünde protesto başlattığı bildirildi.",source:"https://t24.com.tr/haber/cankaya-belediyesi-nin-sokaktan-aldigi-kopek-oldu-hak-savunuculari-belediye-onunde-protestoya-basladi,1240334"},
+{id:32,date:"2025-05-05",city:"Zonguldak",location:"Zonguldak Barınak",category:"Kamu İhlali",title:"Barınakta köpek anestezi iğnesiyle öldürüldü",desc:"Zonguldak'ta barınakta bir köpeğin anestezi iğnesiyle öldürüldüğü, 'Katliam başladı' başlığıyla haberleştirildi.",source:"https://www.zhaber.com.tr/zonguldakta-barinak-tartismasi-katliam-basladi"},
+{id:33,date:"2025-05-02",city:"Kırşehir",location:"Kırşehir Barınak",category:"Kamu İhlali",title:"Kırşehir barınağında hayvanlar öldürüldü",desc:"Kırşehir barınağında hayvanların öldürüldüğü iddiası gündeme geldi.",source:"https://www.dmchaber.com/kirsehirde-hayvan-katliami-iddiasi"},
+{id:34,date:"2025-04-23",city:"Bursa",location:"Osmangazi / Bursa",category:"Kamu İhlali",title:"Belediye ölü kedi ve köpekleri şehir çöplüğüne attı",desc:"Bursa Osmangazi Belediyesi'nin çöp poşetlerine koyarak öldürdüğü kedi ve köpekleri şehir çöplüğüne attığı belgelendi.",source:"https://www.sabah.com.tr/gundem/2025/04/23/chpli-belediyede-hayvan-katliami-cop-posetlerine-oldurup-sehir-coplugune-attilar"},
+{id:35,date:"2025-03-12",city:"İstanbul",location:"Sancaktepe / İstanbul",category:"Kamu İhlali",title:"Çöp konteynerinde belediye tarafından atılmış köpekler bulundu",desc:"İstanbul Sancaktepe'de çöp konteynerinde Sancaktepe Belediyesi tarafından atılmış köpeklerin bulunduğu bildirildi.",source:"https://www.cumhuriyet.com.tr/turkiye/cop-konteynerlerinde-olu-kopekler-bulundu-belediye-baskasindan-2308825"},
+{id:36,date:"2025-02-28",city:"Afyonkarahisar",location:"Gazlıgöl / Afyonkarahisar",category:"Zehirlenme",title:"Gazlıgöl'de hayvanlar zehirlendi",desc:"Afyonkarahisar Gazlıgöl'de en az 5 köpeğin, tavuk ve hindilerin zehirlendiği iddia edildi.",source:"https://www.gazete3.com.tr/tumhaberler/gazligolde-hayvanlar-zehirlendi-iddiasi/"},
+{id:37,date:"2025-01-29",city:"Hakkari",location:"Yüksekova / Hakkari",category:"İşkence",title:"Yüksekova'da 20 köpek kafası kopmuş halde bulundu",desc:"Hakkari Yüksekova'da kül dökülen alanda bazılarının kafası kopmuş halde 20 ölü köpek bulundu.",source:"https://www.hurriyet.com.tr/gundem/yuksekovada-kahreden-goruntu-kul-dokulen-alanda-20-olu-kopek-bulundu-42675152"},
+{id:38,date:"2025-01-12",city:"Gaziantep",location:"Gaziantep",category:"İşkence",title:"3 yavru köpeğin başları kesilerek öldürüldü",desc:"Gaziantep'te 3 yavru köpeğin başları kesilerek öldürüldüğü acı olay haberleştirildi.",source:"https://www.bitlishaber13.net/aci-olay-3-yavru-kopek-baslari-kesilerek-olduruldu"},
+{id:39,date:"2025-01-11",city:"İzmir",location:"Narlıdere / İzmir",category:"Ateşli Silah",title:"Ormanda tüfek kovanlarıyla 2 köpek cesedi bulundu",desc:"İzmir Narlıdere'de bir ormanda tüfek kovanlarıyla birlikte 2 köpek cesedi bulundu, öldürülmüş olma ihtimali yüksek.",source:"https://www.izmirdesondakika.com.tr/izmir-narliderede-bir-ormanda-iki-kopek-cesedi-bulundu"},
+{id:40,date:"2025-01-06",city:"İstanbul",location:"Silivri / İstanbul",category:"Ateşli Silah",title:"Silivri'de köpek defalarca ateş edilerek öldürüldü",desc:"İstanbul Silivri Akören köyünde bir köpeğe defalarca ateş edildiği, 'köpek katliamı' olarak haberleştirildi.",source:"https://www.yeniurfagazetesi.com/haber-silivri-akoren-koyunde-kopek-katliami"},
+{id:41,date:"2025-06-14",city:"Gaziantep",location:"Gaziantep",category:"İşkence",title:"Hamile kedi taşla defalarca vurularak öldürüldü",desc:"Gaziantep'te hamile bir kedinin taşla defalarca vurularak öldürüldüğü görüntülendi.",source:"https://www.odatv.com/guncel/caniligin-bu-kadari-kediyi-tasla-defalarca-vurarak-oldurdu-120102507"},
+{id:42,date:"2025-06-24",city:"Eskişehir",location:"Eskişehir",category:"İşkence",title:"Sokak ortasında köpeğe vurup boğazını sıktı",desc:"Eskişehir'de sokak ortasında bir köpeğe önce vurup sonra boğazını sıkan saldırgan görüntülendi.",source:"https://www.ntv.com.tr/turkiye/sokak-ortasinda-vahset-kopege-once-vurdu-sonra-bogazini-sikti"},
+{id:43,date:"2025-05-06",city:"Yozgat",location:"Yozgat",category:"İşkence",title:"Köpek kamyonda boynundan asılı götürüldü",desc:"Yozgat'ta bir köpeğin kamyonda boynundan asılı şekilde taşındığı görüntülendi, valilik açıklama yaptı.",source:"https://www.yeniankara.com.tr/bolge-haberleri/yozgat/yozgatta-kamyonda-boynundan-asili-seyahat-eden-kopek-hakkinda-sicak-gelisme-108494"},
+{id:44,date:"2025-05-03",city:"Sivas",location:"Sivas",category:"İşkence",title:"Atlar araca bağlanarak koşturuldu",desc:"Sivas'ta 2 atın araca bağlanarak koşturulduğu görüntülendi, sürücüye tepki yağdı.",source:"https://www.sivashaberler.com/sivasta-hayvanlara-eziyet-eden-surucuye-tepki-yagdi/"},
+{id:45,date:"2025-04-02",city:"Hatay",location:"Hatay",category:"İşkence",title:"Köpek aracın arkasına bağlanarak sürüklendi",desc:"Hatay'da bir köpeğin iple aracın arkasına bağlanarak metrelerce sürüklendiği görüntülendi.",source:"https://www.gercekgundem.com/guncel/vahsetin-bu-seferki-adresi-hatay-kopegi-iple-araca-bagladi-metrelerce-surukledi-527964"},
+{id:46,date:"2025-03-14",city:"Tokat",location:"Tokat",category:"İşkence",title:"Koyunlar darp edilerek eziyet edildi",desc:"Tokat'ta koyunlara darp ederek eziyet eden saldırganın gözaltına alındığı bildirildi.",source:"https://www.cumhuriyet.com.tr/turkiye/koyunlara-eziyet-eden-saldirgan-gozaltina-alindi-2309260"},
+{id:47,date:"2025-03-16",city:"İzmir",location:"İzmir Ormanlık Alan",category:"Kamu İhlali",title:"Ormana aç susuz terk edilmiş 25 yavru köpek bulundu",desc:"İzmir'de ormana yaklaşık 25 yavru köpeğin aç ve susuz şekilde terk edildiği tespit edildi.",source:"https://www.izmirdesondakika.com.tr/izmirde-yaklasik-25-yavru-kopek-olume-terk-edildi"},
+{id:48,date:"2025-05-08",city:"Bolu",location:"Bolu",category:"Kamu İhlali",title:"Belediye yüzlerce sokak köpeğini ormana attı",desc:"Bolu'da belediyenin DKMP baskısıyla yüzlerce sokak köpeğini ormana atarak aç ve susuz bıraktığı iddia edildi.",source:"https://www.bolugundem.com/haber/24913114/"},
+{id:49,date:"2025-04-17",city:"Zonguldak",location:"Çaycuma / Zonguldak",category:"Bilinmeyen",title:"Ormanlık alanda çok sayıda ölü ve yaralı köpek bulundu",desc:"Zonguldak Çaycuma'da ormanlık alanda çok sayıda ölü ve yaralı köpeğin bulunduğu, hayvan katliamı iddiasının gündeme geldiği bildirildi.",source:"https://www.kanalbzonguldak.com.tr/caycumada-hayvan-katliami-iddiasi-ormanlik-alanda-olu-bulundular"},
+{id:50,date:"2025-06-20",city:"Bursa",location:"İnegöl / Bursa",category:"Kapatılma",title:"Otluk alan yakıldı, 5 yavru köpek öldü",desc:"Bursa İnegöl'de kimliği belirsiz kişilerce otluk alanın ateşe verilmesi sonucu 5 yavru köpek öldü.",source:"https://www.yildirimgazetesi.com/inegoldeki-yanginda-5-yavru-kopek-telef-oldu"},
+{id:51,date:"2025-04-24",city:"Tunceli",location:"Tunceli",category:"Kapatılma",title:"Ağılda izdiham: 11 koyun telef oldu",desc:"Tunceli'de ağılda korkarak birbirini ezmesi sonucu 11 koyun telef oldu.",source:"https://www.sabah.com.tr/tunceli/2025/04/24/tuncelide-agilda-izdiham-11-koyun-telef-oldu"},
+{id:52,date:"2025-02-18",city:"Ankara",location:"Haymana / Ankara",category:"Araç Çarpma",title:"Tır devrildi 14 büyükbaş öldü, 13'ü kaçtı",desc:"Ankara Haymana'da büyükbaş hayvan yüklü tır devrildi, 14 hayvan telef oldu, 13'ü kaçtı.",source:"https://www.polatlihaberajansi.com/haber/haymanada-buyukbas-hayvan-yuklu-tir-devrildi-14-hayvan-telef-oldu-13u-kacti-8840"},
+{id:53,date:"2025-01-25",city:"Eskişehir",location:"Eskişehir",category:"Kapatılma",title:"Bir kişi çatıyı yakarak baktığı 10 kuşu öldürdü",desc:"Eskişehir'de bir kişinin yangın çıkararak baktığı 10 kuşun ölümüne neden olduğu, kendisinin de yaralandığı bildirildi.",source:"https://www.ahaber.com.tr/video/yasam-videolari/catiyi-yakip-asagiya-atlayan-adam-agir-yaralandi-besledigi-10-kus-yanginda-telef-oldu"},
+{id:54,date:"2025-03-26",city:"İzmir",location:"İzmir",category:"Araç Çarpma",title:"Çöp kamyonu sokakta oturan köpeği ezdi",desc:"İzmir'de çöp kamyonunun sokakta oturan köpeği ezerek öldürdüğü görüntülendi.",source:"https://www.egepostasi.com/haber/Cop-kamyonu-sokakta-oturan-kopegi-ezerek-oldurdu/357116"},
+{id:55,date:"2025-05-23",city:"Aydın",location:"Aydın",category:"Araç Çarpma",title:"Tur otobüsü yerde yatan köpeği göz göre göre ezdi",desc:"Aydın'da bir tur otobüsünün yerde yatan köpeği göz göre göre ezerek öldürdüğü kamera görüntülerine yansıdı.",source:"https://www.cumhuriyet.com.tr/turkiye/dehset-anlari-kamerada-yolda-yatan-kopegi-goz-gore-ezdi-2403433"},
+{id:56,date:"2025-06-16",city:"Samsun",location:"Samsun",category:"Yasa Dışı Avcılık",title:"6 ton kaçak avlanan kalkan balığı ele geçirildi",desc:"Samsun'da 6 ton kaçak avlanan kalkan balığının ele geçirildiği bildirildi.",source:"https://www.ntv.com.tr/turkiye/6-ton-kacak-avlanan-kalkan-ele-gecirildi,3O0yn5DexkKizO2N3CqCRw"},
+{id:57,date:"2025-06-24",city:"Van",location:"Van",category:"Yasa Dışı Avcılık",title:"78,5 ton kaçak inci kefali avlandı, 2.6M TL ceza",desc:"Van'da kaçak inci kefali avlayanlara 2 milyon 674 bin 575 lira ceza verildi, en az 78,5 ton ölü balık ele geçirildi.",source:"https://www.aa.com.tr/tr/gundem/vanda-kacak-inci-kefali-avlayanlara-2-milyon-674-bin-575-lira-ceza-verildi/3610879"},
+{id:58,date:"2025-06-23",city:"Sinop",location:"Sinop",category:"Yasa Dışı Avcılık",title:"1611 kalkan balığı kaçak avlandı",desc:"Sinop'ta kaçak avlanan 1611 kalkan balığının ele geçirildiği bildirildi.",source:"https://www.benguturk.com/sinopta-kacak-avlanan-1611-kalkan-baligi-ele-gecirildi"},
+{id:59,date:"2025-05-23",city:"Ankara",location:"Ankara/İstanbul/Bursa/Sakarya/İzmir",category:"Yasaya Aykırı Ticaret",title:"Egzotik hayvan ticareti: maymun, papağan, tarantula, yılan",desc:"5 ilde satışı yasak egzotik hayvanların kötü koşullarda tutularak çoğaltıldığı yerlere baskın düzenlendi.",source:"https://www.gazetebirlik.com/gundem/ankarada-egzotik-hayvan-baskini-maymun-papagan-tarantula-yilan/288169"},
+{id:60,date:"2025-06-13",city:"Aydın",location:"Çine / Aydın",category:"Yasa Dışı Avcılık",title:"Yaban keçisi avlayanlara rekor ceza",desc:"Aydın'ın Çine ilçesinde yaban keçisi avlayan kişiye 960 bin TL ceza kesildi.",source:"https://www.cnnturk.com/yerel-haberler/isparta/egirdir/kacak-avciya-960-bin-tl-ceza-2269844"},
+{id:61,date:"2025-05-11",city:"Gaziantep",location:"Gaziantep",category:"Zehirlenme",title:"Hamile kediyi taşla öldürdü",desc:"Gaziantep'te hamile kedinin taşla defalarca vurularak öldürüldüğü, olayın 'caniliğin bu kadarı' başlığıyla haberleştirildiği bildirildi.",source:"https://www.odatv.com/guncel/caniligin-bu-kadari-kediyi-tasla-defalarca-vurarak-oldurdu-120102507"},
+{id:62,date:"2025-06-24",city:"Muğla",location:"Köyceğiz / Muğla",category:"Ateşli Silah",title:"Kişi komşusunun köpeğini vurarak öldürdü",desc:"Muğla Köyceğiz'de bir kişinin komşusunun köpeğini vurarak öldürdüğü bildirildi.",source:"https://www.marmarishaber.net/guncel/koycegizde-komsusunun-kopegini-vurdu-12890h"},
+{id:63,date:"2025-03-15",city:"Şanlıurfa",location:"Birecik / Şanlıurfa",category:"Kapatılma",title:"Yangında köpek ve tavuklar öldü",desc:"Şanlıurfa Birecik'te yangında evin köpeği ve tavukların telef olduğu bildirildi.",source:"https://www.urfadasin.com/birecikte-yangin-evin-kopegi-ve-tavuklar-telef-oldu"},
+{id:64,date:"2025-07-10",city:"Bilecik",location:"Bilecik",category:"Kamu İhlali",title:"Yol kenarında onlarca köpek ölü bulundu, kamera kayıtları silindi",desc:"Bilecik'te yol kenarında onlarca köpeğin ölü bulunduğu, Belediye Başkanı Melek Mızrak Subaşı'nın barınaktaki kamera görüntülerinin silinmesi talimatı verdiğinin ortaya çıktığı bildirildi.",source:"https://gdh.digital/haber/kopek-olumleriyle-ilgili-talimat-bizzat-baskandan-wdtb5df624"},
+{id:65,date:"2025-06-06",city:"Kocaeli",location:"Gölcük / Kocaeli",category:"İşkence",title:"Sahipli köpek 'sahipsiz' denilerek alındı, anesteziden öldü",desc:"Kocaeli Dilovası'nda çipli ve sahipli köpeğin belediye ekiplerince 'sahipsiz' denilerek alınıp Kandıra Hayvan Bakımevi'ne götürüldüğü, ertesi gün anesteziden öldüğü bildirildi.",source:"https://www.tbmm.gov.tr/Denetim/Yazili-Soru-Onergesi-Detay/9201de06-4f58-4686-8129-0195c6f21d6c"},
+{id:66,date:"2025-07-22",city:"Sakarya",location:"Sakarya Ormanlık Alan",category:"Kapatılma",title:"Orman yangınında 2 kaplumbağa öldü",desc:"Sakarya Adapazarı'ndaki orman yangınından kaçamayan 2 kaplumbağanın telef olduğu bildirildi.",source:"https://www.halk54.com/adapazarindaki-orman-yanginindan-aci-kare"},
+{id:67,date:"2025-07-27",city:"Ankara",location:"Eymir / Ankara",category:"Kapatılma",title:"Yangında 7 kaplumbağa öldü",desc:"Ankara Eymir'de yangın sonrası ilk rapora göre 7 kaplumbağanın öldüğü bildirildi.",source:"https://sonsoz.com.tr/eymirde-yangin-sonrasi-ilk-rapor-kac-hayvan-kurtarildi"},
+{id:68,date:"2025-05-18",city:"Konya",location:"Konya",category:"Kapatılma",title:"Ev yangınında keçiler öldü",desc:"Konya'da bir evde çıkıp dama sıçrayan yangında 2 keçinin telef olduğu bildirildi.",source:"https://www.gundemebakis.com/alasehirde-bir-evde-cikip-dama-sicrayan-yanginda-2-keci-telef-oldu"},
+{id:69,date:"2025-06-11",city:"Isparta",location:"Eğirdir / Isparta",category:"Bilinmeyen",title:"Oksijen yetersizliği şüphesiyle yüzlerce sazan öldü",desc:"Isparta Eğirdir Gölü'nde oksijen yetersizliğinden kaynaklı olduğundan şüphelenilen balık ölümlerinin yaşandığı bildirildi.",source:"http://www.egirdirakingazetesi.com.tr/haber/56684/"},
+{id:70,date:"2025-05-20",city:"Eskişehir",location:"Eskişehir",category:"Zehirlenme",title:"Köpek zehirlendi, not yürek dağladı",desc:"Eskişehir'de zehirlenen bir köpeğin ardından sahibinin yazdığı not yürek dağladı.",source:"https://www.sakaryagazetesi.com.tr/zehirlenen-kopek-icin-yazilan-not-yurek-dagladi"}
 ];
 
 function switchTab(t){
@@ -930,6 +1026,7 @@ populateVekilSelect();
 initCitizenSignaturePad();
 initMPSignaturePad();
 renderSignedMPs();
+populateAlmanacFilters();
 renderAlmanac();
 initCampaignQR();
 populateFilterCityMode();
@@ -1329,19 +1426,120 @@ if(list2)list2.innerHTML=cardHtml;
 var sigHtml=mpSignatures.map(function(s,i){return (i+1)+'. <strong>'+s.initials+'</strong> — '+s.recordCode+' / '+s.city;}).join('<br>');
 if(preview)preview.innerHTML=sigHtml;
 }
-function renderAlmanac(){
-var city=document.getElementById("input-city").value;
-var container=document.getElementById("almanac-container");
+function populateAlmanacFilters(){
+var citySel=document.getElementById('almanac-city-filter');
+var catSel=document.getElementById('almanac-cat-filter');
+if(!citySel||!catSel)return;
+citySel.innerHTML='<option value="__ALL__">Tüm Türkiye</option>';
+var cities=[...new Set(almanacEvents.map(function(e){return e.city;}))].sort();
+cities.forEach(function(c){var o=document.createElement('option');o.value=c;o.textContent=c;citySel.appendChild(o);});
+citySel.value='__ALL__';
+var cats=[...new Set(almanacEvents.map(function(e){return e.category;}))].sort();
+catSel.innerHTML='<option value="__ALL__">Tüm Kategoriler</option>';
+cats.forEach(function(c){var o=document.createElement('option');o.value=c;o.textContent=c;catSel.appendChild(o);});
+}
+
+function renderAlmanac(){ filterAlmanac(); }
+
+function filterAlmanac(){
+var container=document.getElementById('almanac-container');
 if(!container)return;
-container.innerHTML="";
-var cityEvents=almanacEvents.filter(function(ev){return ev.city===city;});
-var displayEvents=cityEvents.length>0?cityEvents:almanacEvents;
-displayEvents.forEach(function(ev){
-var div=document.createElement("div");
-div.className="bg-zinc-950 border border-zinc-800 p-3 rounded-lg space-y-1";
-div.innerHTML='<div class="flex flex-wrap items-center gap-2 text-[10px] text-red-400 font-bold"><span>📅 '+ev.date+'</span> | <span>📍 '+ev.location+'</span></div><h4 class="text-xs font-bold text-zinc-200">'+ev.title+'</h4><p class="text-[11px] text-zinc-400">'+ev.desc+'</p>';
+var cityF=(document.getElementById('almanac-city-filter')||{}).value||'__ALL__';
+var catF=(document.getElementById('almanac-cat-filter')||{}).value||'__ALL__';
+var sortF=(document.getElementById('almanac-sort-filter')||{}).value||'recent';
+var q=((document.getElementById('almanac-search')||{}).value||'').toLowerCase();
+// Vatandaşın seçtiği şehri almanak filtresine yansıt
+var currentCity=(document.getElementById('input-city')||{}).value||'';
+var effectiveCity=(cityF==='__CITIZEN__')?currentCity:cityF;
+
+var list=almanacEvents.filter(function(ev){
+if(effectiveCity!=='__ALL__' && ev.city!==effectiveCity) return false;
+if(catF!=='__ALL__' && ev.category!==catF) return false;
+if(q && ev.title.toLowerCase().indexOf(q)===-1 && ev.desc.toLowerCase().indexOf(q)===-1 && ev.city.toLowerCase().indexOf(q)===-1) return false;
+return true;
+});
+list.sort(function(a,b){
+if(sortF==='recent') return b.date.localeCompare(a.date);
+return a.date.localeCompare(b.date);
+});
+
+// Sayaçlar
+var cityCount=almanacEvents.filter(function(e){return e.city===effectiveCity;}).length;
+document.getElementById('almanac-city-count').textContent=effectiveCity==='__ALL__'?almanacEvents.length:cityCount;
+document.getElementById('almanac-shown-count').textContent=list.length;
+document.getElementById('almanac-total-count').textContent=almanacEvents.length;
+
+container.innerHTML='';
+if(list.length===0){
+container.innerHTML='<p class="text-xs text-zinc-500 p-4 text-center">Bu filtreyle eşleşen vaka yok.</p>';
+return;
+}
+list.forEach(function(ev){
+// Kategori renk sınıfı
+var catColor='border-zinc-700 bg-zinc-900 text-zinc-300';
+if(ev.category==='Yaşam Hakkı'||ev.category==='Ateşli Silah'||ev.category==='İşkence'||ev.category==='Cinsel Şiddet'){catColor='border-red-800 bg-red-950 text-red-300';}
+else if(ev.category==='Zehirlenme'||ev.category==='Yasa Dışı Avcılık'||ev.category==='Yasaya Aykırı Ticaret'){catColor='border-amber-800 bg-amber-950 text-amber-300';}
+else if(ev.category==='Kamu İhlali'||ev.category==='Kapatılma'){catColor='border-fuchsia-800 bg-fuchsia-950 text-fuchsia-300';}
+else if(ev.category==='Araç Çarpma'||ev.category==='Bilinmeyen'){catColor='border-sky-800 bg-sky-950 text-sky-300';}
+
+var div=document.createElement('div');
+div.className='bg-zinc-950 border border-zinc-800 p-3 rounded-lg space-y-2 hover:border-red-800/60 transition';
+div.innerHTML='<div class="flex flex-wrap items-center gap-2 text-[10px]"><span class="px-1.5 py-0.5 rounded border '+catColor+' font-bold">'+ev.category+'</span><span class="text-red-400 font-bold">📅 '+ev.date+'</span><span class="text-amber-400 font-bold">📍 '+ev.city+'</span></div>'+
+'<h4 class="text-xs font-bold text-white leading-snug">'+ev.title+'</h4>'+
+'<p class="text-[11px] text-zinc-400 leading-snug">'+ev.desc+'</p>'+
+'<div class="flex flex-wrap gap-2 pt-1">'+
+'<a href="'+ev.source+'" target="_blank" rel="noopener" class="text-[10px] text-zinc-400 hover:text-white underline">📰 Kaynak haberi aç</a>'+
+'<button onclick="tagCaseToSelectedMPs('+ev.id+')" class="text-[10px] bg-sky-900 hover:bg-sky-800 text-white border border-sky-700 px-2 py-1 rounded font-bold">🐦 Seçili vekillere etiketle</button>'+
+'<button onclick="mailCaseToSelectedMPs('+ev.id+')" class="text-[10px] bg-emerald-900 hover:bg-emerald-800 text-white border border-emerald-700 px-2 py-1 rounded font-bold">✉️ Seçili vekillere mail</button>'+
+'</div>';
 container.appendChild(div);
 });
+}
+
+function syncAlmanacCity(){
+var sel=document.getElementById('almanac-city-filter');
+var city=(document.getElementById('input-city')||{}).value||'';
+if(!sel||!city)return;
+if([...sel.options].some(function(o){return o.value===city;})){ sel.value=city; }
+filterAlmanac();
+}
+
+function buildCaseTweet(ev,handles){
+return handles+' Sayın Vekiller;\n\n'+
+ev.date+' tarihinde '+ev.city+' ilinde yaşanan olay:\n\n'+
+'❌ '+ev.title+'\n\n'+
+ev.desc+'\n\n'+
+'Bu vahşetin sorumluları arasında siz de varsınız. 7527 için attığınız imza yüzünden canlar ölüyor.\n\n'+
+'📰 '+ev.source+'\n\n'+
+'#7527İptalEt #SorumlularHesapVersin #HayvanHakları';
+}
+
+function tagCaseToSelectedMPs(caseId){
+var sel=getSelectedMPsFromTable();
+if(!sel.length){alert("Lütfen önce vekil listesinden en az 1 vekil seçin.");return;}
+var ev=almanacEvents.find(function(e){return e.id===caseId;});
+if(!ev)return;
+var handles=sel.map(function(m){return m.xHandle;}).join(' ');
+var t=buildCaseTweet(ev,handles);
+window.open('https://x.com/intent/tweet?text='+encodeURIComponent(t),'_blank');
+}
+
+function mailCaseToSelectedMPs(caseId){
+var sel=getSelectedMPsFromTable();
+if(!sel.length){alert("Lütfen önce vekil listesinden en az 1 vekil seçin.");return;}
+if(sel.length>1){alert("Tek seferde sadece 1 vekile mail atabilirsiniz. Seçili ilk vekile gönderiliyor.");}
+var ev=almanacEvents.find(function(e){return e.id===caseId;});
+if(!ev)return;
+var mp=sel[0];
+var subject='7527 İptal - '+ev.city+' Vaka Bildirimi';
+var body='Sayın '+mp.name+' ('+mp.city+'/'+mp.party+'),\n\n'+
+ev.date+' tarihinde '+ev.city+' ilinde yaşanan hayvan hakları ihlali:\n\n'+
+ev.title+'\n\n'+
+ev.desc+'\n\n'+
+'Kaynak: '+ev.source+'\n\n'+
+'7527 sayılı kanuna verdiğiniz destekle bu vahşetin sorumluları arasında yer alıyorsunuz. Kanunun iptali için TBMM\'de derhal girişimde bulunmanızı talep ediyorum.\n\n'+
+'Saygılarımla.';
+window.location.href='mailto:'+mp.email+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
 }
 function shareTo(platform){
 var url=location.href;
