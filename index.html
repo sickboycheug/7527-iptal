@@ -149,6 +149,7 @@ body *{visibility:hidden}
 <div class="border-b border-zinc-800 pb-3">
 <h2 class="text-lg font-bold text-white">🏛️ 3. TBMM MİLLETVEKİLİ TAM LİSTESİ</h2>
 <p class="text-xs text-zinc-400" id="mp-count-info">Yükleniyor...</p>
+<p class="text-xs text-amber-400 font-bold mt-1">Her vekile satırdaki MAİL butonuna basarak tek tek gönderin</p>
 </div>
 <details class="bg-zinc-950 border border-amber-900/50 rounded-lg p-3 text-xs">
 <summary class="cursor-pointer font-bold text-amber-400">⚠️ TBMM'de Boş Olan 8 Koltuk</summary>
@@ -165,8 +166,6 @@ body *{visibility:hidden}
 </ul>
 </div>
 </details>
-<button onclick="sendToSelectedMPs()" class="w-full bg-emerald-700 hover:bg-emerald-600 text-white font-bold py-3 px-4 rounded-lg text-xs uppercase shadow-lg border border-emerald-500">📨 SEÇİLİ VEKİLLERE MAİL GÖNDER</button>
-<p id="selected-mp-info" class="text-[11px] text-emerald-400 text-center font-bold min-h-4"></p>
 <div class="grid grid-cols-1 sm:grid-cols-4 gap-2">
 <div><label class="block text-[10px] text-zinc-400 mb-1 font-bold">PARTİ</label>
 <select id="filter-party" onchange="filterMPTable()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs text-zinc-200">
@@ -183,7 +182,7 @@ body *{visibility:hidden}
 <div class="overflow-x-auto max-h-96 overflow-y-auto rounded border border-zinc-800">
 <table class="w-full text-left text-xs text-zinc-300">
 <thead class="bg-zinc-950 text-zinc-400 uppercase text-[10px] sticky top-0 z-10">
-<tr><th class="p-2.5 text-center w-10">#</th><th class="p-2.5 text-center"><input type="checkbox" id="select-all-mps" onclick="toggleSelectAllMPs(this)" class="rounded accent-red-600 cursor-pointer"></th><th class="p-2.5">Şehir</th><th class="p-2.5">Ad Soyad</th><th class="p-2.5">Parti</th><th class="p-2.5 text-center">7527 Oyu</th><th class="p-2.5">X / E-posta</th><th class="p-2.5 text-center">Eylem</th></tr>
+<tr><th class="p-2.5 text-center w-10">#</th><th class="p-2.5">Şehir</th><th class="p-2.5">Ad Soyad</th><th class="p-2.5">Parti</th><th class="p-2.5 text-center">7527 Oyu</th><th class="p-2.5">X / E-posta</th><th class="p-2.5 text-center">Eylem</th></tr>
 </thead>
 <tbody id="mp-table-body" class="divide-y divide-zinc-800/50"></tbody>
 </table>
@@ -296,17 +295,17 @@ body *{visibility:hidden}
 </main>
 
 <footer class="no-print border-t border-zinc-800 bg-zinc-950 py-6 text-center text-xs text-zinc-500">
-<p class="font-bold text-zinc-400 uppercase tracking-widest">7527 İPTAL! İMZACISI OUL! 🐾 ÖLDÜREN DEĞİL, YAŞATAN OL!</p>
+<p class="font-bold text-zinc-400 uppercase tracking-widest">7527 İPTAL! İMZACISI OL! 🐾 ÖLDÜREN DEĞİL, YAŞATAN OL!</p>
 </footer>
 
 <script>
-const CITIZEN_SIGNED_KEY='sign7527_citizen_signed_v6';
-const CITIZEN_COUNT_KEY='sign7527_citizen_count_v6';
-const MP_SIGNATURES_KEY='sign7527_mp_signatures_v6';
-const CITIZEN_CODE_KEY='sign7527_citizen_code_v6';
-const CB_COUNT_KEY='sign7527_cb_count_v6';
-const MB_COUNT_KEY='sign7527_mb_count_v6';
-const MP_SENT_COUNT_KEY='sign7527_mp_sent_count_v6';
+const CITIZEN_SIGNED_KEY='sign7527_citizen_signed_v8';
+const CITIZEN_COUNT_KEY='sign7527_citizen_count_v8';
+const MP_SIGNATURES_KEY='sign7527_mp_signatures_v8';
+const CITIZEN_CODE_KEY='sign7527_citizen_code_v8';
+const CB_COUNT_KEY='sign7527_cb_count_v8';
+const MB_COUNT_KEY='sign7527_mb_count_v8';
+const MP_SENT_COUNT_KEY='sign7527_mp_sent_count_v8';
 let citizenCount=parseInt(localStorage.getItem(CITIZEN_COUNT_KEY)||'0',10);
 let citizenHasSigned=localStorage.getItem(CITIZEN_SIGNED_KEY)==='true';
 let cbCount=parseInt(localStorage.getItem(CB_COUNT_KEY)||'0',10);
@@ -993,11 +992,6 @@ var bm=document.getElementById("bar-mp");if(bm)bm.style.width=Math.min(100,(mpCo
 var a=document.getElementById("mp-signed-counter");if(a)a.textContent=mpCount+' / '+MP_TARGET;
 var b=document.getElementById("mp-signed-counter-2");if(b)b.textContent=mpCount+' / '+MP_TARGET;
 }
-function updateSelectedCount(){
-var n=document.querySelectorAll('.mp-checkbox:checked').length;
-var el=document.getElementById('selected-mp-info');
-if(el)el.textContent=n>0?(n+' vekil seçildi'):'';
-}
 
 function initCampaignQR(){
 var input=document.getElementById("campaign-url");
@@ -1051,7 +1045,6 @@ var voteF=document.getElementById("filter-vote").value;
 var mode=document.getElementById("filter-city-mode").value;
 var q=(document.getElementById("mp-search").value||"").toLowerCase();
 var tb=document.getElementById("mp-table-body");if(!tb)return;tb.innerHTML="";
-var sam=document.getElementById("select-all-mps");if(sam)sam.checked=false;
 var list=mpDatabase.filter(function(m){
 var mC=mode==="ALL"||m.city===city;
 var mP=partyF==="TÜMÜ"||m.party===partyF;
@@ -1059,7 +1052,7 @@ var mV=voteF==="TÜMÜ"||m.vote===voteF;
 var mQ=m.name.toLowerCase().indexOf(q)>-1||m.city.toLowerCase().indexOf(q)>-1||m.party.toLowerCase().indexOf(q)>-1;
 return mC&&mP&&mV&&mQ;
 });
-if(list.length===0){tb.innerHTML='<tr><td colspan="8" class="p-4 text-center text-zinc-500">Sonuç yok.</td></tr>';updateSelectedCount();return;}
+if(list.length===0){tb.innerHTML='<tr><td colspan="7" class="p-4 text-center text-zinc-500">Sonuç yok.</td></tr>';return;}
 list.forEach(function(m){
 var badge="";
 if(m.vote==="RET"){badge='<span class="bg-emerald-950 text-emerald-300 border border-emerald-700 px-2 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">🐾 YAŞASINLAR (RET)</span>';}
@@ -1068,7 +1061,6 @@ else{var lbl=m.vote==="ÇEKİMSER"?"ÇEKİMSER":"KATILMADI";badge='<span class="
 var tr=document.createElement("tr");
 tr.className="hover:bg-zinc-800/40 transition border-b border-zinc-800/40";
 tr.innerHTML='<td class="p-2.5 text-center font-mono text-zinc-500">'+m.no+'</td>'+
-'<td class="p-2.5 text-center"><input type="checkbox" value="'+m.id+'" class="mp-checkbox rounded accent-red-600 cursor-pointer" onchange="updateSelectedCount()"></td>'+
 '<td class="p-2.5 font-semibold text-zinc-300">'+m.city+'</td>'+
 '<td class="p-2.5 font-bold text-white">'+m.name+'</td>'+
 '<td class="p-2.5 text-zinc-400 font-semibold">'+m.party+'</td>'+
@@ -1076,48 +1068,14 @@ tr.innerHTML='<td class="p-2.5 text-center font-mono text-zinc-500">'+m.no+'</td
 '<td class="p-2.5 text-[11px] font-mono"><div class="text-sky-400 font-bold">🐦 '+m.xHandle+'</div><div class="text-emerald-400">✉️ '+m.email+'</div></td>'+
 '<td class="p-2.5 text-center space-y-1">'+
 '<button onclick="tweetMPDirect(\''+m.xHandle+'\',\''+m.city+'\',\''+m.name.replace(/'/g,"")+'\')" class="w-full bg-sky-950 hover:bg-sky-900 text-sky-300 border border-sky-800 px-2 py-0.5 rounded text-[10px] font-bold">X</button>'+
-'<button onclick="emailMPDirect(\''+m.email+'\',\''+m.city+'\')" class="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 px-2 py-0.5 rounded text-[10px] font-bold">Mail</button>'+
+'<button onclick="emailMPDirect(\''+m.email+'\',\''+m.city+'\')" class="w-full bg-emerald-700 hover:bg-emerald-600 text-white border border-emerald-500 px-2 py-1 rounded text-[10px] font-bold">MAİL</button>'+
 '</td>';
 tb.appendChild(tr);
 });
-updateSelectedCount();
 }
-function toggleSelectAllMPs(m){document.querySelectorAll(".mp-checkbox").forEach(function(c){c.checked=m.checked;});updateSelectedCount();}
 function getMPRecordCode(mp){return '7527-V'+String(mp.id).padStart(4,'0');}
 function tweetMPDirect(h,c,n){var mp=mpDatabase.find(function(m){return m.xHandle===h&&m.city===c&&m.name===n;});var code=mp?getMPRecordCode(mp):"7527";var t=h+' Sayın '+n+', Kayıt kodu: '+code+'. '+c+" seçmeni olarak 7527'nin iptalini istiyoruz! #7527İptalEt";window.open('https://x.com/intent/tweet?text='+encodeURIComponent(t),'_blank');}
 
-function sendToSelectedMPs(){
-if(!validateCitizenForm())return;
-var checks=document.querySelectorAll('.mp-checkbox:checked');
-if(checks.length===0){alert("Lütfen listeden en az 1 vekil seçin (satır başındaki kutu).");return;}
-var selected=[];
-checks.forEach(function(c){
-var id=parseInt(c.value);
-var mp=mpDatabase.find(function(m){return m.id===id;});
-if(mp)selected.push(mp);
-});
-if(selected.length===0){alert("Seçili vekil bulunamadı.");return;}
-if(selected.length>10){if(!confirm(selected.length+" vekil seçtiniz. Her biri için ayrı mail penceresi açılacak. Devam?"))return;}
-var body=buildPetition('mp');
-var i=0;
-function openNext(){
-if(i>=selected.length){
-showThanks('<strong>'+selected.length+' vekile</strong> dilekçeniz iletildi.<br><br>Senin gibi duyarlı bir yurttaş, bu vahşetin son bulmasında rol oynuyor. 🐾');
-return;
-}
-var mp=selected[i];
-var url='mailto:'+mp.email+'?subject='+encodeURIComponent('7527 İptal Talebi - '+getMPRecordCode(mp))+'&body='+encodeURIComponent(body);
-var a=document.createElement('a');a.href=url;a.style.display='none';
-document.body.appendChild(a);a.click();
-setTimeout(function(){try{document.body.removeChild(a);}catch(_){}},200);
-mpSentCount=parseInt(localStorage.getItem(MP_SENT_COUNT_KEY)||'0',10)+1;
-localStorage.setItem(MP_SENT_COUNT_KEY,mpSentCount.toString());
-updateCounters();
-i++;
-setTimeout(openNext,1500);
-}
-openNext();
-}
 function emailMPDirect(e,c){
 if(!validateCitizenForm())return;
 var mp=mpDatabase.find(function(m){return m.email===e&&m.city===c;});
@@ -1130,7 +1088,7 @@ updateCounters();
 sendWithPDF('mp',url);
 setTimeout(function(){
 showThanks('<strong>Sayın '+mp.name+'</strong>\'e dilekçeniz iletildi.<br><br>Senin gibi duyarlı bir yurttaş, bu vahşetin son bulmasında rol oynuyor. Bir canın hayatını kurtardın. 🐾<br><br><em>Sıradaki vekile de gönder!</em>');
-},2500);
+},3000);
 }
 function initCitizenSignaturePad(){
 canvas=document.getElementById("signature-pad");if(!canvas)return;ctx=canvas.getContext("2d");
@@ -1308,17 +1266,17 @@ function sendWithPDF(target,mailUrl){
 document.querySelectorAll('#printable-petitions .petition-page').forEach(function(p){
 p.classList.toggle('active', p.dataset.target===target);
 });
-var opened=false;
-function openMail(){
-if(opened)return;opened=true;
-var a=document.createElement('a');
-a.href=mailUrl;a.style.display='none';
-document.body.appendChild(a);a.click();
-setTimeout(function(){try{document.body.removeChild(a);}catch(_){}},200);
-}
-window.addEventListener('afterprint',function(){setTimeout(openMail,1200);},{once:true});
-setTimeout(openMail,60000);
-setTimeout(function(){window.print();},300);
+setTimeout(function(){
+var el=document.querySelector('#printable-petitions .petition-page.active');
+if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+},100);
+setTimeout(function(){
+window.print();
+setTimeout(function(){
+var onay=confirm('Dilekçeyi PDF olarak kaydettiniz mi?\n\n✔ TAMAM → Mail penceresi açılacak\n✖ İPTAL → Mail açılmayacak');
+if(onay){window.location.href=mailUrl;}
+},2500);
+},1500);
 }
 function mailToCB(){
 if(!validateCitizenForm())return;
@@ -1330,7 +1288,7 @@ cbCount=parseInt(localStorage.getItem(CB_COUNT_KEY)||'0',10)+1;
 localStorage.setItem(CB_COUNT_KEY,cbCount.toString());
 updateCounters();
 sendWithPDF('cb',url);
-showThanks('<strong>Cumhurbaşkanlığı makamına</strong> dilekçeniz iletiliyor.<br><br>Bu dilekçe, 7527 sayılı kanunun durdurulması için atılan kritik bir adımdır.<br><br>Şimdi sıradaki adım: <strong>TBMM Başkanına</strong> da gönderin. 🐾');
+setTimeout(function(){showThanks('<strong>Cumhurbaşkanlığı makamına</strong> dilekçeniz iletiliyor.<br><br>Bu dilekçe, 7527 sayılı kanunun durdurulması için atılan kritik bir adımdır.<br><br>Şimdi sıradaki adım: <strong>TBMM Başkanına</strong> da gönderin. 🐾');},4000);
 }
 function mailToMB(){
 if(!validateCitizenForm())return;
@@ -1340,13 +1298,19 @@ mbCount=parseInt(localStorage.getItem(MB_COUNT_KEY)||'0',10)+1;
 localStorage.setItem(MB_COUNT_KEY,mbCount.toString());
 updateCounters();
 sendWithPDF('mb',url);
-showThanks('<strong>TBMM Başkanlığına</strong> dilekçeniz iletiliyor.<br><br>Bu dilekçe, Meclis\'in harekete geçmesi için kritik bir adımdır.<br><br>Son adım: <strong>Vekillere</strong> tek tek gönderin ve onları da harekete geçirin! 🐾');
+setTimeout(function(){showThanks('<strong>TBMM Başkanlığına</strong> dilekçeniz iletiliyor.<br><br>Bu dilekçe, Meclis\'in harekete geçmesi için kritik bir adımdır.<br><br>Son adım: <strong>Vekillere</strong> tek tek gönderin ve onları da harekete geçirin! 🐾');},4000);
 }
 function handlePrintAndIncrement(){
 if(!validateCitizenForm())return;
 document.querySelectorAll('#printable-petitions .petition-page').forEach(function(p){p.classList.add('active');});
+setTimeout(function(){
+var el=document.getElementById('printable-petitions');
+if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+},100);
+setTimeout(function(){
 window.print();
-setTimeout(function(){document.querySelectorAll('#printable-petitions .petition-page').forEach(function(p){p.classList.remove('active');});},1200);
+setTimeout(function(){document.querySelectorAll('#printable-petitions .petition-page').forEach(function(p){p.classList.remove('active');});},1500);
+},1500);
 }
 function showThanks(msg){
 var m=document.getElementById('thanks-modal');
