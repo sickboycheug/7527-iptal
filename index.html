@@ -1046,19 +1046,16 @@ const mp=sel[0];
 window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(`${mp.xHandle} Sayın ${mp.name}, ${getMPMessage(mp)}`)}`,'_blank');
 if(sel.length>1) alert(`${mp.name} için paylaşım açıldı. Diğer vekillere tek tek göndermek için tablodaki X düğmelerini kullanın.`);
 }
-function sendDirectEmailToSelectedMPs(){
+function sendDirectEmailToSelectedMPs(){alert("Lütfen listedeki her vekilin satırındaki MAİL butonunu kullanın.");}
+function tweetMPDirect(h,c,n){const mp=mpDatabase.find(m=>m.xHandle===h&&m.city===c&&m.name===n);const code=mp?getMPRecordCode(mp):"7527";const t=`${h} Sayın ${n}, Kayıt kodu: ${code}. ${c} seçmeni olarak 7527'nin iptalini istiyoruz! #7527İptalEt`;window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(t)}`,'_blank');}
+function emailMPDirect(e,c){
 if(!validateCitizenForm())return;
-const sel=getSelectedMPsFromTable();
-if(!sel.length){alert("Lütfen listeden 1 vekil seçin.");return;}
-if(sel.length>1){alert("Tek seferde sadece 1 vekile mail gönderebilirsiniz. Lütfen tablodaki Mail butonlarını tek tek kullanın.");return;}
-const mp=sel[0];
-var body=buildPetition("SEÇİM BÖLGESİ MİLLETVEKİLİNE","Sayın "+mp.name+" ("+mp.city+")");
+const mp=mpDatabase.find(m=>m.email===e&&m.city===c);
+if(!mp){alert("Vekil bulunamadı.");return;}
+var body=buildPetition('mp');
 var url='mailto:'+mp.email+'?subject='+encodeURIComponent('7527 İptal Talebi - '+getMPRecordCode(mp))+'&body='+encodeURIComponent(body);
 window.location.href=url;
 }
-function tweetMPDirect(h,c,n){const mp=mpDatabase.find(m=>m.xHandle===h&&m.city===c&&m.name===n);const code=mp?getMPRecordCode(mp):"7527";const t=`${h} Sayın ${n}, Kayıt kodu: ${code}. ${c} seçmeni olarak 7527'nin iptalini istiyoruz! #7527İptalEt`;window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(t)}`,'_blank');}
-function emailMPDirect(e,c){const mp=mpDatabase.find(m=>m.email===e&&m.city===c);const code=mp?getMPRecordCode(mp):"7527";const name=mp?mp.name:"Sayın Milletvekili";window.location.href=`mailto:${e}?subject=${encodeURIComponent(`7527 İptal Talebi - ${code}`)}&body=${encodeURIComponent(`${name},\n\nKayıt kodu: ${code}\n${c} seçmeni olarak 7527'nin iptalini talep ediyorum. #7527İptalEt`)}`;}
-
 function initCitizenSignaturePad(){
 canvas=document.getElementById("signature-pad");if(!canvas)return;ctx=canvas.getContext("2d");
 canvas.width=canvas.offsetWidth;canvas.height=canvas.offsetHeight;
@@ -1205,27 +1202,9 @@ var adres=v('input-address')||'[Adres]';
 var iletisim=v('input-contact')||'[İletişim]';
 var bas='BAŞVURAN YURTTAŞ : '+ad+'\nT.C. KİMLİK NO    : '+tc+'\nADRES            : '+adres+', '+ilce+' / '+sehir+'\nİLETİŞİM         : '+iletisim+'\nDİLEKÇE KODU     : '+code+'\n\n';
 var imza='\n\nSaygılarımla,\n'+ad+'\nDilekçe Kodu: '+code;
-if(tip==='cb'){
-return 'T.C. CUMHURBAŞKANLIĞI MAKAMINA\nSayın Recep Tayyip ERDOĞAN\nANKARA\n\n'+bas+
-'KONU: 7527 Sayılı Kanun Uygulamalarının Durdurulması ve Yasal Düzenlemenin Yeniden Değerlendirilmesi İstemidir.\n\n'+
-'Sayın Cumhurbaşkanım;\n\n'+
-'7527 sayılı kanunun yürürlüğe girmesiyle birlikte ülke genelinde yaşanan toplu tecrit ve yaşam hakkı ihlalleri toplum vicdanını derinden yaralamaktadır. Ülkemizdeki barınak kapasitesi 105 bin civarındayken milyonlarca canlının tecride ve ölüme terk edilmesi kabul edilemez.\n\n'+
-'Anayasa\'nın yaşam hakkını teminat altına alan ilkeleri doğrultusunda; mevzuatın bilimsel kısırlaştırma ve etik koruma esasları çerçevesinde revize edilmesi, 7527 sayılı kanunun uygulamalarının durdurulması için gerekli idari ve yasal adımların atılmasını saygılarımla arz ederim.'+imza;
-}
-if(tip==='mb'){
-return 'T.C. TÜRKİYE BÜYÜK MİLLET MECLİSİ BAŞKANLIĞI\'NA\nSayın Numan KURTULMUŞ\nANKARA\n\n'+bas+
-'KONU: 7527 Sayılı Kanun\'un İptali ve 5199 Sayılı Kanun\'un Etik Kriterlerle Yeniden Yürürlüğe Konulması Talebidir.\n\n'+
-'Sayın Başkan;\n\n'+
-'Ülkemizdeki toplam barınak kapasitesi 105 bin civarındayken milyonlarca canlıyı tecrit ve ölüm kamplarına sokmayı öngören 7527 sayılı kanun; kamu düzenine, toplum vicdanına ve Anayasa\'nın yaşam hakkını teminat altına alan ilkelerine aykırıdır.\n\n'+
-'Bilimsel kısırlaştırma, etik koruma ve yaşatma ilkeleri esas alınarak; 7527 Sayılı Kanun\'un yürürlükten kaldırılması, 5199 Sayılı Hayvanları Koruma Kanunu\'nun yaşam hakkını önceleyen hükümleriyle yeniden yürürlüğe konulması ve mevzuatın bilimsel ve etik esaslar çerçevesinde revize edilmesi için TBMM çatısı altında gerekli girişimlerin başlatılmasını saygılarımla arz ederim.'+imza;
-}
-if(tip==='mp'){
-return 'SEÇİM BÖLGESİ MİLLETVEKİLİNE\nSayın '+v('mp-name')+'\n\n'+bas+
-'KONU: 7527 Sayılı Kanun\'un İptali İçin TBMM\'de Girişim Talebidir.\n\n'+
-'Sayın Milletvekili;\n\n'+
-'Seçim bölgeniz olan '+sehir+' ilinde ikamet eden bir seçmeniniz olarak; hiçbir bilimsel ve vicdani temeli olmayan 7527 sayılı yasa kapsamında yaşanan toplu tecrit ve yaşam hakkı ihlallerinin vebalini hatırlatıyorum.\n\n'+
-'Bilimsel kısırlaştırma ve etik koruma ilkeleri esas alınarak 7527 sayılı kanunun iptal edilmesi için TBMM çatısı altında derhal girişimde bulunmanızı, bu konuyu gündeme taşımanızı ve gerekli yasal düzenlemelerin başlatılması için çaba göstermenizi saygılarımla arz ederim.'+imza;
-}
+if(tip==='cb'){return 'T.C. CUMHURBAŞKANLIĞI MAKAMINA\nSayın Recep Tayyip ERDOĞAN\nANKARA\n\n'+bas+'KONU: 7527 Sayılı Kanun Uygulamalarının Durdurulması ve Yasal Düzenlemenin Yeniden Değerlendirilmesi İstemidir.\n\nSayın Cumhurbaşkanım;\n\n7527 sayılı kanunun yürürlüğe girmesiyle birlikte ülke genelinde yaşanan toplu tecrit ve yaşam hakkı ihlalleri toplum vicdanını derinden yaralamaktadır. Ülkemizdeki barınak kapasitesi 105 bin civarındayken milyonlarca canlının tecride ve ölüme terk edilmesi kabul edilemez.\n\nAnayasa\'nın yaşam hakkını teminat altına alan ilkeleri doğrultusunda; mevzuatın bilimsel kısırlaştırma ve etik koruma esasları çerçevesinde revize edilmesi, 7527 sayılı kanunun uygulamalarının durdurulması için gerekli idari ve yasal adımların atılmasını saygılarımla arz ederim.'+imza;}
+if(tip==='mb'){return 'T.C. TÜRKİYE BÜYÜK MİLLET MECLİSİ BAŞKANLIĞI\'NA\nSayın Numan KURTULMUŞ\nANKARA\n\n'+bas+'KONU: 7527 Sayılı Kanun\'un İptali ve 5199 Sayılı Kanun\'un Etik Kriterlerle Yeniden Yürürlüğe Konulması Talebidir.\n\nSayın Başkan;\n\nÜlkemizdeki toplam barınak kapasitesi 105 bin civarındayken milyonlarca canlıyı tecrit ve ölüm kamplarına sokmayı öngören 7527 sayılı kanun; kamu düzenine, toplum vicdanına ve Anayasa\'nın yaşam hakkını teminat altına alan ilkelerine aykırıdır.\n\nBilimsel kısırlaştırma, etik koruma ve yaşatma ilkeleri esas alınarak; 7527 Sayılı Kanun\'un yürürlükten kaldırılması, 5199 Sayılı Hayvanları Koruma Kanunu\'nun yaşam hakkını önceleyen hükümleriyle yeniden yürürlüğe konulması ve mevzuatın bilimsel ve etik esaslar çerçevesinde revize edilmesi için TBMM çatısı altında gerekli girişimlerin başlatılmasını saygılarımla arz ederim.'+imza;}
+if(tip==='mp'){return 'SEÇİM BÖLGESİ MİLLETVEKİLİNE\n\n'+bas+'KONU: 7527 Sayılı Kanun\'un İptali İçin TBMM\'de Girişim Talebidir.\n\nSayın Milletvekili;\n\nSeçim bölgeniz olan '+sehir+' ilinde ikamet eden bir seçmeniniz olarak; hiçbir bilimsel ve vicdani temeli olmayan 7527 sayılı yasa kapsamında yaşanan toplu tecrit ve yaşam hakkı ihlallerinin vebalini hatırlatıyorum.\n\nBilimsel kısırlaştırma ve etik koruma ilkeleri esas alınarak 7527 sayılı kanunun iptal edilmesi için TBMM çatısı altında derhal girişimde bulunmanızı, bu konuyu gündeme taşımanızı ve gerekli yasal düzenlemelerin başlatılması için çaba göstermenizi saygılarımla arz ederim.'+imza;}
 return '';
 }
 function validateCitizenForm(){
@@ -1260,15 +1239,23 @@ setTimeout(function(){window.print();},200);
 }
 function mailToCB(){
 if(!validateCitizenForm())return;
-var body=buildPetition("T.C. CUMHURBAŞKANLIĞI MAKAMINA","Sayın Recep Tayyip ERDOĞAN");
+var body=buildPetition('cb');
 var url='mailto:'+leaders.cb.email+'?subject='+encodeURIComponent('7527 İptal Talebi - '+getCitizenCode())+'&body='+encodeURIComponent(body);
-window.location.href=url;
+var acildi=false;
+function acMail(){if(acildi)return;acildi=true;window.location.href=url;}
+window.addEventListener('afterprint',function(){setTimeout(acMail,800);},{once:true});
+setTimeout(acMail,15000);
+setTimeout(function(){window.print();},300);
 }
 function mailToMB(){
 if(!validateCitizenForm())return;
-var body=buildPetition("T.C. TBMM BAŞKANLIĞINA","Sayın Numan KURTULMUŞ");
+var body=buildPetition('mb');
 var url='mailto:'+leaders.mb.email+'?subject='+encodeURIComponent('7527 İptal Talebi - '+getCitizenCode())+'&body='+encodeURIComponent(body);
-window.location.href=url;
+var acildi=false;
+function acMail(){if(acildi)return;acildi=true;window.location.href=url;}
+window.addEventListener('afterprint',function(){setTimeout(acMail,800);},{once:true});
+setTimeout(acMail,15000);
+setTimeout(function(){window.print();},300);
 }
 function shareCampaign(){
 const t="7527 İPTAL! İMZACISI OL! Öldüren değil, yaşatan ol!";
