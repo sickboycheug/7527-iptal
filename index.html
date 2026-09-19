@@ -180,7 +180,7 @@ body > header,body > main,body > footer,body > #thanks-modal,body > #confirm-mod
 </section>
 
 <section class="lg:col-span-7 space-y-6">
-<div class="bg-zinc-900 p-6 rounded-xl border-2 border-emerald-700 space-y-4 shadow-2xl sticky top-4">
+<div class="bg-zinc-900 p-6 rounded-xl border-2 border-emerald-700 space-y-4 shadow-2xl">
 <div class="border-b border-emerald-800/50 pb-3 flex justify-between items-center">
 <h2 class="text-lg font-bold text-white">3️⃣ DİLEKÇENİ KONTROL ET</h2>
 <span id="preview-target-label" class="text-xs font-bold text-emerald-400">Hedef seçilmedi</span>
@@ -1516,13 +1516,11 @@ return list;
 }
 
 function buildCaseTweet(ev,handles){
-return handles+' Sayın Vekiller;\n\n'+
-ev.date+' tarihinde '+ev.city+' ilinde yaşanan olay:\n\n'+
-'❌ '+ev.title+'\n\n'+
-ev.desc+'\n\n'+
-'Bu vahşetin sorumluları arasında siz de varsınız. 7527 için attığınız imza yüzünden canlar ölüyor.\n\n'+
-'📰 '+ev.source+'\n\n'+
-'#7527İptalEt #SorumlularHesapVersin #HayvanHakları';
+return handles+'\n'+
+'📍'+ev.city+' • '+ev.date+'\n'+
+'❌ '+ev.title+'\n'+
+'📰 '+ev.source+'\n'+
+'#7527İptalEt #HayvanHakları';
 }
 
 function tagCaseToSelectedMPs(caseId){
