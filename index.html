@@ -9,20 +9,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 body{font-family:'Inter',sans-serif}.font-impact{font-family:'Oswald',sans-serif}
-#printable-petitions .petition-page{display:none}
-#printable-petitions .petition-page.active{display:block}
 @media print{
 html,body{background:#fff!important;color:#000!important}
 body *{visibility:hidden}
-#printable-petitions,#printable-petitions *{visibility:visible}
-#printable-petitions{position:absolute;left:0;top:0;width:100%;color:#000;background:#fff;display:block!important}
-#printable-petitions .petition-page{display:none!important;page-break-after:always;padding:20mm;font-size:11pt;line-height:1.5;color:#000!important;background:#fff!important;border:none!important}
-#printable-petitions .petition-page.active{display:block!important}
+#print-petition,#print-petition *{visibility:visible}
+#print-petition{position:absolute;left:0;top:0;width:100%;color:#000;background:#fff;display:block!important;padding:20mm;font-size:11pt;line-height:1.6}
+#print-petition .val-sig{display:block!important;max-height:60px!important;margin-left:auto!important;margin-top:30px}
 .no-print{display:none!important}
-.val-signature{display:block!important;max-height:48px!important;margin-left:auto!important}
-#printable-petitions .text-red-400,#printable-petitions .text-red-500,#printable-petitions .text-zinc-500{color:#000!important}
 }
-#thanks-modal{display:none}
+#print-petition{display:none}
+#thanks-modal,#confirm-modal{display:none}
+.selected-target{background:#059669!important;border-color:#059669!important;color:#fff!important}
 </style>
 </head>
 <body class="bg-zinc-950 text-zinc-100 antialiased min-h-screen flex flex-col">
@@ -35,7 +32,18 @@ body *{visibility:hidden}
 <div class="bg-emerald-950/50 border border-emerald-800 rounded-lg p-3 text-center">
 <p class="text-[11px] text-emerald-300">Senin gibi duyarlı insanlar sayesinde bu vahşet son bulacak.</p>
 </div>
-<button onclick="closeThanks()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg text-sm uppercase">TAMAM</button>
+<button onclick="document.getElementById('thanks-modal').style.display='none'" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg text-sm uppercase">TAMAM</button>
+</div>
+</div>
+
+<div id="confirm-modal" class="fixed inset-0 z-50 bg-black/80 items-center justify-center p-4">
+<div class="bg-zinc-900 border-2 border-amber-600 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+<h3 class="text-lg font-bold text-white text-center">📧 E-POSTA GÖNDERİLDİ Mİ?</h3>
+<p class="text-sm text-zinc-300 text-center">Açılan e-posta penceresinde dilekçeyi gönderdiyseniz aşağıdaki butona basın. Sayaç sadece onay verdiğinizde artar.</p>
+<div class="grid grid-cols-2 gap-3">
+<button onclick="confirmSend(true)" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg text-sm uppercase">✅ EVET, GÖNDERDİM</button>
+<button onclick="confirmSend(false)" class="bg-zinc-700 hover:bg-zinc-600 text-white font-bold py-3 rounded-lg text-sm uppercase">❌ HAYIR</button>
+</div>
 </div>
 </div>
 
@@ -43,7 +51,7 @@ body *{visibility:hidden}
 <div class="max-w-5xl mx-auto space-y-4">
 <div class="inline-block bg-red-600 -rotate-1 px-6 py-2 shadow-xl rounded-sm"><h1 class="font-impact text-3xl md:text-5xl tracking-wider text-white uppercase italic">7527 İPTAL! İMZACISI OL!</h1></div>
 <p class="text-xl md:text-2xl font-extrabold text-zinc-200">ÖLDÜREN DEĞİL, YAŞATAN OL!</p>
-<p class="px-2 text-[10px] leading-relaxed md:text-sm font-semibold text-red-500 uppercase tracking-[0.12em] md:tracking-widest break-words">YAŞAM HAKKI İÇİN 🐾 HAYVANLAR İÇİN 🐾 GELECEĞİMİZ İÇİN</p>
+<p class="text-[10px] md:text-sm font-semibold text-red-500 uppercase tracking-widest">YAŞAM HAKKI İÇİN 🐾 HAYVANLAR İÇİN 🐾 GELECEĞİMİZ İÇİN</p>
 <div class="pt-2 flex flex-wrap justify-center gap-2">
 <button id="tab-vatandas" onclick="switchTab('vatandas')" class="px-5 py-2.5 rounded-lg font-bold text-sm uppercase tracking-wider transition border-2 bg-red-600 border-red-600 text-white shadow-lg">👤 VATANDAŞ PANELİ</button>
 <button id="tab-vekil" onclick="switchTab('vekil')" class="px-5 py-2.5 rounded-lg font-bold text-sm uppercase tracking-wider transition border-2 bg-zinc-900 border-zinc-700 text-zinc-400 hover:text-white">🏛️ MECLİS VEKİL PANELİ</button>
@@ -53,7 +61,6 @@ body *{visibility:hidden}
 <div id="campaign-qr" class="bg-white p-2 rounded-lg shrink-0"></div>
 <div class="text-left space-y-2 min-w-0">
 <p class="font-impact text-lg text-red-400 tracking-wide">7527 İPTAL! İMZACISI OL!</p>
-<p class="text-xs text-zinc-300">Kampanyayı paylaşmak için bağlantıyı kare kod olarak kullanın.</p>
 <input id="campaign-url" type="url" oninput="updateCampaignQR()" placeholder="Yayın adresini buraya yapıştırın" class="w-full bg-zinc-900 border border-zinc-700 rounded px-2 py-1.5 text-xs text-zinc-100 focus:border-red-600 focus:outline-none">
 <button type="button" onclick="downloadCampaignQR()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-3 rounded text-[10px] uppercase">⬇️ QR PNG İNDİR</button>
 </div>
@@ -63,8 +70,9 @@ body *{visibility:hidden}
 </header>
 
 <main id="panel-vatandas" class="max-w-7xl mx-auto px-4 py-8 w-full grid grid-cols-1 lg:grid-cols-12 gap-8">
-<section class="no-print contents lg:block lg:col-span-4 lg:space-y-6">
-<div class="order-1 bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-4 shadow-2xl">
+
+<section class="lg:col-span-5 space-y-6">
+<div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-4 shadow-2xl">
 <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
 <h2 class="text-xs font-bold text-zinc-300 uppercase tracking-wider">📊 İMZA HEDEF SAYACI</h2>
 <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-red-950 text-red-400 border border-red-800/80 animate-pulse">● CANLI</span>
@@ -73,219 +81,139 @@ body *{visibility:hidden}
 <div class="flex justify-between items-baseline text-xs"><span class="font-semibold text-zinc-300">Vatandaş İmza Hedefi</span><span class="font-bold text-red-500 font-mono text-sm" id="cnt-citizen">0 / 3.000.000</span></div>
 <div class="w-full bg-zinc-950 rounded-full h-3 overflow-hidden border border-zinc-800"><div id="bar-citizen" class="bg-gradient-to-r from-red-700 to-red-500 h-3 rounded-full" style="width:0%"></div></div>
 </div>
-<div class="space-y-1.5 pt-2 border-t border-zinc-800/60">
-<div class="flex justify-between items-baseline text-xs"><span class="font-semibold text-zinc-300">🏛️ Cumhurbaşkanına Gönderilen</span><span class="font-bold text-amber-400 font-mono text-xs" id="cnt-cb">0</span></div>
+<div class="grid grid-cols-3 gap-2 pt-3 border-t border-zinc-800/60 text-center">
+<div><div class="text-[9px] text-zinc-500 font-bold">CB</div><div class="text-amber-400 font-mono text-xs font-bold" id="cnt-cb">0</div></div>
+<div><div class="text-[9px] text-zinc-500 font-bold">MB</div><div class="text-amber-400 font-mono text-xs font-bold" id="cnt-mb">0</div></div>
+<div><div class="text-[9px] text-zinc-500 font-bold">VEKİL</div><div class="text-sky-400 font-mono text-xs font-bold" id="cnt-mp-sent">0</div></div>
 </div>
-<div class="space-y-1.5 pt-2 border-t border-zinc-800/60">
-<div class="flex justify-between items-baseline text-xs"><span class="font-semibold text-zinc-300">🏛️ TBMM Başkanına Gönderilen</span><span class="font-bold text-amber-400 font-mono text-xs" id="cnt-mb">0</span></div>
-</div>
-<div class="space-y-1.5 pt-2 border-t border-zinc-800/60">
-<div class="flex justify-between items-baseline text-xs"><span class="font-semibold text-zinc-300">✉️ Vekillere Gönderilen</span><span class="font-bold text-sky-400 font-mono text-xs" id="cnt-mp-sent">0</span></div>
-</div>
-<div class="space-y-1.5 pt-2 border-t border-zinc-800/60">
+<div class="space-y-1.5 pt-3 border-t border-zinc-800/60">
 <div class="flex justify-between items-baseline text-xs"><span class="font-semibold text-zinc-300">Meclis İptal İmzası</span><span class="font-bold text-emerald-400 font-mono text-sm" id="cnt-mp">0 / 592</span></div>
 <div class="w-full bg-zinc-950 rounded-full h-3 overflow-hidden border border-zinc-800"><div id="bar-mp" class="bg-gradient-to-r from-emerald-600 to-emerald-400 h-3 rounded-full" style="width:0%"></div></div>
 </div>
 </div>
 
-<div class="order-2 bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-4 shadow-2xl">
-<h2 class="text-lg font-bold text-white border-b border-zinc-800 pb-2">👤 VATANDAŞ İMZA MODÜLÜ</h2>
-<div class="space-y-3 text-sm">
-<div><label class="block text-xs font-semibold text-zinc-400 mb-1">AD SOYAD *</label><input type="text" id="input-name" oninput="updatePetitions()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-zinc-100 focus:border-red-600 focus:outline-none"></div>
-<div><label class="block text-xs font-semibold text-zinc-400 mb-1">T.C. KİMLİK NO *</label><input type="text" id="input-tc" oninput="updatePetitions()" maxlength="11" inputmode="numeric" autocomplete="off" required class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-zinc-100 focus:border-red-600 focus:outline-none"></div>
-<div class="grid grid-cols-2 gap-2">
-<div><label class="block text-xs font-semibold text-zinc-400 mb-1">ŞEHİR *</label><select id="input-city" onchange="filterMPTable();updatePetitions();renderAlmanac();" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-2 text-zinc-100 focus:border-red-600 focus:outline-none"></select></div>
-<div><label class="block text-xs font-semibold text-zinc-400 mb-1">İLÇE *</label><input type="text" id="input-district" oninput="updatePetitions()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-zinc-100 focus:border-red-600 focus:outline-none"></div>
+<div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-3 shadow-2xl">
+<h2 class="text-lg font-bold text-white border-b border-zinc-800 pb-2">1️⃣ KİME GÖNDERECEKSİN?</h2>
+<div class="grid grid-cols-3 gap-2">
+<button id="t-cb" onclick="selectTarget('cb')" class="border-2 border-amber-700 bg-amber-950/50 text-amber-300 font-bold py-3 rounded-lg text-xs uppercase hover:bg-amber-900/60">🏛️ CB</button>
+<button id="t-mb" onclick="selectTarget('mb')" class="border-2 border-amber-700 bg-amber-950/50 text-amber-300 font-bold py-3 rounded-lg text-xs uppercase hover:bg-amber-900/60">🏛️ MB</button>
+<button id="t-mp" onclick="selectTarget('mp')" class="border-2 border-emerald-700 bg-emerald-950/50 text-emerald-300 font-bold py-3 rounded-lg text-xs uppercase hover:bg-emerald-900/60">✉️ VEKİL</button>
 </div>
-<div><label class="block text-xs font-semibold text-zinc-400 mb-1">İKAME ADRESİ *</label><textarea id="input-address" oninput="updatePetitions()" rows="2" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-zinc-100 focus:border-red-600 focus:outline-none text-xs"></textarea></div>
-<div><label class="block text-xs font-semibold text-zinc-400 mb-1">TELEFON / E-POSTA</label><input type="text" id="input-contact" oninput="updatePetitions()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-zinc-100 focus:border-red-600 focus:outline-none"></div>
+<p class="text-[11px] text-zinc-400 text-center" id="target-info">Önce kime göndereceğini seç</p>
+</div>
+
+<div id="vekil-secim" class="hidden bg-zinc-900 p-4 rounded-xl border border-emerald-800/50 space-y-3">
+<h3 class="text-sm font-bold text-emerald-400 border-b border-emerald-900/40 pb-2">MİLLETVEKİLİ SEÇ (tek seçim)</h3>
+<input type="text" id="mp-search" oninput="filterVekilRadio()" placeholder="Ad soyad ara..." class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-xs text-zinc-100 focus:border-emerald-600 focus:outline-none">
+<div class="flex gap-2">
+<select id="filter-party" onchange="filterVekilRadio()" class="flex-1 bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-[11px] text-zinc-200">
+<option value="TÜMÜ">Tüm Partiler</option><option value="AK Parti">AK Parti</option><option value="CHP">CHP</option><option value="MHP">MHP</option><option value="DEM PARTİ">DEM PARTİ</option><option value="İYİ Parti">İYİ Parti</option><option value="Yeni Parti">Yeni Parti</option><option value="YENİ YOL">YENİ YOL</option><option value="BAĞIMSIZ">BAĞIMSIZ</option><option value="YENİDEN REFAH">YENİDEN REFAH</option><option value="SAADET Partisi">SAADET Partisi</option><option value="TİP">TİP</option><option value="HÜDA PAR">HÜDA PAR</option><option value="DBP">DBP</option><option value="EMEP">EMEP</option><option value="DSP">DSP</option><option value="DP">DP</option>
+</select>
+<select id="filter-city-mode" onchange="filterVekilRadio()" class="flex-1 bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-[11px] text-zinc-200">
+<option value="ALL">81 İl</option><option value="SELECTED">Vatandaşın ili</option>
+</select>
+</div>
+<div id="vekil-radio-list" class="max-h-72 overflow-y-auto space-y-1 border border-zinc-800 rounded p-2"></div>
+</div>
+
+<div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-3 shadow-2xl">
+<h2 class="text-lg font-bold text-white border-b border-zinc-800 pb-2">2️⃣ BİLGİLERİNİ DOLDUR</h2>
+<div class="space-y-3 text-sm">
+<div><label class="block text-xs font-semibold text-zinc-400 mb-1">AD SOYAD *</label><input type="text" id="input-name" oninput="updatePreview()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-zinc-100 focus:border-red-600 focus:outline-none"></div>
+<div><label class="block text-xs font-semibold text-zinc-400 mb-1">T.C. KİMLİK NO *</label><input type="text" id="input-tc" oninput="updatePreview()" maxlength="11" inputmode="numeric" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-zinc-100 focus:border-red-600 focus:outline-none"></div>
+<div class="grid grid-cols-2 gap-2">
+<div><label class="block text-xs font-semibold text-zinc-400 mb-1">ŞEHİR *</label><select id="input-city" onchange="updatePreview()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-2 text-zinc-100 focus:border-red-600 focus:outline-none"></select></div>
+<div><label class="block text-xs font-semibold text-zinc-400 mb-1">İLÇE *</label><input type="text" id="input-district" oninput="updatePreview()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-zinc-100 focus:border-red-600 focus:outline-none"></div>
+</div>
+<div><label class="block text-xs font-semibold text-zinc-400 mb-1">ADRES *</label><textarea id="input-address" oninput="updatePreview()" rows="2" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-zinc-100 focus:border-red-600 focus:outline-none text-xs"></textarea></div>
+<div><label class="block text-xs font-semibold text-zinc-400 mb-1">TELEFON / E-POSTA</label><input type="text" id="input-contact" oninput="updatePreview()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-zinc-100 focus:border-red-600 focus:outline-none"></div>
 <div class="pt-2">
-<div class="flex justify-between items-center mb-1"><label class="block text-xs font-semibold text-red-400">ISLAK İMZA</label><button type="button" onclick="clearSignature()" class="text-[10px] text-zinc-400 hover:text-white underline">Temizle</button></div>
+<div class="flex justify-between items-center mb-1"><label class="block text-xs font-semibold text-red-400">ISLAK İMZA *</label><button type="button" onclick="clearSignature()" class="text-[10px] text-zinc-400 hover:text-white underline">Temizle</button></div>
 <div class="relative border border-zinc-700 bg-white rounded-lg overflow-hidden touch-none"><canvas id="signature-pad" class="w-full h-28 cursor-crosshair block"></canvas></div>
 </div>
 </div>
 </div>
 
-<div class="order-4 bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-3">
-<button onclick="handlePrintAndIncrement()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg text-xs uppercase">🖨️ 3 RESMİ DİLEKÇEYİ İNDİR / YAZDIR</button>
+<div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-3">
 <div class="grid grid-cols-4 sm:grid-cols-7 gap-2">
-<button onclick="shareTo('x')" title="X" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 rounded-lg py-3 text-white font-bold text-base">𝕏</button>
-<button onclick="shareTo('fb')" title="Facebook" class="bg-blue-900 hover:bg-blue-800 border border-blue-700 rounded-lg py-3 text-white font-bold text-base">f</button>
-<button onclick="shareTo('wa')" title="WhatsApp" class="bg-emerald-900 hover:bg-emerald-800 border border-emerald-700 rounded-lg py-3 text-white font-bold text-base">💬</button>
-<button onclick="shareTo('tg')" title="Telegram" class="bg-sky-900 hover:bg-sky-800 border border-sky-700 rounded-lg py-3 text-white font-bold text-base">✈️</button>
-<button onclick="shareTo('li')" title="LinkedIn" class="bg-indigo-900 hover:bg-indigo-800 border border-indigo-700 rounded-lg py-3 text-white font-bold text-base">in</button>
-<button onclick="shareTo('ig')" title="Instagram" class="bg-pink-900 hover:bg-pink-800 border border-pink-700 rounded-lg py-3 text-white font-bold text-base">📷</button>
-<button onclick="shareTo('tt')" title="TikTok" class="bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 rounded-lg py-3 text-white font-bold text-base">♪</button>
+<button onclick="shareTo('x')" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 rounded-lg py-3 text-white font-bold">𝕏</button>
+<button onclick="shareTo('fb')" class="bg-blue-900 hover:bg-blue-800 border border-blue-700 rounded-lg py-3 text-white font-bold">f</button>
+<button onclick="shareTo('wa')" class="bg-emerald-900 hover:bg-emerald-800 border border-emerald-700 rounded-lg py-3 text-white font-bold">💬</button>
+<button onclick="shareTo('tg')" class="bg-sky-900 hover:bg-sky-800 border border-sky-700 rounded-lg py-3 text-white font-bold">✈️</button>
+<button onclick="shareTo('li')" class="bg-indigo-900 hover:bg-indigo-800 border border-indigo-700 rounded-lg py-3 text-white font-bold">in</button>
+<button onclick="shareTo('ig')" class="bg-pink-900 hover:bg-pink-800 border border-pink-700 rounded-lg py-3 text-white font-bold">📷</button>
+<button onclick="shareTo('tt')" class="bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 rounded-lg py-3 text-white font-bold">♪</button>
 </div>
-<button onclick="downloadShareCard()" class="w-full bg-fuchsia-700 hover:bg-fuchsia-600 text-white font-bold py-3 px-4 rounded-lg text-xs uppercase">📸 KAREKODLU PAYLAŞIM GÖRSELİ İNDİR</button>
+<button onclick="downloadShareCard()" class="w-full bg-fuchsia-700 hover:bg-fuchsia-600 text-white font-bold py-3 rounded-lg text-xs uppercase">📸 KAREKODLU PAYLAŞIM GÖRSELİ İNDİR</button>
 </div>
 
-<div class="order-5 bg-gradient-to-br from-red-950 via-zinc-900 to-emerald-950 p-5 rounded-xl border border-red-800/70 space-y-3 shadow-xl">
+<div class="bg-gradient-to-br from-red-950 via-zinc-900 to-emerald-950 p-5 rounded-xl border border-red-800/70 space-y-3">
 <h3 class="text-base font-bold text-white">🤝 KAMPANYA GÖNÜLLÜSÜ OL</h3>
-<p class="text-xs text-zinc-300">Saha çalışmaları, duyuru ve dayanışma faaliyetlerine destek olmak için bize ulaşın.</p>
-<a href="mailto:ara2024.tr@gmail.com?subject=7527%20Kampanya%20Gonullusu%20Basvurusu" class="block w-full bg-red-600 hover:bg-red-700 text-white text-center font-bold py-3 px-4 rounded-lg text-xs uppercase">✉️ GÖNÜLLÜLÜK BAŞVURUSU GÖNDER</a>
-<p class="text-[11px] text-zinc-400 text-center">ara2024.tr@gmail.com</p>
+<a href="mailto:ara2024.tr@gmail.com?subject=7527%20Kampanya%20Gonullusu%20Basvurusu" class="block w-full bg-red-600 hover:bg-red-700 text-white text-center font-bold py-3 rounded-lg text-xs uppercase">✉️ GÖNÜLLÜLÜK BAŞVURUSU GÖNDER</a>
 </div>
 </section>
 
-<section class="contents lg:block lg:col-span-8 lg:space-y-8">
-<div class="order-2 no-print bg-gradient-to-br from-amber-950 via-zinc-900 to-red-950 p-6 rounded-xl border-2 border-amber-700 space-y-4 shadow-2xl">
-<div class="border-b border-amber-800/50 pb-3">
-<h2 class="text-lg font-bold text-white">⭐ CUMHURBAŞKANI ve TBMM BAŞKANI'na DİLEKÇE GÖNDER</h2>
-<p class="text-xs text-amber-300 mt-1">Önce Cumhurbaşkanına, sonra TBMM Başkanına gönderin. En son vekillere tek tek yollayın.</p>
+<section class="lg:col-span-7 space-y-6">
+<div class="bg-zinc-900 p-6 rounded-xl border-2 border-emerald-700 space-y-4 shadow-2xl sticky top-4">
+<div class="border-b border-emerald-800/50 pb-3 flex justify-between items-center">
+<h2 class="text-lg font-bold text-white">3️⃣ DİLEKÇENİ KONTROL ET</h2>
+<span id="preview-target-label" class="text-xs font-bold text-emerald-400">Henüz hedef seçilmedi</span>
 </div>
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-<button onclick="mailToCB()" class="bg-amber-700 hover:bg-amber-600 text-white font-bold py-4 px-4 rounded-lg text-sm uppercase border border-amber-500 shadow-lg">
-🏛️ 1. CUMHURBAŞKANINA GÖNDER
-<div class="text-[10px] font-normal mt-1">Sayın Recep Tayyip ERDOĞAN</div>
-</button>
-<button onclick="mailToMB()" class="bg-amber-700 hover:bg-amber-600 text-white font-bold py-4 px-4 rounded-lg text-sm uppercase border border-amber-500 shadow-lg">
-🏛️ 2. TBMM BAŞKANINA GÖNDER
-<div class="text-[10px] font-normal mt-1">Sayın Numan KURTULMUŞ</div>
-</button>
+<div id="preview-content" class="bg-white border border-zinc-700 rounded-lg p-6 text-black max-h-[500px] overflow-y-auto" style="font-family:Georgia,serif;font-size:13px;line-height:1.7">
+<p class="text-zinc-500 italic">Yukarıdan önce kime göndereceğini seç. Seçim yaptığın anda dilekçen burada belirecek.</p>
 </div>
-</div>
-<div class="no-print order-3 bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-4">
-<div class="border-b border-zinc-800 pb-3">
-<h2 class="text-lg font-bold text-white">🏛️ 3. TBMM MİLLETVEKİLİ TAM LİSTESİ</h2>
-<p class="text-xs text-zinc-400" id="mp-count-info">Yükleniyor...</p>
-<p class="text-xs text-amber-400 font-bold mt-1">Her vekile satırdaki MAİL butonuna basarak tek tek gönderin</p>
-</div>
-<details class="bg-zinc-950 border border-amber-900/50 rounded-lg p-3 text-xs">
-<summary class="cursor-pointer font-bold text-amber-400">⚠️ TBMM'de Boş Olan 8 Koltuk</summary>
-<div class="pt-3 space-y-1 text-zinc-300 text-xs">
-<ul class="list-disc pl-5 space-y-1">
-<li><strong>Hasan Bitmez</strong> (SAADET / Kocaeli) — Vefat</li>
-<li><strong>Sırrı Süreyya Önder</strong> (DEM PARTİ / İstanbul) — Vefat</li>
-<li><strong>Şerafettin Can Atalay</strong> (TİP / Hatay) — Vekilliği düşürüldü</li>
-<li><strong>Murat Kurum</strong> (AK Parti / İstanbul) — Bakan atandı</li>
-<li><strong>Burcu Köksal</strong> (CHP / Afyonkarahisar) — Belediye Başkanı oldu</li>
-<li><strong>Abdurrahman Tutdere</strong> (CHP / Adıyaman) — Belediye Başkanı oldu</li>
-<li><strong>Hasan Baltacı</strong> (CHP / Kastamonu) — Belediye Başkanı oldu</li>
-<li><strong>Ahmet Önal</strong> (CHP / Kırıkkale) — Belediye Başkanı oldu</li>
-</ul>
-</div>
-</details>
-<div class="grid grid-cols-1 sm:grid-cols-4 gap-2">
-<div><label class="block text-[10px] text-zinc-400 mb-1 font-bold">PARTİ</label>
-<select id="filter-party" onchange="filterMPTable()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs text-zinc-200">
-<option value="TÜMÜ">Tüm Partiler</option><option value="AK Parti">AK Parti</option><option value="CHP">CHP</option><option value="MHP">MHP</option><option value="DEM PARTİ">DEM PARTİ</option><option value="İYİ Parti">İYİ Parti</option><option value="Yeni Parti">Yeni Parti</option><option value="YENİ YOL">YENİ YOL</option><option value="BAĞIMSIZ">BAĞIMSIZ</option><option value="YENİDEN REFAH">YENİDEN REFAH</option><option value="SAADET Partisi">SAADET Partisi</option><option value="TİP">TİP</option><option value="HÜDA PAR">HÜDA PAR</option><option value="DBP">DBP</option><option value="EMEP">EMEP</option><option value="DSP">DSP</option><option value="DP">DP</option>
-</select></div>
-<div><label class="block text-[10px] text-zinc-400 mb-1 font-bold">7527 OYU</label>
-<select id="filter-vote" onchange="filterMPTable()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs text-zinc-200">
-<option value="TÜMÜ">Tüm Oylar</option><option value="RET">🐾 YAŞASINLAR (RET)</option><option value="KABUL">⚰️ ÖLSÜNLER (KABUL)</option><option value="ÇEKİMSER">⚖️ ÇEKİMSER</option><option value="KATILMADI">➖ KATILMADI</option>
-</select></div>
-<div><label class="block text-[10px] text-zinc-400 mb-1 font-bold">ŞEHİR</label>
-<select id="filter-city-mode" onchange="filterMPTable()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs text-zinc-200"><option value="ALL">81 İlin Tamamı</option><option value="SELECTED">Sadece Seçili Şehir</option></select></div>
-<div><label class="block text-[10px] text-zinc-400 mb-1 font-bold">ARA</label><input type="text" id="mp-search" onkeyup="filterMPTable()" placeholder="İsim / şehir / parti" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-1.5 text-xs text-zinc-200"></div>
-</div>
-<div class="overflow-x-auto max-h-96 overflow-y-auto rounded border border-zinc-800">
-<table class="w-full text-left text-xs text-zinc-300">
-<thead class="bg-zinc-950 text-zinc-400 uppercase text-[10px] sticky top-0 z-10">
-<tr><th class="p-2.5 text-center w-10">#</th><th class="p-2.5">Şehir</th><th class="p-2.5">Ad Soyad</th><th class="p-2.5">Parti</th><th class="p-2.5 text-center">7527 Oyu</th><th class="p-2.5">X / E-posta</th><th class="p-2.5 text-center">Eylem</th></tr>
-</thead>
-<tbody id="mp-table-body" class="divide-y divide-zinc-800/50"></tbody>
-</table>
-</div>
+<button id="send-btn" onclick="sendCurrent()" disabled class="w-full bg-zinc-700 text-zinc-400 font-bold py-4 rounded-lg text-sm uppercase cursor-not-allowed">ÖNCE HEDEF SEÇ</button>
+<p class="text-[11px] text-amber-300 text-center">Gönder'e bastığında: PDF inecek + mail penceresi açılacak + onay verdiğinde sayaç artacak</p>
 </div>
 
-<div class="no-print order-6 bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-4">
+<div class="no-print bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-4">
 <div class="border-b border-zinc-800 pb-3">
-<h2 class="text-lg font-bold text-white">📚 VAKA & OLAY ALMANAK VERİ TABANI</h2>
+<h2 class="text-lg font-bold text-white">📚 VAKA & OLAY ALMANAK</h2>
 </div>
-<div class="bg-zinc-950 p-3 rounded-lg border border-zinc-800 flex flex-col sm:flex-row items-center gap-2">
-<label class="text-[11px] font-bold text-zinc-400 shrink-0">Almanak Linki:</label>
+<div class="bg-zinc-950 p-3 rounded-lg border border-zinc-800">
 <input type="text" id="almanac-url-input" value="https://almanak.hayvanhaklari.org" class="w-full bg-zinc-900 border border-zinc-800 rounded px-2.5 py-1 text-xs text-red-400 font-mono">
 </div>
-<div id="almanac-container" class="space-y-3 max-h-80 overflow-y-auto pr-1"></div>
-</div>
-
-<div id="printable-petitions" class="order-7 space-y-8">
-<div data-target="mb" class="petition-page bg-zinc-900 border border-zinc-800 p-8 rounded-xl text-zinc-200 space-y-4 text-xs md:text-sm">
-<div class="text-center font-bold space-y-1 uppercase"><p>T.C. TÜRKİYE BÜYÜK MİLLET MECLİSİ BAŞKANLIĞI'NA</p><p class="text-red-400">Sayın Numan KURTULMUŞ</p><p class="text-zinc-500 font-normal">ANKARA</p></div>
-<div class="pt-4 space-y-1 text-xs">
-<p><strong>BAŞVURAN:</strong> <span class="val-name font-semibold text-red-400">[Ad Soyad]</span></p>
-<p><strong>T.C. KİMLİK NO:</strong> <span class="val-tc">[Kimlik No]</span></p>
-<p><strong>ADRES:</strong> <span class="val-address">[Adres]</span>, <span class="val-district">[İlçe]</span> / <span class="val-city">[Şehir]</span></p>
-<p><strong>İLETİŞİM:</strong> <span class="val-contact">[İletişim]</span></p>
-</div>
-<p><strong>KONU:</strong> 7527 Sayılı Kanun'un İptali ve 5199 Sayılı Kanun'un Etik Kriterlerle Yeniden Yürürlüğe Konulması Talebidir.</p>
-<p class="leading-relaxed text-justify">Sayın Başkan; Ülkemizdeki toplam barınak kapasitesi 105 bin civarındayken milyonlarca canlıyı tecrit ve ölüm kamplarına sokmayı öngören 7527 sayılı kanun kamu düzenine ve vicdana aykırıdır. Bilimsel kısırlaştırma ve etik koruma ilkeleri esas alınarak kanunun iptali için TBMM çatısı altında gerekli girişimlerin başlatılmasını saygılarımla arz ederim.</p>
-<div class="pt-6 flex justify-end"><img class="val-signature hidden max-h-12" alt="İmza"/></div>
-</div>
-
-<div data-target="cb" class="petition-page bg-zinc-900 border border-zinc-800 p-8 rounded-xl text-zinc-200 space-y-4 text-xs md:text-sm">
-<div class="text-center font-bold space-y-1 uppercase"><p>T.C. CUMHURBAŞKANLIĞI MAKAMINA</p><p class="text-red-400">Sayın Recep Tayyip ERDOĞAN</p><p class="text-zinc-500 font-normal">ANKARA</p></div>
-<div class="pt-4 space-y-1 text-xs">
-<p><strong>BAŞVURAN YURTTAŞ:</strong> <span class="val-name font-semibold text-red-400">[Ad Soyad]</span></p>
-<p><strong>T.C. KİMLİK NO:</strong> <span class="val-tc">[Kimlik No]</span></p>
-<p><strong>ADRES:</strong> <span class="val-address">[Adres]</span>, <span class="val-district">[İlçe]</span> / <span class="val-city">[Şehir]</span></p>
-</div>
-<p><strong>KONU:</strong> 7527 Sayılı Kanun Uygulamalarının Durdurulması ve Yasal Düzenlemenin Yeniden Değerlendirilmesi İstemidir.</p>
-<p class="leading-relaxed text-justify">Sayın Cumhurbaşkanım; 7527 sayılı kanunun yürürlüğe girmesiyle birlikte ülke genelinde yaşanan toplu tecrit ve yaşam hakkı ihlalleri toplum vicdanını derinden yaralamaktadır. Anayasa'nın yaşam hakkını teminat altına alan ilkeleri doğrultusunda, mevzuatın bilimsel ve etik esaslar çerçevesinde revize edilmesi için idari ve yasal adımların atılmasını saygılarımla arz ederim.</p>
-<div class="pt-6 flex justify-end"><img class="val-signature hidden max-h-12" alt="İmza"/></div>
-</div>
-
-<div data-target="mp" class="petition-page bg-zinc-900 border border-zinc-800 p-8 rounded-xl text-zinc-200 space-y-4 text-xs md:text-sm">
-<div class="text-center font-bold space-y-1 uppercase"><p>SEÇİM BÖLGESİ MİLLETVEKİLLERİNE</p><p class="text-red-500" id="petition3-recipients">(<span class="val-city uppercase">İSTANBUL</span> MİLLETVEKİLLERİNİN DİKKATİNE)</p></div>
-<div class="pt-4 space-y-1 text-xs">
-<p><strong>SEÇMEN / YURTTAŞ:</strong> <span class="val-name font-semibold text-red-400">[Ad Soyad]</span></p>
-<p><strong>SEÇİM BÖLGESİ:</strong> <span class="val-district">[İlçe]</span> / <span class="val-city">[Şehir]</span></p>
-</div>
-<p><strong>SAYIN MİLLETVEKİLİ,</strong></p>
-<p class="leading-relaxed text-justify">Seçim bölgeniz olan <span class="val-city font-bold">[Şehir]</span> ilinde ikamet eden bir seçmeniniz olarak; hiçbir bilimsel ve vicdani temeli olmayan 7527 sayılı yasa kapsamında yaşanan katliamların ve tecrit vahşetinin vebalini hatırlatıyorum. Yasayı iptal ettirmek için TBMM'de derhal girişimde bulunmanızı talep ediyorum.</p>
-<div class="pt-6 flex justify-end"><img class="val-signature hidden max-h-12" alt="İmza"/></div>
-</div>
+<div id="almanac-container" class="space-y-3"></div>
 </div>
 </section>
 </main>
 
 <main id="panel-vekil" class="hidden max-w-7xl mx-auto px-4 py-8 w-full grid grid-cols-1 lg:grid-cols-12 gap-8">
 <section class="lg:col-span-5 space-y-6">
-<div class="bg-gradient-to-br from-emerald-950 via-zinc-900 to-red-950 p-6 rounded-xl border-2 border-emerald-700 shadow-2xl space-y-3">
+<div class="bg-gradient-to-br from-emerald-950 via-zinc-900 to-red-950 p-6 rounded-xl border-2 border-emerald-700 space-y-3">
 <h2 class="text-lg md:text-xl font-impact text-white uppercase tracking-wider text-center">🏛️ MECLİS VEKİL PANELİ</h2>
-<p class="text-xs text-center text-zinc-300">Sayın Milletvekili, adınızı seçip formu doldurarak ve ıslak imzanızı atarak olağanüstü toplantı çağrılı iptal dilekçesini imzalayabilirsiniz.</p>
 <div class="bg-zinc-950/80 border border-emerald-800/50 rounded-lg p-4">
 <div class="flex justify-between items-baseline"><span class="text-xs text-zinc-400 font-semibold">İMZALAYAN VEKİL SAYISI</span><span class="text-emerald-400 font-mono font-bold text-xl" id="mp-signed-counter-2">0 / 592</span></div>
 </div>
 </div>
-
-<div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-4 shadow-2xl">
+<div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-4">
 <h3 class="text-base font-bold text-white border-b border-zinc-800 pb-2">👤 VEKİL KİMLİK BİLGİLERİ</h3>
 <div class="space-y-3 text-sm">
-<div>
-<label class="block text-xs font-semibold text-zinc-400 mb-1">MİLLETVEKİLİ ARA / SEÇ *</label>
 <input type="text" id="mp-search-input" oninput="filterVekilList()" placeholder="Ad soyad yazın" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-zinc-100 focus:border-emerald-600 focus:outline-none">
-<select id="mp-select" size="6" onchange="showSelectedMP(this)" class="w-full mt-2 bg-zinc-950 border border-zinc-800 rounded px-2 py-1 text-xs text-zinc-200"></select>
-<p id="mp-selected-info" class="text-[11px] text-emerald-400 min-h-4">Listeden adınızı seçin.</p>
-</div>
+<select id="mp-select" size="6" onchange="showSelectedMP(this)" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-1 text-xs text-zinc-200"></select>
+<p id="mp-selected-info" class="text-[11px] text-emerald-400">Listeden adınızı seçin.</p>
 <div class="pt-2">
 <div class="flex justify-between items-center mb-1"><label class="block text-xs font-semibold text-emerald-400">ISLAK İMZA (VEKİL)</label><button type="button" onclick="clearMPSignature()" class="text-[10px] text-zinc-400 hover:text-white underline">Temizle</button></div>
 <div class="relative border border-emerald-800/50 bg-white rounded-lg overflow-hidden touch-none"><canvas id="mp-signature-pad" class="w-full h-32 cursor-crosshair block"></canvas></div>
-<button onclick="signAsMP()" class="w-full mt-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg text-xs uppercase">✍️ DİLEKÇEYİ İMZALA VE MECLİSE SUN</button>
+<button onclick="signAsMP()" class="w-full mt-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg text-xs uppercase">✍️ İMZALA VE MECLİSE SUN</button>
 </div>
 </div>
 </div>
-
 <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-3">
 <h3 class="text-base font-bold text-white border-b border-zinc-800 pb-2">📋 İMZALAYAN VEKİLLER</h3>
 <div id="signed-mps-list-2" class="space-y-2 max-h-80 overflow-y-auto text-xs"></div>
 </div>
 </section>
-
 <section class="lg:col-span-7">
-<div class="bg-zinc-900 p-8 rounded-xl border border-zinc-800 shadow-2xl space-y-4 text-zinc-200">
-<div class="text-center font-bold space-y-1 uppercase border-b border-zinc-800 pb-4">
-<p class="text-lg md:text-xl font-impact text-emerald-400">T.C. TÜRKİYE BÜYÜK MİLLET MECLİSİ BAŞKANLIĞI'NA</p>
+<div class="bg-zinc-900 p-8 rounded-xl border border-zinc-800 text-zinc-200 space-y-4">
+<div class="text-center font-bold uppercase border-b border-zinc-800 pb-4">
+<p class="text-lg font-impact text-emerald-400">T.C. TÜRKİYE BÜYÜK MİLLET MECLİSİ BAŞKANLIĞI'NA</p>
 <p class="text-red-400">Sayın Numan KURTULMUŞ</p>
-<p class="text-zinc-500 font-normal text-xs">ANKARA</p>
+<p class="text-zinc-500 text-xs">ANKARA</p>
 </div>
-<p class="text-xs"><strong>KONU:</strong> 7527 Sayılı Kanun'un İptali, 5199 Sayılı Kanun'un Yaşam Hakkını Önceleyen Hükümleriyle Yeniden Yürürlüğe Konulması ve Olağanüstü Toplantı Çağrısı Talebidir.</p>
-<p class="text-sm leading-relaxed text-justify"><strong>Sayın Başkan,</strong></p>
-<p class="text-sm leading-relaxed bg-emerald-950/40 border-l-4 border-emerald-600 pl-4 py-3"><strong>İMZALAYAN MİLLETVEKİLİ:</strong> <span id="petition-selected-mp" class="text-emerald-300">Henüz vekil seçilmedi.</span></p>
-<p class="text-sm leading-relaxed text-justify">Aşağıda imzası bulunan milletvekilleri olarak; ülkemizdeki mevcut barınak kapasitesinin 105 bin civarında olduğu gerçeği karşısında, milyonlarca canlının yaşam hakkını tehdit eden <strong>7527 Sayılı Hayvanları Koruma Kanununda Değişiklik Yapılmasına Dair Kanun</strong>'un yürürlükten kaldırılarak, <strong>5199 Sayılı Hayvanları Koruma Kanunu</strong>'nun yaşam hakkını önceleyen hükümleriyle yeniden yürürlüğe konulmasını ve yasanın <strong>bilimsel kısırlaştırma, etik koruma ve yaşatma ilkeleri</strong> çerçevesinde iyileştirilmesini talep ediyoruz.</p>
-<p class="text-sm leading-relaxed text-justify bg-red-950/40 border-l-4 border-red-600 pl-4 py-3 italic">Kamu vicdanını derinden yaralayan, masum canlıların hayatını sistematik olarak tehdit eden bu vahşetin artık son bulması gerekmektedir. <strong>Bıçak kemiğe dayanmıştır.</strong></p>
-<p class="text-sm leading-relaxed text-justify font-bold text-amber-400">Yukarıda arz edilen gerekçelerle; TÜRKİYE BÜYÜK MİLLET MECLİSİ'nin <u>OLAĞANÜSTÜ TOPLANTIYA</u> çağrılmasını, ilgili kanun teklifinin acilen gündeme alınmasını ve 7527 sayılı kanunun iptal sürecinin başlatılmasını saygılarımızla arz ederiz.</p>
+<p class="text-sm"><strong>KONU:</strong> 7527 Sayılı Kanun'un İptali, 5199 Sayılı Kanun'un Yaşam Hakkını Önceleyen Hükümleriyle Yeniden Yürürlüğe Konulması ve Olağanüstü Toplantı Çağrısı Talebidir.</p>
+<p class="text-sm bg-emerald-950/40 border-l-4 border-emerald-600 pl-4 py-3"><strong>İMZALAYAN MİLLETVEKİLİ:</strong> <span id="petition-selected-mp" class="text-emerald-300">Henüz vekil seçilmedi.</span></p>
+<p class="text-sm leading-relaxed">Aşağıda imzası bulunan milletvekilleri olarak; ülkemizdeki mevcut barınak kapasitesinin 105 bin civarında olduğu gerçeği karşısında, milyonlarca canlının yaşam hakkını tehdit eden <strong>7527 Sayılı Hayvanları Koruma Kanunu</strong>'nun yürürlükten kaldırılarak, <strong>5199 Sayılı Kanun</strong>'un yaşam hakkını önceleyen hükümleriyle yeniden yürürlüğe konulmasını talep ediyoruz.</p>
 <div class="pt-4 border-t border-zinc-800">
 <p class="text-xs font-bold text-zinc-400 uppercase mb-2">İMZALAYAN MİLLETVEKİLLERİ</p>
 <div id="petition-signatures-preview-2" class="text-xs text-zinc-300 space-y-1 italic"><p class="text-zinc-500">Henüz imza yok.</p></div>
@@ -298,27 +226,28 @@ body *{visibility:hidden}
 <p class="font-bold text-zinc-400 uppercase tracking-widest">7527 İPTAL! İMZACISI OL! 🐾 ÖLDÜREN DEĞİL, YAŞATAN OL!</p>
 </footer>
 
+<div id="print-petition"></div>
+
 <script>
-const CITIZEN_SIGNED_KEY='sign7527_citizen_signed_v8';
-const CITIZEN_COUNT_KEY='sign7527_citizen_count_v8';
-const MP_SIGNATURES_KEY='sign7527_mp_signatures_v8';
-const CITIZEN_CODE_KEY='sign7527_citizen_code_v8';
-const CB_COUNT_KEY='sign7527_cb_count_v8';
-const MB_COUNT_KEY='sign7527_mb_count_v8';
-const MP_SENT_COUNT_KEY='sign7527_mp_sent_count_v8';
+const CITIZEN_COUNT_KEY='sign7527_citizen_count_v10';
+const MP_SIGNATURES_KEY='sign7527_mp_signatures_v10';
+const CITIZEN_CODE_KEY='sign7527_citizen_code_v10';
+const CB_COUNT_KEY='sign7527_cb_count_v10';
+const MB_COUNT_KEY='sign7527_mb_count_v10';
+const MP_SENT_COUNT_KEY='sign7527_mp_sent_count_v10';
 let citizenCount=parseInt(localStorage.getItem(CITIZEN_COUNT_KEY)||'0',10);
-let citizenHasSigned=localStorage.getItem(CITIZEN_SIGNED_KEY)==='true';
 let cbCount=parseInt(localStorage.getItem(CB_COUNT_KEY)||'0',10);
 let mbCount=parseInt(localStorage.getItem(MB_COUNT_KEY)||'0',10);
 let mpSentCount=parseInt(localStorage.getItem(MP_SENT_COUNT_KEY)||'0',10);
 let mpSignatures=JSON.parse(localStorage.getItem(MP_SIGNATURES_KEY)||'[]');
-mpSignatures=mpSignatures.map(function(s){return{id:s.id,city:s.city,party:s.party,vote:s.vote||"KABUL",date:s.date,signature:s.signature,recordCode:s.recordCode||('7527-V'+String(s.id).padStart(4,'0')),initials:s.initials||s.name||''};});
-localStorage.setItem(MP_SIGNATURES_KEY,JSON.stringify(mpSignatures));
 const statsData={citizenTarget:3000000};
 const leaders={
 cb:{email:'iletisim@tccb.gov.tr',name:'Recep Tayyip ERDOĞAN'},
 mb:{email:'numan.kurtulmus@tbmm.gov.tr',name:'Numan KURTULMUŞ'}
 };
+let selectedTarget=null;
+let selectedVekil=null;
+let pendingConfirm=null;
 
 const rawMPText = `Adana|Abdullah DOĞRU|AK Parti
 Adana|Ahmet ZENBİLCİ|BAĞIMSIZ
@@ -699,8 +628,7 @@ Kahramanmaraş|Vahit KİRİŞCİ|AK Parti
 Kahramanmaraş|Zuhal KARAKOÇ|MHP
 Karabük|Cem ŞAHİN|AK Parti
 Karabük|Cevdet AKAY|CHP
-Karabük|Durmuş Ali KESKİNKILIÇ|AK Parti
-Karaman|İsmail Atakan ÜNVER|Yeni Parti
+Karabük|Karaman|İsmail Atakan ÜNVER|Yeni Parti
 Karaman|Osman SAĞLAM|AK Parti
 Karaman|Selman Oğuzhan ESER|AK Parti
 Kars|Adem ÇALKIN|AK Parti
@@ -962,17 +890,13 @@ function initPage(){
 updateCounters();
 populateCityDropdown();
 populateVekilSelect();
-updatePetitions();
-filterMPTable();
 initCitizenSignaturePad();
 initMPSignaturePad();
 renderSignedMPs();
 renderAlmanac();
 initCampaignQR();
-var info=document.getElementById("mp-count-info");
-if(info) info.textContent='Listede '+mpDatabase.length+' milletvekili ('+citiesList.length+' il). Mecliste 8 koltuk boş olduğu için toplam 600 değil '+mpDatabase.length+"'dir.";
+filterVekilRadio();
 }
-
 if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',initPage);}else{initPage();}
 
 window.addEventListener('resize',function(){
@@ -983,13 +907,12 @@ if(mpCanvas){mpCanvas.width=mpCanvas.offsetWidth;mpCanvas.height=mpCanvas.offset
 function updateCounters(){
 var cc=document.getElementById("cnt-citizen");if(cc)cc.textContent=citizenCount.toLocaleString('tr-TR')+' / '+statsData.citizenTarget.toLocaleString('tr-TR');
 var bc=document.getElementById("bar-citizen");if(bc)bc.style.width=Math.min(100,(citizenCount/statsData.citizenTarget)*100)+"%";
-var cc2=document.getElementById("cnt-cb");if(cc2)cc2.textContent=cbCount.toLocaleString('tr-TR');
-var cc3=document.getElementById("cnt-mb");if(cc3)cc3.textContent=mbCount.toLocaleString('tr-TR');
-var cc4=document.getElementById("cnt-mp-sent");if(cc4)cc4.textContent=mpSentCount.toLocaleString('tr-TR');
+var e1=document.getElementById("cnt-cb");if(e1)e1.textContent=cbCount.toLocaleString('tr-TR');
+var e2=document.getElementById("cnt-mb");if(e2)e2.textContent=mbCount.toLocaleString('tr-TR');
+var e3=document.getElementById("cnt-mp-sent");if(e3)e3.textContent=mpSentCount.toLocaleString('tr-TR');
 var mpCount=mpSignatures.length;
 var cm=document.getElementById("cnt-mp");if(cm)cm.textContent=mpCount+' / '+MP_TARGET;
 var bm=document.getElementById("bar-mp");if(bm)bm.style.width=Math.min(100,(mpCount/MP_TARGET)*100)+"%";
-var a=document.getElementById("mp-signed-counter");if(a)a.textContent=mpCount+' / '+MP_TARGET;
 var b=document.getElementById("mp-signed-counter-2");if(b)b.textContent=mpCount+' / '+MP_TARGET;
 }
 
@@ -1012,9 +935,9 @@ new QRCode(container,{text:url,width:128,height:128,colorDark:"#18181b",colorLig
 function downloadCampaignQR(){
 var container=document.getElementById("campaign-qr");
 var code=container&&container.querySelector("canvas, img");
-if(!code){alert("Önce geçerli bir yayın adresi girin.");return;}
+if(!code)return;
 var link=document.createElement("a");
-link.download="7527-iptal-kare-kod.png";
+link.download="7527-qr.png";
 link.href=code.tagName.toLowerCase()==="canvas"?code.toDataURL("image/png"):code.src;
 link.click();
 }
@@ -1022,74 +945,234 @@ function populateCityDropdown(){
 var sel=document.getElementById("input-city");if(!sel)return;sel.innerHTML="";
 citiesList.forEach(function(c){var o=document.createElement("option");o.value=c;o.textContent=c;if(c==="İstanbul")o.selected=true;sel.appendChild(o);});
 }
-function updatePetitions(){
-var name=(document.getElementById("input-name").value||"").trim()||"[Ad Soyad]";
-var tc=(document.getElementById("input-tc").value||"").trim()||"[Kimlik No]";
-var city=document.getElementById("input-city").value;
-var district=(document.getElementById("input-district").value||"").trim()||"[İlçe]";
-var address=(document.getElementById("input-address").value||"").trim()||"[Adres]";
-var contact=(document.getElementById("input-contact").value||"").trim()||"[İletişim]";
-document.querySelectorAll(".val-name").forEach(function(e){e.textContent=name;});
-document.querySelectorAll(".val-tc").forEach(function(e){e.textContent=tc;});
-document.querySelectorAll(".val-city").forEach(function(e){e.textContent=city;});
-document.querySelectorAll(".val-district").forEach(function(e){e.textContent=district;});
-document.querySelectorAll(".val-address").forEach(function(e){e.textContent=address;});
-document.querySelectorAll(".val-contact").forEach(function(e){e.textContent=contact;});
-var el=document.getElementById("petition3-recipients");
-if(el)el.innerHTML='(<span class="uppercase">'+city+"</span> MİLLETVEKİLLERİNİN DİKKATİNE)";
+function v(id){var el=document.getElementById(id);return el?(el.value||'').trim():'';}
+function getCitizenCode(){
+var c=localStorage.getItem(CITIZEN_CODE_KEY);
+if(!c){c='7527-C'+String(Date.now()).slice(-5);localStorage.setItem(CITIZEN_CODE_KEY,c);}
+return c;
 }
-function filterMPTable(){
-var city=document.getElementById("input-city").value;
-var partyF=document.getElementById("filter-party").value;
-var voteF=document.getElementById("filter-vote").value;
-var mode=document.getElementById("filter-city-mode").value;
-var q=(document.getElementById("mp-search").value||"").toLowerCase();
-var tb=document.getElementById("mp-table-body");if(!tb)return;tb.innerHTML="";
-var list=mpDatabase.filter(function(m){
-var mC=mode==="ALL"||m.city===city;
-var mP=partyF==="TÜMÜ"||m.party===partyF;
-var mV=voteF==="TÜMÜ"||m.vote===voteF;
-var mQ=m.name.toLowerCase().indexOf(q)>-1||m.city.toLowerCase().indexOf(q)>-1||m.party.toLowerCase().indexOf(q)>-1;
-return mC&&mP&&mV&&mQ;
-});
-if(list.length===0){tb.innerHTML='<tr><td colspan="7" class="p-4 text-center text-zinc-500">Sonuç yok.</td></tr>';return;}
-list.forEach(function(m){
-var badge="";
-if(m.vote==="RET"){badge='<span class="bg-emerald-950 text-emerald-300 border border-emerald-700 px-2 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">🐾 YAŞASINLAR (RET)</span>';}
-else if(m.vote==="KABUL"){badge='<span class="bg-red-950 text-red-400 border border-red-800 px-2 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">⚰️ ÖLSÜNLER (KABUL)</span>';}
-else{var lbl=m.vote==="ÇEKİMSER"?"ÇEKİMSER":"KATILMADI";badge='<span class="bg-amber-950 text-amber-300 border border-amber-800 px-2 py-0.5 rounded text-[10px] font-bold whitespace-nowrap">➖ '+lbl+'</span>';}
-var tr=document.createElement("tr");
-tr.className="hover:bg-zinc-800/40 transition border-b border-zinc-800/40";
-tr.innerHTML='<td class="p-2.5 text-center font-mono text-zinc-500">'+m.no+'</td>'+
-'<td class="p-2.5 font-semibold text-zinc-300">'+m.city+'</td>'+
-'<td class="p-2.5 font-bold text-white">'+m.name+'</td>'+
-'<td class="p-2.5 text-zinc-400 font-semibold">'+m.party+'</td>'+
-'<td class="p-2.5 text-center">'+badge+'</td>'+
-'<td class="p-2.5 text-[11px] font-mono"><div class="text-sky-400 font-bold">🐦 '+m.xHandle+'</div><div class="text-emerald-400">✉️ '+m.email+'</div></td>'+
-'<td class="p-2.5 text-center space-y-1">'+
-'<button onclick="tweetMPDirect(\''+m.xHandle+'\',\''+m.city+'\',\''+m.name.replace(/'/g,"")+'\')" class="w-full bg-sky-950 hover:bg-sky-900 text-sky-300 border border-sky-800 px-2 py-0.5 rounded text-[10px] font-bold">X</button>'+
-'<button onclick="emailMPDirect(\''+m.email+'\',\''+m.city+'\')" class="w-full bg-emerald-700 hover:bg-emerald-600 text-white border border-emerald-500 px-2 py-1 rounded text-[10px] font-bold">MAİL</button>'+
-'</td>';
-tb.appendChild(tr);
-});
-}
-function getMPRecordCode(mp){return '7527-V'+String(mp.id).padStart(4,'0');}
-function tweetMPDirect(h,c,n){var mp=mpDatabase.find(function(m){return m.xHandle===h&&m.city===c&&m.name===n;});var code=mp?getMPRecordCode(mp):"7527";var t=h+' Sayın '+n+', Kayıt kodu: '+code+'. '+c+" seçmeni olarak 7527'nin iptalini istiyoruz! #7527İptalEt";window.open('https://x.com/intent/tweet?text='+encodeURIComponent(t),'_blank');}
 
-function emailMPDirect(e,c){
-if(!validateCitizenForm())return;
-var mp=mpDatabase.find(function(m){return m.email===e&&m.city===c;});
-if(!mp){alert("Vekil bulunamadı.");return;}
-var body=buildPetition('mp');
-var url='mailto:'+mp.email+'?subject='+encodeURIComponent('7527 İptal Talebi - '+getMPRecordCode(mp))+'&body='+encodeURIComponent(body);
+function selectTarget(t){
+selectedTarget=t;
+['cb','mb','mp'].forEach(function(x){
+var b=document.getElementById('t-'+x);
+if(b){if(x===t){b.classList.add('selected-target');}else{b.classList.remove('selected-target');}}
+});
+var vs=document.getElementById('vekil-secim');
+if(t==='mp'){vs.classList.remove('hidden');}
+else{vs.classList.add('hidden');}
+var info=document.getElementById('target-info');
+var lbl=document.getElementById('preview-target-label');
+if(t==='cb'){info.textContent='Cumhurbaşkanına gönderilecek';lbl.textContent='🏛️ CUMHURBAŞKANI DİLEKÇESİ';lbl.className='text-xs font-bold text-amber-400';}
+else if(t==='mb'){info.textContent='TBMM Başkanına gönderilecek';lbl.textContent='🏛️ TBMM BAŞKANI DİLEKÇESİ';lbl.className='text-xs font-bold text-amber-400';}
+else{if(selectedVekil){info.textContent=selectedVekil.name+' vekiline gönderilecek';lbl.textContent='✉️ '+selectedVekil.name.toUpperCase()+' DİLEKÇESİ';}else{info.textContent='Aşağıdan bir vekil seç';lbl.textContent='✉️ VEKİL SEÇİLMEDİ';}lbl.className='text-xs font-bold text-emerald-400';}
+updatePreview();
+}
+
+function filterVekilRadio(){
+var container=document.getElementById('vekil-radio-list');if(!container)return;
+var q=(document.getElementById('mp-search').value||'').toLowerCase();
+var partyF=document.getElementById('filter-party').value;
+var mode=document.getElementById('filter-city-mode').value;
+var city=document.getElementById('input-city').value;
+var list=mpDatabase.filter(function(m){
+if(partyF!=='TÜMÜ'&&m.party!==partyF)return false;
+if(mode==='SELECTED'&&m.city!==city)return false;
+if(q&&m.name.toLowerCase().indexOf(q)===-1&&m.city.toLowerCase().indexOf(q)===-1&&m.party.toLowerCase().indexOf(q)===-1)return false;
+return true;
+});
+if(list.length===0){container.innerHTML='<p class="text-xs text-zinc-500 p-2">Sonuç yok.</p>';return;}
+container.innerHTML=list.slice(0,300).map(function(m){
+var badge=m.vote==='RET'?'🐾':(m.vote==='KABUL'?'⚰️':'➖');
+var sel=selectedVekil&&selectedVekil.id===m.id?'border-emerald-600 bg-emerald-950/40':'border-zinc-800 bg-zinc-950';
+return '<label class="flex items-center gap-2 p-2 border rounded cursor-pointer hover:bg-zinc-800/40 '+sel+'"><input type="radio" name="vekilRadio" value="'+m.id+'" '+(sel.indexOf('emerald')>-1?'checked':'')+' onchange="pickVekil('+m.id+')" class="accent-emerald-600"><div class="flex-1 min-w-0 text-[11px]"><div class="font-bold text-white truncate">'+m.name+' <span class="text-amber-400">'+badge+'</span></div><div class="text-zinc-400">'+m.city+' • '+m.party+'</div></div></label>';
+}).join('');
+}
+function pickVekil(id){
+var mp=mpDatabase.find(function(m){return m.id===id;});
+if(!mp)return;
+selectedVekil=mp;
+selectTarget('mp');
+}
+function populateVekilSelect(){
+var sel=document.getElementById("mp-select");if(!sel)return;sel.innerHTML="";
+mpDatabase.forEach(function(m){var o=document.createElement("option");o.value=m.id;o.textContent=m.name+' — '+m.city+' — '+m.party;sel.appendChild(o);});
+}
+function filterVekilList(){
+var q=(document.getElementById("mp-search-input").value||"").toLowerCase();
+selectedMPId=null;
+var sel=document.getElementById("mp-select");if(!sel)return;sel.innerHTML="";
+var list=mpDatabase.filter(function(m){return m.name.toLowerCase().indexOf(q)>-1||m.city.toLowerCase().indexOf(q)>-1||m.party.toLowerCase().indexOf(q)>-1;});
+if(list.length===0){var o=document.createElement("option");o.textContent="Sonuç yok";o.disabled=true;sel.appendChild(o);return;}
+list.forEach(function(m){var o=document.createElement("option");o.value=m.id;o.textContent=m.name+' — '+m.city+' — '+m.party;sel.appendChild(o);});
+}
+function showSelectedMP(sel){
+var info=document.getElementById("mp-selected-info");
+var mp=mpDatabase.find(function(m){return m.id===parseInt(sel.value);});
+if(!mp)return;
+selectedMPId=mp.id;
+var s=document.getElementById("mp-search-input");
+if(s)s.value=mp.name;
+if(info)info.textContent='Seçilen vekil: '+mp.name+' ('+mp.city+' / '+mp.party+')';
+var petition=document.getElementById("petition-selected-mp");
+if(petition)petition.textContent=mp.name+' - '+mp.city+' / '+mp.party;
+}
+
+function updatePreview(){
+var box=document.getElementById('preview-content');
+if(!box)return;
+if(!selectedTarget){box.innerHTML='<p class="text-zinc-500 italic">Yukarıdan önce kime göndereceğini seç.</p>';return;}
+if(selectedTarget==='mp'&&!selectedVekil){box.innerHTML='<p class="text-zinc-500 italic">Aşağıdaki listeden bir vekil seç.</p>';return;}
+box.innerHTML=buildPetitionHTML(selectedTarget);
+var btn=document.getElementById('send-btn');
+btn.disabled=false;
+btn.className='w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-lg text-sm uppercase shadow-lg';
+if(selectedTarget==='cb')btn.textContent='📨 CUMHURBAŞKANINA GÖNDER';
+else if(selectedTarget==='mb')btn.textContent='📨 TBMM BAŞKANINA GÖNDER';
+else btn.textContent='📨 '+selectedVekil.name.toUpperCase()+' VEKİLİNE GÖNDER';
+}
+
+function buildPetitionHTML(tip){
+var ad=v('input-name')||'_______________';
+var tc=v('input-tc')||'_______________';
+var sehir=document.getElementById('input-city').value||'_______________';
+var ilce=v('input-district')||'_______________';
+var adres=v('input-address')||'_______________';
+var iletisim=v('input-contact')||'_______________';
+var code=getCitizenCode();
+var sigHTML='';
+if(canvas){try{var d=canvas.toDataURL("image/png");if(d&&d.length>200){sigHTML='<div style="text-align:right;margin-top:30px"><img src="'+d+'" style="max-height:60px" alt="imza"/></div>';}}catch(_){}}
+var baslik='',hitap='',konu='',govde='';
+if(tip==='cb'){
+baslik='T.C. CUMHURBAŞKANLIĞI MAKAMINA';hitap='Sayın Recep Tayyip ERDOĞAN';
+konu='7527 Sayılı Kanun Uygulamalarının Durdurulması ve Yasal Düzenlemenin Yeniden Değerlendirilmesi İstemidir.';
+govde='Sayın Cumhurbaşkanım;<br><br>7527 sayılı kanunun yürürlüğe girmesiyle birlikte ülke genelinde yaşanan toplu tecrit ve yaşam hakkı ihlalleri toplum vicdanını derinden yaralamaktadır. Ülkemizdeki barınak kapasitesi 105 bin civarındayken milyonlarca canlının tecride ve ölüme terk edilmesi kabul edilemez.<br><br>Anayasa\'nın yaşam hakkını teminat altına alan ilkeleri doğrultusunda; mevzuatın bilimsel kısırlaştırma ve etik koruma esasları çerçevesinde revize edilmesi, 7527 sayılı kanunun uygulamalarının durdurulması için gerekli idari ve yasal adımların atılmasını saygılarımla arz ederim.';
+}else if(tip==='mb'){
+baslik='T.C. TÜRKİYE BÜYÜK MİLLET MECLİSİ BAŞKANLIĞI\'NA';hitap='Sayın Numan KURTULMUŞ';
+konu='7527 Sayılı Kanun\'un İptali ve 5199 Sayılı Kanun\'un Etik Kriterlerle Yeniden Yürürlüğe Konulması Talebidir.';
+govde='Sayın Başkan;<br><br>Ülkemizdeki toplam barınak kapasitesi 105 bin civarındayken milyonlarca canlıyı tecrit ve ölüm kamplarına sokmayı öngören 7527 sayılı kanun; kamu düzenine, toplum vicdanına ve Anayasa\'nın yaşam hakkını teminat altına alan ilkelerine aykırıdır.<br><br>Bilimsel kısırlaştırma, etik koruma ve yaşatma ilkeleri esas alınarak; 7527 Sayılı Kanun\'un yürürlükten kaldırılması, 5199 Sayılı Hayvanları Koruma Kanunu\'nun yaşam hakkını önceleyen hükümleriyle yeniden yürürlüğe konulması ve mevzuatın bilimsel ve etik esaslar çerçevesinde revize edilmesi için TBMM çatısı altında gerekli girişimlerin başlatılmasını saygılarımla arz ederim.';
+}else{
+baslik='SEÇİM BÖLGESİ MİLLETVEKİLİ SAYIN '+(selectedVekil?selectedVekil.name.toUpperCase():'[VEKİL]')+'\'A';
+hitap=selectedVekil?('Sayın '+selectedVekil.name):'Sayın Milletvekili';
+konu='7527 Sayılı Kanun\'un İptali İçin TBMM\'de Girişim Talebidir.';
+govde='Sayın Milletvekili;<br><br>Seçim bölgeniz olan '+sehir+' ilinde ikamet eden bir seçmeniniz olarak; hiçbir bilimsel ve vicdani temeli olmayan 7527 sayılı yasa kapsamında yaşanan toplu tecrit ve yaşam hakkı ihlallerinin vebalini hatırlatıyorum.<br><br>Bilimsel kısırlaştırma ve etik koruma ilkeleri esas alınarak 7527 sayılı kanunun iptal edilmesi için TBMM çatısı altında derhal girişimde bulunmanızı, bu konuyu gündeme taşımanızı ve gerekli yasal düzenlemelerin başlatılması için çaba göstermenizi saygılarımla arz ederim.';
+}
+return '<div style="text-align:center;font-weight:bold;font-size:14px">'+baslik+'</div>'+
+'<div style="text-align:center;font-weight:bold">'+hitap+'</div>'+
+'<div style="text-align:center;margin-bottom:20px">ANKARA</div>'+
+'<div><strong>BAŞVURAN YURTTAŞ :</strong> '+ad+'</div>'+
+'<div><strong>T.C. KİMLİK NO&nbsp;&nbsp;&nbsp;&nbsp;:</strong> '+tc+'</div>'+
+'<div><strong>ADRES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</strong> '+adres+', '+ilce+' / '+sehir+'</div>'+
+'<div><strong>İLETİŞİM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</strong> '+iletisim+'</div>'+
+'<div><strong>DİLEKÇE KODU&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</strong> '+code+'</div>'+
+'<div style="margin-top:20px"><strong>KONU:</strong> '+konu+'</div>'+
+'<div style="text-align:justify;margin-top:20px">'+govde+'</div>'+
+'<div style="margin-top:30px">Saygılarımla,<br><strong>'+ad+'</strong><br>Dilekçe Kodu: '+code+'</div>'+
+sigHTML;
+}
+
+function buildPetitionText(tip){
+var code=getCitizenCode();
+var ad=v('input-name')||'[Ad Soyad]';
+var tc=v('input-tc')||'[TC]';
+var sehir=document.getElementById('input-city').value||'';
+var ilce=v('input-district')||'[İlçe]';
+var adres=v('input-address')||'[Adres]';
+var iletisim=v('input-contact')||'[İletişim]';
+var bas='BAŞVURAN YURTTAŞ : '+ad+'\nT.C. KİMLİK NO    : '+tc+'\nADRES            : '+adres+', '+ilce+' / '+sehir+'\nİLETİŞİM         : '+iletisim+'\nDİLEKÇE KODU     : '+code+'\n\n';
+var imza='\n\nSaygılarımla,\n'+ad+'\nDilekçe Kodu: '+code;
+if(tip==='cb')return 'T.C. CUMHURBAŞKANLIĞI MAKAMINA\nSayın Recep Tayyip ERDOĞAN\nANKARA\n\n'+bas+'KONU: 7527 Sayılı Kanun Uygulamalarının Durdurulması ve Yasal Düzenlemenin Yeniden Değerlendirilmesi İstemidir.\n\nSayın Cumhurbaşkanım;\n\n7527 sayılı kanunun yürürlüğe girmesiyle birlikte ülke genelinde yaşanan toplu tecrit ve yaşam hakkı ihlalleri toplum vicdanını derinden yaralamaktadır. Ülkemizdeki barınak kapasitesi 105 bin civarındayken milyonlarca canlının tecride ve ölüme terk edilmesi kabul edilemez.\n\nAnayasa\'nın yaşam hakkını teminat altına alan ilkeleri doğrultusunda; mevzuatın bilimsel kısırlaştırma ve etik koruma esasları çerçevesinde revize edilmesi, 7527 sayılı kanunun uygulamalarının durdurulması için gerekli idari ve yasal adımların atılmasını saygılarımla arz ederim.'+imza;
+if(tip==='mb')return 'T.C. TÜRKİYE BÜYÜK MİLLET MECLİSİ BAŞKANLIĞI\'NA\nSayın Numan KURTULMUŞ\nANKARA\n\n'+bas+'KONU: 7527 Sayılı Kanun\'un İptali ve 5199 Sayılı Kanun\'un Etik Kriterlerle Yeniden Yürürlüğe Konulması Talebidir.\n\nSayın Başkan;\n\nÜlkemizdeki toplam barınak kapasitesi 105 bin civarındayken milyonlarca canlıyı tecrit ve ölüm kamplarına sokmayı öngören 7527 sayılı kanun; kamu düzenine, toplum vicdanına ve Anayasa\'nın yaşam hakkını teminat altına alan ilkelerine aykırıdır.\n\nBilimsel kısırlaştırma, etik koruma ve yaşatma ilkeleri esas alınarak; 7527 Sayılı Kanun\'un yürürlükten kaldırılması, 5199 Sayılı Hayvanları Koruma Kanunu\'nun yaşam hakkını önceleyen hükümleriyle yeniden yürürlüğe konulması ve mevzuatın bilimsel ve etik esaslar çerçevesinde revize edilmesi için TBMM çatısı altında gerekli girişimlerin başlatılmasını saygılarımla arz ederim.'+imza;
+var vk=selectedVekil?('Sayın '+selectedVekil.name):'Sayın Milletvekili';
+return 'SEÇİM BÖLGESİ MİLLETVEKİLİNE\n'+vk+'\n\n'+bas+'KONU: 7527 Sayılı Kanun\'un İptali İçin TBMM\'de Girişim Talebidir.\n\nSayın Milletvekili;\n\nSeçim bölgeniz olan '+sehir+' ilinde ikamet eden bir seçmeniniz olarak; hiçbir bilimsel ve vicdani temeli olmayan 7527 sayılı yasa kapsamında yaşanan toplu tecrit ve yaşam hakkı ihlallerinin vebalini hatırlatıyorum.\n\nBilimsel kısırlaştırma ve etik koruma ilkeleri esas alınarak 7527 sayılı kanunun iptal edilmesi için TBMM çatısı altında derhal girişimde bulunmanızı, bu konuyu gündeme taşımanızı ve gerekli yasal düzenlemelerin başlatılması için çaba göstermenizi saygılarımla arz ederim.'+imza;
+}
+
+function validateForm(){
+var ad=v('input-name');
+var tc=v('input-tc');
+var ilce=v('input-district');
+var adres=v('input-address');
+if(!ad){alert("Lütfen AD SOYAD girin.");document.getElementById('input-name').focus();return false;}
+if(!/^\d{11}$/.test(tc)){alert("Lütfen 11 haneli T.C. KİMLİK NO girin.");document.getElementById('input-tc').focus();return false;}
+if(!ilce){alert("Lütfen İLÇE girin.");document.getElementById('input-district').focus();return false;}
+if(!adres){alert("Lütfen İKAME ADRESİ girin.");document.getElementById('input-address').focus();return false;}
+if(isCitizenSignatureEmpty()){alert("Lütfen ISLAK İMZANIZI atın.");return false;}
+return true;
+}
+function isCitizenSignatureEmpty(){
+if(!canvas)return true;
+try{
+var b=document.createElement('canvas');
+b.width=canvas.width||1;b.height=canvas.height||1;
+var bx=b.getContext('2d');bx.fillStyle="#ffffff";bx.fillRect(0,0,b.width,b.height);
+return canvas.toDataURL()===b.toDataURL();
+}catch(_){return true;}
+}
+
+function sendCurrent(){
+if(!selectedTarget){alert("Lütfen önce kime göndereceğini seç.");return;}
+if(selectedTarget==='mp'&&!selectedVekil){alert("Lütfen bir vekil seç.");return;}
+if(!validateForm())return;
+var body='',url='';
+if(selectedTarget==='cb'){
+body=buildPetitionText('cb');
+url='mailto:'+leaders.cb.email+'?subject='+encodeURIComponent('7527 İptal Talebi - '+getCitizenCode())+'&body='+encodeURIComponent(body);
+}else if(selectedTarget==='mb'){
+body=buildPetitionText('mb');
+url='mailto:'+leaders.mb.email+'?subject='+encodeURIComponent('7527 İptal Talebi - '+getCitizenCode())+'&body='+encodeURIComponent(body);
+}else{
+body=buildPetitionText('mp');
+url='mailto:'+selectedVekil.email+'?subject='+encodeURIComponent('7527 İptal Talebi - '+getMPRecordCode(selectedVekil))+'&body='+encodeURIComponent(body);
+}
+var el=document.getElementById('print-petition');
+el.innerHTML=buildPetitionHTML(selectedTarget);
+el.style.display='block';
+setTimeout(function(){
+window.print();
+setTimeout(function(){
+el.style.display='none';
+var a=document.createElement('a');a.href=url;a.style.display='none';
+document.body.appendChild(a);a.click();
+setTimeout(function(){try{document.body.removeChild(a);}catch(_){}},200);
+setTimeout(function(){
+pendingConfirm={type:selectedTarget,mp:selectedVekil};
+document.getElementById('confirm-modal').style.display='flex';
+},1500);
+},1000);
+},150);
+}
+function confirmSend(gonderdim){
+document.getElementById('confirm-modal').style.display='none';
+if(!gonderdim){pendingConfirm=null;return;}
+var t=pendingConfirm.type;
+if(t==='cb'){
+citizenCount=parseInt(localStorage.getItem(CITIZEN_COUNT_KEY)||'0',10)+1;
+localStorage.setItem(CITIZEN_COUNT_KEY,citizenCount.toString());
+cbCount=parseInt(localStorage.getItem(CB_COUNT_KEY)||'0',10)+1;
+localStorage.setItem(CB_COUNT_KEY,cbCount.toString());
+updateCounters();
+showThanks('<strong>Cumhurbaşkanlığı makamına</strong> dilekçeniz iletildi.<br><br>Şimdi TBMM Başkanına da gönderin. 🐾');
+}else if(t==='mb'){
+mbCount=parseInt(localStorage.getItem(MB_COUNT_KEY)||'0',10)+1;
+localStorage.setItem(MB_COUNT_KEY,mbCount.toString());
+updateCounters();
+showThanks('<strong>TBMM Başkanlığına</strong> dilekçeniz iletildi.<br><br>Son adım: Vekillere gönderin! 🐾');
+}else{
 mpSentCount=parseInt(localStorage.getItem(MP_SENT_COUNT_KEY)||'0',10)+1;
 localStorage.setItem(MP_SENT_COUNT_KEY,mpSentCount.toString());
 updateCounters();
-sendWithPDF('mp',url);
-setTimeout(function(){
-showThanks('<strong>Sayın '+mp.name+'</strong>\'e dilekçeniz iletildi.<br><br>Senin gibi duyarlı bir yurttaş, bu vahşetin son bulmasında rol oynuyor. Bir canın hayatını kurtardın. 🐾<br><br><em>Sıradaki vekile de gönder!</em>');
-},3000);
+var mp=pendingConfirm.mp;
+showThanks('<strong>Sayın '+(mp?mp.name:'Vekil')+'</strong>\'e dilekçeniz iletildi.<br><br>Bir canın hayatını kurtardın. 🐾<br><br><em>Sıradaki vekile de gönder!</em>');
 }
+pendingConfirm=null;
+}
+function showThanks(msg){
+var m=document.getElementById('thanks-modal');
+document.getElementById('thanks-text').innerHTML=msg;
+m.style.display='flex';
+}
+function getMPRecordCode(mp){return '7527-V'+String(mp.id).padStart(4,'0');}
+
 function initCitizenSignaturePad(){
 canvas=document.getElementById("signature-pad");if(!canvas)return;ctx=canvas.getContext("2d");
 canvas.width=canvas.offsetWidth;canvas.height=canvas.offsetHeight;
@@ -1105,33 +1188,9 @@ canvas.addEventListener("touchend",function(){canvas.dispatchEvent(new MouseEven
 }
 function getPos(e){var r=canvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};}
 function startDrawing(e){isDrawing=true;var p=getPos(e);ctx.beginPath();ctx.moveTo(p.x,p.y);}
-function draw(e){if(!isDrawing)return;var p=getPos(e);ctx.lineTo(p.x,p.y);ctx.stroke();syncSig();}
-function stopDrawing(){if(isDrawing){isDrawing=false;ctx.closePath();syncSig();}}
-function clearSignature(){if(!ctx)return;ctx.fillStyle="#ffffff";ctx.fillRect(0,0,canvas.width,canvas.height);document.querySelectorAll(".val-signature").forEach(function(i){i.src="";i.classList.add("hidden");});}
-function syncSig(){var d=canvas.toDataURL("image/png");document.querySelectorAll(".val-signature").forEach(function(i){i.src=d;i.classList.remove("hidden");});}
-function populateVekilSelect(){
-var sel=document.getElementById("mp-select");if(!sel)return;sel.innerHTML="";
-mpDatabase.forEach(function(m){var o=document.createElement("option");o.value=m.id;o.textContent=m.name+' — '+m.city+' — '+m.party;sel.appendChild(o);});
-}
-function filterVekilList(){
-var q=(document.getElementById("mp-search-input").value||"").toLowerCase();
-selectedMPId=null;
-var sel=document.getElementById("mp-select");if(!sel)return;sel.innerHTML="";
-var list=mpDatabase.filter(function(m){return m.name.toLowerCase().indexOf(q)>-1||m.city.toLowerCase().indexOf(q)>-1||m.party.toLowerCase().indexOf(q)>-1;});
-if(list.length===0){var o=document.createElement("option");o.textContent="Sonuç bulunamadı";o.disabled=true;sel.appendChild(o);return;}
-list.forEach(function(m){var o=document.createElement("option");o.value=m.id;o.textContent=m.name+' — '+m.city+' — '+m.party;sel.appendChild(o);});
-}
-function showSelectedMP(sel){
-var info=document.getElementById("mp-selected-info");
-var mp=mpDatabase.find(function(m){return m.id===parseInt(sel.value);});
-if(!mp)return;
-selectedMPId=mp.id;
-var search=document.getElementById("mp-search-input");
-if(search)search.value=mp.name;
-if(info)info.textContent='Seçilen vekil: '+mp.name+' ('+mp.city+' / '+mp.party+')';
-var petition=document.getElementById("petition-selected-mp");
-if(petition)petition.textContent=mp.name+' - '+mp.city+' / '+mp.party;
-}
+function draw(e){if(!isDrawing)return;var p=getPos(e);ctx.lineTo(p.x,p.y);ctx.stroke();}
+function stopDrawing(){if(isDrawing){isDrawing=false;ctx.closePath();updatePreview();}}
+function clearSignature(){if(!ctx)return;ctx.fillStyle="#ffffff";ctx.fillRect(0,0,canvas.width,canvas.height);updatePreview();}
 function initMPSignaturePad(){
 mpCanvas=document.getElementById("mp-signature-pad");if(!mpCanvas)return;mpCtx=mpCanvas.getContext("2d");
 mpCanvas.width=mpCanvas.offsetWidth||300;mpCanvas.height=mpCanvas.offsetHeight||120;
@@ -1162,169 +1221,58 @@ var sel=document.getElementById("mp-select");
 var id=selectedMPId||parseInt(sel.value);
 if(!id){alert("Lütfen listeden kendinizi seçin!");return;}
 if(isMPSignatureEmpty()){alert("Lütfen ıslak imzanızı atın!");return;}
-var vote="RET";
 if(mpSignatures.some(function(s){return s.id===id;})){alert("Bu milletvekili zaten imzalamış.");return;}
 var mp=mpDatabase.find(function(m){return m.id===id;});
 if(!mp){alert("Vekil bulunamadı!");return;}
 var sigData=mpCanvas.toDataURL("image/png");
 var now=new Date();
 var tarih=now.toLocaleDateString('tr-TR')+' '+now.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
-mpSignatures.push({id:mp.id,city:mp.city,party:mp.party,vote:vote,date:tarih,signature:sigData,recordCode:getMPRecordCode(mp),initials:mp.name});
+mpSignatures.push({id:mp.id,city:mp.city,party:mp.party,vote:'RET',date:tarih,signature:sigData,recordCode:getMPRecordCode(mp),initials:mp.name});
 localStorage.setItem(MP_SIGNATURES_KEY,JSON.stringify(mpSignatures));
 clearMPSignature();
 updateCounters();
 renderSignedMPs();
-showThanks('<strong>Sayın '+mp.name+'</strong> olarak 7527 iptal dilekçesine imza attınız.<br><br>Bu imza Meclis\'te olağanüstü toplantı çağrısı için kritik bir adımdır.<br><br><em>Teşekkürler.</em>');
+showThanks('<strong>Sayın '+mp.name+'</strong> olarak 7527 iptal dilekçesine imza attınız.<br><br><em>Teşekkürler.</em>');
 }
 function renderSignedMPs(){
-var list=document.getElementById("signed-mps-list");
 var list2=document.getElementById("signed-mps-list-2");
 var preview=document.getElementById("petition-signatures-preview-2");
 var emptyHtml='<p class="text-zinc-500 text-center py-2 text-[10px]">Henüz hiçbir vekil imzalamadı.</p>';
 if(mpSignatures.length===0){
-if(list)list.innerHTML=emptyHtml;
 if(list2)list2.innerHTML=emptyHtml;
 if(preview)preview.innerHTML='<p class="text-zinc-500">Henüz imza yok.</p>';
 return;
 }
 var cardHtml=mpSignatures.slice().reverse().map(function(s){
-var vote=s.vote||"KABUL";
-var voteLabel=vote==="RET"?"🐾 RET":"⚰️ KABUL";
-return '<div class="bg-zinc-950 border border-emerald-800/40 rounded-lg p-2.5 flex justify-between items-center gap-2"><div class="flex-1 min-w-0"><div class="font-bold text-white text-[11px]">'+s.initials+' <span class="text-emerald-300">'+s.recordCode+'</span></div><div class="text-[9px] text-zinc-400">'+s.city+' • '+s.party+'</div><div class="text-[9px] text-red-300 mt-0.5">'+voteLabel+' • '+s.date+'</div></div><img src="'+s.signature+'" class="max-h-8 bg-white/90 rounded p-0.5 shrink-0" alt="imza"></div>';
+return '<div class="bg-zinc-950 border border-emerald-800/40 rounded-lg p-2.5 flex justify-between items-center gap-2"><div class="flex-1 min-w-0"><div class="font-bold text-white text-[11px]">'+s.initials+' <span class="text-emerald-300">'+s.recordCode+'</span></div><div class="text-[9px] text-zinc-400">'+s.city+' • '+s.party+'</div><div class="text-[9px] text-red-300 mt-0.5">🐾 RET • '+s.date+'</div></div><img src="'+s.signature+'" class="max-h-8 bg-white/90 rounded p-0.5 shrink-0" alt="imza"></div>';
 }).join('');
-if(list)list.innerHTML=cardHtml;
 if(list2)list2.innerHTML=cardHtml;
-var sigHtml=mpSignatures.map(function(s,i){return (i+1)+'. <strong>'+s.initials+'</strong> — '+s.recordCode+' / '+s.city+' <span class="text-emerald-500">✓ '+s.date+'</span>';}).join('<br>');
+var sigHtml=mpSignatures.map(function(s,i){return (i+1)+'. <strong>'+s.initials+'</strong> — '+s.recordCode+' / '+s.city;}).join('<br>');
 if(preview)preview.innerHTML=sigHtml;
 }
+
 function renderAlmanac(){
-var selectedCity=document.getElementById("input-city").value;
+var city=document.getElementById("input-city").value;
 var container=document.getElementById("almanac-container");
 if(!container)return;
 container.innerHTML="";
-var cityEvents=almanacEvents.filter(function(ev){return ev.city===selectedCity;});
+var cityEvents=almanacEvents.filter(function(ev){return ev.city===city;});
 var displayEvents=cityEvents.length>0?cityEvents:almanacEvents;
 displayEvents.forEach(function(ev){
 var div=document.createElement("div");
-div.className="bg-zinc-950 border border-zinc-800 p-3 rounded-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-3";
-div.innerHTML='<div class="space-y-1"><div class="flex flex-wrap items-center gap-2 text-[10px] text-red-400 font-bold"><span>📅 '+ev.date+'</span> | <span>📍 '+ev.location+'</span></div><h4 class="text-xs font-bold text-zinc-200">'+ev.title+'</h4><p class="text-[11px] text-zinc-400">'+ev.desc+'</p></div><div class="shrink-0"><button onclick="tagAlmanacToCityMP(\''+ev.title.replace(/'/g,"")+'\',\''+ev.location.replace(/'/g,"")+'\')" class="bg-red-950 hover:bg-red-900 text-red-300 border border-red-800 px-3 py-1.5 rounded text-[10px] font-bold">🚨 Vakayı Seçili Vekillere Etiketle</button></div>';
+div.className="bg-zinc-950 border border-zinc-800 p-3 rounded-lg space-y-1";
+div.innerHTML='<div class="flex flex-wrap items-center gap-2 text-[10px] text-red-400 font-bold"><span>📅 '+ev.date+'</span> | <span>📍 '+ev.location+'</span></div><h4 class="text-xs font-bold text-zinc-200">'+ev.title+'</h4><p class="text-[11px] text-zinc-400">'+ev.desc+'</p>';
 container.appendChild(div);
 });
 }
-function tagAlmanacToCityMP(title,location){
-var city=document.getElementById("input-city").value;
-var list=mpDatabase.filter(function(m){return m.city===city;});
-if(!list.length){alert("Bu şehirde vekil bulunamadı.");return;}
-var h=list.slice(0,5).map(function(m){return m.xHandle;}).join(" ");
-var base=document.getElementById("almanac-url-input").value;
-var t=h+' Sayın Vekiller; Almanağa kaydolmuş vaka: '+location+' - "'+title+'". Detay: '+base+' Buna ne zaman dur diyeceksiniz? #7527İptalEt #SorumlularHesapVersin';
-window.open('https://x.com/intent/tweet?text='+encodeURIComponent(t),'_blank');
-}
-function getCitizenCode(){
-var c=localStorage.getItem(CITIZEN_CODE_KEY);
-if(!c){c='7527-C'+String(Date.now()).slice(-5);localStorage.setItem(CITIZEN_CODE_KEY,c);}
-return c;
-}
-function v(id){var el=document.getElementById(id);return el?(el.value||'').trim():'';}
-function buildPetition(tip){
-var code=getCitizenCode();
-var ad=v('input-name')||'[Ad Soyad]';
-var tc=v('input-tc')||'[TC]';
-var sehir=(document.getElementById('input-city')||{}).value||'';
-var ilce=v('input-district')||'[İlçe]';
-var adres=v('input-address')||'[Adres]';
-var iletisim=v('input-contact')||'[İletişim]';
-var bas='BAŞVURAN YURTTAŞ : '+ad+'\nT.C. KİMLİK NO    : '+tc+'\nADRES            : '+adres+', '+ilce+' / '+sehir+'\nİLETİŞİM         : '+iletisim+'\nDİLEKÇE KODU     : '+code+'\n\n';
-var imza='\n\nSaygılarımla,\n'+ad+'\nDilekçe Kodu: '+code;
-if(tip==='cb'){return 'T.C. CUMHURBAŞKANLIĞI MAKAMINA\nSayın Recep Tayyip ERDOĞAN\nANKARA\n\n'+bas+'KONU: 7527 Sayılı Kanun Uygulamalarının Durdurulması ve Yasal Düzenlemenin Yeniden Değerlendirilmesi İstemidir.\n\nSayın Cumhurbaşkanım;\n\n7527 sayılı kanunun yürürlüğe girmesiyle birlikte ülke genelinde yaşanan toplu tecrit ve yaşam hakkı ihlalleri toplum vicdanını derinden yaralamaktadır. Ülkemizdeki barınak kapasitesi 105 bin civarındayken milyonlarca canlının tecride ve ölüme terk edilmesi kabul edilemez.\n\nAnayasa\'nın yaşam hakkını teminat altına alan ilkeleri doğrultusunda; mevzuatın bilimsel kısırlaştırma ve etik koruma esasları çerçevesinde revize edilmesi, 7527 sayılı kanunun uygulamalarının durdurulması için gerekli idari ve yasal adımların atılmasını saygılarımla arz ederim.'+imza;}
-if(tip==='mb'){return 'T.C. TÜRKİYE BÜYÜK MİLLET MECLİSİ BAŞKANLIĞI\'NA\nSayın Numan KURTULMUŞ\nANKARA\n\n'+bas+'KONU: 7527 Sayılı Kanun\'un İptali ve 5199 Sayılı Kanun\'un Etik Kriterlerle Yeniden Yürürlüğe Konulması Talebidir.\n\nSayın Başkan;\n\nÜlkemizdeki toplam barınak kapasitesi 105 bin civarındayken milyonlarca canlıyı tecrit ve ölüm kamplarına sokmayı öngören 7527 sayılı kanun; kamu düzenine, toplum vicdanına ve Anayasa\'nın yaşam hakkını teminat altına alan ilkelerine aykırıdır.\n\nBilimsel kısırlaştırma, etik koruma ve yaşatma ilkeleri esas alınarak; 7527 Sayılı Kanun\'un yürürlükten kaldırılması, 5199 Sayılı Hayvanları Koruma Kanunu\'nun yaşam hakkını önceleyen hükümleriyle yeniden yürürlüğe konulması ve mevzuatın bilimsel ve etik esaslar çerçevesinde revize edilmesi için TBMM çatısı altında gerekli girişimlerin başlatılmasını saygılarımla arz ederim.'+imza;}
-if(tip==='mp'){return 'SEÇİM BÖLGESİ MİLLETVEKİLİNE\n\n'+bas+'KONU: 7527 Sayılı Kanun\'un İptali İçin TBMM\'de Girişim Talebidir.\n\nSayın Milletvekili;\n\nSeçim bölgeniz olan '+sehir+' ilinde ikamet eden bir seçmeniniz olarak; hiçbir bilimsel ve vicdani temeli olmayan 7527 sayılı yasa kapsamında yaşanan toplu tecrit ve yaşam hakkı ihlallerinin vebalini hatırlatıyorum.\n\nBilimsel kısırlaştırma ve etik koruma ilkeleri esas alınarak 7527 sayılı kanunun iptal edilmesi için TBMM çatısı altında derhal girişimde bulunmanızı, bu konuyu gündeme taşımanızı ve gerekli yasal düzenlemelerin başlatılması için çaba göstermenizi saygılarımla arz ederim.'+imza;}
-return '';
-}
-function validateCitizenForm(){
-var ad=v('input-name');
-var tc=v('input-tc');
-var ilce=v('input-district');
-var adres=v('input-address');
-if(!ad){alert("Lütfen AD SOYAD girin.");document.getElementById('input-name').focus();return false;}
-if(!/^\d{11}$/.test(tc)){alert("Lütfen 11 haneli T.C. KİMLİK NO girin.");document.getElementById('input-tc').focus();return false;}
-if(!ilce){alert("Lütfen İLÇE girin.");document.getElementById('input-district').focus();return false;}
-if(!adres){alert("Lütfen İKAME ADRESİ girin.");document.getElementById('input-address').focus();return false;}
-if(isCitizenSignatureEmpty()){alert("Lütfen ISLAK İMZANIZI atın.");return false;}
-return true;
-}
-function isCitizenSignatureEmpty(){
-if(!canvas)return true;
-try{
-var b=document.createElement('canvas');
-b.width=canvas.width||1;b.height=canvas.height||1;
-var bx=b.getContext('2d');bx.fillStyle="#ffffff";bx.fillRect(0,0,b.width,b.height);
-return canvas.toDataURL()===b.toDataURL();
-}catch(_){return true;}
-}
-function sendWithPDF(target,mailUrl){
-document.querySelectorAll('#printable-petitions .petition-page').forEach(function(p){
-p.classList.toggle('active', p.dataset.target===target);
-});
-setTimeout(function(){
-var el=document.querySelector('#printable-petitions .petition-page.active');
-if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
-},100);
-setTimeout(function(){
-window.print();
-setTimeout(function(){
-var onay=confirm('Dilekçeyi PDF olarak kaydettiniz mi?\n\n✔ TAMAM → Mail penceresi açılacak\n✖ İPTAL → Mail açılmayacak');
-if(onay){window.location.href=mailUrl;}
-},2500);
-},1500);
-}
-function mailToCB(){
-if(!validateCitizenForm())return;
-var body=buildPetition('cb');
-var url='mailto:'+leaders.cb.email+'?subject='+encodeURIComponent('7527 İptal Talebi - '+getCitizenCode())+'&body='+encodeURIComponent(body);
-citizenCount=parseInt(localStorage.getItem(CITIZEN_COUNT_KEY)||'0',10)+1;
-localStorage.setItem(CITIZEN_COUNT_KEY,citizenCount.toString());
-cbCount=parseInt(localStorage.getItem(CB_COUNT_KEY)||'0',10)+1;
-localStorage.setItem(CB_COUNT_KEY,cbCount.toString());
-updateCounters();
-sendWithPDF('cb',url);
-setTimeout(function(){showThanks('<strong>Cumhurbaşkanlığı makamına</strong> dilekçeniz iletiliyor.<br><br>Bu dilekçe, 7527 sayılı kanunun durdurulması için atılan kritik bir adımdır.<br><br>Şimdi sıradaki adım: <strong>TBMM Başkanına</strong> da gönderin. 🐾');},4000);
-}
-function mailToMB(){
-if(!validateCitizenForm())return;
-var body=buildPetition('mb');
-var url='mailto:'+leaders.mb.email+'?subject='+encodeURIComponent('7527 İptal Talebi - '+getCitizenCode())+'&body='+encodeURIComponent(body);
-mbCount=parseInt(localStorage.getItem(MB_COUNT_KEY)||'0',10)+1;
-localStorage.setItem(MB_COUNT_KEY,mbCount.toString());
-updateCounters();
-sendWithPDF('mb',url);
-setTimeout(function(){showThanks('<strong>TBMM Başkanlığına</strong> dilekçeniz iletiliyor.<br><br>Bu dilekçe, Meclis\'in harekete geçmesi için kritik bir adımdır.<br><br>Son adım: <strong>Vekillere</strong> tek tek gönderin ve onları da harekete geçirin! 🐾');},4000);
-}
-function handlePrintAndIncrement(){
-if(!validateCitizenForm())return;
-document.querySelectorAll('#printable-petitions .petition-page').forEach(function(p){p.classList.add('active');});
-setTimeout(function(){
-var el=document.getElementById('printable-petitions');
-if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
-},100);
-setTimeout(function(){
-window.print();
-setTimeout(function(){document.querySelectorAll('#printable-petitions .petition-page').forEach(function(p){p.classList.remove('active');});},1500);
-},1500);
-}
-function showThanks(msg){
-var m=document.getElementById('thanks-modal');
-document.getElementById('thanks-text').innerHTML=msg;
-m.style.display='flex';
-}
-function closeThanks(){document.getElementById('thanks-modal').style.display='none';}
+
 function shareTo(platform){
 var url=location.href;
 var t='7527 İPTAL! İmzacısı ol! Öldüren değil, yaşatan ol!';
 var e=encodeURIComponent;
 if(platform==='ig'||platform==='tt'){
 if(navigator.clipboard){navigator.clipboard.writeText(t+' '+url);}
-alert('Kampanya metni ve link kopyalandı.\n\n'+(platform==='ig'?'Instagram':'TikTok')+' uygulamasını açıp story veya gönderinize yapıştırın.');
+alert('Metin ve link kopyalandı.\n\n'+(platform==='ig'?'Instagram':'TikTok')+' uygulamasını açıp yapıştırın.');
 window.open(platform==='ig'?'https://www.instagram.com/':'https://www.tiktok.com/','_blank');
 return;
 }
@@ -1345,8 +1293,7 @@ c.strokeStyle='#dc2626';c.lineWidth=8;c.strokeRect(20,20,1040,1310);
 c.fillStyle='#dc2626';c.fillRect(60,60,960,120);
 c.fillStyle='#ffffff';c.font='bold 68px Arial';c.textAlign='center';
 c.fillText('7527 İPTAL!',540,145);
-c.fillStyle='#ffffff';c.font='bold 52px Arial';
-c.fillText('İMZACISI OL!',540,240);
+c.font='bold 52px Arial';c.fillText('İMZACISI OL!',540,240);
 c.font='26px Arial';c.fillStyle='#fca5a5';
 c.fillText('ÖLDÜREN DEĞİL, YAŞATAN OL!',540,290);
 c.font='200px Arial';c.fillText('🐾',540,530);
@@ -1361,10 +1308,8 @@ c.font='24px Arial';c.fillStyle='#a1a1aa';
 c.fillText('Karekodu okut, sen de imzala',540,1210);
 c.font='bold 32px Arial';c.fillStyle='#dc2626';
 c.fillText('7527IPTAL',540,1260);
-c.font='22px Arial';c.fillStyle='#71717a';
-c.fillText(location.host,540,1300);
 var a=document.createElement('a');
-a.download='7527-paylasim-gorseli.png';
+a.download='7527-paylasim.png';
 a.href=c2.toDataURL('image/png');
 a.click();
 }
