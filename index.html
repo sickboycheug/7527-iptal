@@ -192,7 +192,7 @@ body > header,body > main,body > footer,body > #thanks-modal,body > #confirm-mod
 <p class="text-[11px] text-amber-300 text-center">Gönder: PDF inecek + mail açılacak + PDF'i ek olarak ekleyip gönderin + onay sonrası sayaç artar</p>
 </div>
 
-<div class="no-print order-6 bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-4">
+<div class="bg-zinc-900 p-6 rounded-xl border-2 border-emerald-700 space-y-4 shadow-2xl">
 <div class="border-b border-zinc-800 pb-3">
 <h2 class="text-lg font-bold text-white">📚 VAKA & OLAY ALMANAK VERİ TABANI</h2>
 <p class="text-xs text-zinc-400 mt-1">2025 yılı hayvan hakları ihlalleri. Şehrine göre filtrele, seçili vekillere etiketle ve baskı kur.</p>
@@ -1502,6 +1502,17 @@ var city=(document.getElementById('input-city')||{}).value||'';
 if(!sel||!city)return;
 if([...sel.options].some(function(o){return o.value===city;})){ sel.value=city; }
 filterAlmanac();
+}
+function getSelectedMPsFromTable(){
+var checked=document.querySelectorAll('input[name="vekilRadio"]:checked');
+var list=[];
+checked.forEach(function(r){
+var id=parseInt(r.value);
+var mp=mpDatabase.find(function(m){return m.id===id;});
+if(mp)list.push(mp);
+});
+if(!list.length && selectedVekil) list.push(selectedVekil);
+return list;
 }
 
 function buildCaseTweet(ev,handles){
