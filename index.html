@@ -74,21 +74,36 @@ body *{visibility:hidden}
 <section class="lg:col-span-5 space-y-6">
 <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-4 shadow-2xl">
 <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
-<h2 class="text-xs font-bold text-zinc-300 uppercase tracking-wider">📊 İMZA HEDEF SAYACI</h2>
+<h2 class="text-xs font-bold text-zinc-300 uppercase tracking-wider">📊 HEDEF SAYAÇLAR</h2>
 <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-red-950 text-red-400 border border-red-800/80 animate-pulse">● CANLI</span>
 </div>
+
 <div class="space-y-1.5">
-<div class="flex justify-between items-baseline text-xs"><span class="font-semibold text-zinc-300">Vatandaş İmza Hedefi</span><span class="font-bold text-red-500 font-mono text-sm" id="cnt-citizen">0 / 3.000.000</span></div>
-<div class="w-full bg-zinc-950 rounded-full h-3 overflow-hidden border border-zinc-800"><div id="bar-citizen" class="bg-gradient-to-r from-red-700 to-red-500 h-3 rounded-full" style="width:0%"></div></div>
+<div class="flex justify-between items-baseline text-xs"><span class="font-bold text-white">🐾 VATANDAŞ İMZA HEDEFİ</span><span class="font-bold text-red-500 font-mono text-sm" id="cnt-citizen">0 / 3.000.000</span></div>
+<div class="w-full bg-zinc-950 rounded-full h-4 overflow-hidden border border-zinc-800"><div id="bar-citizen" class="bg-gradient-to-r from-red-700 to-red-500 h-4 rounded-full" style="width:0%"></div></div>
+<p class="text-[9px] text-zinc-500">Her CB + MB + Vekil gönderimi bu sayaca işler</p>
 </div>
-<div class="grid grid-cols-3 gap-2 pt-3 border-t border-zinc-800/60 text-center">
-<div><div class="text-[9px] text-zinc-500 font-bold">CB</div><div class="text-amber-400 font-mono text-xs font-bold" id="cnt-cb">0</div></div>
-<div><div class="text-[9px] text-zinc-500 font-bold">MB</div><div class="text-amber-400 font-mono text-xs font-bold" id="cnt-mb">0</div></div>
-<div><div class="text-[9px] text-zinc-500 font-bold">VEKİL</div><div class="text-sky-400 font-mono text-xs font-bold" id="cnt-mp-sent">0</div></div>
-</div>
+
 <div class="space-y-1.5 pt-3 border-t border-zinc-800/60">
-<div class="flex justify-between items-baseline text-xs"><span class="font-semibold text-zinc-300">Meclis İptal İmzası</span><span class="font-bold text-emerald-400 font-mono text-sm" id="cnt-mp">0 / 592</span></div>
-<div class="w-full bg-zinc-950 rounded-full h-3 overflow-hidden border border-zinc-800"><div id="bar-mp" class="bg-gradient-to-r from-emerald-600 to-emerald-400 h-3 rounded-full" style="width:0%"></div></div>
+<div class="flex justify-between items-baseline text-xs"><span class="font-bold text-white">🏛️ MECLİS İPTAL İMZASI</span><span class="font-bold text-emerald-400 font-mono text-sm" id="cnt-mp">0 / 592</span></div>
+<div class="w-full bg-zinc-950 rounded-full h-4 overflow-hidden border border-zinc-800"><div id="bar-mp" class="bg-gradient-to-r from-emerald-600 to-emerald-400 h-4 rounded-full" style="width:0%"></div></div>
+<p class="text-[9px] text-zinc-500">Meclis vekil panelinden imzalayan milletvekili sayısı</p>
+</div>
+
+<div class="space-y-1.5 pt-3 border-t border-zinc-800/60">
+<div class="flex justify-between items-baseline text-xs"><span class="font-bold text-white">✉️ VEKİL DİLEKÇE SAYACI</span><span class="font-bold text-sky-400 font-mono text-sm" id="cnt-mp-sent">0</span></div>
+<p class="text-[9px] text-zinc-500">Vatandaşların vekillere gönderdiği toplam mail sayısı</p>
+</div>
+
+<div class="grid grid-cols-2 gap-2 pt-3 border-t border-zinc-800/60 text-center">
+<div class="bg-zinc-950 rounded p-2 border border-amber-900/40">
+<div class="text-[9px] text-amber-400 font-bold">🏛️ CB'ye Gönderilen</div>
+<div class="text-amber-400 font-mono text-base font-bold" id="cnt-cb">0</div>
+</div>
+<div class="bg-zinc-950 rounded p-2 border border-amber-900/40">
+<div class="text-[9px] text-amber-400 font-bold">🏛️ MB'ye Gönderilen</div>
+<div class="text-amber-400 font-mono text-base font-bold" id="cnt-mb">0</div>
+</div>
 </div>
 </div>
 
@@ -105,12 +120,15 @@ body *{visibility:hidden}
 <div id="vekil-secim" class="hidden bg-zinc-900 p-4 rounded-xl border border-emerald-800/50 space-y-3">
 <h3 class="text-sm font-bold text-emerald-400 border-b border-emerald-900/40 pb-2">MİLLETVEKİLİ SEÇ (tek seçim)</h3>
 <input type="text" id="mp-search" oninput="filterVekilRadio()" placeholder="Ad soyad ara..." class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-xs text-zinc-100 focus:border-emerald-600 focus:outline-none">
-<div class="flex gap-2">
-<select id="filter-party" onchange="filterVekilRadio()" class="flex-1 bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-[11px] text-zinc-200">
+<div class="grid grid-cols-3 gap-2">
+<select id="filter-party" onchange="filterVekilRadio()" class="bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-[10px] text-zinc-200">
 <option value="TÜMÜ">Tüm Partiler</option><option value="AK Parti">AK Parti</option><option value="CHP">CHP</option><option value="MHP">MHP</option><option value="DEM PARTİ">DEM PARTİ</option><option value="İYİ Parti">İYİ Parti</option><option value="Yeni Parti">Yeni Parti</option><option value="YENİ YOL">YENİ YOL</option><option value="BAĞIMSIZ">BAĞIMSIZ</option><option value="YENİDEN REFAH">YENİDEN REFAH</option><option value="SAADET Partisi">SAADET Partisi</option><option value="TİP">TİP</option><option value="HÜDA PAR">HÜDA PAR</option><option value="DBP">DBP</option><option value="EMEP">EMEP</option><option value="DSP">DSP</option><option value="DP">DP</option>
 </select>
-<select id="filter-city-mode" onchange="filterVekilRadio()" class="flex-1 bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-[11px] text-zinc-200">
+<select id="filter-city-mode" onchange="filterVekilRadio()" class="bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-[10px] text-zinc-200">
 <option value="ALL">81 İl</option><option value="SELECTED">Vatandaşın ili</option>
+</select>
+<select id="filter-mail-status" onchange="filterVekilRadio()" class="bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-[10px] text-zinc-200">
+<option value="ALL">Tüm Mail Durumu</option><option value="NONE">Hiç gönderilmemiş</option><option value="LOW">En az gönderilen (1-2)</option><option value="SENT">Gönderilmiş (1+)</option>
 </select>
 </div>
 <div id="vekil-radio-list" class="max-h-72 overflow-y-auto space-y-1 border border-zinc-800 rounded p-2"></div>
@@ -122,7 +140,7 @@ body *{visibility:hidden}
 <div><label class="block text-xs font-semibold text-zinc-400 mb-1">AD SOYAD *</label><input type="text" id="input-name" oninput="updatePreview()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-zinc-100 focus:border-red-600 focus:outline-none"></div>
 <div><label class="block text-xs font-semibold text-zinc-400 mb-1">T.C. KİMLİK NO *</label><input type="text" id="input-tc" oninput="updatePreview()" maxlength="11" inputmode="numeric" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-zinc-100 focus:border-red-600 focus:outline-none"></div>
 <div class="grid grid-cols-2 gap-2">
-<div><label class="block text-xs font-semibold text-zinc-400 mb-1">ŞEHİR *</label><select id="input-city" onchange="updatePreview()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-2 text-zinc-100 focus:border-red-600 focus:outline-none"></select></div>
+<div><label class="block text-xs font-semibold text-zinc-400 mb-1">ŞEHİR *</label><select id="input-city" onchange="updatePreview();filterVekilRadio()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-2 text-zinc-100 focus:border-red-600 focus:outline-none"></select></div>
 <div><label class="block text-xs font-semibold text-zinc-400 mb-1">İLÇE *</label><input type="text" id="input-district" oninput="updatePreview()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-zinc-100 focus:border-red-600 focus:outline-none"></div>
 </div>
 <div><label class="block text-xs font-semibold text-zinc-400 mb-1">ADRES *</label><textarea id="input-address" oninput="updatePreview()" rows="2" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-zinc-100 focus:border-red-600 focus:outline-none text-xs"></textarea></div>
@@ -157,13 +175,13 @@ body *{visibility:hidden}
 <div class="bg-zinc-900 p-6 rounded-xl border-2 border-emerald-700 space-y-4 shadow-2xl sticky top-4">
 <div class="border-b border-emerald-800/50 pb-3 flex justify-between items-center">
 <h2 class="text-lg font-bold text-white">3️⃣ DİLEKÇENİ KONTROL ET</h2>
-<span id="preview-target-label" class="text-xs font-bold text-emerald-400">Henüz hedef seçilmedi</span>
+<span id="preview-target-label" class="text-xs font-bold text-emerald-400">Hedef seçilmedi</span>
 </div>
 <div id="preview-content" class="bg-white border border-zinc-700 rounded-lg p-6 text-black max-h-[500px] overflow-y-auto" style="font-family:Georgia,serif;font-size:13px;line-height:1.7">
-<p class="text-zinc-500 italic">Yukarıdan önce kime göndereceğini seç. Seçim yaptığın anda dilekçen burada belirecek.</p>
+<p class="text-zinc-500 italic">Yukarıdan önce kime göndereceğini seç.</p>
 </div>
 <button id="send-btn" onclick="sendCurrent()" disabled class="w-full bg-zinc-700 text-zinc-400 font-bold py-4 rounded-lg text-sm uppercase cursor-not-allowed">ÖNCE HEDEF SEÇ</button>
-<p class="text-[11px] text-amber-300 text-center">Gönder'e bastığında: PDF inecek + mail penceresi açılacak + onay verdiğinde sayaç artacak</p>
+<p class="text-[11px] text-amber-300 text-center">Gönder: PDF inecek + mail açılacak + onay sonrası sayaç artacak</p>
 </div>
 
 <div class="no-print bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-4">
@@ -181,7 +199,7 @@ body *{visibility:hidden}
 <main id="panel-vekil" class="hidden max-w-7xl mx-auto px-4 py-8 w-full grid grid-cols-1 lg:grid-cols-12 gap-8">
 <section class="lg:col-span-5 space-y-6">
 <div class="bg-gradient-to-br from-emerald-950 via-zinc-900 to-red-950 p-6 rounded-xl border-2 border-emerald-700 space-y-3">
-<h2 class="text-lg md:text-xl font-impact text-white uppercase tracking-wider text-center">🏛️ MECLİS VEKİL PANELİ</h2>
+<h2 class="text-lg font-impact text-white uppercase text-center">🏛️ MECLİS VEKİL PANELİ</h2>
 <div class="bg-zinc-950/80 border border-emerald-800/50 rounded-lg p-4">
 <div class="flex justify-between items-baseline"><span class="text-xs text-zinc-400 font-semibold">İMZALAYAN VEKİL SAYISI</span><span class="text-emerald-400 font-mono font-bold text-xl" id="mp-signed-counter-2">0 / 592</span></div>
 </div>
@@ -229,16 +247,18 @@ body *{visibility:hidden}
 <div id="print-petition"></div>
 
 <script>
-const CITIZEN_COUNT_KEY='sign7527_citizen_count_v10';
-const MP_SIGNATURES_KEY='sign7527_mp_signatures_v10';
-const CITIZEN_CODE_KEY='sign7527_citizen_code_v10';
-const CB_COUNT_KEY='sign7527_cb_count_v10';
-const MB_COUNT_KEY='sign7527_mb_count_v10';
-const MP_SENT_COUNT_KEY='sign7527_mp_sent_count_v10';
+const CITIZEN_COUNT_KEY='sign7527_citizen_count_v11';
+const MP_SIGNATURES_KEY='sign7527_mp_signatures_v11';
+const CITIZEN_CODE_KEY='sign7527_citizen_code_v11';
+const CB_COUNT_KEY='sign7527_cb_count_v11';
+const MB_COUNT_KEY='sign7527_mb_count_v11';
+const MP_SENT_COUNT_KEY='sign7527_mp_sent_count_v11';
+const MP_MAIL_LOG_KEY='sign7527_mp_mail_log_v11';
 let citizenCount=parseInt(localStorage.getItem(CITIZEN_COUNT_KEY)||'0',10);
 let cbCount=parseInt(localStorage.getItem(CB_COUNT_KEY)||'0',10);
 let mbCount=parseInt(localStorage.getItem(MB_COUNT_KEY)||'0',10);
 let mpSentCount=parseInt(localStorage.getItem(MP_SENT_COUNT_KEY)||'0',10);
+let mailLog=JSON.parse(localStorage.getItem(MP_MAIL_LOG_KEY)||'{}');
 let mpSignatures=JSON.parse(localStorage.getItem(MP_SIGNATURES_KEY)||'[]');
 const statsData={citizenTarget:3000000};
 const leaders={
@@ -248,6 +268,14 @@ mb:{email:'numan.kurtulmus@tbmm.gov.tr',name:'Numan KURTULMUŞ'}
 let selectedTarget=null;
 let selectedVekil=null;
 let pendingConfirm=null;
+
+function getMailCount(id){return (mailLog[id]&&mailLog[id].count)?mailLog[id].count:0;}
+function incrementMailCount(id){
+if(!mailLog[id])mailLog[id]={count:0,last:null};
+mailLog[id].count++;
+mailLog[id].last=new Date().toISOString();
+localStorage.setItem(MP_MAIL_LOG_KEY,JSON.stringify(mailLog));
+}
 
 const rawMPText = `Adana|Abdullah DOĞRU|AK Parti
 Adana|Ahmet ZENBİLCİ|BAĞIMSIZ
@@ -628,7 +656,8 @@ Kahramanmaraş|Vahit KİRİŞCİ|AK Parti
 Kahramanmaraş|Zuhal KARAKOÇ|MHP
 Karabük|Cem ŞAHİN|AK Parti
 Karabük|Cevdet AKAY|CHP
-Karabük|Karaman|İsmail Atakan ÜNVER|Yeni Parti
+Karabük|Durmuş Ali KESKİNKILIÇ|AK Parti
+Karaman|İsmail Atakan ÜNVER|Yeni Parti
 Karaman|Osman SAĞLAM|AK Parti
 Karaman|Selman Oğuzhan ESER|AK Parti
 Kars|Adem ÇALKIN|AK Parti
@@ -915,7 +944,6 @@ var cm=document.getElementById("cnt-mp");if(cm)cm.textContent=mpCount+' / '+MP_T
 var bm=document.getElementById("bar-mp");if(bm)bm.style.width=Math.min(100,(mpCount/MP_TARGET)*100)+"%";
 var b=document.getElementById("mp-signed-counter-2");if(b)b.textContent=mpCount+' / '+MP_TARGET;
 }
-
 function initCampaignQR(){
 var input=document.getElementById("campaign-url");
 if(!input)return;
@@ -951,7 +979,6 @@ var c=localStorage.getItem(CITIZEN_CODE_KEY);
 if(!c){c='7527-C'+String(Date.now()).slice(-5);localStorage.setItem(CITIZEN_CODE_KEY,c);}
 return c;
 }
-
 function selectTarget(t){
 selectedTarget=t;
 ['cb','mb','mp'].forEach(function(x){
@@ -974,18 +1001,27 @@ var container=document.getElementById('vekil-radio-list');if(!container)return;
 var q=(document.getElementById('mp-search').value||'').toLowerCase();
 var partyF=document.getElementById('filter-party').value;
 var mode=document.getElementById('filter-city-mode').value;
+var mailStatus=document.getElementById('filter-mail-status').value;
 var city=document.getElementById('input-city').value;
 var list=mpDatabase.filter(function(m){
 if(partyF!=='TÜMÜ'&&m.party!==partyF)return false;
 if(mode==='SELECTED'&&m.city!==city)return false;
+var cnt=getMailCount(m.id);
+if(mailStatus==='NONE'&&cnt>0)return false;
+if(mailStatus==='SENT'&&cnt===0)return false;
+if(mailStatus==='LOW'&&(cnt<1||cnt>2))return false;
 if(q&&m.name.toLowerCase().indexOf(q)===-1&&m.city.toLowerCase().indexOf(q)===-1&&m.party.toLowerCase().indexOf(q)===-1)return false;
 return true;
 });
 if(list.length===0){container.innerHTML='<p class="text-xs text-zinc-500 p-2">Sonuç yok.</p>';return;}
-container.innerHTML=list.slice(0,300).map(function(m){
-var badge=m.vote==='RET'?'🐾':(m.vote==='KABUL'?'⚰️':'➖');
+container.innerHTML=list.slice(0,500).map(function(m){
+var cnt=getMailCount(m.id);
+var mailBadge='';
+if(cnt===0){mailBadge='<span class="text-[9px] bg-zinc-800 text-zinc-500 px-1.5 py-0.5 rounded font-bold">📨 0</span>';}
+else if(cnt<=2){mailBadge='<span class="text-[9px] bg-amber-950 text-amber-400 px-1.5 py-0.5 rounded font-bold border border-amber-800">📨 '+cnt+'</span>';}
+else{mailBadge='<span class="text-[9px] bg-emerald-950 text-emerald-400 px-1.5 py-0.5 rounded font-bold border border-emerald-800">📨 '+cnt+'</span>';}
 var sel=selectedVekil&&selectedVekil.id===m.id?'border-emerald-600 bg-emerald-950/40':'border-zinc-800 bg-zinc-950';
-return '<label class="flex items-center gap-2 p-2 border rounded cursor-pointer hover:bg-zinc-800/40 '+sel+'"><input type="radio" name="vekilRadio" value="'+m.id+'" '+(sel.indexOf('emerald')>-1?'checked':'')+' onchange="pickVekil('+m.id+')" class="accent-emerald-600"><div class="flex-1 min-w-0 text-[11px]"><div class="font-bold text-white truncate">'+m.name+' <span class="text-amber-400">'+badge+'</span></div><div class="text-zinc-400">'+m.city+' • '+m.party+'</div></div></label>';
+return '<label class="flex items-center gap-2 p-2 border rounded cursor-pointer hover:bg-zinc-800/40 '+sel+'"><input type="radio" name="vekilRadio" value="'+m.id+'" '+(sel.indexOf('emerald')>-1?'checked':'')+' onchange="pickVekil('+m.id+')" class="accent-emerald-600 shrink-0"><div class="flex-1 min-w-0 text-[11px]"><div class="font-bold text-white truncate">'+m.name+'</div><div class="text-zinc-400">'+m.city+' • '+m.party+'</div></div>'+mailBadge+'</label>';
 }).join('');
 }
 function pickVekil(id){
@@ -1070,7 +1106,6 @@ return '<div style="text-align:center;font-weight:bold;font-size:14px">'+baslik+
 '<div style="margin-top:30px">Saygılarımla,<br><strong>'+ad+'</strong><br>Dilekçe Kodu: '+code+'</div>'+
 sigHTML;
 }
-
 function buildPetitionText(tip){
 var code=getCitizenCode();
 var ad=v('input-name')||'[Ad Soyad]';
@@ -1086,7 +1121,6 @@ if(tip==='mb')return 'T.C. TÜRKİYE BÜYÜK MİLLET MECLİSİ BAŞKANLIĞI\'NA\
 var vk=selectedVekil?('Sayın '+selectedVekil.name):'Sayın Milletvekili';
 return 'SEÇİM BÖLGESİ MİLLETVEKİLİNE\n'+vk+'\n\n'+bas+'KONU: 7527 Sayılı Kanun\'un İptali İçin TBMM\'de Girişim Talebidir.\n\nSayın Milletvekili;\n\nSeçim bölgeniz olan '+sehir+' ilinde ikamet eden bir seçmeniniz olarak; hiçbir bilimsel ve vicdani temeli olmayan 7527 sayılı yasa kapsamında yaşanan toplu tecrit ve yaşam hakkı ihlallerinin vebalini hatırlatıyorum.\n\nBilimsel kısırlaştırma ve etik koruma ilkeleri esas alınarak 7527 sayılı kanunun iptal edilmesi için TBMM çatısı altında derhal girişimde bulunmanızı, bu konuyu gündeme taşımanızı ve gerekli yasal düzenlemelerin başlatılması için çaba göstermenizi saygılarımla arz ederim.'+imza;
 }
-
 function validateForm(){
 var ad=v('input-name');
 var tc=v('input-tc');
@@ -1108,7 +1142,6 @@ var bx=b.getContext('2d');bx.fillStyle="#ffffff";bx.fillRect(0,0,b.width,b.heigh
 return canvas.toDataURL()===b.toDataURL();
 }catch(_){return true;}
 }
-
 function sendCurrent(){
 if(!selectedTarget){alert("Lütfen önce kime göndereceğini seç.");return;}
 if(selectedTarget==='mp'&&!selectedVekil){alert("Lütfen bir vekil seç.");return;}
@@ -1153,15 +1186,21 @@ localStorage.setItem(CB_COUNT_KEY,cbCount.toString());
 updateCounters();
 showThanks('<strong>Cumhurbaşkanlığı makamına</strong> dilekçeniz iletildi.<br><br>Şimdi TBMM Başkanına da gönderin. 🐾');
 }else if(t==='mb'){
+citizenCount=parseInt(localStorage.getItem(CITIZEN_COUNT_KEY)||'0',10)+1;
+localStorage.setItem(CITIZEN_COUNT_KEY,citizenCount.toString());
 mbCount=parseInt(localStorage.getItem(MB_COUNT_KEY)||'0',10)+1;
 localStorage.setItem(MB_COUNT_KEY,mbCount.toString());
 updateCounters();
 showThanks('<strong>TBMM Başkanlığına</strong> dilekçeniz iletildi.<br><br>Son adım: Vekillere gönderin! 🐾');
 }else{
+citizenCount=parseInt(localStorage.getItem(CITIZEN_COUNT_KEY)||'0',10)+1;
+localStorage.setItem(CITIZEN_COUNT_KEY,citizenCount.toString());
 mpSentCount=parseInt(localStorage.getItem(MP_SENT_COUNT_KEY)||'0',10)+1;
 localStorage.setItem(MP_SENT_COUNT_KEY,mpSentCount.toString());
-updateCounters();
 var mp=pendingConfirm.mp;
+if(mp)incrementMailCount(mp.id);
+updateCounters();
+filterVekilRadio();
 showThanks('<strong>Sayın '+(mp?mp.name:'Vekil')+'</strong>\'e dilekçeniz iletildi.<br><br>Bir canın hayatını kurtardın. 🐾<br><br><em>Sıradaki vekile de gönder!</em>');
 }
 pendingConfirm=null;
@@ -1172,7 +1211,6 @@ document.getElementById('thanks-text').innerHTML=msg;
 m.style.display='flex';
 }
 function getMPRecordCode(mp){return '7527-V'+String(mp.id).padStart(4,'0');}
-
 function initCitizenSignaturePad(){
 canvas=document.getElementById("signature-pad");if(!canvas)return;ctx=canvas.getContext("2d");
 canvas.width=canvas.offsetWidth;canvas.height=canvas.offsetHeight;
@@ -1250,7 +1288,6 @@ if(list2)list2.innerHTML=cardHtml;
 var sigHtml=mpSignatures.map(function(s,i){return (i+1)+'. <strong>'+s.initials+'</strong> — '+s.recordCode+' / '+s.city;}).join('<br>');
 if(preview)preview.innerHTML=sigHtml;
 }
-
 function renderAlmanac(){
 var city=document.getElementById("input-city").value;
 var container=document.getElementById("almanac-container");
@@ -1265,7 +1302,6 @@ div.innerHTML='<div class="flex flex-wrap items-center gap-2 text-[10px] text-re
 container.appendChild(div);
 });
 }
-
 function shareTo(platform){
 var url=location.href;
 var t='7527 İPTAL! İmzacısı ol! Öldüren değil, yaşatan ol!';
