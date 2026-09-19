@@ -10,11 +10,12 @@
 <style>
 body{font-family:'Inter',sans-serif}.font-impact{font-family:'Oswald',sans-serif}
 @media print{
-html,body{background:#fff!important;color:#000!important;margin:0!important;padding:0!important}
-body > *:not(#print-petition){display:none!important}
-#print-petition{display:block!important;position:static!important;width:100%!important;padding:15mm!important;font-size:11pt;line-height:1.6;color:#000!important;background:#fff!important;box-sizing:border-box}
-#print-petition *{color:#000!important}
-#print-petition .val-sig{display:block!important;max-height:60px!important;margin-left:auto!important;margin-top:30px!important}
+html,body{background:#fff!important;color:#000!important}
+body *{visibility:hidden}
+#print-petition,#print-petition *{visibility:visible}
+#print-petition{position:absolute;left:0;top:0;width:100%;color:#000;background:#fff;display:block!important;padding:20mm;font-size:11pt;line-height:1.6}
+#print-petition .val-sig{display:block!important;max-height:60px!important;margin-left:auto!important;margin-top:30px}
+.no-print{display:none!important}
 }
 #print-petition{display:none}
 #thanks-modal,#confirm-modal{display:none}
@@ -256,13 +257,13 @@ body > *:not(#print-petition){display:none!important}
 <div id="print-petition"></div>
 
 <script>
-const CITIZEN_COUNT_KEY='sign7527_citizen_count_v13';
-const MP_SIGNATURES_KEY='sign7527_mp_signatures_v13';
-const CITIZEN_CODE_KEY='sign7527_citizen_code_v13';
-const CB_COUNT_KEY='sign7527_cb_count_v13';
-const MB_COUNT_KEY='sign7527_mb_count_v13';
-const MP_SENT_COUNT_KEY='sign7527_mp_sent_count_v13';
-const MP_MAIL_LOG_KEY='sign7527_mp_mail_log_v13';
+const CITIZEN_COUNT_KEY='sign7527_citizen_count_v12';
+const MP_SIGNATURES_KEY='sign7527_mp_signatures_v12';
+const CITIZEN_CODE_KEY='sign7527_citizen_code_v12';
+const CB_COUNT_KEY='sign7527_cb_count_v12';
+const MB_COUNT_KEY='sign7527_mb_count_v12';
+const MP_SENT_COUNT_KEY='sign7527_mp_sent_count_v12';
+const MP_MAIL_LOG_KEY='sign7527_mp_mail_log_v12';
 let citizenCount=parseInt(localStorage.getItem(CITIZEN_COUNT_KEY)||'0',10);
 let cbCount=parseInt(localStorage.getItem(CB_COUNT_KEY)||'0',10);
 let mbCount=parseInt(localStorage.getItem(MB_COUNT_KEY)||'0',10);
@@ -1198,7 +1199,7 @@ var a=document.createElement('a');a.href=url;a.style.display='none';
 document.body.appendChild(a);a.click();
 setTimeout(function(){try{document.body.removeChild(a);}catch(_){}},200);
 setTimeout(function(){
-alert('📎 ÖNEMLİ — 3 ADIM:\n\n1) İnen PDF\'i mail uygulamasında ATAÇ simgesiyle ekleyin.\n\n2) Mail\'i göndermeden önce PDF\'in ekli göründüğünü KONTROL EDİN.\n\n3) Sonra GÖNDER\'e basın.\n\n⚠️ Gmail web kullanıyorsanız ve PDF eklenmiyorsa: maili mobil uygulamadan veya Outlook\'tan gönderin.');
+alert('📎 ÖNEMLİ HATIRLATMA:\n\n1) İndirdiğiniz PDF dosyasını mail uygulamasında ATAÇ / EK DOSYA simgesiyle mail\'e ekleyin.\n\n2) Sonra gönderin.\n\n(Tarayıcılar güvenlik nedeniyle otomatik dosya ekleyemez — bu yüzden manuel eklemelisiniz.)');
 pendingConfirm={type:selectedTarget,mp:selectedVekil};
 document.getElementById('confirm-modal').style.display='flex';
 },1500);
