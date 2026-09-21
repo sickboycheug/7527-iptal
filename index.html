@@ -1600,6 +1600,32 @@ a.download='7527-paylasim.png';
 a.href=c2.toDataURL('image/png');
 a.click();
 }
+// T.C. Kimlik No Doğrulama Algoritması
+function isValidTC(tc) {
+  tc = String(tc).trim();
+  if (!/^[1-9]\d{10}$/.test(tc)) return false;
+  const digits = tc.split('').map(Number);
+  const oddSum = digits[0] + digits[2] + digits[4] + digits[6] + digits[8];
+  const evenSum = digits[1] + digits[3] + digits[5] + digits[7];
+  let digit10 = ((oddSum * 7) - evenSum) % 10;
+  if (digit10 < 0) digit10 += 10;
+  const digit11 = (digits.slice(0, 10).reduce((a, b) => a + b, 0)) % 10;
+  return digits[9] === digit10 && digits[10] === digit11;
+}
+
+// Form Gönderilirken T.C. Kontrolü
+const imzaFormu = document.querySelector('form');
+if (imzaFormu) {
+  imzaFormu.addEventListener('submit', function(e) {
+    const tcGirdisi = document.querySelector('input[type="text"]').value;
+    if (!isValidTC(tcGirdisi)) {
+      e.preventDefault();
+      e.stopPropagation();
+      alert("Lütfen geçerli bir T.C. Kimlik Numarası giriniz!");
+      return false;
+    }
+  }, true);
+}
 </script>
 </body>
 </html>
