@@ -1589,6 +1589,10 @@ function renderAlmanac() {
           <span class="text-amber-400/80 font-semibold">${e.category}</span>
           <a href="${e.source}" target="_blank" rel="noopener" class="underline hover:text-zinc-300">Kaynak 🔗</a>
         </div>
+        <div class="grid grid-cols-2 gap-2 pt-2">
+          <button type="button" onclick="sendAlmanacToSelectedMP('${String(e.title).replace(/'/g,"\\'")}','${String(e.location||e.city).replace(/'/g,"\\'")}')" class="bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-200 rounded px-2 py-1.5 text-[10px] font-bold">✉️ Seçili vekile e-posta</button>
+          <button type="button" onclick="shareAlmanacCase('${String(e.title).replace(/'/g,"\\'")}','${String(e.location||e.city).replace(/'/g,"\\'")}')" class="bg-sky-900 hover:bg-sky-800 border border-sky-700 text-sky-100 rounded px-2 py-1.5 text-[10px] font-bold">𝕏 Sosyal paylaş</button>
+        </div>
       `;
       container.appendChild(card);
     });
@@ -1601,6 +1605,16 @@ function renderAlmanac() {
   document.getElementById('almanac-shown-count').textContent = filtered.length;
   document.getElementById('almanac-total-count').textContent =
     almanacEvents.length;
+}
+function sendAlmanacToSelectedMP(title,location){
+  if(!selectedVekil){alert('Önce sol kolondan bir milletvekili seçin.');return;}
+  const subject=encodeURIComponent(`7527 İptal Talebi - ${selectedVekil.name}`);
+  const body=encodeURIComponent(`Sayın ${selectedVekil.name},\n\n${location} konumunda kayda geçen "${title}" vakası hakkında gereğini yapmanızı ve 7527 sayılı kanunun iptali için adım atmanızı talep ediyorum.\n\n7527 İPTAL!`);
+  window.location.href=`mailto:${selectedVekil.email}?subject=${subject}&body=${body}`;
+}
+function shareAlmanacCase(title,location){
+  const text=encodeURIComponent(`7527 İPTAL! ${location} - "${title}" vakası hakkında seçili milletvekillerinden açıklama ve işlem talep ediyoruz. ${window.location.href}`);
+  window.open(`https://x.com/intent/tweet?text=${text}`,'_blank');
 }
 
 let campaignQRCodeObj = null;
