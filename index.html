@@ -132,6 +132,7 @@ Tarayıcınız video oynatmayı desteklemiyor.
 </select>
 </div>
 <div id="vekil-radio-list" class="max-h-72 overflow-y-auto space-y-1 border border-zinc-800 rounded p-2"></div>
+<button id="share-mp-panel-btn" type="button" onclick="shareVekilPanelLink()" class="hidden w-full bg-emerald-700 hover:bg-emerald-600 border border-emerald-500 text-white rounded-lg py-2.5 text-xs font-bold uppercase">🔗 Seçilen vekil için imza bağlantısını paylaş</button>
 </div>
 
 <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-3 shadow-2xl">
@@ -1050,6 +1051,7 @@ initCampaignQR();
 populateFilterCityMode();
 populateVolCity();
 filterVekilRadio();
+  openVekilPanelLink();
 refreshRemoteCounters();
 }
 function populateFilterCityMode(){
@@ -1350,7 +1352,46 @@ function filterVekilRadio() {
 
 function onVekilRadioSelect(mpId) {
   selectedVekil = mpDatabase.find((m) => m.id === mpId) || null;
+  const shareButton = document.getElementById('share-mp-panel-btn');
+  if (shareButton) shareButton.classList.toggle('hidden', !selectedVekil);
   updatePreview();
+}
+
+function getVekilPanelUrl(mpId) {
+  const url = new URL(window.location.href);
+  url.search = '';
+  url.hash = '';
+  url.searchParams.set('panel', 'vekil');
+  url.searchParams.set('mp', String(mpId));
+  return url.toString();
+}
+
+async function shareVekilPanelLink() {
+  if (!selectedVekil) return;
+  const url = getVekilPanelUrl(selectedVekil.id);
+  const shareData = {
+    title: `${selectedVekil.name} için imza bağlantısı`,
+    text: `${selectedVekil.name} için vekil panelinden imza verin.`,
+    url,
+  };
+  if (navigator.share) {
+    await navigator.share(shareData).catch(function () {});
+    return;
+  }
+  await navigator.clipboard?.writeText(url);
+  alert('Vekil paneli bağlantısı panoya kopyalandı.');
+}
+
+function openVekilPanelLink() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('panel') !== 'vekil') return;
+  switchTab('vekil');
+  const mpId = Number(params.get('mp'));
+  if (!Number.isInteger(mpId)) return;
+  const select = document.getElementById('mp-select');
+  if (!select || !mpDatabase.some(function (m) { return m.id === mpId; })) return;
+  select.value = String(mpId);
+  showSelectedMP(select);
 }
 
 function updatePreview() {
@@ -1428,8 +1469,7 @@ function updatePreview() {
         <p><strong>İletişim:</strong> ${contact}</p>
       </div>
       <div class="text-center">
-        <p class="font-bold mb-1">Islak İmza</p>
-        <img src="${sigData}" class="max-h-12 border border-zinc-200 rounded" alt="İmza">
+        <img src="${sigData}" class="max-h-12" alt="İmza">
       </div>
     </div>
   `;
@@ -1789,6 +1829,9 @@ function showSelectedMP(elem) {
 
   if (mp) {
     selectedMPId = mp.id;
+    selectedVekil = mp;
+    const shareButton = document.getElementById('share-mp-panel-btn');
+    if (shareButton) shareButton.classList.remove('hidden');
     if (info)
       info.textContent = `Seçilen Vekil: ${mp.name} (${mp.party} - ${mp.city})`;
     if (petMP) petMP.textContent = `${mp.name} (${mp.party} - ${mp.city})`;
