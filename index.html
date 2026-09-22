@@ -6,6 +6,7 @@
 <title>7527 İPTAL! İMZACISI OL!</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 body{font-family:'Inter',sans-serif}.font-impact{font-family:'Oswald',sans-serif}
@@ -286,6 +287,9 @@ const CB_COUNT_KEY='sign7527_cb_count_v12';
 const MB_COUNT_KEY='sign7527_mb_count_v12';
 const MP_SENT_COUNT_KEY='sign7527_mp_sent_count_v12';
 const MP_MAIL_LOG_KEY='sign7527_mp_mail_log_v12';
+const SUPABASE_URL='https://mednnlpprdgupdajmrin.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY='sb_publishable_4xahmL7yt4C53MAJuorucg_qhImIEwn';
+const supabaseClient=window.supabase?.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 let citizenCount=parseInt(localStorage.getItem(CITIZEN_COUNT_KEY)||'0',10);
 let cbCount=parseInt(localStorage.getItem(CB_COUNT_KEY)||'0',10);
 let mbCount=parseInt(localStorage.getItem(MB_COUNT_KEY)||'0',10);
@@ -1032,6 +1036,7 @@ initCampaignQR();
 populateFilterCityMode();
 populateVolCity();
 filterVekilRadio();
+refreshRemoteCounters();
 }
 function populateFilterCityMode(){
 var sel=document.getElementById('filter-city-mode');
@@ -1084,6 +1089,35 @@ function updateCounters() {
     cbCount.toLocaleString('tr-TR');
   document.getElementById('cnt-mb').textContent =
     mbCount.toLocaleString('tr-TR');
+}
+async function getCitizenHash(){
+  const tc=(document.getElementById('input-tc')?.value||'').trim();
+  if(!/^\d{11}$/.test(tc))return null;
+  const data=new TextEncoder().encode('7527:'+tc);
+  const digest=await crypto.subtle.digest('SHA-256',data);
+  return Array.from(new Uint8Array(digest)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');
+}
+async function refreshRemoteCounters(){
+  if(!supabaseClient)return;
+  const queries=await Promise.all([
+    supabaseClient.from('campaign_citizens').select('id',{count:'exact',head:true}),
+    supabaseClient.from('campaign_submissions').select('id',{count:'exact',head:true}).eq('recipient_type','cb'),
+    supabaseClient.from('campaign_submissions').select('id',{count:'exact',head:true}).eq('recipient_type','mb'),
+    supabaseClient.from('campaign_submissions').select('id',{count:'exact',head:true}).eq('recipient_type','mp')
+  ]);
+  if(queries.some(function(result){return result.error;}))return;
+  citizenCount=queries[0].count||0;cbCount=queries[1].count||0;mbCount=queries[2].count||0;mpSentCount=queries[3].count||0;updateCounters();
+}
+async function recordRemoteSubmission(type,recipientId){
+  if(!supabaseClient)return true;
+  const hash=await getCitizenHash();
+  if(!hash)return false;
+  const citizenResult=await supabaseClient.from('campaign_citizens').upsert({citizen_hash:hash},{onConflict:'citizen_hash',ignoreDuplicates:true});
+  if(citizenResult.error)return false;
+  const number='7527-'+type.toUpperCase()+'-'+Date.now()+'-'+Math.random().toString(36).slice(2,8);
+  const result=await supabaseClient.from('campaign_submissions').insert({citizen_hash:hash,recipient_type:type,recipient_id:recipientId||null,petition_number:number});
+  if(result.error&&result.error.code!=='23505')return false;
+  await refreshRemoteCounters();return true;
 }
 
 function populateCityDropdown() {
@@ -1415,25 +1449,19 @@ function sendCurrent() {
   }, 1000);
 }
 
-function confirmSend(status) {
+async function confirmSend(status) {
   const modal = document.getElementById('confirm-modal');
   if (modal) modal.style.display = 'none';
 
   if (status && pendingConfirm) {
-    if (pendingConfirm === 'cb') {
-      cbCount++;
-      localStorage.setItem(CB_COUNT_KEY, cbCount);
-    } else if (pendingConfirm === 'mb') {
-      mbCount++;
-      localStorage.setItem(MB_COUNT_KEY, mbCount);
-    } else if (pendingConfirm === 'mp' && selectedVekil) {
-      mpSentCount++;
-      incrementMailCount(selectedVekil.id);
-      localStorage.setItem(MP_SENT_COUNT_KEY, mpSentCount);
+    if(!(await recordRemoteSubmission(pendingConfirm,pendingConfirm==='mp'&&selectedVekil?selectedVekil.id:null))){alert('Ortak sayaç bağlantısı kurulamadı. Lütfen tekrar deneyin.');return;}
+    if(pendingConfirm==='mp'&&selectedVekil)incrementMailCount(selectedVekil.id);
+    if(!supabaseClient){
+      if (pendingConfirm === 'cb') {cbCount++;localStorage.setItem(CB_COUNT_KEY, cbCount);}
+      else if (pendingConfirm === 'mb') {mbCount++;localStorage.setItem(MB_COUNT_KEY, mbCount);}
+      else if (pendingConfirm === 'mp' && selectedVekil) {mpSentCount++;localStorage.setItem(MP_SENT_COUNT_KEY, mpSentCount);}
+      citizenCount++;localStorage.setItem(CITIZEN_COUNT_KEY, citizenCount);
     }
-
-    citizenCount++;
-    localStorage.setItem(CITIZEN_COUNT_KEY, citizenCount);
 
     updateCounters();
     filterVekilRadio();
