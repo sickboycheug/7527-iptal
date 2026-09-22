@@ -1051,580 +1051,707 @@ var o=document.createElement('option');o.value=c;o.textContent=c;sel.appendChild
 }
 if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',initPage);}else{initPage();}
 
-window.addEventListener('resize',function(){
-if(canvas){canvas.width=canvas.offsetWidth;canvas.height=canvas.offsetHeight;ctx.fillStyle="#ffffff";ctx.fillRect(0,0,canvas.width,canvas.height);ctx.strokeStyle="#000000";ctx.lineWidth=2.5;ctx.lineCap="round";}
-if(mpCanvas){mpCanvas.width=mpCanvas.offsetWidth;mpCanvas.height=mpCanvas.offsetHeight;mpCtx.fillStyle="#ffffff";mpCtx.fillRect(0,0,mpCanvas.width,mpCanvas.height);mpCtx.strokeStyle="#000000";mpCtx.lineWidth=2.5;mpCtx.lineCap="round";}
+window.addEventListener('resize', function () {
+  if (canvas) {
+    const w = canvas.offsetWidth;
+    if (w > 0) canvas.width = w;
+  }
+  if (mpCanvas) {
+    const w = mpCanvas.offsetWidth;
+    if (w > 0) mpCanvas.width = w;
+  }
 });
 
-function updateCounters(){
-var cc=document.getElementById("cnt-citizen");if(cc)cc.textContent=citizenCount.toLocaleString('tr-TR')+' / '+statsData.citizenTarget.toLocaleString('tr-TR');
-var bc=document.getElementById("bar-citizen");if(bc)bc.style.width=Math.min(100,(citizenCount/statsData.citizenTarget)*100)+"%";
-var e1=document.getElementById("cnt-cb");if(e1)e1.textContent=cbCount.toLocaleString('tr-TR');
-var e2=document.getElementById("cnt-mb");if(e2)e2.textContent=mbCount.toLocaleString('tr-TR');
-var e3=document.getElementById("cnt-mp-sent");if(e3)e3.textContent=mpSentCount.toLocaleString('tr-TR');
-var mpCount=mpSignatures.length;
-var cm=document.getElementById("cnt-mp");if(cm)cm.textContent=mpCount+' / '+MP_TARGET;
-var bm=document.getElementById("bar-mp");if(bm)bm.style.width=Math.min(100,(mpCount/MP_TARGET)*100)+"%";
-var b=document.getElementById("mp-signed-counter-2");if(b)b.textContent=mpCount+' / '+MP_TARGET;
-}
-function initCampaignQR(){
-var input=document.getElementById("campaign-url");
-if(!input)return;
-var isLocal=location.hostname==="localhost"||location.hostname==="127.0.0.1"||location.hostname==="0.0.0.0";
-if(/^https?:$/.test(location.protocol)&&!isLocal) input.value=location.href;
-updateCampaignQR();
-}
-function updateCampaignQR(){
-var input=document.getElementById("campaign-url");
-var container=document.getElementById("campaign-qr");
-if(!input||!container)return;
-var url=input.value.trim();
-container.innerHTML="";
-if(!url)return;
-new QRCode(container,{text:url,width:128,height:128,colorDark:"#18181b",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.H});
-}
-function downloadCampaignQR(){
-var container=document.getElementById("campaign-qr");
-var code=container&&container.querySelector("canvas, img");
-if(!code)return;
-var link=document.createElement("a");
-link.download="7527-qr.png";
-link.href=code.tagName.toLowerCase()==="canvas"?code.toDataURL("image/png"):code.src;
-link.click();
-}
-function populateCityDropdown(){
-var sel=document.getElementById("input-city");if(!sel)return;sel.innerHTML="";
-citiesList.forEach(function(c){var o=document.createElement("option");o.value=c;o.textContent=c;if(c==="İstanbul")o.selected=true;sel.appendChild(o);});
-}
-function v(id){var el=document.getElementById(id);return el?(el.value||'').trim():'';}
-function getCitizenCode(){
-var c=localStorage.getItem(CITIZEN_CODE_KEY);
-if(!c){c='7527-C'+String(Date.now()).slice(-5);localStorage.setItem(CITIZEN_CODE_KEY,c);}
-return c;
-}
-function selectTarget(t){
-selectedTarget=t;
-['cb','mb','mp'].forEach(function(x){
-var b=document.getElementById('t-'+x);
-if(b){if(x===t){b.classList.add('selected-target');}else{b.classList.remove('selected-target');}}
-});
-var vs=document.getElementById('vekil-secim');
-if(t==='mp'){vs.classList.remove('hidden');}
-else{vs.classList.add('hidden');}
-var info=document.getElementById('target-info');
-var lbl=document.getElementById('preview-target-label');
-if(t==='cb'){info.textContent='Cumhurbaşkanına gönderilecek';lbl.textContent='🏛️ CUMHURBAŞKANI DİLEKÇESİ';lbl.className='text-xs font-bold text-amber-400';}
-else if(t==='mb'){info.textContent='TBMM Başkanına gönderilecek';lbl.textContent='🏛️ TBMM BAŞKANI DİLEKÇESİ';lbl.className='text-xs font-bold text-amber-400';}
-else{if(selectedVekil){info.textContent=selectedVekil.name+' vekiline gönderilecek';lbl.textContent='✉️ '+selectedVekil.name.toUpperCase()+' DİLEKÇESİ';}else{info.textContent='Aşağıdan bir vekil seç';lbl.textContent='✉️ VEKİL SEÇİLMEDİ';}lbl.className='text-xs font-bold text-emerald-400';}
-updatePreview();
+function updateCounters() {
+  document.getElementById('cnt-citizen').textContent =
+    citizenCount.toLocaleString('tr-TR') + ' / 3.000.000';
+  const citPct = Math.min((citizenCount / 3000000) * 100, 100).toFixed(2);
+  document.getElementById('bar-citizen').style.width = citPct + '%';
+
+  const mpCount = mpSignatures.length;
+  document.getElementById('cnt-mp').textContent =
+    mpCount + ' / ' + MP_TARGET;
+  const mpPct = Math.min((mpCount / MP_TARGET) * 100, 100).toFixed(2);
+  document.getElementById('bar-mp').style.width = mpPct + '%';
+
+  const mpCounter2 = document.getElementById('mp-signed-counter-2');
+  if (mpCounter2)
+    mpCounter2.textContent = mpCount + ' / ' + MP_TARGET;
+
+  document.getElementById('cnt-mp-sent').textContent =
+    mpSentCount.toLocaleString('tr-TR');
+  document.getElementById('cnt-cb').textContent =
+    cbCount.toLocaleString('tr-TR');
+  document.getElementById('cnt-mb').textContent =
+    mbCount.toLocaleString('tr-TR');
 }
 
-function filterVekilRadio(){
-var container=document.getElementById('vekil-radio-list');if(!container)return;
-var q=(document.getElementById('mp-search').value||'').toLowerCase();
-var partyF=document.getElementById('filter-party').value;
-var mode=document.getElementById('filter-city-mode').value;
-var mailStatus=document.getElementById('filter-mail-status').value;
-var list=mpDatabase.filter(function(m){
-if(partyF!=='TÜMÜ'&&m.party!==partyF)return false;
-if(mode!=='ALL'&&m.city!==mode)return false;
-var cnt=getMailCount(m.id);
-if(mailStatus==='NONE'&&cnt>0)return false;
-if(mailStatus==='SENT'&&cnt===0)return false;
-if(mailStatus==='LOW'&&(cnt<1||cnt>2))return false;
-if(q&&m.name.toLowerCase().indexOf(q)===-1&&m.city.toLowerCase().indexOf(q)===-1&&m.party.toLowerCase().indexOf(q)===-1)return false;
-return true;
-});
-if(list.length===0){container.innerHTML='<p class="text-xs text-zinc-500 p-2">Sonuç yok.</p>';return;}
-container.innerHTML=list.slice(0,500).map(function(m){
-var cnt=getMailCount(m.id);
-var mailBadge='';
-if(cnt===0){mailBadge='<span class="text-[9px] bg-zinc-800 text-zinc-500 px-1.5 py-0.5 rounded font-bold">📨 0</span>';}
-else if(cnt<=2){mailBadge='<span class="text-[9px] bg-amber-950 text-amber-400 px-1.5 py-0.5 rounded font-bold border border-amber-800">📨 '+cnt+'</span>';}
-else{mailBadge='<span class="text-[9px] bg-emerald-950 text-emerald-400 px-1.5 py-0.5 rounded font-bold border border-emerald-800">📨 '+cnt+'</span>';}
-var voteBadge='';
-if(m.vote==='RET'){voteBadge='<span class="text-[9px] bg-emerald-950 text-emerald-400 border border-emerald-700 px-1.5 py-0.5 rounded font-bold">🐾 RET</span>';}
-else if(m.vote==='KABUL'){voteBadge='<span class="text-[9px] bg-red-950 text-red-400 border border-red-800 px-1.5 py-0.5 rounded font-bold">⚰️ KABUL</span>';}
-else{voteBadge='<span class="text-[9px] bg-amber-950 text-amber-400 border border-amber-800 px-1.5 py-0.5 rounded font-bold">➖ KATILMADI</span>';}
-var sel=selectedVekil&&selectedVekil.id===m.id?'border-emerald-600 bg-emerald-950/40':'border-zinc-800 bg-zinc-950';
-return '<label class="flex items-center gap-2 p-2 border rounded cursor-pointer hover:bg-zinc-800/40 '+sel+'"><input type="radio" name="vekilRadio" value="'+m.id+'" '+(sel.indexOf('emerald')>-1?'checked':'')+' onchange="pickVekil('+m.id+')" class="accent-emerald-600 shrink-0"><div class="flex-1 min-w-0 text-[11px]"><div class="font-bold text-white truncate">'+m.name+'</div><div class="text-zinc-400">'+m.city+' • '+m.party+'</div></div>'+voteBadge+mailBadge+'</label>';
-}).join('');
-}
-function pickVekil(id){
-var mp=mpDatabase.find(function(m){return m.id===id;});
-if(!mp)return;
-selectedVekil=mp;
-selectTarget('mp');
-}
-function populateVekilSelect(){
-var sel=document.getElementById("mp-select");if(!sel)return;sel.innerHTML="";
-mpDatabase.forEach(function(m){var o=document.createElement("option");o.value=m.id;o.textContent=m.name+' — '+m.city+' — '+m.party;sel.appendChild(o);});
-}
-function filterVekilList(){
-var q=(document.getElementById("mp-search-input").value||"").toLowerCase();
-selectedMPId=null;
-var sel=document.getElementById("mp-select");if(!sel)return;sel.innerHTML="";
-var list=mpDatabase.filter(function(m){return m.name.toLowerCase().indexOf(q)>-1||m.city.toLowerCase().indexOf(q)>-1||m.party.toLowerCase().indexOf(q)>-1;});
-if(list.length===0){var o=document.createElement("option");o.textContent="Sonuç yok";o.disabled=true;sel.appendChild(o);return;}
-list.forEach(function(m){var o=document.createElement("option");o.value=m.id;o.textContent=m.name+' — '+m.city+' — '+m.party;sel.appendChild(o);});
-}
-function showSelectedMP(sel){
-var info=document.getElementById("mp-selected-info");
-var mp=mpDatabase.find(function(m){return m.id===parseInt(sel.value);});
-if(!mp)return;
-selectedMPId=mp.id;
-var s=document.getElementById("mp-search-input");
-if(s)s.value=mp.name;
-if(info)info.textContent='Seçilen vekil: '+mp.name+' ('+mp.city+' / '+mp.party+')';
-var petition=document.getElementById("petition-selected-mp");
-if(petition)petition.textContent=mp.name+' - '+mp.city+' / '+mp.party;
+function populateCityDropdown() {
+  const citySelect = document.getElementById('input-city');
+  if (!citySelect) return;
+  citySelect.innerHTML = '<option value="">Şehir Seçin</option>';
+  citiesList.forEach(function (c) {
+    const opt = document.createElement('option');
+    opt.value = c;
+    opt.textContent = c;
+    citySelect.appendChild(opt);
+  });
 }
 
-function updatePreview(){
-var box=document.getElementById('preview-content');
-if(!box)return;
-if(!selectedTarget){box.innerHTML='<p class="text-zinc-500 italic">Yukarıdan önce kime göndereceğini seç.</p>';return;}
-if(selectedTarget==='mp'&&!selectedVekil){box.innerHTML='<p class="text-zinc-500 italic">Aşağıdaki listeden bir vekil seç.</p>';return;}
-box.innerHTML=buildPetitionHTML(selectedTarget);
-var btn=document.getElementById('send-btn');
-btn.disabled=false;
-btn.className='w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-lg text-sm uppercase shadow-lg';
-if(selectedTarget==='cb')btn.textContent='📨 CUMHURBAŞKANINA GÖNDER';
-else if(selectedTarget==='mb')btn.textContent='📨 TBMM BAŞKANINA GÖNDER';
-else btn.textContent='📨 '+selectedVekil.name.toUpperCase()+' VEKİLİNE GÖNDER';
+function populateVekilSelect() {
+  const sel = document.getElementById('mp-select');
+  if (!sel) return;
+  sel.innerHTML = '';
+  mpDatabase.forEach(function (m) {
+    const opt = document.createElement('option');
+    opt.value = m.id;
+    opt.textContent = m.city + ' - ' + m.name + ' (' + m.party + ')';
+    sel.appendChild(opt);
+  });
 }
 
-function buildPetitionHTML(tip){
-var ad=v('input-name')||'_______________';
-var tc=v('input-tc')||'_______________';
-var sehir=document.getElementById('input-city').value||'_______________';
-var ilce=v('input-district')||'_______________';
-var adres=v('input-address')||'_______________';
-var iletisim=v('input-contact')||'_______________';
-var code=getCitizenCode();
-var sigHTML='';
-if(canvas){try{var d=canvas.toDataURL("image/png");if(d&&d.length>200){sigHTML='<div style="text-align:right;margin-top:30px"><img src="'+d+'" style="max-height:60px" alt="imza"/></div>';}}catch(_){}}
-var baslik='',hitap='',konu='',govde='';
-if(tip==='cb'){
-baslik='T.C. CUMHURBAŞKANLIĞI MAKAMINA';hitap='Sayın Recep Tayyip ERDOĞAN';
-konu='7527 Sayılı Kanun Uygulamalarının Durdurulması ve Yasal Düzenlemenin Yeniden Değerlendirilmesi İstemidir.';
-govde='Sayın Cumhurbaşkanım;<br><br>7527 sayılı kanunun yürürlüğe girmesiyle birlikte ülke genelinde yaşanan toplu tecrit ve yaşam hakkı ihlalleri toplum vicdanını derinden yaralamaktadır. Ülkemizdeki barınak kapasitesi 105 bin civarındayken milyonlarca canlının tecride ve ölüme terk edilmesi kabul edilemez.<br><br>Anayasa\'nın yaşam hakkını teminat altına alan ilkeleri doğrultusunda; mevzuatın bilimsel kısırlaştırma ve etik koruma esasları çerçevesinde revize edilmesi, 7527 sayılı kanunun uygulamalarının durdurulması için gerekli idari ve yasal adımların atılmasını saygılarımla arz ederim.';
-}else if(tip==='mb'){
-baslik='T.C. TÜRKİYE BÜYÜK MİLLET MECLİSİ BAŞKANLIĞI\'NA';hitap='Sayın Numan KURTULMUŞ';
-konu='7527 Sayılı Kanun\'un İptali ve 5199 Sayılı Kanun\'un Etik Kriterlerle Yeniden Yürürlüğe Konulması Talebidir.';
-govde='Sayın Başkan;<br><br>Ülkemizdeki toplam barınak kapasitesi 105 bin civarındayken milyonlarca canlıyı tecrit ve ölüm kamplarına sokmayı öngören 7527 sayılı kanun; kamu düzenine, toplum vicdanına ve Anayasa\'nın yaşam hakkını teminat altına alan ilkelerine aykırıdır.<br><br>Bilimsel kısırlaştırma, etik koruma ve yaşatma ilkeleri esas alınarak; 7527 Sayılı Kanun\'un yürürlükten kaldırılması, 5199 Sayılı Hayvanları Koruma Kanunu\'nun yaşam hakkını önceleyen hükümleriyle yeniden yürürlüğe konulması ve mevzuatın bilimsel ve etik esaslar çerçevesinde revize edilmesi için TBMM çatısı altında gerekli girişimlerin başlatılmasını saygılarımla arz ederim.';
-}else{
-baslik='SEÇİM BÖLGESİ MİLLETVEKİLİ SAYIN '+(selectedVekil?selectedVekil.name.toUpperCase():'[VEKİL]');
-hitap=selectedVekil?('Sayın '+selectedVekil.name):'Sayın Milletvekili';
-konu='7527 Sayılı Kanun\'un İptali İçin TBMM\'de Girişim Talebidir.';
-govde='Sayın Milletvekili;<br><br>Seçim bölgeniz olan '+sehir+' ilinde ikamet eden bir seçmeniniz olarak; hiçbir bilimsel ve vicdani temeli olmayan 7527 sayılı yasa kapsamında yaşanan toplu tecrit ve yaşam hakkı ihlallerinin vebalini hatırlatıyorum.<br><br>Bilimsel kısırlaştırma ve etik koruma ilkeleri esas alınarak 7527 sayılı kanunun iptal edilmesi için TBMM çatısı altında derhal girişimde bulunmanızı, bu konuyu gündeme taşımanızı ve gerekli yasal düzenlemelerin başlatılması için çaba göstermenizi saygılarımla arz ederim.';
-}
-return '<div style="text-align:center;font-weight:bold;font-size:14px">'+baslik+'</div>'+
-'<div style="text-align:center;font-weight:bold">'+hitap+'</div>'+
-'<div style="text-align:center;margin-bottom:20px">ANKARA</div>'+
-'<div><strong>BAŞVURAN YURTTAŞ :</strong> '+ad+'</div>'+
-'<div><strong>T.C. KİMLİK NO&nbsp;&nbsp;&nbsp;&nbsp;:</strong> '+tc+'</div>'+
-'<div><strong>ADRES&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</strong> '+adres+', '+ilce+' / '+sehir+'</div>'+
-'<div><strong>İLETİŞİM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</strong> '+iletisim+'</div>'+
-'<div><strong>DİLEKÇE KODU&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</strong> '+code+'</div>'+
-'<div style="margin-top:20px"><strong>KONU:</strong> '+konu+'</div>'+
-'<div style="text-align:justify;margin-top:20px">'+govde+'</div>'+
-'<div style="margin-top:30px">Saygılarımla,<br><strong>'+ad+'</strong><br>Dilekçe Kodu: '+code+'</div>'+
-sigHTML;
-}
-function buildPetitionText(tip){
-var code=getCitizenCode();
-var ad=v('input-name')||'[Ad Soyad]';
-var tc=v('input-tc')||'[TC]';
-var sehir=document.getElementById('input-city').value||'';
-var ilce=v('input-district')||'[İlçe]';
-var adres=v('input-address')||'[Adres]';
-var iletisim=v('input-contact')||'[İletişim]';
-var bas='BAŞVURAN YURTTAŞ : '+ad+'\nT.C. KİMLİK NO    : '+tc+'\nADRES            : '+adres+', '+ilce+' / '+sehir+'\nİLETİŞİM         : '+iletisim+'\nDİLEKÇE KODU     : '+code+'\n\n';
-var imza='\n\nSaygılarımla,\n'+ad+'\nDilekçe Kodu: '+code;
-if(tip==='cb')return 'T.C. CUMHURBAŞKANLIĞI MAKAMINA\nSayın Recep Tayyip ERDOĞAN\nANKARA\n\n'+bas+'KONU: 7527 Sayılı Kanun Uygulamalarının Durdurulması ve Yasal Düzenlemenin Yeniden Değerlendirilmesi İstemidir.\n\nSayın Cumhurbaşkanım;\n\n7527 sayılı kanunun yürürlüğe girmesiyle birlikte ülke genelinde yaşanan toplu tecrit ve yaşam hakkı ihlalleri toplum vicdanını derinden yaralamaktadır. Ülkemizdeki barınak kapasitesi 105 bin civarındayken milyonlarca canlının tecride ve ölüme terk edilmesi kabul edilemez.\n\nAnayasa\'nın yaşam hakkını teminat altına alan ilkeleri doğrultusunda; mevzuatın bilimsel kısırlaştırma ve etik koruma esasları çerçevesinde revize edilmesi, 7527 sayılı kanunun uygulamalarının durdurulması için gerekli idari ve yasal adımların atılmasını saygılarımla arz ederim.'+imza;
-if(tip==='mb')return 'T.C. TÜRKİYE BÜYÜK MİLLET MECLİSİ BAŞKANLIĞI\'NA\nSayın Numan KURTULMUŞ\nANKARA\n\n'+bas+'KONU: 7527 Sayılı Kanun\'un İptali ve 5199 Sayılı Kanun\'un Etik Kriterlerle Yeniden Yürürlüğe Konulması Talebidir.\n\nSayın Başkan;\n\nÜlkemizdeki toplam barınak kapasitesi 105 bin civarındayken milyonlarca canlıyı tecrit ve ölüm kamplarına sokmayı öngören 7527 sayılı kanun; kamu düzenine, toplum vicdanına ve Anayasa\'nın yaşam hakkını teminat altına alan ilkelerine aykırıdır.\n\nBilimsel kısırlaştırma, etik koruma ve yaşatma ilkeleri esas alınarak; 7527 Sayılı Kanun\'un yürürlükten kaldırılması, 5199 Sayılı Hayvanları Koruma Kanunu\'nun yaşam hakkını önceleyen hükümleriyle yeniden yürürlüğe konulması ve mevzuatın bilimsel ve etik esaslar çerçevesinde revize edilmesi için TBMM çatısı altında gerekli girişimlerin başlatılmasını saygılarımla arz ederim.'+imza;
-var vk=selectedVekil?('Sayın '+selectedVekil.name):'Sayın Milletvekili';
-return 'SEÇİM BÖLGESİ MİLLETVEKİLİNE\n'+vk+'\n\n'+bas+'KONU: 7527 Sayılı Kanun\'un İptali İçin TBMM\'de Girişim Talebidir.\n\nSayın Milletvekili;\n\nSeçim bölgeniz olan '+sehir+' ilinde ikamet eden bir seçmeniniz olarak; hiçbir bilimsel ve vicdani temeli olmayan 7527 sayılı yasa kapsamında yaşanan toplu tecrit ve yaşam hakkı ihlallerinin vebalini hatırlatıyorum.\n\nBilimsel kısırlaştırma ve etik koruma ilkeleri esas alınarak 7527 sayılı kanunun iptal edilmesi için TBMM çatısı altında derhal girişimde bulunmanızı, bu konuyu gündeme taşımanızı ve gerekli yasal düzenlemelerin başlatılması için çaba göstermenizi saygılarımla arz ederim.'+imza;
-}
-function validateForm(){
-var ad=v('input-name');
-var tc=v('input-tc');
-var ilce=v('input-district');
-var adres=v('input-address');
-if(!ad){alert("Lütfen AD SOYAD girin.");document.getElementById('input-name').focus();return false;}
-if(!/^\d{11}$/.test(tc)){alert("Lütfen 11 haneli T.C. KİMLİK NO girin.");document.getElementById('input-tc').focus();return false;}
-if(!ilce){alert("Lütfen İLÇE girin.");document.getElementById('input-district').focus();return false;}
-if(!adres){alert("Lütfen İKAME ADRESİ girin.");document.getElementById('input-address').focus();return false;}
-if(isCitizenSignatureEmpty()){alert("Lütfen ISLAK İMZANIZI atın.");return false;}
-return true;
-}
-function isCitizenSignatureEmpty(){
-if(!canvas)return true;
-try{
-var b=document.createElement('canvas');
-b.width=canvas.width||1;b.height=canvas.height||1;
-var bx=b.getContext('2d');bx.fillStyle="#ffffff";bx.fillRect(0,0,b.width,b.height);
-return canvas.toDataURL()===b.toDataURL();
-}catch(_){return true;}
-}
-function sendCurrent(){
-if(!selectedTarget){alert("Lütfen önce kime göndereceğini seç.");return;}
-if(selectedTarget==='mp'&&!selectedVekil){alert("Lütfen bir vekil seç.");return;}
-if(!validateForm())return;
-var body='',url='';
-if(selectedTarget==='cb'){
-body=buildPetitionText('cb');
-url='mailto:'+leaders.cb.email+'?subject='+encodeURIComponent('7527 İptal Talebi - '+getCitizenCode())+'&body='+encodeURIComponent(body);
-}else if(selectedTarget==='mb'){
-body=buildPetitionText('mb');
-url='mailto:'+leaders.mb.email+'?subject='+encodeURIComponent('7527 İptal Talebi - '+getCitizenCode())+'&body='+encodeURIComponent(body);
-}else{
-body=buildPetitionText('mp');
-url='mailto:'+selectedVekil.email+'?subject='+encodeURIComponent('7527 İptal Talebi - '+getMPRecordCode(selectedVekil))+'&body='+encodeURIComponent(body);
-}
-var el=document.getElementById('print-petition');
-el.innerHTML=buildPetitionHTML(selectedTarget);
-el.style.display='block';
-setTimeout(function(){
-window.print();
-setTimeout(function(){
-el.style.display='none';
-var a=document.createElement('a');a.href=url;a.style.display='none';
-document.body.appendChild(a);a.click();
-setTimeout(function(){try{document.body.removeChild(a);}catch(_){}},200);
-setTimeout(function(){
-alert('📎 ÖNEMLİ HATIRLATMA:\n\n1) İndirdiğiniz PDF dosyasını mail uygulamasında ATAÇ / EK DOSYA simgesiyle mail\'e ekleyin.\n\n2) Sonra gönderin.\n\n(Tarayıcılar güvenlik nedeniyle otomatik dosya ekleyemez — bu yüzden manuel eklemelisiniz.)');
-pendingConfirm={type:selectedTarget,mp:selectedVekil};
-document.getElementById('confirm-modal').style.display='flex';
-},1500);
-},1000);
-},150);
-}
-function confirmSend(gonderdim){
-document.getElementById('confirm-modal').style.display='none';
-if(!gonderdim){pendingConfirm=null;return;}
-var t=pendingConfirm.type;
-if(t==='cb'){
-citizenCount=parseInt(localStorage.getItem(CITIZEN_COUNT_KEY)||'0',10)+1;
-localStorage.setItem(CITIZEN_COUNT_KEY,citizenCount.toString());
-cbCount=parseInt(localStorage.getItem(CB_COUNT_KEY)||'0',10)+1;
-localStorage.setItem(CB_COUNT_KEY,cbCount.toString());
-updateCounters();
-showThanks('<strong>Cumhurbaşkanlığı makamına</strong> dilekçeniz iletildi.<br><br>Şimdi TBMM Başkanına da gönderin. 🐾');
-}else if(t==='mb'){
-citizenCount=parseInt(localStorage.getItem(CITIZEN_COUNT_KEY)||'0',10)+1;
-localStorage.setItem(CITIZEN_COUNT_KEY,citizenCount.toString());
-mbCount=parseInt(localStorage.getItem(MB_COUNT_KEY)||'0',10)+1;
-localStorage.setItem(MB_COUNT_KEY,mbCount.toString());
-updateCounters();
-showThanks('<strong>TBMM Başkanlığına</strong> dilekçeniz iletildi.<br><br>Son adım: Vekillere gönderin! 🐾');
-}else{
-citizenCount=parseInt(localStorage.getItem(CITIZEN_COUNT_KEY)||'0',10)+1;
-localStorage.setItem(CITIZEN_COUNT_KEY,citizenCount.toString());
-mpSentCount=parseInt(localStorage.getItem(MP_SENT_COUNT_KEY)||'0',10)+1;
-localStorage.setItem(MP_SENT_COUNT_KEY,mpSentCount.toString());
-var mp=pendingConfirm.mp;
-if(mp)incrementMailCount(mp.id);
-updateCounters();
-filterVekilRadio();
-showThanks('<strong>Sayın '+(mp?mp.name:'Vekil')+'</strong>\'e dilekçeniz iletildi.<br><br>Bir canın hayatını kurtardın. 🐾<br><br><em>Sıradaki vekile de gönder!</em>');
-}
-pendingConfirm=null;
-}
-function showThanks(msg){
-var m=document.getElementById('thanks-modal');
-document.getElementById('thanks-text').innerHTML=msg;
-m.style.display='flex';
-}
-function sendVolunteer(){
-var name=v('vol-name');var phone=v('vol-phone');var email=v('vol-email');
-var city=(document.getElementById('vol-city').value||'');
-var skill=(document.getElementById('vol-skill').value||'');
-var msg=v('vol-message');
-if(!name){alert('Ad soyad girin.');document.getElementById('vol-name').focus();return;}
-if(!phone){alert('Telefon girin.');document.getElementById('vol-phone').focus();return;}
-var body='Merhaba,\n\n7527 iptal kampanyasına gönüllü olmak istiyorum.\n\nAD SOYAD: '+name+'\nTELEFON: '+phone+'\nE-POSTA: '+(email||'-')+'\nŞEHİR: '+(city||'-')+'\nDESTEK: '+skill+'\nNOT: '+(msg||'-')+'\n\n"Bir imzanız bir hayat kurtarır. Bir gönüllü, yüz hayat kurtarır."';
-var url='mailto:ara2024.tr@gmail.com?subject='+encodeURIComponent('Kampanya Gönüllüsü Başvurusu - '+name)+'&body='+encodeURIComponent(body);
-window.location.href=url;
-}
-function getMPRecordCode(mp){return '7527-V'+String(mp.id).padStart(4,'0');}
-function initCitizenSignaturePad(){
-canvas=document.getElementById("signature-pad");if(!canvas)return;ctx=canvas.getContext("2d");
-canvas.width=canvas.offsetWidth;canvas.height=canvas.offsetHeight;
-ctx.fillStyle="#ffffff";ctx.fillRect(0,0,canvas.width,canvas.height);
-ctx.strokeStyle="#000000";ctx.lineWidth=2.5;ctx.lineCap="round";
-canvas.addEventListener("mousedown",startDrawing);
-canvas.addEventListener("mousemove",draw);
-canvas.addEventListener("mouseup",stopDrawing);
-canvas.addEventListener("mouseleave",stopDrawing);
-canvas.addEventListener("touchstart",function(e){e.preventDefault();var t=e.touches[0];canvas.dispatchEvent(new MouseEvent("mousedown",{clientX:t.clientX,clientY:t.clientY}));},{passive:false});
-canvas.addEventListener("touchmove",function(e){e.preventDefault();var t=e.touches[0];canvas.dispatchEvent(new MouseEvent("mousemove",{clientX:t.clientX,clientY:t.clientY}));},{passive:false});
-canvas.addEventListener("touchend",function(){canvas.dispatchEvent(new MouseEvent("mouseup",{}));});
-}
-function getPos(e){var r=canvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};}
-function startDrawing(e){isDrawing=true;var p=getPos(e);ctx.beginPath();ctx.moveTo(p.x,p.y);}
-function draw(e){if(!isDrawing)return;var p=getPos(e);ctx.lineTo(p.x,p.y);ctx.stroke();}
-function stopDrawing(){if(isDrawing){isDrawing=false;ctx.closePath();updatePreview();}}
-function clearSignature(){if(!ctx)return;ctx.fillStyle="#ffffff";ctx.fillRect(0,0,canvas.width,canvas.height);updatePreview();}
-function initMPSignaturePad(){
-mpCanvas=document.getElementById("mp-signature-pad");if(!mpCanvas)return;mpCtx=mpCanvas.getContext("2d");
-mpCanvas.width=mpCanvas.offsetWidth||300;mpCanvas.height=mpCanvas.offsetHeight||120;
-mpCtx.fillStyle="#ffffff";mpCtx.fillRect(0,0,mpCanvas.width,mpCanvas.height);
-mpCtx.strokeStyle="#000000";mpCtx.lineWidth=2.5;mpCtx.lineCap="round";
-mpCanvas.addEventListener("mousedown",startMPDrawing);
-mpCanvas.addEventListener("mousemove",drawMP);
-mpCanvas.addEventListener("mouseup",stopMPDrawing);
-mpCanvas.addEventListener("mouseleave",stopMPDrawing);
-mpCanvas.addEventListener("touchstart",function(e){e.preventDefault();var t=e.touches[0];mpCanvas.dispatchEvent(new MouseEvent("mousedown",{clientX:t.clientX,clientY:t.clientY}));},{passive:false});
-mpCanvas.addEventListener("touchmove",function(e){e.preventDefault();var t=e.touches[0];mpCanvas.dispatchEvent(new MouseEvent("mousemove",{clientX:t.clientX,clientY:t.clientY}));},{passive:false});
-mpCanvas.addEventListener("touchend",function(){mpCanvas.dispatchEvent(new MouseEvent("mouseup",{}));});
-}
-function getMPPos(e){var r=mpCanvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};}
-function startMPDrawing(e){mpIsDrawing=true;var p=getMPPos(e);mpCtx.beginPath();mpCtx.moveTo(p.x,p.y);}
-function drawMP(e){if(!mpIsDrawing)return;var p=getMPPos(e);mpCtx.lineTo(p.x,p.y);mpCtx.stroke();}
-function stopMPDrawing(){if(mpIsDrawing){mpIsDrawing=false;mpCtx.closePath();}}
-function clearMPSignature(){if(!mpCtx)return;mpCtx.fillStyle="#ffffff";mpCtx.fillRect(0,0,mpCanvas.width,mpCanvas.height);}
-function isMPSignatureEmpty(){
-if(!mpCanvas)return true;
-var b=document.createElement('canvas');
-b.width=mpCanvas.width||1;b.height=mpCanvas.height||1;
-var bx=b.getContext('2d');bx.fillStyle="#ffffff";bx.fillRect(0,0,b.width,b.height);
-return mpCanvas.toDataURL()===b.toDataURL();
-}
-function signAsMP(){
-var sel=document.getElementById("mp-select");
-var id=selectedMPId||parseInt(sel.value);
-if(!id){alert("Lütfen listeden kendinizi seçin!");return;}
-if(isMPSignatureEmpty()){alert("Lütfen ıslak imzanızı atın!");return;}
-if(mpSignatures.some(function(s){return s.id===id;})){alert("Bu milletvekili zaten imzalamış.");return;}
-var mp=mpDatabase.find(function(m){return m.id===id;});
-if(!mp){alert("Vekil bulunamadı!");return;}
-var sigData=mpCanvas.toDataURL("image/png");
-var now=new Date();
-var tarih=now.toLocaleDateString('tr-TR')+' '+now.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
-mpSignatures.push({id:mp.id,city:mp.city,party:mp.party,vote:'RET',date:tarih,signature:sigData,recordCode:getMPRecordCode(mp),initials:mp.name});
-localStorage.setItem(MP_SIGNATURES_KEY,JSON.stringify(mpSignatures));
-clearMPSignature();
-updateCounters();
-renderSignedMPs();
-showThanks('<strong>Sayın '+mp.name+'</strong> olarak 7527 iptal dilekçesine imza attınız.<br><br><em>Teşekkürler.</em>');
-}
-function renderSignedMPs(){
-var list2=document.getElementById("signed-mps-list-2");
-var preview=document.getElementById("petition-signatures-preview-2");
-var emptyHtml='<p class="text-zinc-500 text-center py-2 text-[10px]">Henüz hiçbir vekil imzalamadı.</p>';
-if(mpSignatures.length===0){
-if(list2)list2.innerHTML=emptyHtml;
-if(preview)preview.innerHTML='<p class="text-zinc-500">Henüz imza yok.</p>';
-return;
-}
-var cardHtml=mpSignatures.slice().reverse().map(function(s){
-return '<div class="bg-zinc-950 border border-emerald-800/40 rounded-lg p-2.5 flex justify-between items-center gap-2"><div class="flex-1 min-w-0"><div class="font-bold text-white text-[11px]">'+s.initials+' <span class="text-emerald-300">'+s.recordCode+'</span></div><div class="text-[9px] text-zinc-400">'+s.city+' • '+s.party+'</div><div class="text-[9px] text-red-300 mt-0.5">🐾 RET • '+s.date+'</div></div><img src="'+s.signature+'" class="max-h-8 bg-white/90 rounded p-0.5 shrink-0" alt="imza"></div>';
-}).join('');
-if(list2)list2.innerHTML=cardHtml;
-var sigHtml=mpSignatures.map(function(s,i){return (i+1)+'. <strong>'+s.initials+'</strong> — '+s.recordCode+' / '+s.city;}).join('<br>');
-if(preview)preview.innerHTML=sigHtml;
-}
-function populateAlmanacFilters(){
-var citySel=document.getElementById('almanac-city-filter');
-var catSel=document.getElementById('almanac-cat-filter');
-if(!citySel||!catSel)return;
-citySel.innerHTML='<option value="__ALL__">Tüm Türkiye</option>';
-var cities=[...new Set(almanacEvents.map(function(e){return e.city;}))].sort();
-cities.forEach(function(c){var o=document.createElement('option');o.value=c;o.textContent=c;citySel.appendChild(o);});
-citySel.value='__ALL__';
-var cats=[...new Set(almanacEvents.map(function(e){return e.category;}))].sort();
-catSel.innerHTML='<option value="__ALL__">Tüm Kategoriler</option>';
-cats.forEach(function(c){var o=document.createElement('option');o.value=c;o.textContent=c;catSel.appendChild(o);});
-}
+function initCitizenSignaturePad() {
+  canvas = document.getElementById('signature-pad');
+  if (!canvas) return;
+  ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth || 300;
+  canvas.height = canvas.offsetHeight || 112;
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.strokeStyle = '#000000';
+  ctx.lineWidth = 2.5;
+  ctx.lineCap = 'round';
 
-function renderAlmanac(){ filterAlmanac(); }
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return { x: clientX - rect.left, y: clientY - rect.top };
+  }
 
-function filterAlmanac(){
-var container=document.getElementById('almanac-container');
-if(!container)return;
-var cityF=(document.getElementById('almanac-city-filter')||{}).value||'__ALL__';
-var catF=(document.getElementById('almanac-cat-filter')||{}).value||'__ALL__';
-var sortF=(document.getElementById('almanac-sort-filter')||{}).value||'recent';
-var q=((document.getElementById('almanac-search')||{}).value||'').toLowerCase();
-// Vatandaşın seçtiği şehri almanak filtresine yansıt
-var currentCity=(document.getElementById('input-city')||{}).value||'';
-var effectiveCity=(cityF==='__CITIZEN__')?currentCity:cityF;
-
-var list=almanacEvents.filter(function(ev){
-if(effectiveCity!=='__ALL__' && ev.city!==effectiveCity) return false;
-if(catF!=='__ALL__' && ev.category!==catF) return false;
-if(q && ev.title.toLowerCase().indexOf(q)===-1 && ev.desc.toLowerCase().indexOf(q)===-1 && ev.city.toLowerCase().indexOf(q)===-1) return false;
-return true;
-});
-list.sort(function(a,b){
-if(sortF==='recent') return b.date.localeCompare(a.date);
-return a.date.localeCompare(b.date);
-});
-
-// Sayaçlar
-var cityCount=almanacEvents.filter(function(e){return e.city===effectiveCity;}).length;
-document.getElementById('almanac-city-count').textContent=effectiveCity==='__ALL__'?almanacEvents.length:cityCount;
-document.getElementById('almanac-shown-count').textContent=list.length;
-document.getElementById('almanac-total-count').textContent=almanacEvents.length;
-
-container.innerHTML='';
-if(list.length===0){
-container.innerHTML='<p class="text-xs text-zinc-500 p-4 text-center">Bu filtreyle eşleşen vaka yok.</p>';
-return;
-}
-list.forEach(function(ev){
-// Kategori renk sınıfı
-var catColor='border-zinc-700 bg-zinc-900 text-zinc-300';
-if(ev.category==='Yaşam Hakkı'||ev.category==='Ateşli Silah'||ev.category==='İşkence'||ev.category==='Cinsel Şiddet'){catColor='border-red-800 bg-red-950 text-red-300';}
-else if(ev.category==='Zehirlenme'||ev.category==='Yasa Dışı Avcılık'||ev.category==='Yasaya Aykırı Ticaret'){catColor='border-amber-800 bg-amber-950 text-amber-300';}
-else if(ev.category==='Kamu İhlali'||ev.category==='Kapatılma'){catColor='border-fuchsia-800 bg-fuchsia-950 text-fuchsia-300';}
-else if(ev.category==='Araç Çarpma'||ev.category==='Bilinmeyen'){catColor='border-sky-800 bg-sky-950 text-sky-300';}
-
-var div=document.createElement('div');
-div.className='bg-zinc-950 border border-zinc-800 p-3 rounded-lg space-y-2 hover:border-red-800/60 transition';
-div.innerHTML='<div class="flex flex-wrap items-center gap-2 text-[10px]"><span class="px-1.5 py-0.5 rounded border '+catColor+' font-bold">'+ev.category+'</span><span class="text-red-400 font-bold">📅 '+ev.date+'</span><span class="text-amber-400 font-bold">📍 '+ev.city+'</span></div>'+
-'<h4 class="text-xs font-bold text-white leading-snug">'+ev.title+'</h4>'+
-'<p class="text-[11px] text-zinc-400 leading-snug">'+ev.desc+'</p>'+
-'<div class="flex flex-wrap gap-2 pt-1">'+
-'<a href="'+ev.source+'" target="_blank" rel="noopener" class="text-[10px] text-zinc-400 hover:text-white underline">📰 Kaynak haberi aç</a>'+
-'<button onclick="tagCaseToSelectedMPs('+ev.id+')" class="text-[10px] bg-sky-900 hover:bg-sky-800 text-white border border-sky-700 px-2 py-1 rounded font-bold">🐦 Seçili vekillere etiketle</button>'+
-'<button onclick="mailCaseToSelectedMPs('+ev.id+')" class="text-[10px] bg-emerald-900 hover:bg-emerald-800 text-white border border-emerald-700 px-2 py-1 rounded font-bold">✉️ Seçili vekillere mail</button>'+
-'</div>';
-container.appendChild(div);
-});
-}
-
-function syncAlmanacCity(){
-var sel=document.getElementById('almanac-city-filter');
-var city=(document.getElementById('input-city')||{}).value||'';
-if(!sel||!city)return;
-if([...sel.options].some(function(o){return o.value===city;})){ sel.value=city; }
-filterAlmanac();
-}
-function getSelectedMPsFromTable(){
-var checked=document.querySelectorAll('input[name="vekilRadio"]:checked');
-var list=[];
-checked.forEach(function(r){
-var id=parseInt(r.value);
-var mp=mpDatabase.find(function(m){return m.id===id;});
-if(mp)list.push(mp);
-});
-if(!list.length && selectedVekil) list.push(selectedVekil);
-return list;
-}
-
-function buildCaseTweet(ev,handles){
-return handles+'\n'+
-'📍'+ev.city+' • '+ev.date+'\n'+
-'❌ '+ev.title+'\n'+
-'📰 '+ev.source+'\n'+
-'#7527İptalEt #HayvanHakları';
-}
-
-function tagCaseToSelectedMPs(caseId){
-var sel=getSelectedMPsFromTable();
-if(!sel.length){alert("Lütfen önce vekil listesinden en az 1 vekil seçin.");return;}
-var ev=almanacEvents.find(function(e){return e.id===caseId;});
-if(!ev)return;
-var handles=sel.map(function(m){return m.xHandle;}).join(' ');
-var t=buildCaseTweet(ev,handles);
-window.open('https://x.com/intent/tweet?text='+encodeURIComponent(t),'_blank');
-}
-
-function mailCaseToSelectedMPs(caseId){
-var sel=getSelectedMPsFromTable();
-if(!sel.length){alert("Lütfen önce vekil listesinden en az 1 vekil seçin.");return;}
-if(sel.length>1){alert("Tek seferde sadece 1 vekile mail atabilirsiniz. Seçili ilk vekile gönderiliyor.");}
-var ev=almanacEvents.find(function(e){return e.id===caseId;});
-if(!ev)return;
-var mp=sel[0];
-var subject='7527 İptal - '+ev.city+' Vaka Bildirimi';
-var body='Sayın '+mp.name+' ('+mp.city+'/'+mp.party+'),\n\n'+
-ev.date+' tarihinde '+ev.city+' ilinde yaşanan hayvan hakları ihlali:\n\n'+
-ev.title+'\n\n'+
-ev.desc+'\n\n'+
-'Kaynak: '+ev.source+'\n\n'+
-'7527 sayılı kanuna verdiğiniz destekle bu vahşetin sorumluları arasında yer alıyorsunuz. Kanunun iptali için TBMM\'de derhal girişimde bulunmanızı talep ediyorum.\n\n'+
-'Saygılarımla.';
-window.location.href='mailto:'+mp.email+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
-}
-function shareTo(platform){
-var url=location.href;
-var t='7527 İPTAL! İmzacısı ol! Öldüren değil, yaşatan ol!';
-var e=encodeURIComponent;
-if(platform==='ig'||platform==='tt'){
-downloadShareCard();
-if(navigator.clipboard){navigator.clipboard.writeText(t+' '+url);}
-setTimeout(function(){
-alert('✅ Paylaşım görseli indirildi.\n✅ Metin ve link kopyalandı.\n\nŞimdi '+(platform==='ig'?'Instagram':'TikTok')+' açılıyor.\nStory veya gönderi oluşturup görseli yükleyin ve metni yapıştırın.');
-window.open(platform==='ig'?'https://www.instagram.com/':'https://www.tiktok.com/','_blank');
-},400);
-return;
-}
-var link='';
-if(platform==='x')link='https://x.com/intent/tweet?text='+e(t)+'&url='+e(url);
-else if(platform==='fb')link='https://www.facebook.com/sharer/sharer.php?u='+e(url)+'&quote='+e(t);
-else if(platform==='wa')link='https://api.whatsapp.com/send?text='+e(t+' '+url);
-else if(platform==='tg')link='https://t.me/share/url?url='+e(url)+'&text='+e(t);
-else if(platform==='li')link='https://www.linkedin.com/sharing/share-offsite/?url='+e(url);
-if(link)window.open(link,'_blank');
-}
-function downloadShareCard(){
-var c2=document.createElement('canvas');
-c2.width=1080;c2.height=1350;
-var c=c2.getContext('2d');
-c.fillStyle='#09090b';c.fillRect(0,0,1080,1350);
-c.strokeStyle='#dc2626';c.lineWidth=8;c.strokeRect(20,20,1040,1310);
-c.fillStyle='#dc2626';c.fillRect(60,60,960,120);
-c.fillStyle='#ffffff';c.font='bold 68px Arial';c.textAlign='center';
-c.fillText('7527 İPTAL!',540,145);
-c.font='bold 52px Arial';c.fillText('İMZACISI OL!',540,240);
-c.font='26px Arial';c.fillStyle='#fca5a5';
-c.fillText('ÖLDÜREN DEĞİL, YAŞATAN OL!',540,290);
-c.font='200px Arial';c.fillText('🐾',540,530);
-c.font='bold 36px Arial';c.fillStyle='#fef2f2';
-c.fillText('Bir imzanla bir değil',540,640);
-c.font='bold 42px Arial';c.fillStyle='#fca5a5';
-c.fillText('BİR ÇOK CANI KURTARACAKSIN',540,700);
-c.fillStyle='#ffffff';c.fillRect(340,760,400,400);
-var qc=document.getElementById('campaign-qr');
-if(qc){var qi=qc.querySelector('canvas,img');if(qi){try{c.drawImage(qi,370,790,340,340);}catch(_){}}}
-c.font='24px Arial';c.fillStyle='#a1a1aa';
-c.fillText('Karekodu okut, sen de imzala',540,1210);
-c.font='bold 32px Arial';c.fillStyle='#dc2626';
-c.fillText('7527IPTAL',540,1260);
-var a=document.createElement('a');
-a.download='7527-paylasim.png';
-a.href=c2.toDataURL('image/png');
-a.click();
-}
-// T.C. Kimlik No Doğrulama Algoritması
-function isValidTC(tc) {
-  tc = String(tc).trim();
-  if (!/^[1-9]\d{10}$/.test(tc)) return false;
-  const digits = tc.split('').map(Number);
-  const oddSum = digits[0] + digits[2] + digits[4] + digits[6] + digits[8];
-  const evenSum = digits[1] + digits[3] + digits[5] + digits[7];
-  let digit10 = ((oddSum * 7) - evenSum) % 10;
-  if (digit10 < 0) digit10 += 10;
-  const digit11 = (digits.slice(0, 10).reduce((a, b) => a + b, 0)) % 10;
-  return digits[9] === digit10 && digits[10] === digit11;
-}
-
-// Form Gönderilirken T.C. Kontrolü
-const imzaFormu = document.querySelector('form');
-if (imzaFormu) {
-  imzaFormu.addEventListener('submit', function(e) {
-    const tcGirdisi = document.querySelector('input[type="text"]').value;
-    if (!isValidTC(tcGirdisi)) {
-      e.preventDefault();
-      e.stopPropagation();
-      alert("Lütfen geçerli bir T.C. Kimlik Numarası giriniz!");
-      return false;
+  function start(e) {
+    isDrawing = true;
+    const pos = getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+    if (e.type === 'touchstart') e.preventDefault();
+  }
+  function move(e) {
+    if (!isDrawing) return;
+    const pos = getPos(e);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+    if (e.type === 'touchmove') e.preventDefault();
+  }
+  function end() {
+    if (isDrawing) {
+      isDrawing = false;
+      updatePreview();
     }
-  }, true);
+  }
+
+  canvas.addEventListener('mousedown', start);
+  canvas.addEventListener('mousemove', move);
+  canvas.addEventListener('mouseup', end);
+  canvas.addEventListener('touchstart', start, { passive: false });
+  canvas.addEventListener('touchmove', move, { passive: false });
+  canvas.addEventListener('touchend', end);
+}
+
+function clearSignature() {
+  if (!canvas || !ctx) return;
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  updatePreview();
+}
+
+function initMPSignaturePad() {
+  mpCanvas = document.getElementById('mp-signature-pad');
+  if (!mpCanvas) return;
+  mpCtx = mpCanvas.getContext('2d');
+  mpCanvas.width = mpCanvas.offsetWidth || 300;
+  mpCanvas.height = mpCanvas.offsetHeight || 128;
+  mpCtx.fillStyle = '#ffffff';
+  mpCtx.fillRect(0, 0, mpCanvas.width, mpCanvas.height);
+  mpCtx.strokeStyle = '#000000';
+  mpCtx.lineWidth = 2.5;
+  mpCtx.lineCap = 'round';
+
+  function getPos(e) {
+    const rect = mpCanvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return { x: clientX - rect.left, y: clientY - rect.top };
+  }
+
+  function start(e) {
+    mpIsDrawing = true;
+    const pos = getPos(e);
+    mpCtx.beginPath();
+    mpCtx.moveTo(pos.x, pos.y);
+    if (e.type === 'touchstart') e.preventDefault();
+  }
+  function move(e) {
+    if (!mpIsDrawing) return;
+    const pos = getPos(e);
+    mpCtx.lineTo(pos.x, pos.y);
+    mpCtx.stroke();
+    if (e.type === 'touchmove') e.preventDefault();
+  }
+  function end() {
+    mpIsDrawing = false;
+  }
+
+  mpCanvas.addEventListener('mousedown', start);
+  mpCanvas.addEventListener('mousemove', move);
+  mpCanvas.addEventListener('mouseup', end);
+  mpCanvas.addEventListener('touchstart', start, { passive: false });
+  mpCanvas.addEventListener('touchmove', move, { passive: false });
+  mpCanvas.addEventListener('touchend', end);
+}
+
+function clearMPSignature() {
+  if (!mpCanvas || !mpCtx) return;
+  mpCtx.fillStyle = '#ffffff';
+  mpCtx.fillRect(0, 0, mpCanvas.width, mpCanvas.height);
+}
+
+function selectTarget(target) {
+  selectedTarget = target;
+  const btnCB = document.getElementById('t-cb');
+  const btnMB = document.getElementById('t-mb');
+  const btnMP = document.getElementById('t-mp');
+  const info = document.getElementById('target-info');
+  const vekilSecim = document.getElementById('vekil-secim');
+
+  btnCB.className =
+    'border-2 border-amber-700 bg-amber-950/50 text-amber-300 font-bold py-3 rounded-lg text-xs uppercase hover:bg-amber-900/60';
+  btnMB.className =
+    'border-2 border-amber-700 bg-amber-950/50 text-amber-300 font-bold py-3 rounded-lg text-xs uppercase hover:bg-amber-900/60';
+  btnMP.className =
+    'border-2 border-emerald-700 bg-emerald-950/50 text-emerald-300 font-bold py-3 rounded-lg text-xs uppercase hover:bg-emerald-900/60';
+
+  if (target === 'cb') {
+    btnCB.classList.add('selected-target');
+    info.textContent = 'Cumhurbaşkanlığı Makamına Dilekçe';
+    vekilSecim.classList.add('hidden');
+    selectedVekil = null;
+  } else if (target === 'mb') {
+    btnMB.classList.add('selected-target');
+    info.textContent = 'TBMM Başkanlığı Makamına Dilekçe';
+    vekilSecim.classList.add('hidden');
+    selectedVekil = null;
+  } else if (target === 'mp') {
+    btnMP.classList.add('selected-target');
+    info.textContent = 'Seçilen Milletvekiline Özel İptal Talebi Dilekçesi';
+    vekilSecim.classList.remove('hidden');
+  }
+
+  updatePreview();
+}
+
+function filterVekilRadio() {
+  const search = (
+    document.getElementById('mp-search')?.value || ''
+  ).toLowerCase();
+  const party = document.getElementById('filter-party')?.value || 'TÜMÜ';
+  const city = document.getElementById('filter-city-mode')?.value || 'ALL';
+  const mailStatus =
+    document.getElementById('filter-mail-status')?.value || 'ALL';
+  const listContainer = document.getElementById('vekil-radio-list');
+  if (!listContainer) return;
+
+  const filtered = mpDatabase.filter(function (m) {
+    const matchSearch =
+      m.name.toLowerCase().includes(search) ||
+      m.city.toLowerCase().includes(search);
+    const matchParty = party === 'TÜMÜ' || m.party === party;
+    const matchCity = city === 'ALL' || m.city === city;
+
+    const count = getMailCount(m.id);
+    let matchMail = true;
+    if (mailStatus === 'NONE') matchMail = count === 0;
+    else if (mailStatus === 'LOW') matchMail = count >= 1 && count <= 2;
+    else if (mailStatus === 'SENT') matchMail = count >= 1;
+
+    return matchSearch && matchParty && matchCity && matchMail;
+  });
+
+  listContainer.innerHTML = '';
+  if (filtered.length === 0) {
+    listContainer.innerHTML =
+      '<p class="text-xs text-zinc-500 p-2 text-center">Milletvekili bulunamadı.</p>';
+    return;
+  }
+
+  filtered.forEach(function (m) {
+    const label = document.createElement('label');
+    label.className =
+      'flex items-center justify-between p-2 rounded hover:bg-zinc-800 cursor-pointer text-xs text-zinc-200 border border-zinc-800/60';
+    const count = getMailCount(m.id);
+    label.innerHTML = `
+      <div class="flex items-center gap-2">
+        <input type="radio" name="selected_mp_radio" value="${m.id}" onchange="onVekilRadioSelect(${m.id})" ${selectedVekil && selectedVekil.id === m.id ? 'checked' : ''} class="accent-emerald-500">
+        <span><strong>${m.name}</strong> (${m.party} - ${m.city})</span>
+      </div>
+      <span class="text-[10px] px-1.5 py-0.5 rounded bg-zinc-950 text-zinc-400 border border-zinc-800 font-mono">✉️ ${count}</span>
+    `;
+    listContainer.appendChild(label);
+  });
+}
+
+function onVekilRadioSelect(mpId) {
+  selectedVekil = mpDatabase.find((m) => m.id === mpId) || null;
+  updatePreview();
+}
+
+function updatePreview() {
+  const preview = document.getElementById('preview-content');
+  const sendBtn = document.getElementById('send-btn');
+  const targetLabel = document.getElementById('preview-target-label');
+
+  if (!selectedTarget) {
+    targetLabel.textContent = 'Hedef seçilmedi';
+    preview.innerHTML =
+      '<p class="text-zinc-500 italic">Yukarıdan önce kime göndereceğini seç.</p>';
+    sendBtn.disabled = true;
+    sendBtn.className =
+      'w-full bg-zinc-700 text-zinc-400 font-bold py-4 rounded-lg text-sm uppercase cursor-not-allowed';
+    sendBtn.textContent = 'ÖNCE HEDEF SEÇ';
+    return;
+  }
+
+  if (selectedTarget === 'mp' && !selectedVekil) {
+    targetLabel.textContent = 'Milletvekili seçilmedi';
+    preview.innerHTML =
+      '<p class="text-zinc-500 italic">Lütfen listeden bir milletvekili seçin.</p>';
+    sendBtn.disabled = true;
+    sendBtn.className =
+      'w-full bg-zinc-700 text-zinc-400 font-bold py-4 rounded-lg text-sm uppercase cursor-not-allowed';
+    sendBtn.textContent = 'MİLLETVEKİLİ SEÇİN';
+    return;
+  }
+
+  const name =
+    document.getElementById('input-name').value.trim() || '[AD SOYAD]';
+  const tc = document.getElementById('input-tc').value.trim() || '[TC NO]';
+  const city =
+    document.getElementById('input-city').value.trim() || '[ŞEHİR]';
+  const district =
+    document.getElementById('input-district').value.trim() || '[İLÇE]';
+  const address =
+    document.getElementById('input-address').value.trim() || '[ADRES]';
+  const contact =
+    document.getElementById('input-contact').value.trim() ||
+    '[TELEFON/E-POSTA]';
+  const sigData = canvas ? canvas.toDataURL() : '';
+
+  let headerText = '';
+  let targetMail = '';
+
+  if (selectedTarget === 'cb') {
+    headerText = 'T.C. CUMHURBAŞKANLIĞI MAKAMINA';
+    targetMail = leaders.cb.email;
+    targetLabel.textContent = 'Hedef: Cumhurbaşkanlığı';
+  } else if (selectedTarget === 'mb') {
+    headerText = 'T.C. TÜRKİYE BÜYÜK MİLLET MECLİSİ BAŞKANLIĞI\'NA';
+    targetMail = leaders.mb.email;
+    targetLabel.textContent = 'Hedef: TBMM Başkanlığı';
+  } else if (selectedTarget === 'mp') {
+    headerText = `T.C. TÜRKİYE BÜYÜK MİLLET MECLİSİ\nSayın ${selectedVekil.name} (${selectedVekil.party} ${selectedVekil.city} Milletvekili)`;
+    targetMail = selectedVekil.email;
+    targetLabel.textContent = `Hedef: Sayın ${selectedVekil.name}`;
+  }
+
+  preview.innerHTML = `
+    <div class="text-center font-bold mb-4 whitespace-pre-line">${headerText}</div>
+    <p class="mb-3"><strong>KONU:</strong> 7527 Sayılı Kanun'un İptali ve 5199 Sayılı Kanun'un Yaşam Haklarını Önceleyen Hükümleriyle Yeniden Yürürlüğe Konulması Talebidir.</p>
+    <p class="mb-3">Mevcut barınak kapasitesinin yetersizliği göz önüne alındığında, 7527 sayılı Kanun hayvanların yaşam hakkını açıkça tehdit etmektedir. Anayasal haklar çerçevesinde kanunun derhal iptal edilmesini talep ediyorum.</p>
+    <div class="mt-6 pt-4 border-t border-zinc-300 flex justify-between items-end text-xs">
+      <div>
+        <p><strong>İmzalayan:</strong> ${name}</p>
+        <p><strong>T.C. No:</strong> ${tc}</p>
+        <p><strong>Adres:</strong> ${address} - ${district} / ${city}</p>
+        <p><strong>İletişim:</strong> ${contact}</p>
+      </div>
+      <div class="text-center">
+        <p class="font-bold mb-1">Islak İmza</p>
+        <img src="${sigData}" class="max-h-12 border border-zinc-200 rounded" alt="İmza">
+      </div>
+    </div>
+  `;
+
+  sendBtn.disabled = false;
+  sendBtn.className =
+    'w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-lg text-sm uppercase cursor-pointer shadow-lg transition';
+  sendBtn.textContent = '✉️ DİLEKÇEYİ E-POSTA İLE GÖNDER (' + targetMail + ')';
+}
+
+function sendCurrent() {
+  if (!selectedTarget) return;
+
+  let mailTo = '';
+  let subject = encodeURIComponent(
+    '7527 SAYILI KANUN İPTAL TALEBİ DİLEKÇESİ'
+  );
+
+  if (selectedTarget === 'cb') mailTo = leaders.cb.email;
+  else if (selectedTarget === 'mb') mailTo = leaders.mb.email;
+  else if (selectedTarget === 'mp' && selectedVekil)
+    mailTo = selectedVekil.email;
+
+  const name = document.getElementById('input-name').value.trim();
+  const tc = document.getElementById('input-tc').value.trim();
+  const bodyText = encodeURIComponent(
+    `Sayın Makama,\n\n7527 Sayılı Kanun'un iptal edilerek 5199 Sayılı Hayvanları Koruma Kanun'unun yaşam hakkını koruyan maddeleriyle yeniden uygulanması hususunda gereğini arz ederim.\n\nSaygılarımla,\n${name}\nTC: ${tc}`
+  );
+
+  pendingConfirm = selectedTarget;
+  window.location.href = `mailto:${mailTo}?subject=${subject}&body=${bodyText}`;
+
+  setTimeout(function () {
+    const modal = document.getElementById('confirm-modal');
+    if (modal) modal.style.display = 'flex';
+  }, 1000);
+}
+
+function confirmSend(status) {
+  const modal = document.getElementById('confirm-modal');
+  if (modal) modal.style.display = 'none';
+
+  if (status && pendingConfirm) {
+    if (pendingConfirm === 'cb') {
+      cbCount++;
+      localStorage.setItem(CB_COUNT_KEY, cbCount);
+    } else if (pendingConfirm === 'mb') {
+      mbCount++;
+      localStorage.setItem(MB_COUNT_KEY, mbCount);
+    } else if (pendingConfirm === 'mp' && selectedVekil) {
+      mpSentCount++;
+      incrementMailCount(selectedVekil.id);
+      localStorage.setItem(MP_SENT_COUNT_KEY, mpSentCount);
+    }
+
+    citizenCount++;
+    localStorage.setItem(CITIZEN_COUNT_KEY, citizenCount);
+
+    updateCounters();
+    filterVekilRadio();
+
+    const thanksModal = document.getElementById('thanks-modal');
+    const thanksText = document.getElementById('thanks-text');
+    if (thanksText)
+      thanksText.textContent =
+        'Dilekçeniz başarıyla iletildi. Yaşam hakkı mücadelesine kattığınız destek için teşekkür ederiz.';
+    if (thanksModal) thanksModal.style.display = 'flex';
+  }
+  pendingConfirm = null;
+}
+
+function populateAlmanacFilters() {
+  const catSel = document.getElementById('almanac-cat-filter');
+  const citySel = document.getElementById('almanac-city-filter');
+  if (!catSel || !citySel) return;
+
+  const cats = [
+    'TÜM KATEGORİLER',
+    ...new Set(almanacEvents.map((e) => e.category)),
+  ];
+  catSel.innerHTML = '';
+  cats.forEach((c) => {
+    const opt = document.createElement('option');
+    opt.value = c;
+    opt.textContent = c;
+    catSel.appendChild(opt);
+  });
+
+  citySel.innerHTML = '<option value="TÜMÜ">Tüm Şehirler</option>';
+  citiesList.forEach((c) => {
+    const opt = document.createElement('option');
+    opt.value = c;
+    opt.textContent = c;
+    citySel.appendChild(opt);
+  });
+}
+
+function filterAlmanac() {
+  renderAlmanac();
+}
+
+function renderAlmanac() {
+  const cityFilter =
+    document.getElementById('almanac-city-filter')?.value || 'TÜMÜ';
+  const catFilter =
+    document.getElementById('almanac-cat-filter')?.value || 'TÜM KATEGORİLER';
+  const sortFilter =
+    document.getElementById('almanac-sort-filter')?.value || 'recent';
+  const searchQuery = (
+    document.getElementById('almanac-search')?.value || ''
+  ).toLowerCase();
+  const container = document.getElementById('almanac-container');
+
+  if (!container) return;
+
+  let filtered = almanacEvents.filter(function (e) {
+    const matchCity = cityFilter === 'TÜMÜ' || e.city === cityFilter;
+    const matchCat =
+      catFilter === 'TÜM KATEGORİLER' || e.category === catFilter;
+    const matchSearch =
+      e.title.toLowerCase().includes(searchQuery) ||
+      e.city.toLowerCase().includes(searchQuery) ||
+      e.desc.toLowerCase().includes(searchQuery);
+    return matchCity && matchCat && matchSearch;
+  });
+
+  if (sortFilter === 'recent') {
+    filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+  } else {
+    filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
+  }
+
+  container.innerHTML = '';
+  if (filtered.length === 0) {
+    container.innerHTML =
+      '<p class="text-xs text-zinc-500 text-center py-4">Aranan kriterlere uygun vaka kaydı bulunamadı.</p>';
+  } else {
+    filtered.forEach(function (e) {
+      const card = document.createElement('div');
+      card.className =
+        'bg-zinc-950 p-3 rounded-lg border border-zinc-800 space-y-1.5 text-xs';
+      card.innerHTML = `
+        <div class="flex justify-between items-start">
+          <span class="font-bold text-red-400">[${e.city}] ${e.title}</span>
+          <span class="text-[10px] bg-zinc-800 text-zinc-300 px-1.5 py-0.5 rounded font-mono">${e.date}</span>
+        </div>
+        <p class="text-zinc-300 text-[11px] leading-relaxed">${e.desc}</p>
+        <div class="flex justify-between items-center text-[10px] pt-1 text-zinc-500">
+          <span class="text-amber-400/80 font-semibold">${e.category}</span>
+          <a href="${e.source}" target="_blank" rel="noopener" class="underline hover:text-zinc-300">Kaynak 🔗</a>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  const cityCount = almanacEvents.filter(
+    (e) => cityFilter === 'TÜMÜ' || e.city === cityFilter
+  ).length;
+  document.getElementById('almanac-city-count').textContent = cityCount;
+  document.getElementById('almanac-shown-count').textContent = filtered.length;
+  document.getElementById('almanac-total-count').textContent =
+    almanacEvents.length;
+}
+
+let campaignQRCodeObj = null;
+
+function initCampaignQR() {
+  const qrContainer = document.getElementById('campaign-qr');
+  const urlInput = document.getElementById('campaign-url');
+  if (!qrContainer) return;
+
+  const currentUrl = window.location.href;
+  if (urlInput) urlInput.value = currentUrl;
+
+  qrContainer.innerHTML = '';
+  campaignQRCodeObj = new QRCode(qrContainer, {
+    text: currentUrl,
+    width: 72,
+    height: 72,
+    colorDark: '#000000',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.H,
+  });
+}
+
+function updateCampaignQR() {
+  const urlInput = document.getElementById('campaign-url');
+  if (!urlInput || !campaignQRCodeObj) return;
+  const val = urlInput.value.trim() || window.location.href;
+  campaignQRCodeObj.clear();
+  campaignQRCodeObj.makeCode(val);
+}
+
+function downloadCampaignQR() {
+  const img = document.querySelector('#campaign-qr img');
+  const canvasElem = document.querySelector('#campaign-qr canvas');
+  let url = '';
+
+  if (img && img.src) url = img.src;
+  else if (canvasElem) url = canvasElem.toDataURL('image/png');
+
+  if (!url) return;
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = '7527-iptal-kampanya-qr.png';
+  a.click();
+}
+
+function shareTo(platform) {
+  const shareUrl = encodeURIComponent(window.location.href);
+  const text = encodeURIComponent(
+    '7527 İPTAL! Öldüren değil, yaşatan ol! Sen de imzacı ol:'
+  );
+  let url = '';
+
+  switch (platform) {
+    case 'x':
+      url = `https://x.com/intent/tweet?text=${text}&url=${shareUrl}`;
+      break;
+    case 'fb':
+      url = `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`;
+      break;
+
+    case 'wa':
+      url = `https://api.whatsapp.com/send?text=${text}%20${shareUrl}`;
+      break;
+
+    case 'tg':
+      url = `https://t.me/share/url?url=${shareUrl}&text=${text}`;
+      break;
+
+    case 'li':
+      url = `https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`;
+      break;
+
+    default:
+      navigator.clipboard?.writeText(window.location.href);
+      alert('Kampanya bağlantısı panoya kopyalandı!');
+      return;
+  }
+  window.open(url, '_blank');
+}
+
+function downloadShareCard() {
+  alert(
+    'Paylaşım görseli indiriliyor. Görseli sosyal medya hesaplarınızda #7527İptal etiketiyle paylaşabilirsiniz.'
+  );
+}
+
+function sendVolunteer() {
+  const name = document.getElementById('vol-name')?.value.trim();
+  const phone = document.getElementById('vol-phone')?.value.trim();
+  const email = document.getElementById('vol-email')?.value.trim();
+  const city = document.getElementById('vol-city')?.value;
+  const skill = document.getElementById('vol-skill')?.value;
+  const msg = document.getElementById('vol-message')?.value.trim();
+
+  if (!name || !phone) {
+    alert('Lütfen Ad Soyad ve Telefon alanlarını doldurun.');
+    return;
+  }
+
+  const subject = encodeURIComponent('KAMPANYA GÖNÜLLÜLÜK BAŞVURUSU');
+  const body = encodeURIComponent(
+    `Ad Soyad: ${name}\nTelefon: ${phone}\nE-posta: ${email}\nŞehir: ${city}\nDestek Alanı: ${skill}\nNot: ${msg}`
+  );
+
+  window.location.href = `mailto:ara2024.tr@gmail.com?subject=${subject}&body=${body}`;
+}
+
+function filterVekilList() {
+  const search = (
+    document.getElementById('mp-search-input')?.value || ''
+  ).toLowerCase();
+  const sel = document.getElementById('mp-select');
+  if (!sel) return;
+
+  sel.innerHTML = '';
+  const filtered = mpDatabase.filter(
+    (m) =>
+      m.name.toLowerCase().includes(search) ||
+      m.city.toLowerCase().includes(search)
+  );
+
+  filtered.forEach(function (m) {
+    const opt = document.createElement('option');
+    opt.value = m.id;
+    opt.textContent = m.city + ' - ' + m.name + ' (' + m.party + ')';
+    sel.appendChild(opt);
+  });
+}
+
+function showSelectedMP(elem) {
+  const mpId = parseInt(elem.value, 10);
+  const mp = mpDatabase.find((m) => m.id === mpId);
+  const info = document.getElementById('mp-selected-info');
+  const petMP = document.getElementById('petition-selected-mp');
+
+  if (mp) {
+    selectedMPId = mp.id;
+    if (info)
+      info.textContent = `Seçilen Vekil: ${mp.name} (${mp.party} - ${mp.city})`;
+    if (petMP) petMP.textContent = `${mp.name} (${mp.party} - ${mp.city})`;
+  }
+}
+
+function signAsMP() {
+  if (!selectedMPId) {
+    alert('Lütfen listeden adınızı seçin.');
+    return;
+  }
+
+  const mp = mpDatabase.find((m) => m.id === selectedMPId);
+  if (!mp) return;
+
+  const existing = mpSignatures.find((s) => s.id === mp.id);
+  if (existing) {
+    alert('Bu milletvekili adına daha önce imza verilmiş.');
+    return;
+  }
+
+  const sigData = mpCanvas ? mpCanvas.toDataURL() : '';
+  mpSignatures.push({
+    id: mp.id,
+    name: mp.name,
+    party: mp.party,
+    city: mp.city,
+    sig: sigData,
+    date: new Date().toLocaleDateString('tr-TR'),
+  });
+
+  localStorage.setItem(MP_SIGNATURES_KEY, JSON.stringify(mpSignatures));
+  clearMPSignature();
+  renderSignedMPs();
+  updateCounters();
+  alert(`Sayın ${mp.name}, imzanız başarıyla kaydedildi.`);
+}
+
+function renderSignedMPs() {
+  const list2 = document.getElementById('signed-mps-list-2');
+  const preview2 = document.getElementById('petition-signatures-preview-2');
+
+  if (list2) {
+    list2.innerHTML = '';
+    if (mpSignatures.length === 0) {
+      list2.innerHTML =
+        '<p class="text-zinc-500 italic">Henüz imzalamış milletvekili bulunmuyor.</p>';
+    } else {
+      mpSignatures.forEach(function (s) {
+        const item = document.createElement('div');
+        item.className =
+          'bg-zinc-950 p-2 rounded border border-emerald-900/40 flex justify-between items-center text-zinc-200';
+        item.innerHTML = `
+          <span><strong>${s.name}</strong> (${s.party} - ${s.city})</span>
+          <span class="text-[10px] text-emerald-400 font-mono">${s.date}</span>
+        `;
+        list2.appendChild(item);
+      });
+    }
+  }
+
+  if (preview2) {
+    preview2.innerHTML = '';
+    if (mpSignatures.length === 0) {
+      preview2.innerHTML =
+        '<p class="text-zinc-500 italic">Henüz imza yok.</p>';
+    } else {
+      mpSignatures.forEach(function (s) {
+        const p = document.createElement('p');
+        p.textContent = `• ${s.name} (${s.party} - ${s.city})`;
+        preview2.appendChild(p);
+      });
+    }
+  }
 }
 </script>
 </body>
