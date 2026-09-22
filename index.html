@@ -217,6 +217,7 @@ body > header,body > main,body > footer,body > #thanks-modal,body > #confirm-mod
 <p class="text-xs font-bold text-amber-300">Yeni Vaka Kayıt Formu</p>
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2"><input id="admin-event-title" placeholder="Vaka başlığı" class="bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs"><input id="admin-event-city" placeholder="Şehir" class="bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs"></div>
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2"><input id="admin-event-location" placeholder="Konum" class="bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs"><select id="admin-event-category" class="bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs"><option>Toplama/Katliam</option><option>Barınak İhmali</option><option>Bireysel Şiddet</option><option>Hukuki İhlal</option></select></div>
+<input id="admin-event-source" type="url" placeholder="Kaynak linki (https://...)" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs">
 <textarea id="admin-event-desc" placeholder="Açıklama" rows="2" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs"></textarea><button type="button" onclick="saveAdminEvent()" class="bg-amber-700 hover:bg-amber-600 text-white font-bold py-2 rounded text-xs">VAKAYI KAYDET</button>
 </div>
 </div>
@@ -1529,13 +1530,14 @@ function saveAdminEvent(){
   const city=document.getElementById('admin-event-city').value.trim();
   const location=document.getElementById('admin-event-location').value.trim();
   const category=document.getElementById('admin-event-category').value;
+  const source=document.getElementById('admin-event-source').value.trim();
   const desc=document.getElementById('admin-event-desc').value.trim();
-  if(!title||!city||!location||!desc){alert('Başlık, şehir, konum ve açıklama zorunludur.');return;}
-  const event={id:Date.now(),date:new Date().toISOString().slice(0,10),city,location,title,category,desc,source:'#'};
+  if(!title||!city||!location||!desc||!/^https?:\/\//i.test(source)){alert('Başlık, şehir, konum, açıklama ve geçerli kaynak linki zorunludur.');return;}
+  const event={id:Date.now(),date:new Date().toISOString().slice(0,10),city,location,title,category,desc,source};
   almanacEvents.unshift(event);
   const stored=JSON.parse(localStorage.getItem(ALMANAC_STORAGE_KEY)||'[]');
   stored.unshift(event);localStorage.setItem(ALMANAC_STORAGE_KEY,JSON.stringify(stored));
-  ['admin-event-title','admin-event-city','admin-event-location','admin-event-desc'].forEach(function(id){document.getElementById(id).value='';});
+  ['admin-event-title','admin-event-city','admin-event-location','admin-event-source','admin-event-desc'].forEach(function(id){document.getElementById(id).value='';});
   renderAlmanac();alert('Vaka almanaka eklendi.');
 }
 
