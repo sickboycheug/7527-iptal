@@ -263,7 +263,12 @@ Tarayıcınız video oynatmayı desteklemiyor.
 <input type="text" id="mp-search-input" oninput="filterVekilList()" placeholder="Kendi adınızı yazın" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-zinc-100 focus:border-emerald-600 focus:outline-none">
 <select id="mp-select" size="6" onchange="showSelectedMP(this)" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-1 text-xs text-zinc-200"></select>
 <p id="mp-selected-info" class="text-[11px] text-emerald-400">Kendi adınızı listeden seçin.</p>
-<p class="text-[11px] text-amber-300 bg-amber-950/40 border border-amber-800/60 rounded p-2">Vekil doğrulaması tamamlanmadan bu alandan vekil adına imza kaydedilemez.</p>
+<div class="text-[11px] text-amber-300 bg-amber-950/40 border border-amber-800/60 rounded p-2 space-y-2">
+<p>Vekil adına imza için resmî e-posta adresinizle doğrulama yapın.</p>
+<div class="flex gap-2"><input id="mp-verification-email" type="email" placeholder="Resmî e-posta adresiniz" class="min-w-0 flex-1 bg-zinc-950 border border-amber-800 rounded px-2 py-1.5 text-zinc-100"><button type="button" onclick="requestMPVerification()" class="shrink-0 bg-amber-700 hover:bg-amber-600 text-white rounded px-2 py-1.5 text-[10px] font-bold">KOD GÖNDER</button></div>
+<div id="mp-otp-row" class="hidden flex gap-2"><input id="mp-verification-code" inputmode="numeric" autocomplete="one-time-code" placeholder="E-postadaki kod" class="min-w-0 flex-1 bg-zinc-950 border border-amber-800 rounded px-2 py-1.5 text-zinc-100"><button type="button" onclick="verifyMPCode()" class="shrink-0 bg-emerald-700 hover:bg-emerald-600 text-white rounded px-2 py-1.5 text-[10px] font-bold">DOĞRULA</button></div>
+<p id="mp-verification-status" class="text-[10px] text-zinc-300">Doğrulama bekleniyor.</p>
+</div>
 <div class="pt-2">
 <div class="flex justify-between items-center mb-1"><label class="block text-xs font-semibold text-emerald-400">ISLAK İMZA (VEKİL)</label><button type="button" onclick="clearMPSignature()" class="text-[10px] text-zinc-400 hover:text-white underline">Temizle</button></div>
 <div class="relative border border-emerald-800/50 bg-white rounded-lg overflow-hidden touch-none"><canvas id="mp-signature-pad" class="w-full h-32 cursor-crosshair block"></canvas></div>
@@ -311,13 +316,12 @@ const MP_MAIL_LOG_KEY='sign7527_mp_mail_log_v12';
 const SUPABASE_URL='https://mednnlpprdgupdajmrin.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_4xahmL7yt4C53MAJuorucg_qhImIEwn';
 const supabaseClient=window.supabase?.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
-const MP_SIGNING_ENABLED=false;
 let citizenCount=parseInt(localStorage.getItem(CITIZEN_COUNT_KEY)||'0',10);
 let cbCount=parseInt(localStorage.getItem(CB_COUNT_KEY)||'0',10);
 let mbCount=parseInt(localStorage.getItem(MB_COUNT_KEY)||'0',10);
 let mpSentCount=parseInt(localStorage.getItem(MP_SENT_COUNT_KEY)||'0',10);
 let mailLog=JSON.parse(localStorage.getItem(MP_MAIL_LOG_KEY)||'{}');
-let mpSignatures=JSON.parse(localStorage.getItem(MP_SIGNATURES_KEY)||'[]');
+let mpSignatures=[];
 const statsData={citizenTarget:3000000};
 const leaders={
 cb:{email:'iletisim@tccb.gov.tr',name:'Recep Tayyip ERDOĞAN'},
@@ -326,6 +330,7 @@ mb:{email:'numan.kurtulmus@tbmm.gov.tr',name:'Numan KURTULMUŞ'}
 let selectedTarget=null;
 let selectedVekil=null;
 let pendingConfirm=null;
+let mpVerification=null;
 
 function getMailCount(id){return (mailLog[id]&&mailLog[id].count)?mailLog[id].count:0;}
 function incrementMailCount(id){
@@ -1052,6 +1057,7 @@ populateVekilSelect();
 initCitizenSignaturePad();
 initMPSignaturePad();
 renderSignedMPs();
+loadMPSignatures();
 populateAlmanacFilters();
 loadStoredAlmanac();
 populateAlmanacFilters();
@@ -1825,6 +1831,9 @@ function showSelectedMP(elem) {
   if (mp) {
     selectedMPId = mp.id;
     selectedVekil = mp;
+    mpVerification = null;
+    setMPVerificationState(false, 'Doğrulama bekleniyor.');
+    document.getElementById('mp-otp-row')?.classList.add('hidden');
     const shareButton = document.getElementById('share-mp-panel-btn');
     if (shareButton) shareButton.classList.remove('hidden');
     if (info)
@@ -1833,9 +1842,60 @@ function showSelectedMP(elem) {
   }
 }
 
-function signAsMP() {
-  if (!MP_SIGNING_ENABLED) {
-    alert('Vekil doğrulaması tamamlanmadan vekil adına imza kaydedilemez.');
+function setMPVerificationState(verified, message) {
+  const button = document.getElementById('mp-sign-btn');
+  const status = document.getElementById('mp-verification-status');
+  if (button) {
+    button.disabled = !verified;
+    button.className = verified
+      ? 'w-full mt-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg text-xs uppercase'
+      : 'w-full mt-2 bg-zinc-700 text-zinc-400 font-bold py-3 rounded-lg text-xs uppercase cursor-not-allowed';
+  }
+  if (status) status.textContent = message;
+}
+
+async function requestMPVerification() {
+  if (!selectedMPId || !supabaseClient) {
+    alert('Önce bir vekil seçin.');
+    return;
+  }
+  const email = document.getElementById('mp-verification-email')?.value.trim().toLowerCase();
+  if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+    alert('Geçerli bir resmî e-posta adresi girin.');
+    return;
+  }
+  const result = await supabaseClient.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
+  if (result.error) {
+    alert('Doğrulama kodu gönderilemedi.');
+    return;
+  }
+  document.getElementById('mp-otp-row')?.classList.remove('hidden');
+  setMPVerificationState(false, 'Kod gönderildi. E-postadaki kodu girin.');
+}
+
+async function verifyMPCode() {
+  if (!selectedMPId || !supabaseClient) return;
+  const email = document.getElementById('mp-verification-email')?.value.trim().toLowerCase();
+  const token = document.getElementById('mp-verification-code')?.value.trim();
+  if (!email || !token) return;
+  const authResult = await supabaseClient.auth.verifyOtp({ email, token, type: 'email' });
+  if (authResult.error) {
+    setMPVerificationState(false, 'Kod geçersiz veya süresi dolmuş.');
+    return;
+  }
+  const claimResult = await supabaseClient.rpc('claim_verified_mp', { p_mp_id: selectedMPId });
+  if (claimResult.error || claimResult.data !== true) {
+    await supabaseClient.auth.signOut();
+    setMPVerificationState(false, 'Bu e-posta seçilen vekille eşleşmiyor.');
+    return;
+  }
+  mpVerification = { mpId: selectedMPId };
+  setMPVerificationState(true, 'Vekil doğrulandı. İmza kaydedilebilir.');
+}
+
+async function signAsMP() {
+  if (!mpVerification || mpVerification.mpId !== selectedMPId || !supabaseClient) {
+    alert('Önce seçilen vekil için e-posta doğrulamasını tamamlayın.');
     return;
   }
   if (!selectedMPId) {
@@ -1846,27 +1906,32 @@ function signAsMP() {
   const mp = mpDatabase.find((m) => m.id === selectedMPId);
   if (!mp) return;
 
-  const existing = mpSignatures.find((s) => s.id === mp.id);
-  if (existing) {
-    alert('Bu milletvekili adına daha önce imza verilmiş.');
+  const sigData = mpCanvas ? mpCanvas.toDataURL() : '';
+  const result = await supabaseClient.rpc('submit_mp_signature', {
+    p_mp_id: mp.id,
+    p_signature_data: sigData,
+  });
+  if (result.error) {
+    alert(result.error.message.includes('duplicate') ? 'Bu milletvekili adına daha önce imza verilmiş.' : 'İmza kaydedilemedi.');
     return;
   }
-
-  const sigData = mpCanvas ? mpCanvas.toDataURL() : '';
-  mpSignatures.push({
-    id: mp.id,
-    name: mp.name,
-    party: mp.party,
-    city: mp.city,
-    sig: sigData,
-    date: new Date().toLocaleDateString('tr-TR'),
-  });
-
-  localStorage.setItem(MP_SIGNATURES_KEY, JSON.stringify(mpSignatures));
+  mpSignatures.push({ id: mp.id, name: mp.name, party: mp.party, city: mp.city, date: new Date().toLocaleDateString('tr-TR') });
   clearMPSignature();
   renderSignedMPs();
   updateCounters();
   alert(`Sayın ${mp.name}, imzanız başarıyla kaydedildi.`);
+}
+
+async function loadMPSignatures() {
+  if (!supabaseClient) return;
+  const result = await supabaseClient.rpc('list_mp_signatures');
+  if (result.error || !Array.isArray(result.data)) return;
+  mpSignatures = result.data.map(function (row) {
+    const mp = mpDatabase.find(function (item) { return item.id === row.mp_id; });
+    return mp ? { id: mp.id, name: mp.name, party: mp.party, city: mp.city, date: new Date(row.signed_at).toLocaleDateString('tr-TR') } : null;
+  }).filter(Boolean);
+  renderSignedMPs();
+  updateCounters();
 }
 
 function renderSignedMPs() {
