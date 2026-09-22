@@ -157,30 +157,21 @@ body > header,body > main,body > footer,body > #thanks-modal,body > #confirm-mod
 <button onclick="downloadShareCard()" class="w-full bg-fuchsia-700 hover:bg-fuchsia-600 text-white font-bold py-3 rounded-lg text-xs uppercase">📸 KAREKODLU PAYLAŞIM GÖRSELİ İNDİR</button>
 </div>
 
-<div class="bg-gradient-to-br from-red-950 via-zinc-900 to-emerald-950 p-5 rounded-xl border border-red-800/70 space-y-3">
+</section>
+
+<section class="lg:col-span-7 space-y-6">
+<div class="bg-gradient-to-br from-red-950 via-zinc-900 to-emerald-950 p-5 rounded-xl border border-red-800/70 space-y-3 shadow-xl">
 <h3 class="text-base font-bold text-white">🤝 KAMPANYA GÖNÜLLÜSÜ OL</h3>
 <p class="text-xs text-zinc-300">Bir imzanız bir hayat kurtarır. Bir gönüllü, yüz hayat kurtarır.</p>
 <input id="vol-name" type="text" placeholder="Ad Soyad *" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs text-zinc-100 focus:border-red-600 focus:outline-none">
 <input id="vol-phone" type="tel" placeholder="Telefon *" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs text-zinc-100 focus:border-red-600 focus:outline-none">
 <input id="vol-email" type="email" placeholder="E-posta" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs text-zinc-100 focus:border-red-600 focus:outline-none">
-<select id="vol-city" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs text-zinc-100 focus:border-red-600 focus:outline-none">
-<option value="">Şehir seçin</option>
-</select>
-<select id="vol-skill" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs text-zinc-100 focus:border-red-600 focus:outline-none">
-<option>Saha çalışması yapabilirim</option>
-<option>Sosyal medya desteği verebilirim</option>
-<option>Duyuru/sticker dağıtabilirim</option>
-<option>Tasarım/afiş hazırlayabilirim</option>
-<option>Maddi destek sağlayabilirim</option>
-<option>Diğer</option>
-</select>
+<select id="vol-city" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs text-zinc-100 focus:border-red-600 focus:outline-none"><option value="">Şehir seçin</option></select>
+<select id="vol-skill" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs text-zinc-100 focus:border-red-600 focus:outline-none"><option>Saha çalışması yapabilirim</option><option>Sosyal medya desteği verebilirim</option><option>Duyuru/sticker dağıtabilirim</option><option>Tasarım/afiş hazırlayabilirim</option><option>Maddi destek sağlayabilirim</option><option>Diğer</option></select>
 <textarea id="vol-message" rows="2" placeholder="Ek notunuz (opsiyonel)" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs text-zinc-100 focus:border-red-600 focus:outline-none"></textarea>
 <button onclick="sendVolunteer()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg text-xs uppercase">✉️ GÖNÜLLÜLÜK BAŞVURUSU GÖNDER</button>
 <p class="text-[10px] text-zinc-400 text-center">ara2024.tr@gmail.com</p>
 </div>
-</section>
-
-<section class="lg:col-span-7 space-y-6">
 <div class="bg-zinc-900 p-6 rounded-xl border-2 border-emerald-700 space-y-4 shadow-2xl">
 <div class="border-b border-emerald-800/50 pb-3 flex justify-between items-center">
 <h2 class="text-lg font-bold text-white">3️⃣ DİLEKÇENİ KONTROL ET</h2>
@@ -195,7 +186,7 @@ body > header,body > main,body > footer,body > #thanks-modal,body > #confirm-mod
 
 <div class="bg-zinc-900 p-6 rounded-xl border-2 border-emerald-700 space-y-4 shadow-2xl">
 <div class="border-b border-zinc-800 pb-3">
-<h2 class="text-lg font-bold text-white">📚 VAKA & OLAY ALMANAK VERİ TABANI</h2>
+<div class="flex items-center justify-between gap-3"><h2 class="text-lg font-bold text-white">📚 VAKA & OLAY ALMANAK VERİ TABANI</h2><button type="button" onclick="openAdminPanel()" class="text-[10px] text-amber-300 border border-amber-800 px-2 py-1 rounded">🔑 Yönetici</button></div>
 <p class="text-xs text-zinc-400 mt-1">2025 yılı hayvan hakları ihlalleri. Şehrine göre filtrele, seçili vekillere etiketle ve baskı kur.</p>
 </div>
 <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -225,6 +216,12 @@ body > header,body > main,body > footer,body > #thanks-modal,body > #confirm-mod
 </div>
 </div>
 <div id="almanac-container" class="space-y-3 max-h-96 overflow-y-auto pr-1"></div>
+<div id="admin-panel" class="hidden border-t border-amber-800/50 pt-4 space-y-3">
+<p class="text-xs font-bold text-amber-300">Yeni Vaka Kayıt Formu</p>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-2"><input id="admin-event-title" placeholder="Vaka başlığı" class="bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs"><input id="admin-event-city" placeholder="Şehir" class="bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs"></div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-2"><input id="admin-event-location" placeholder="Konum" class="bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs"><select id="admin-event-category" class="bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs"><option>Toplama/Katliam</option><option>Barınak İhmali</option><option>Bireysel Şiddet</option><option>Hukuki İhlal</option></select></div>
+<textarea id="admin-event-desc" placeholder="Açıklama" rows="2" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs"></textarea><button type="button" onclick="saveAdminEvent()" class="bg-amber-700 hover:bg-amber-600 text-white font-bold py-2 rounded text-xs">VAKAYI KAYDET</button>
+</div>
 </div>
 </section>
 </main>
@@ -1031,6 +1028,8 @@ initCitizenSignaturePad();
 initMPSignaturePad();
 renderSignedMPs();
 populateAlmanacFilters();
+loadStoredAlmanac();
+populateAlmanacFilters();
 renderAlmanac();
 initCampaignQR();
 populateFilterCityMode();
@@ -1504,6 +1503,35 @@ function populateAlmanacFilters() {
 
 function filterAlmanac() {
   renderAlmanac();
+}
+
+const ALMANAC_STORAGE_KEY='sign7527_almanac_v2';
+function loadStoredAlmanac(){
+  try{
+    const stored=JSON.parse(localStorage.getItem(ALMANAC_STORAGE_KEY)||'[]');
+    if(Array.isArray(stored))stored.reverse().forEach(function(event){
+      if(event&&event.id&&!almanacEvents.some(function(item){return item.id===event.id;}))almanacEvents.unshift(event);
+    });
+  }catch(error){console.warn('Almanak kaydı okunamadı',error);}
+}
+function openAdminPanel(){
+  const password=prompt('Yönetici şifresi');
+  if(password!=='ARA_ADMIN_2026'){if(password!==null)alert('Hatalı şifre.');return;}
+  document.getElementById('admin-panel')?.classList.remove('hidden');
+}
+function saveAdminEvent(){
+  const title=document.getElementById('admin-event-title').value.trim();
+  const city=document.getElementById('admin-event-city').value.trim();
+  const location=document.getElementById('admin-event-location').value.trim();
+  const category=document.getElementById('admin-event-category').value;
+  const desc=document.getElementById('admin-event-desc').value.trim();
+  if(!title||!city||!location||!desc){alert('Başlık, şehir, konum ve açıklama zorunludur.');return;}
+  const event={id:Date.now(),date:new Date().toISOString().slice(0,10),city,location,title,category,desc,source:'#'};
+  almanacEvents.unshift(event);
+  const stored=JSON.parse(localStorage.getItem(ALMANAC_STORAGE_KEY)||'[]');
+  stored.unshift(event);localStorage.setItem(ALMANAC_STORAGE_KEY,JSON.stringify(stored));
+  ['admin-event-title','admin-event-city','admin-event-location','admin-event-desc'].forEach(function(id){document.getElementById(id).value='';});
+  renderAlmanac();alert('Vaka almanaka eklendi.');
 }
 
 function renderAlmanac() {
