@@ -23,6 +23,17 @@ const outputName = mode === 'vekil' ? 'vekil-7527-iptal' : 'vatandas-7527-iptal'
     document.body.appendChild(caption);
     window.setVideoCaption = (text) => { caption.textContent = text; };
     window.focusVideo = (selector) => { document.querySelectorAll('.video-focus').forEach((el) => el.classList.remove('video-focus')); const el = document.querySelector(selector); if (el) { el.classList.add('video-focus'); el.scrollIntoView({ behavior: 'instant', block: 'center' }); } };
+    window.showVideoMock = (kind) => {
+      document.getElementById('video-mock')?.remove();
+      const mock = document.createElement('div');
+      mock.id = 'video-mock';
+      mock.style.cssText = 'position:fixed;inset:70px 90px 70px;z-index:9998;background:#f8fafc;color:#0f172a;border:4px solid #334155;border-radius:12px;box-shadow:0 20px 60px #000b;font:16px Inter,sans-serif;overflow:hidden';
+      mock.innerHTML = kind === 'pdf'
+        ? '<div style="background:#334155;color:#fff;padding:14px 20px;font-weight:800">Yazdır</div><div style="display:grid;grid-template-columns:1fr 280px;height:calc(100% - 52px)"><div style="background:#cbd5e1;padding:24px;display:flex;justify-content:center"><div style="background:#fff;width:330px;padding:24px;box-shadow:0 4px 12px #0003"><b>T.C. CUMHURBAŞKANLIĞI MAKAMINA</b><hr><p>7527 Sayılı Kanun\'un iptali talebi</p><p style="margin-top:100px">İmza: Örnek Gönüllü</p></div></div><div style="background:#fff;padding:24px"><b>Yazıcı</b><p>PDF olarak kaydet</p><label>Dosya adı</label><div style="border:1px solid #94a3b8;padding:10px;margin:8px 0">dilekce-7527.pdf</div><button style="background:#2563eb;color:#fff;border:0;border-radius:6px;padding:12px 20px;font-weight:800">KAYDET</button></div></div>'
+        : '<div style="background:#1d4ed8;color:#fff;padding:14px 20px;font-weight:800">Yeni ileti</div><div style="padding:24px;background:#fff;height:calc(100% - 52px)"><p><b>Kime:</b> TBMM / Cumhurbaşkanlığı</p><p><b>Konu:</b> 7527 Sayılı Kanun İptal Talebi</p><hr><p>Dilekçenizi ekte gönderin.</p><div style="display:inline-flex;gap:10px;align-items:center;background:#e2e8f0;padding:12px 16px;border-radius:8px;margin-top:35px">📎 dilekce-7527.pdf</div><br><button style="margin-top:35px;background:#16a34a;color:#fff;border:0;border-radius:6px;padding:12px 24px;font-weight:800">GÖNDER</button></div>';
+      document.body.appendChild(mock);
+    };
+    window.hideVideoMock = () => document.getElementById('video-mock')?.remove();
   });
 
   if (mode === 'vekil') {
@@ -81,8 +92,11 @@ const outputName = mode === 'vekil' ? 'vekil-7527-iptal' : 'vatandas-7527-iptal'
     await page.evaluate(() => { focusVideo('#send-btn'); setVideoCaption('5. Dilekçeyi kontrol et ve gönder düğmesine basın.'); });
     await page.waitForTimeout(4500);
     await page.click('#send-btn');
-    await page.evaluate(() => { setVideoCaption('6. PDF olarak kaydedin; açılan e-postaya PDF dosyasını ekleyip gönderin.'); });
-    await page.waitForTimeout(7500);
+    await page.evaluate(() => { showVideoMock('pdf'); setVideoCaption('6. Açılan yazdırma ekranında PDF olarak kaydedin.'); });
+    await page.waitForTimeout(6000);
+    await page.evaluate(() => { hideVideoMock(); showVideoMock('mail'); setVideoCaption('7. E-postaya PDF dosyasını ekleyip gönderin.'); });
+    await page.waitForTimeout(7000);
+    await page.evaluate(() => { hideVideoMock(); });
     await page.evaluate(() => { focusVideo('#confirm-modal'); setVideoCaption('7. E-postayı gönderdiyseniz gönderim teyidini verin.'); });
     await page.waitForTimeout(6500);
     await page.evaluate(() => { document.getElementById('confirm-modal').style.display = 'none'; });
