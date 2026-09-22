@@ -1437,12 +1437,20 @@ function sendCurrent() {
   );
 
   pendingConfirm = selectedTarget;
-  window.location.href = `mailto:${mailTo}?subject=${subject}&body=${bodyText}`;
-
-  setTimeout(function () {
-    const modal = document.getElementById('confirm-modal');
-    if (modal) modal.style.display = 'flex';
-  }, 1000);
+  const printContainer=document.getElementById('print-petition');
+  if(printContainer){
+    printContainer.innerHTML=preview.innerHTML;
+    printContainer.querySelectorAll('img').forEach(function(image){image.classList.add('val-sig');});
+  }
+  const openMail=function(){
+    window.location.href = `mailto:${mailTo}?subject=${subject}&body=${bodyText}`;
+    setTimeout(function () {
+      const modal = document.getElementById('confirm-modal');
+      if (modal) modal.style.display = 'flex';
+    }, 1000);
+  };
+  window.addEventListener('afterprint',openMail,{once:true});
+  window.print();
 }
 
 async function confirmSend(status) {
