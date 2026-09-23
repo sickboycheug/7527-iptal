@@ -37,7 +37,7 @@ const outputName = mode === 'vekil' ? 'vekil-7527-iptal' : 'vatandas-7527-iptal'
   });
 
   if (mode === 'vekil') {
-    await page.evaluate(() => { switchTab('vekil'); setVideoCaption('Meclis Vekil Paneli\nVekil imzası için üç adım.'); });
+    await page.evaluate(() => { switchTab('vekil'); setVideoCaption('Meclis Vekil Paneli\nVekil imzası için dört adım.'); });
     await page.waitForTimeout(4500);
     await page.evaluate(() => { focusVideo('#mp-search-input'); setVideoCaption('1. Kendi adınızı arayın ve listeden seçin.'); });
     await page.fill('#mp-search-input', 'Ahmet');
@@ -45,7 +45,15 @@ const outputName = mode === 'vekil' ? 'vekil-7527-iptal' : 'vatandas-7527-iptal'
     await page.selectOption('#mp-select', { index: 0 });
     await page.evaluate(() => { focusVideo('#mp-selected-info'); setVideoCaption('2. Seçiminizi kontrol edin.'); });
     await page.waitForTimeout(3500);
-    await page.evaluate(() => { focusVideo('#mp-signature-pad'); setVideoCaption('3. Islak imzanızı atın.'); });
+    await page.fill('#mp-verification-email', 'ornek.vekil@tbmm.gov.tr');
+    await page.evaluate(() => { focusVideo('#mp-verification-email'); setVideoCaption('3. Resmî e-posta adresinizi girip KOD GÖNDER düğmesine basın.'); });
+    await page.waitForTimeout(4500);
+    await page.click('button:has-text("KOD GÖNDER")').catch(() => {});
+    await page.evaluate(() => { document.getElementById('mp-otp-row')?.classList.remove('hidden'); focusVideo('#mp-verification-code'); setVideoCaption('4. E-postanıza gelen tek kullanımlık kodu girip DOĞRULA düğmesine basın.'); });
+    await page.waitForTimeout(5000);
+    await page.fill('#mp-verification-code', '123456');
+    await page.waitForTimeout(2500);
+    await page.evaluate(() => { setMPVerificationState(true, 'Vekil doğrulandı. İmza kaydedilebilir.'); focusVideo('#mp-signature-pad'); setVideoCaption('5. Doğrulama sonrası ıslak imzanızı atın.'); });
     const canvas = page.locator('#mp-signature-pad');
     const box = await canvas.boundingBox();
     await page.mouse.move(box.x + 80, box.y + 55);
@@ -55,7 +63,7 @@ const outputName = mode === 'vekil' ? 'vekil-7527-iptal' : 'vatandas-7527-iptal'
     await page.mouse.move(box.x + 235, box.y + 40, { steps: 5 });
     await page.mouse.up();
     await page.waitForTimeout(4500);
-    await page.evaluate(() => { setVideoCaption('İmzanızı tamamlayın ve imzayı kaydedin.'); });
+    await page.evaluate(() => { setVideoCaption('İmzanızı tamamlayın ve İMZALA VE MECLİSE SUN düğmesine basarak kaydedin.'); });
     await page.waitForTimeout(5000);
     await page.evaluate(() => { document.querySelectorAll('.video-focus').forEach((el) => el.classList.remove('video-focus')); setVideoCaption('Milletvekili imzası, yaşam hakkını savunan ortak talebin Mecliste görünür olmasıdır.'); });
     await page.waitForTimeout(4500);
