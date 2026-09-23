@@ -1008,10 +1008,10 @@ async function loadOfficialMPEmails() {
   const result = await supabaseClient.rpc('list_mp_contacts');
   if(result.error || !Array.isArray(result.data)) return;
   result.data.forEach(function(row){
-    officialMPEmails.set(row.name.trim().toUpperCase(), row.email);
+    officialMPEmails.set(normalizeMPName(row.name), row.email);
   });
   mpDatabase.forEach(function(m){
-    m.email = officialMPEmails.get(m.name.trim().toUpperCase()) || '';
+    m.email = officialMPEmails.get(normalizeMPName(m.name)) || '';
   });
 }
 
