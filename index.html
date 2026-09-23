@@ -308,7 +308,7 @@ const MP_MAIL_LOG_KEY='sign7527_mp_mail_log_v12';
 const SUPABASE_URL='https://mednnlpprdgupdajmrin.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_4xahmL7yt4C53MAJuorucg_qhImIEwn';
 const supabaseClient=window.supabase?.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
-const TBMM_EMAIL_LIST_URL='https://www.tbmm.gov.tr/milletvekili/eposta-liste';
+const TBMM_CONTACTS_URL='https://seffaftbmm.cc/contacts.json';
 let citizenCount=parseInt(localStorage.getItem(CITIZEN_COUNT_KEY)||'0',10);
 let cbCount=parseInt(localStorage.getItem(CB_COUNT_KEY)||'0',10);
 let mbCount=parseInt(localStorage.getItem(MB_COUNT_KEY)||'0',10);
@@ -937,7 +937,7 @@ try{
 mpDatabase=rawMPText.trim().split("\n").map(function(line,i){
 var parts=line.split("|");
 var city=(parts[0]||"").trim(),name=(parts[1]||"").trim(),party=(parts[2]||"").trim();
-return{no:i+1,id:i+1,city:city,name:name,party:party,xHandle:'',email:'',vote:defaultVoteForParty(party)};
+return{no:i+1,id:i+1,city:city,name:name,party:party,xHandle:'',email:'',imageUrl:'',telephones:[],vote:defaultVoteForParty(party)};
 }).filter(function(m){return m.city&&m.name&&m.party;});
 }catch(e){console.error('MP parse hata:',e);}
 
@@ -945,26 +945,29 @@ const MP_TARGET=mpDatabase.length||592;
 const citiesList=[...new Set(mpDatabase.map(function(m){return m.city;}))];
 
 function normalizeMPName(value) {
-  return String(value || '').toLocaleLowerCase('tr-TR').replace(/ı/g,'i').replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ş/g,'s').replace(/ö/g,'o').replace(/ç/g,'c').replace(/[^a-z0-9]/g,'');
+  return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('tr-TR').replace(/ı/g,'i').replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ş/g,'s').replace(/ö/g,'o').replace(/ç/g,'c').replace(/[^a-z0-9]/g,'');
 }
 
 async function loadOfficialMPEmails() {
   try {
-    const response = await fetch(TBMM_EMAIL_LIST_URL, { credentials: 'omit' });
-    if (!response.ok) throw new Error('TBMM e-posta listesi yüklenemedi');
-    const html = await response.text();
-    const document = new DOMParser().parseFromString(html, 'text/html');
-    document.querySelectorAll('#mecTable tbody tr').forEach(function (row) {
-      const cells = row.querySelectorAll('td');
-      const name = cells[0]?.textContent.trim();
-      const email = cells[3]?.textContent.trim().toLowerCase();
-      if (name && email && email.includes('@')) officialMPEmails.set(normalizeMPName(name), email);
+    const response = await fetch(TBMM_CONTACTS_URL, { credentials: 'omit' });
+    if (!response.ok) throw new Error('TBMM iletişim listesi yüklenemedi');
+    const contacts = await response.json();
+    contacts.forEach(function (contact) {
+      const name = contact.name?.trim();
+      const email = contact.email?.trim().toLowerCase();
+      if (name && email && email.includes('@')) officialMPEmails.set(normalizeMPName(name), contact);
     });
     mpDatabase.forEach(function (mp) {
-      mp.email = officialMPEmails.get(normalizeMPName(mp.name)) || '';
+      const contact = officialMPEmails.get(normalizeMPName(mp.name));
+      if (contact) {
+        mp.email = contact.email.toLowerCase();
+        mp.imageUrl = contact.image_url || '';
+        mp.telephones = Array.isArray(contact.telephones) ? contact.telephones : [];
+      }
     });
   } catch (error) {
-    console.warn('TBMM e-posta listesi okunamadı:', error);
+    console.warn('TBMM iletişim listesi okunamadı:', error);
   }
 }
 
