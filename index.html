@@ -120,15 +120,12 @@ Tarayıcınız video oynatmayı desteklemiyor.
 <div id="vekil-secim" class="hidden bg-zinc-900 p-4 rounded-xl border border-emerald-800/50 space-y-3">
 <h3 class="text-sm font-bold text-emerald-400 border-b border-emerald-900/40 pb-2">MİLLETVEKİLİ SEÇ</h3>
 <input type="text" id="mp-search" oninput="filterVekilRadio()" placeholder="Ad soyad ara..." class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-xs text-zinc-100 focus:border-emerald-600 focus:outline-none">
-<div class="grid grid-cols-3 gap-2">
+<div class="grid grid-cols-2 gap-2">
 <select id="filter-party" onchange="filterVekilRadio()" class="bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-[10px] text-zinc-200">
 <option value="TÜMÜ">Tüm Partiler</option><option value="AK Parti">AK Parti</option><option value="CHP">CHP</option><option value="MHP">MHP</option><option value="DEM PARTİ">DEM PARTİ</option><option value="İYİ Parti">İYİ Parti</option><option value="Yeni Parti">Yeni Parti</option><option value="YENİ YOL">YENİ YOL</option><option value="BAĞIMSIZ">BAĞIMSIZ</option><option value="YENİDEN REFAH">YENİDEN REFAH</option><option value="SAADET Partisi">SAADET Partisi</option><option value="TİP">TİP</option><option value="HÜDA PAR">HÜDA PAR</option><option value="DBP">DBP</option><option value="EMEP">EMEP</option><option value="DSP">DSP</option><option value="DP">DP</option>
 </select>
 <select id="filter-city-mode" onchange="filterVekilRadio()" class="bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-[10px] text-zinc-200">
 <option value="ALL">Tüm Türkiye</option>
-</select>
-<select id="filter-mail-status" onchange="filterVekilRadio()" class="bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-[10px] text-zinc-200">
-<option value="ALL">Tüm Mail Durumu</option><option value="NONE">Hiç gönderilmemiş</option><option value="LOW">En az gönderilen (1-2)</option><option value="SENT">Gönderilmiş (1+)</option>
 </select>
 </div>
 <div id="vekil-radio-list" class="max-h-72 overflow-y-auto space-y-1 border border-zinc-800 rounded p-2"></div>
@@ -304,7 +301,6 @@ const CITIZEN_CODE_KEY='sign7527_citizen_code_v12';
 const CB_COUNT_KEY='sign7527_cb_count_v12';
 const MB_COUNT_KEY='sign7527_mb_count_v12';
 const MP_SENT_COUNT_KEY='sign7527_mp_sent_count_v12';
-const MP_MAIL_LOG_KEY='sign7527_mp_mail_log_v12';
 const SUPABASE_URL='https://mednnlpprdgupdajmrin.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_4xahmL7yt4C53MAJuorucg_qhImIEwn';
 const supabaseClient=window.supabase?.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
@@ -313,7 +309,6 @@ let citizenCount=parseInt(localStorage.getItem(CITIZEN_COUNT_KEY)||'0',10);
 let cbCount=parseInt(localStorage.getItem(CB_COUNT_KEY)||'0',10);
 let mbCount=parseInt(localStorage.getItem(MB_COUNT_KEY)||'0',10);
 let mpSentCount=parseInt(localStorage.getItem(MP_SENT_COUNT_KEY)||'0',10);
-let mailLog=JSON.parse(localStorage.getItem(MP_MAIL_LOG_KEY)||'{}');
 let mpSignatures=[];
 const statsData={citizenTarget:3000000};
 const leaders={
@@ -324,14 +319,6 @@ let selectedTarget=null;
 let selectedVekil=null;
 let pendingConfirm=null;
 let mpVerification=null;
-
-function getMailCount(id){return (mailLog[id]&&mailLog[id].count)?mailLog[id].count:0;}
-function incrementMailCount(id){
-if(!mailLog[id])mailLog[id]={count:0,last:null};
-mailLog[id].count++;
-mailLog[id].last=new Date().toISOString();
-localStorage.setItem(MP_MAIL_LOG_KEY,JSON.stringify(mailLog));
-}
 
 const rawMPText = `Adana|Abdullah DOĞRU|AK Parti
 Adana|Ahmet ZENBİLCİ|BAĞIMSIZ
@@ -1342,8 +1329,6 @@ function filterVekilRadio() {
   ).toLowerCase();
   const party = document.getElementById('filter-party')?.value || 'TÜMÜ';
   const city = document.getElementById('filter-city-mode')?.value || 'ALL';
-  const mailStatus =
-    document.getElementById('filter-mail-status')?.value || 'ALL';
   const listContainer = document.getElementById('vekil-radio-list');
   if (!listContainer) return;
 
@@ -1354,13 +1339,7 @@ function filterVekilRadio() {
     const matchParty = party === 'TÜMÜ' || m.party === party;
     const matchCity = city === 'ALL' || m.city === city;
 
-    const count = getMailCount(m.id);
-    let matchMail = true;
-    if (mailStatus === 'NONE') matchMail = count === 0;
-    else if (mailStatus === 'LOW') matchMail = count >= 1 && count <= 2;
-    else if (mailStatus === 'SENT') matchMail = count >= 1;
-
-    return matchSearch && matchParty && matchCity && matchMail;
+    return matchSearch && matchParty && matchCity;
   });
 
   listContainer.innerHTML = '';
@@ -1374,13 +1353,11 @@ function filterVekilRadio() {
     const label = document.createElement('label');
     label.className =
       'flex items-center justify-between p-2 rounded hover:bg-zinc-800 cursor-pointer text-xs text-zinc-200 border border-zinc-800/60';
-    const count = getMailCount(m.id);
     label.innerHTML = `
       <div class="flex items-center gap-2">
         <input type="radio" name="selected_mp_radio" value="${m.id}" onchange="onVekilRadioSelect(${m.id})" ${selectedVekil && selectedVekil.id === m.id ? 'checked' : ''} class="accent-emerald-500">
         <span><strong>${m.name}</strong> (${m.party} - ${m.city})</span>
       </div>
-      <span class="text-[10px] px-1.5 py-0.5 rounded bg-zinc-950 text-zinc-400 border border-zinc-800 font-mono">✉️ ${count}</span>
     `;
     listContainer.appendChild(label);
   });
@@ -1521,7 +1498,6 @@ async function confirmSend(status) {
 
   if (status && pendingConfirm) {
     if(!(await recordRemoteSubmission(pendingConfirm,pendingConfirm==='mp'&&selectedVekil?selectedVekil.id:null))){alert('Ortak sayaç bağlantısı kurulamadı. Lütfen tekrar deneyin.');return;}
-    if(pendingConfirm==='mp'&&selectedVekil)incrementMailCount(selectedVekil.id);
     if(!supabaseClient){
       if (pendingConfirm === 'cb') {cbCount++;localStorage.setItem(CB_COUNT_KEY, cbCount);}
       else if (pendingConfirm === 'mb') {mbCount++;localStorage.setItem(MB_COUNT_KEY, mbCount);}
