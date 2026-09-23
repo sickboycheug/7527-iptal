@@ -78,7 +78,7 @@ begin
   on conflict (petition_number) do nothing
   returning id into submission_id;
 
-  if submission_id is not null then
+  if submission_id is not null and to_regclass('public.campaign_submission_audit') is not null then
     insert into public.campaign_submission_audit (submission_id, action)
     values (submission_id, 'created');
   end if;
