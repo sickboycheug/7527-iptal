@@ -1014,9 +1014,15 @@ function normalizeMPName(value) {
 }
 
 async function loadOfficialMPEmails() {
-  // Harici iletişim listeleri güvenilmeyen e-posta adresi enjeksiyonuna açıktır.
-  // Milletvekili adresleri yalnızca doğrulanmış yerel veriyle eklenmelidir.
-  return Promise.resolve();
+  if(!supabaseClient) return;
+  const result = await supabaseClient.rpc('list_mp_contacts');
+  if(result.error || !Array.isArray(result.data)) return;
+  result.data.forEach(function(row){
+    officialMPEmails.set(row.name.trim().toUpperCase(), row.email);
+  });
+  mpDatabase.forEach(function(m){
+    m.email = officialMPEmails.get(m.name.trim().toUpperCase()) || '';
+  });
 }
 
 // ═══ ALMANAK VERİ TABANI ═══
