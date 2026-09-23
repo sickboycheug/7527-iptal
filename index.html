@@ -19,6 +19,13 @@ body > header,body > main,body > footer,body > #thanks-modal,body > #confirm-mod
 #print-petition{display:none}
 #thanks-modal,#confirm-modal{display:none}
 .selected-target{background:#059669!important;border-color:#059669!important;color:#fff!important}
+.video-shell video{display:block;width:100%;aspect-ratio:16/9;object-fit:contain;min-height:220px}
+.video-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.5rem;margin-top:.75rem}
+@media (max-width:420px){.video-actions{grid-template-columns:1fr}.video-actions button{min-height:42px}}
+@media (max-width:1023px){
+#panel-vatandas>section{display:contents}
+#panel-vatandas>section>div{margin-bottom:0}
+}
 </style>
 </head>
 <body class="bg-zinc-950 text-zinc-100 antialiased min-h-screen flex flex-col">
@@ -74,10 +81,17 @@ body > header,body > main,body > footer,body > #thanks-modal,body > #confirm-mod
 <div class="no-print bg-zinc-900 border-2 border-red-700/70 rounded-xl p-4 shadow-2xl">
 <p class="text-[10px] font-bold text-red-400 uppercase tracking-widest">VATANDAŞ İŞLEM REHBERİ</p>
 <h2 class="text-xl font-impact text-white uppercase mb-3">Vatandaş dilekçesi nasıl gönderilir?</h2>
-<video class="w-full rounded-lg border border-zinc-700 bg-black" controls preload="metadata" playsinline aria-label="Vatandaş dilekçesi gönderme anlatımı">
+<div class="video-shell">
+<video id="citizen-guide-video" class="rounded-lg border border-zinc-700 bg-black" controls preload="metadata" playsinline aria-label="Vatandaş dilekçesi gönderme anlatımı">
 <source src="campaign-video-output/kampanya-7527-iptal.mp4?v=20260923-2" type="video/mp4">
 Tarayıcınız video oynatmayı desteklemiyor.
 </video>
+<div class="video-actions" aria-label="Vatandaş videosu işlemleri">
+<button type="button" onclick="toggleVideoFullscreen('citizen-guide-video')" class="bg-zinc-700 hover:bg-zinc-600 text-white font-bold py-2.5 rounded-lg text-xs">⛶ TAM EKRAN</button>
+<button type="button" onclick="shareVideo('citizen-guide-video','Vatandaş dilekçesi gönderme anlatımı')" class="bg-sky-700 hover:bg-sky-600 text-white font-bold py-2.5 rounded-lg text-xs">↗ PAYLAŞ</button>
+<button type="button" onclick="downloadVideo('citizen-guide-video','7527-vatandas-dilekce-rehberi.mp4')" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-lg text-xs">↓ İNDİR</button>
+</div>
+</div>
 </div>
 <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-4 shadow-2xl">
 <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
@@ -174,7 +188,7 @@ Tarayıcınız video oynatmayı desteklemiyor.
 </section>
 
 <section class="lg:col-span-7 space-y-6">
-<div class="bg-gradient-to-br from-red-950 via-zinc-900 to-emerald-950 p-5 rounded-xl border border-red-800/70 space-y-3 shadow-xl">
+<div id="volunteer-card" class="bg-gradient-to-br from-red-950 via-zinc-900 to-emerald-950 p-5 rounded-xl border border-red-800/70 space-y-3 shadow-xl">
 <h3 class="text-base font-bold text-white">🤝 KAMPANYA GÖNÜLLÜSÜ OL</h3>
 <p class="text-xs text-zinc-300">Bir imzanız bir hayat kurtarır. Bir gönüllü, yüz hayat kurtarır.</p>
 <input id="vol-name" type="text" placeholder="Ad Soyad *" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs text-zinc-100 focus:border-red-600 focus:outline-none">
@@ -235,10 +249,17 @@ Tarayıcınız video oynatmayı desteklemiyor.
 <div class="no-print bg-zinc-900 border-2 border-emerald-700 rounded-xl p-4 shadow-2xl">
 <p class="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">VEKİL İŞLEM REHBERİ</p>
 <h2 class="text-xl font-impact text-white uppercase mb-3">Vekil imzası nasıl verilir?</h2>
-<video class="w-full rounded-lg border border-zinc-700 bg-black" controls preload="metadata" playsinline aria-label="Milletvekili imza verme anlatımı">
+<div class="video-shell">
+<video id="mp-guide-video" class="rounded-lg border border-zinc-700 bg-black" controls preload="metadata" playsinline aria-label="Milletvekili imza verme anlatımı">
 <source src="campaign-video-output/vekil-7527-iptal.mp4?v=20260923-1" type="video/mp4">
 Tarayıcınız video oynatmayı desteklemiyor.
 </video>
+<div class="video-actions" aria-label="Milletvekili videosu işlemleri">
+<button type="button" onclick="toggleVideoFullscreen('mp-guide-video')" class="bg-zinc-700 hover:bg-zinc-600 text-white font-bold py-2.5 rounded-lg text-xs">⛶ TAM EKRAN</button>
+<button type="button" onclick="shareVideo('mp-guide-video','Milletvekili imza verme anlatımı')" class="bg-sky-700 hover:bg-sky-600 text-white font-bold py-2.5 rounded-lg text-xs">↗ PAYLAŞ</button>
+<button type="button" onclick="downloadVideo('mp-guide-video','7527-vekil-imza-rehberi.mp4')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg text-xs">↓ İNDİR</button>
+</div>
+</div>
 </div>
 <div class="bg-gradient-to-br from-emerald-950 via-zinc-900 to-red-950 p-6 rounded-xl border-2 border-emerald-700 space-y-3">
 <h2 class="text-lg font-impact text-white uppercase text-center">🏛️ MECLİS VEKİL PANELİ</h2>
@@ -277,9 +298,9 @@ Tarayıcınız video oynatmayı desteklemiyor.
 <p class="text-red-400">Sayın Numan KURTULMUŞ</p>
 <p class="text-zinc-500 text-xs">ANKARA</p>
 </div>
-<p class="text-sm"><strong>KONU:</strong> 7527 Sayılı Kanun'un İptali, 5199 Sayılı Kanun'un Yaşam Hakkını Önceleyen Hükümleriyle Yeniden Yürürlüğe Konulması ve Olağanüstü Toplantı Çağrısı Talebidir.</p>
+<p class="text-sm"><strong>KONU:</strong> 7527 sayılı Kanun'un kaldırılması, 5199 sayılı Kanun'a dönülmesi ve yaşam hakkı gözetilerek birlikte iyileştirilmesi talebidir.</p>
 <p class="text-sm bg-emerald-950/40 border-l-4 border-emerald-600 pl-4 py-3"><strong>İMZALAYAN MİLLETVEKİLİ:</strong> <span id="petition-selected-mp" class="text-emerald-300">Henüz vekil seçilmedi.</span></p>
-<p class="text-sm leading-relaxed">Aşağıda imzası bulunan milletvekilleri olarak; ülkemizdeki mevcut barınak kapasitesinin 105 bin civarında olması nedeniyle ihtiyacı karşılamaktan uzak kalması, <strong>7527 Sayılı Kanun</strong>'un uygulamada yarattığı cezasızlık halinin sahada hayvanlara yönelik şiddet ve katliam vakalarını artırması ve toplama-kapatma esasına dayanan bu sistemin bizatihi kendisinin de milyonlarca canlının yaşam hakkını tehdit etmesi nedenleriyle, söz konusu kanunun yürürlükten kaldırılarak <strong>5199 Sayılı Kanun</strong>'un yaşam hakkını önceleyen hükümleriyle yeniden yürürlüğe konulmasını talep ediyoruz.</p>
+<p class="text-sm leading-relaxed">Aşağıda imzası bulunan milletvekilleri olarak; <strong>7527 sayılı Kanun'un olağanüstü toplantıyla derhal kaldırılması, 5199 sayılı Kanun'a dönülmesi ve yaşam hakkı gözetilerek ilgili düzenlemelerin birlikte iyileştirilmesi</strong> için gerekli sürecin başlatılmasını talep ediyoruz.</p>
 <div class="pt-4 border-t border-zinc-800">
 <p class="text-xs font-bold text-zinc-400 uppercase mb-2">İMZALAYAN MİLLETVEKİLLERİ</p>
 <div id="petition-signatures-preview-2" class="text-xs text-zinc-300 space-y-1 italic"><p class="text-zinc-500">Henüz imza yok.</p></div>
@@ -304,7 +325,6 @@ const MP_SENT_COUNT_KEY='sign7527_mp_sent_count_v12';
 const SUPABASE_URL='https://mednnlpprdgupdajmrin.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_4xahmL7yt4C53MAJuorucg_qhImIEwn';
 const supabaseClient=window.supabase?.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
-const TBMM_CONTACTS_URL='https://seffaftbmm.cc/contacts.json';
 let citizenCount=parseInt(localStorage.getItem(CITIZEN_COUNT_KEY)||'0',10);
 let cbCount=parseInt(localStorage.getItem(CB_COUNT_KEY)||'0',10);
 let mbCount=parseInt(localStorage.getItem(MB_COUNT_KEY)||'0',10);
@@ -319,6 +339,14 @@ let selectedTarget=null;
 let selectedVekil=null;
 let pendingConfirm=null;
 let mpVerification=null;
+let pendingPetitionNumber=null;
+
+function createPetitionNumber(type){
+  const bytes=new Uint8Array(8);
+  crypto.getRandomValues(bytes);
+  const suffix=Array.from(bytes).map(function(byte){return byte.toString(16).padStart(2,'0');}).join('').toUpperCase();
+  return '7527-'+type.toUpperCase()+'-'+new Date().toISOString().slice(0,10).replaceAll('-','')+'-'+suffix;
+}
 
 const rawMPText = `Adana|Abdullah DOĞRU|AK Parti
 Adana|Ahmet ZENBİLCİ|BAĞIMSIZ
@@ -936,26 +964,9 @@ function normalizeMPName(value) {
 }
 
 async function loadOfficialMPEmails() {
-  try {
-    const response = await fetch(TBMM_CONTACTS_URL, { credentials: 'omit' });
-    if (!response.ok) throw new Error('TBMM iletişim listesi yüklenemedi');
-    const contacts = await response.json();
-    contacts.forEach(function (contact) {
-      const name = contact.name?.trim();
-      const email = contact.email?.trim().toLowerCase();
-      if (name && email && email.includes('@')) officialMPEmails.set(normalizeMPName(name), contact);
-    });
-    mpDatabase.forEach(function (mp) {
-      const contact = officialMPEmails.get(normalizeMPName(mp.name));
-      if (contact) {
-        mp.email = contact.email.toLowerCase();
-        mp.imageUrl = contact.image_url || '';
-        mp.telephones = Array.isArray(contact.telephones) ? contact.telephones : [];
-      }
-    });
-  } catch (error) {
-    console.warn('TBMM iletişim listesi okunamadı:', error);
-  }
+  // Harici iletişim listeleri güvenilmeyen e-posta adresi enjeksiyonuna açıktır.
+  // Milletvekili adresleri yalnızca doğrulanmış yerel veriyle eklenmelidir.
+  return Promise.resolve();
 }
 
 // ═══ ALMANAK VERİ TABANI ═══
@@ -1147,15 +1158,17 @@ async function refreshRemoteCounters(){
   if(queries.some(function(result){return result.error;}))return;
   citizenCount=queries[0].count||0;cbCount=queries[1].count||0;mbCount=queries[2].count||0;mpSentCount=queries[3].count||0;updateCounters();
 }
-async function recordRemoteSubmission(type,recipientId){
+async function recordRemoteSubmission(type,recipientId,petitionNumber){
   if(!supabaseClient)return true;
   const hash=await getCitizenHash();
   if(!hash)return false;
-  const citizenResult=await supabaseClient.from('campaign_citizens').upsert({citizen_hash:hash},{onConflict:'citizen_hash',ignoreDuplicates:true});
-  if(citizenResult.error)return false;
-  const number='7527-'+type.toUpperCase()+'-'+Date.now()+'-'+Math.random().toString(36).slice(2,8);
-  const result=await supabaseClient.from('campaign_submissions').insert({citizen_hash:hash,recipient_type:type,recipient_id:recipientId||null,petition_number:number});
-  if(result.error&&result.error.code!=='23505')return false;
+  const result=await supabaseClient.rpc('record_campaign_submission',{
+    p_citizen_hash:hash,
+    p_recipient_type:type,
+    p_recipient_id:recipientId||null,
+    p_petition_number:petitionNumber
+  });
+  if(result.error)return false;
   await refreshRemoteCounters();return true;
 }
 
@@ -1428,8 +1441,9 @@ function updatePreview() {
 
   preview.innerHTML = `
     <div class="text-center font-bold mb-4 whitespace-pre-line">${headerText}</div>
-    <p class="mb-3"><strong>KONU:</strong> 7527 Sayılı Kanun'un İptali ve 5199 Sayılı Kanun'un Yaşam Haklarını Önceleyen Hükümleriyle Yeniden Yürürlüğe Konulması Talebidir.</p>
-    <p class="mb-3">Ülkemizdeki mevcut barınak kapasitesinin ihtiyacı karşılamaktan uzak olması, 7527 sayılı Kanun'un uygulamada yarattığı cezasızlık halinin sahada hayvanlara yönelik şiddet ve katliam vakalarını artırması ve toplama-kapatma esasına dayanan bu sistemin bizatihi kendisinin de yaşam hakkını tehdit etmesi nedenleriyle, Anayasal haklar çerçevesinde 7527 sayılı Kanun'un derhal iptal edilmesini talep ediyorum.</p>
+    <p class="mb-3"><strong>KONU:</strong> 7527 sayılı Kanun'un kaldırılması, 5199 sayılı Kanun'a dönülmesi ve yaşam hakkı gözetilerek birlikte iyileştirilmesi talebidir.</p>
+    <p class="mb-3">7527 sayılı Kanun'un uygulamasının yaşam hakkı, hayvan refahı ve kamu yararı bakımından yeniden değerlendirilmesi gerektiğini düşünüyorum. Bu nedenle, <strong>7527 sayılı Kanun'un olağanüstü toplantıyla derhal kaldırılmasını, 5199 sayılı Kanun'a dönülmesini ve yaşam hakkı gözetilerek düzenlemelerin birlikte iyileştirilmesini</strong> talep ediyorum.</p>
+    <p class="mb-3 text-xs text-zinc-600"><strong>Takip kodu:</strong> ${pendingPetitionNumber || 'Gönderim sırasında oluşturulacak'}</p>
     <div class="mt-6 pt-4 border-t border-zinc-300 flex justify-between items-end text-xs">
       <div>
         <p><strong>İmzalayan:</strong> ${name}</p>
@@ -1469,8 +1483,10 @@ function sendCurrent() {
 
   const name = document.getElementById('input-name').value.trim();
   const tc = document.getElementById('input-tc').value.trim();
+  pendingPetitionNumber=createPetitionNumber(selectedTarget);
+  updatePreview();
   const bodyText = encodeURIComponent(
-    `Sayın Makama,\n\n7527 Sayılı Kanun'un iptal edilerek 5199 Sayılı Hayvanları Koruma Kanun'unun yaşam hakkını koruyan maddeleriyle yeniden uygulanması hususunda gereğini arz ederim.\n\nSaygılarımla,\n${name}\nTC: ${tc}`
+    `Sayın Makama,\n\n7527 sayılı Kanun'un olağanüstü toplantıyla derhal kaldırılmasını, 5199 sayılı Kanun'a dönülmesini ve yaşam hakkı gözetilerek birlikte iyileştirilmesini talep ediyorum.\n\nTakip kodu: ${pendingPetitionNumber}\n\nSaygılarımla,\n${name}\nTC: ${tc}`
   );
 
   pendingConfirm = selectedTarget;
@@ -1497,7 +1513,7 @@ async function confirmSend(status) {
   if (modal) modal.style.display = 'none';
 
   if (status && pendingConfirm) {
-    if(!(await recordRemoteSubmission(pendingConfirm,pendingConfirm==='mp'&&selectedVekil?selectedVekil.id:null))){alert('Ortak sayaç bağlantısı kurulamadı. Lütfen tekrar deneyin.');return;}
+    if(!(await recordRemoteSubmission(pendingConfirm,pendingConfirm==='mp'&&selectedVekil?selectedVekil.id:null,pendingPetitionNumber))){alert('Ortak sayaç bağlantısı kurulamadı. Lütfen tekrar deneyin.');return;}
     if(!supabaseClient){
       if (pendingConfirm === 'cb') {cbCount++;localStorage.setItem(CB_COUNT_KEY, cbCount);}
       else if (pendingConfirm === 'mb') {mbCount++;localStorage.setItem(MB_COUNT_KEY, mbCount);}
@@ -1512,10 +1528,11 @@ async function confirmSend(status) {
     const thanksText = document.getElementById('thanks-text');
     if (thanksText)
       thanksText.textContent =
-        'Dilekçeniz başarıyla iletildi. Yaşam hakkı mücadelesine kattığınız destek için teşekkür ederiz.';
+        'Dilekçeniz için kayıt oluşturuldu. Takip kodunuz: '+pendingPetitionNumber+'. E-posta gönderimi, mail uygulamanızdan ayrıca tamamlanmalıdır.';
     if (thanksModal) thanksModal.style.display = 'flex';
   }
   pendingConfirm = null;
+  pendingPetitionNumber = null;
 }
 
 function populateAlmanacFilters() {
@@ -1558,10 +1575,7 @@ function loadStoredAlmanac(){
   }catch(error){console.warn('Almanak kaydı okunamadı',error);}
 }
 function openAdminPanel(){
-  const password=prompt('Yönetici şifresi');
-  if(password!=='ARA_ADMIN_2026'){if(password!==null)alert('Hatalı şifre.');return;}
-  populateAdminEventForm();
-  document.getElementById('admin-panel')?.classList.remove('hidden');
+  alert('Yönetici işlemleri güvenlik nedeniyle yalnızca sunucu tarafı kimlik doğrulamasıyla yapılabilir.');
 }
 function populateAdminEventForm(){
   const citySel=document.getElementById('admin-event-city');
@@ -1713,6 +1727,51 @@ function downloadCampaignQR() {
   a.href = url;
   a.download = '7527-iptal-kampanya-qr.png';
   a.click();
+}
+
+function getVideoUrl(video) {
+  return video?.currentSrc || video?.querySelector('source')?.src || '';
+}
+
+async function toggleVideoFullscreen(videoId) {
+  const video = document.getElementById(videoId);
+  if (!video) return;
+  try {
+    if (document.fullscreenElement) await document.exitFullscreen();
+    else if (video.requestFullscreen) await video.requestFullscreen();
+    else if (video.webkitEnterFullscreen) video.webkitEnterFullscreen();
+  } catch (error) {
+    alert('Tam ekran bu tarayıcıda kullanılamıyor. Videoyu cihazınızın tam ekran simgesinden açabilirsiniz.');
+  }
+}
+
+async function shareVideo(videoId, title) {
+  const video = document.getElementById(videoId);
+  const url = getVideoUrl(video).split('?')[0];
+  if (!url) return;
+  const shareData = { title, text: title + ' - 7527 İptal', url };
+  try {
+    if (navigator.share) await navigator.share(shareData);
+    else {
+      await navigator.clipboard.writeText(url);
+      alert('Video bağlantısı panoya kopyalandı.');
+    }
+  } catch (error) {
+    if (error.name !== 'AbortError') alert('Video bağlantısı paylaşılamadı.');
+  }
+}
+
+function downloadVideo(videoId, filename) {
+  const video = document.getElementById(videoId);
+  const url = getVideoUrl(video);
+  if (!url) return;
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  link.rel = 'noopener';
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
 }
 
 function shareTo(platform) {
