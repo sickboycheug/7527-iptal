@@ -1600,8 +1600,8 @@ async function confirmSend(status) {
     const thanksModal = document.getElementById('thanks-modal');
     const thanksText = document.getElementById('thanks-text');
     if (thanksText)
-      thanksText.textContent =
-        'Dilekçeniz için kayıt oluşturuldu. Takip kodunuz: '+pendingPetitionNumber+'. E-posta gönderimi, mail uygulamanızdan ayrıca tamamlanmalıdır.';
+  thanksText.textContent =
+    'Dilekçeniz için kayıt oluşturuldu. E-posta gönderimi, mail uygulamanızdan ayrıca tamamlanmalıdır.';
     if (thanksModal) thanksModal.style.display = 'flex';
   }
   pendingConfirm = null;
