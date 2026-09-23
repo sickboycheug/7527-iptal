@@ -370,6 +370,8 @@ const MB_COUNT_KEY='sign7527_mb_count_v12';
 const MP_SENT_COUNT_KEY='sign7527_mp_sent_count_v12';
 const VERIFICATION_TEST_PETITION='7527-CB-20260923-0000000000000005';
 const VERIFICATION_TEST_HASH='2345678901abcdef2345678901abcdef2345678901abcdef2345678901abcdef';
+const VERIFICATION_TEST_PETITION_2='7527-CB-20260923-0000000000000006';
+const VERIFICATION_TEST_HASH_2='3456789012abcdef3456789012abcdef3456789012abcdef3456789012abcdef';
 const SUPABASE_URL='https://mednnlpprdgupdajmrin.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_4xahmL7yt4C53MAJuorucg_qhImIEwn';
 const supabaseClient=window.supabase?.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
@@ -1225,10 +1227,10 @@ async function getCitizenHash(){
 async function refreshRemoteCounters(){
   if(!supabaseClient)return;
   const queries=await Promise.all([
-    supabaseClient.from('campaign_citizens').select('id',{count:'exact',head:true}).neq('citizen_hash',VERIFICATION_TEST_HASH),
-    supabaseClient.from('campaign_submissions').select('id',{count:'exact',head:true}).eq('recipient_type','cb').neq('petition_number',VERIFICATION_TEST_PETITION),
-    supabaseClient.from('campaign_submissions').select('id',{count:'exact',head:true}).eq('recipient_type','mb').neq('petition_number',VERIFICATION_TEST_PETITION),
-    supabaseClient.from('campaign_submissions').select('id',{count:'exact',head:true}).eq('recipient_type','mp').neq('petition_number',VERIFICATION_TEST_PETITION)
+    supabaseClient.from('campaign_citizens').select('id',{count:'exact',head:true}).neq('citizen_hash',VERIFICATION_TEST_HASH).neq('citizen_hash',VERIFICATION_TEST_HASH_2),
+    supabaseClient.from('campaign_submissions').select('id',{count:'exact',head:true}).eq('recipient_type','cb').neq('petition_number',VERIFICATION_TEST_PETITION).neq('petition_number',VERIFICATION_TEST_PETITION_2),
+    supabaseClient.from('campaign_submissions').select('id',{count:'exact',head:true}).eq('recipient_type','mb').neq('petition_number',VERIFICATION_TEST_PETITION).neq('petition_number',VERIFICATION_TEST_PETITION_2),
+    supabaseClient.from('campaign_submissions').select('id',{count:'exact',head:true}).eq('recipient_type','mp').neq('petition_number',VERIFICATION_TEST_PETITION).neq('petition_number',VERIFICATION_TEST_PETITION_2)
   ]);
   if(queries.some(function(result){return result.error;}))return;
   citizenCount=queries[0].count||0;cbCount=queries[1].count||0;mbCount=queries[2].count||0;mpSentCount=queries[3].count||0;updateCounters();
