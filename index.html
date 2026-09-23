@@ -26,9 +26,45 @@ body > header,body > main,body > footer,body > #thanks-modal,body > #confirm-mod
 #panel-vatandas>section{display:contents}
 #panel-vatandas>section>div{margin-bottom:0}
 }
+#launch-gate{display:block!important;position:fixed;inset:0;z-index:100;background:#09090b;overflow-y:auto}
+.launch-pending>header,.launch-pending>main,.launch-pending>footer{visibility:hidden}
+.launch-gate-inner{width:min(100% - 2rem,72rem);min-height:100%;margin:auto;padding:2rem 0;display:flex;flex-direction:column;justify-content:center;gap:1.5rem}
+.launch-videos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+.launch-videos video{display:block;width:100%;aspect-ratio:16/9;object-fit:contain;background:#000}
+@media (max-width:640px){.launch-gate-inner{width:min(100% - 1.5rem,72rem);padding:1.5rem 0}.launch-videos{grid-template-columns:1fr}}
 </style>
 </head>
-<body class="bg-zinc-950 text-zinc-100 antialiased min-h-screen flex flex-col">
+<body class="launch-pending bg-zinc-950 text-zinc-100 antialiased min-h-screen flex flex-col">
+
+<section id="launch-gate" aria-labelledby="launch-title" aria-live="polite">
+<div class="launch-gate-inner text-center">
+<div class="space-y-3">
+<p class="text-xs font-bold uppercase tracking-[0.25em] text-red-400">Yakında başlıyoruz</p>
+<h1 id="launch-title" class="font-impact text-4xl sm:text-6xl tracking-wide text-white uppercase">7527 İptal! İmzacı Ol!</h1>
+<p class="text-base sm:text-lg font-bold text-zinc-200">Öldüren değil, yaşatan ol.</p>
+</div>
+<div class="border-y border-red-900/70 bg-zinc-900/70 px-4 py-5 sm:py-6">
+<p class="text-xs font-semibold uppercase tracking-widest text-zinc-400">Yayın başlangıcına kalan süre</p>
+<p id="launch-countdown" class="mt-2 font-mono text-3xl sm:text-5xl font-bold text-red-400 tabular-nums">-- gün --:--:--</p>
+<p class="mt-2 text-sm text-zinc-300">24 Eylül 2026, 20.00</p>
+</div>
+<p class="mx-auto max-w-2xl text-sm leading-relaxed text-zinc-300">7527 sayılı Kanun'un iptali ve yaşam hakkı için çağrımız çok yakında burada başlayacak. Yayın saati geldiğinde imza kampanyası otomatik olarak açılacak.</p>
+<div class="launch-videos text-left">
+<article class="border border-zinc-700 bg-zinc-900 p-3 sm:p-4">
+<h2 class="mb-2 text-sm font-bold uppercase text-red-400">Vatandaş Rehberi</h2>
+<video muted autoplay loop playsinline preload="metadata" aria-label="Vatandaş dilekçesi gönderme anlatımı">
+<source src="campaign-video-output/kampanya-7527-iptal.mp4?v=20260923-2" type="video/mp4">
+</video>
+</article>
+<article class="border border-zinc-700 bg-zinc-900 p-3 sm:p-4">
+<h2 class="mb-2 text-sm font-bold uppercase text-emerald-400">Vekil Rehberi</h2>
+<video muted autoplay loop playsinline preload="metadata" aria-label="Milletvekili imza verme anlatımı">
+<source src="campaign-video-output/vekil-7527-iptal.mp4?v=20260923-1" type="video/mp4">
+</video>
+</article>
+</div>
+</div>
+</section>
 
 <div id="thanks-modal" class="fixed inset-0 z-50 bg-black/80 items-center justify-center p-4">
 <div class="bg-zinc-900 border-2 border-emerald-600 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
@@ -1068,6 +1104,33 @@ setTimeout(function(){if(mpCanvas){var w=mpCanvas.offsetWidth,h=mpCanvas.offsetH
 var canvas,ctx,isDrawing=false;
 var mpCanvas,mpCtx,mpIsDrawing=false;
 var selectedMPId=null;
+const CAMPAIGN_LAUNCH_AT=new Date('2026-09-24T20:00:00+03:00').getTime();
+let launchCountdownTimer=null;
+
+function startLaunchGate(){
+  const gate=document.getElementById('launch-gate');
+  const countdown=document.getElementById('launch-countdown');
+  if(!gate||!countdown)return;
+
+  function updateLaunchGate(){
+    const remaining=CAMPAIGN_LAUNCH_AT-Date.now();
+    if(remaining<=0){
+      clearInterval(launchCountdownTimer);
+      gate.remove();
+      document.body.classList.remove('launch-pending');
+      return;
+    }
+    const totalSeconds=Math.floor(remaining/1000);
+    const days=Math.floor(totalSeconds/86400);
+    const hours=Math.floor((totalSeconds%86400)/3600);
+    const minutes=Math.floor((totalSeconds%3600)/60);
+    const seconds=totalSeconds%60;
+    countdown.textContent=days+' gün '+String(hours).padStart(2,'0')+':'+String(minutes).padStart(2,'0')+':'+String(seconds).padStart(2,'0');
+  }
+
+  updateLaunchGate();
+  launchCountdownTimer=setInterval(updateLaunchGate,1000);
+}
 
 async function initPage(){
 await loadOfficialMPEmails();
@@ -1104,7 +1167,7 @@ citiesList.forEach(function(c){
 var o=document.createElement('option');o.value=c;o.textContent=c;sel.appendChild(o);
 });
 }
-if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',initPage);}else{initPage();}
+if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',function(){initPage();startLaunchGate();});}else{initPage();startLaunchGate();}
 
 window.addEventListener('resize', function () {
   if (canvas) {
