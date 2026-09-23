@@ -38,8 +38,8 @@ const path = require('path');
   await page.evaluate(() => { focusVideo('#t-mp'); setVideoCaption('10. Şimdi milletvekiline gönderim adımına geçin.'); }); await page.waitForTimeout(5000); await page.click('#t-mp'); await page.waitForTimeout(2500);
   await page.evaluate(() => { focusVideo('#vekil-radio-list'); setVideoCaption('11. Listeden gönderim yapılacak vekili seçin.'); }); await page.waitForTimeout(4500);
   await page.locator('input[name="selected_mp_radio"]').first().click(); await page.waitForTimeout(3500);
-  await page.evaluate(() => { focusVideo('#share-mp-panel-btn'); setVideoCaption('12. Seçilen vekil için imza bağlantısını paylaşın. İmzayı artık vekilin kendisi kendi panelinden atar.'); }); await page.waitForTimeout(6000);
-  await page.evaluate(() => { document.querySelectorAll('.video-focus').forEach((el) => el.classList.remove('video-focus')); setVideoCaption('Adımlar tamamlandı. PDF, e-posta ve teyit sırası korunur.'); }); await page.waitForTimeout(4500);
+  await page.evaluate(() => { focusVideo('#send-btn'); setVideoCaption('12. Seçtiğiniz vekile de aynı gönderim adımlarını (PDF kaydet, e-postaya ekle, gönder, teyit ver) uygulayarak dilekçenizi iletin.'); }); await page.waitForTimeout(6000);
+  await page.evaluate(() => { document.querySelectorAll('.video-focus').forEach((el) => el.classList.remove('video-focus')); setVideoCaption('Adımlar tamamlandı. Her hedef için PDF, e-posta ve teyit sırası korunur.'); }); await page.waitForTimeout(4500);
 
   await context.close(); const rawVideoPath = await page.video().path(); await browser.close(); execFileSync('ffmpeg', ['-y', '-i', rawVideoPath, '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', path.join(__dirname, 'campaign-video-output', 'kampanya-7527-iptal.mp4')], { stdio: 'ignore' }); console.log('kampanya-7527-iptal');
 })();

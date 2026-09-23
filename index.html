@@ -75,7 +75,7 @@ body > header,body > main,body > footer,body > #thanks-modal,body > #confirm-mod
 <p class="text-[10px] font-bold text-red-400 uppercase tracking-widest">VATANDAŞ İŞLEM REHBERİ</p>
 <h2 class="text-xl font-impact text-white uppercase mb-3">Vatandaş dilekçesi nasıl gönderilir?</h2>
 <video class="w-full rounded-lg border border-zinc-700 bg-black" controls preload="metadata" playsinline aria-label="Vatandaş dilekçesi gönderme anlatımı">
-<source src="campaign-video-output/kampanya-7527-iptal.mp4?v=20260923-1" type="video/mp4">
+<source src="campaign-video-output/kampanya-7527-iptal.mp4?v=20260923-2" type="video/mp4">
 Tarayıcınız video oynatmayı desteklemiyor.
 </video>
 </div>
@@ -132,7 +132,6 @@ Tarayıcınız video oynatmayı desteklemiyor.
 </select>
 </div>
 <div id="vekil-radio-list" class="max-h-72 overflow-y-auto space-y-1 border border-zinc-800 rounded p-2"></div>
-<button id="share-mp-panel-btn" type="button" onclick="shareVekilPanelLink()" class="hidden w-full bg-emerald-700 hover:bg-emerald-600 border border-emerald-500 text-white rounded-lg py-2.5 text-xs font-bold uppercase">🔗 Seçilen vekil için imza bağlantısını paylaş</button>
 </div>
 
 <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 space-y-3 shadow-2xl">
@@ -224,8 +223,9 @@ Tarayıcınız video oynatmayı desteklemiyor.
 <div id="almanac-container" class="space-y-3 max-h-96 overflow-y-auto pr-1"></div>
 <div id="admin-panel" class="hidden border-t border-amber-800/50 pt-4 space-y-3">
 <p class="text-xs font-bold text-amber-300">Yeni Vaka Kayıt Formu</p>
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-2"><input id="admin-event-title" placeholder="Vaka başlığı" class="bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs"><input id="admin-event-city" placeholder="Şehir" class="bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs"></div>
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-2"><input id="admin-event-location" placeholder="Konum" class="bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs"><select id="admin-event-category" class="bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs"><option>Toplama/Katliam</option><option>Barınak İhmali</option><option>Bireysel Şiddet</option><option>Hukuki İhlal</option></select></div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-2"><input id="admin-event-title" placeholder="Vaka başlığı" class="bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs"><input id="admin-event-date" type="date" title="Vaka tarihi" class="bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs"></div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-2"><select id="admin-event-city" class="bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs"><option value="">Şehir seçin</option></select><input id="admin-event-location" placeholder="Konum" class="bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs"></div>
+<select id="admin-event-category" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs"></select>
 <input id="admin-event-source" type="url" placeholder="Kaynak linki (https://...)" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs">
 <textarea id="admin-event-desc" placeholder="Açıklama" rows="2" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2 py-1.5 text-xs"></textarea><button type="button" onclick="saveAdminEvent()" class="bg-amber-700 hover:bg-amber-600 text-white font-bold py-2 rounded text-xs">VAKAYI KAYDET</button>
 </div>
@@ -975,8 +975,9 @@ async function loadOfficialMPEmails() {
 // 2025 yılı Ocak-Haziran arası raporlardan derlenen gerçek vakalar.
 // Yeni vaka eklemek için aynı formatta yeni bir { ... } satırı ekleyin.
 // Kategoriler: Yaşam Hakkı, İşkence, Zehirlenme, Araç Çarpma, Ateşli Silah,
-//              Yasa Dışı Avcılık, Dövüştürme, Cinsel Şiddet, Kamu İhlali,
-//              Kapatılma, Bilinmeyen
+//              Yasa Dışı Avcılık, Yasaya Aykırı Ticaret, Dövüştürme,
+//              Cinsel Şiddet, Kamu İhlali, Kapatılma, Bilinmeyen
+const ALMANAC_CATEGORIES=['Yaşam Hakkı','İşkence','Zehirlenme','Araç Çarpma','Ateşli Silah','Yasa Dışı Avcılık','Yasaya Aykırı Ticaret','Dövüştürme','Cinsel Şiddet','Kamu İhlali','Kapatılma','Bilinmeyen'];
 const almanacEvents=[
 {id:1,date:"2025-02-04",city:"Erzincan",location:"Erzincan Belediyesi",category:"Kamu İhlali",title:"Belediye köpekleri canlı canlı gömdü",desc:"Erzincan Belediyesi hayvan toplama aracından çıkarılan 8 köpeğin belediyeye ait çöp arıtma tesisinde açılan çukura canlı halde gömüldüğü görüntülendi.",source:"https://medyascope.tv/2025/02/04/erzincanda-hayvan-katliami-iddiasi-kopekler-canli-canli-gomuldu/"},
 {id:2,date:"2025-02-20",city:"Osmaniye",location:"Osmaniye Hayvan Barınağı",category:"Kamu İhlali",title:"Barınakta onlarca köpek canlı gömüldü",desc:"Osmaniye'de hayvan barınağında onlarca köpeğin canlı halde gömüldüğü, yavruların memeden ayrılmadığı ve anne köpeklerin süt dolu olduğu görüntülendi.",source:"https://haber.mynet.com/goruntuler-herkesin-kanini-dondurdu-osmaniye-de-onlarca-kopek-katledildi"},
@@ -1087,7 +1088,6 @@ initCampaignQR();
 populateFilterCityMode();
 populateVolCity();
 filterVekilRadio();
-  openVekilPanelLink();
 refreshRemoteCounters();
 }
 function populateFilterCityMode(){
@@ -1388,46 +1388,7 @@ function filterVekilRadio() {
 
 function onVekilRadioSelect(mpId) {
   selectedVekil = mpDatabase.find((m) => m.id === mpId) || null;
-  const shareButton = document.getElementById('share-mp-panel-btn');
-  if (shareButton) shareButton.classList.toggle('hidden', !selectedVekil);
   updatePreview();
-}
-
-function getVekilPanelUrl(mpId) {
-  const url = new URL(window.location.href);
-  url.search = '';
-  url.hash = '';
-  url.searchParams.set('panel', 'vekil');
-  url.searchParams.set('mp', String(mpId));
-  return url.toString();
-}
-
-async function shareVekilPanelLink() {
-  if (!selectedVekil) return;
-  const url = getVekilPanelUrl(selectedVekil.id);
-  const shareData = {
-    title: `${selectedVekil.name} için imza bağlantısı`,
-    text: `${selectedVekil.name} için vekil panelinden imza verin.`,
-    url,
-  };
-  if (navigator.share) {
-    await navigator.share(shareData).catch(function () {});
-    return;
-  }
-  await navigator.clipboard?.writeText(url);
-  alert('Vekil paneli bağlantısı panoya kopyalandı.');
-}
-
-function openVekilPanelLink() {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('panel') !== 'vekil') return;
-  switchTab('vekil');
-  const mpId = Number(params.get('mp'));
-  if (!Number.isInteger(mpId)) return;
-  const select = document.getElementById('mp-select');
-  if (!select || !mpDatabase.some(function (m) { return m.id === mpId; })) return;
-  select.value = String(mpId);
-  showSelectedMP(select);
 }
 
 function updatePreview() {
@@ -1623,21 +1584,36 @@ function loadStoredAlmanac(){
 function openAdminPanel(){
   const password=prompt('Yönetici şifresi');
   if(password!=='ARA_ADMIN_2026'){if(password!==null)alert('Hatalı şifre.');return;}
+  populateAdminEventForm();
   document.getElementById('admin-panel')?.classList.remove('hidden');
+}
+function populateAdminEventForm(){
+  const citySel=document.getElementById('admin-event-city');
+  if(citySel&&citySel.options.length<=1){
+    citiesList.forEach(function(c){const o=document.createElement('option');o.value=c;o.textContent=c;citySel.appendChild(o);});
+  }
+  const catSel=document.getElementById('admin-event-category');
+  if(catSel&&catSel.options.length===0){
+    ALMANAC_CATEGORIES.forEach(function(c){const o=document.createElement('option');o.value=c;o.textContent=c;catSel.appendChild(o);});
+  }
+  const dateInput=document.getElementById('admin-event-date');
+  if(dateInput)dateInput.max=new Date().toISOString().slice(0,10);
 }
 function saveAdminEvent(){
   const title=document.getElementById('admin-event-title').value.trim();
+  const date=document.getElementById('admin-event-date').value;
   const city=document.getElementById('admin-event-city').value.trim();
   const location=document.getElementById('admin-event-location').value.trim();
   const category=document.getElementById('admin-event-category').value;
   const source=document.getElementById('admin-event-source').value.trim();
   const desc=document.getElementById('admin-event-desc').value.trim();
-  if(!title||!city||!location||!desc||!/^https?:\/\//i.test(source)){alert('Başlık, şehir, konum, açıklama ve geçerli kaynak linki zorunludur.');return;}
-  const event={id:Date.now(),date:new Date().toISOString().slice(0,10),city,location,title,category,desc,source};
+  if(!title||!date||!city||!location||!desc||!/^https?:\/\//i.test(source)){alert('Başlık, tarih, şehir, konum, açıklama ve geçerli kaynak linki zorunludur.');return;}
+  if(date>new Date().toISOString().slice(0,10)){alert('Vaka tarihi gelecekte olamaz.');return;}
+  const event={id:Date.now(),date,city,location,title,category,desc,source};
   almanacEvents.unshift(event);
   const stored=JSON.parse(localStorage.getItem(ALMANAC_STORAGE_KEY)||'[]');
   stored.unshift(event);localStorage.setItem(ALMANAC_STORAGE_KEY,JSON.stringify(stored));
-  ['admin-event-title','admin-event-city','admin-event-location','admin-event-source','admin-event-desc'].forEach(function(id){document.getElementById(id).value='';});
+  ['admin-event-title','admin-event-date','admin-event-city','admin-event-location','admin-event-source','admin-event-desc'].forEach(function(id){document.getElementById(id).value='';});
   renderAlmanac();alert('Vaka almanaka eklendi.');
 }
 
@@ -1859,8 +1835,6 @@ function showSelectedMP(elem) {
     mpVerification = null;
     setMPVerificationState(false, 'Doğrulama bekleniyor.');
     document.getElementById('mp-otp-row')?.classList.add('hidden');
-    const shareButton = document.getElementById('share-mp-panel-btn');
-    if (shareButton) shareButton.classList.remove('hidden');
     if (info)
       info.textContent = `Seçilen Vekil: ${mp.name} (${mp.party} - ${mp.city})`;
     if (petMP) petMP.textContent = `${mp.name} (${mp.party} - ${mp.city})`;
