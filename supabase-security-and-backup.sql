@@ -90,5 +90,20 @@ $$;
 revoke all on function public.record_campaign_submission(text, text, integer, text) from public;
 grant execute on function public.record_campaign_submission(text, text, integer, text) to anon, authenticated;
 
+create or replace function public.lookup_campaign_submission(p_petition_number text)
+returns table (recipient_type text, created_at timestamptz)
+language sql
+security definer
+set search_path = public
+as $$
+  select s.recipient_type, s.created_at
+  from public.campaign_submissions s
+  where s.petition_number = p_petition_number
+    and p_petition_number ~ '^7527-(CB|MB|MP)-[0-9]{8}-[0-9A-F]{16}$';
+$$;
+
+revoke all on function public.lookup_campaign_submission(text) from public;
+grant execute on function public.lookup_campaign_submission(text) to anon, authenticated;
+
 -- Günlük yedek için: Supabase Dashboard > Database > Backups bölümünde
 -- günlük backup/PITR politikasını etkinleştirin ve geri yükleme tatbikatı yapın.
