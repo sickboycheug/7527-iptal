@@ -108,12 +108,12 @@
 </head>
 <body class="launch-pending bg-zinc-950 text-zinc-100 antialiased min-h-screen flex flex-col">
 
-<!-- 1. GERİ SAYIM KAPISI (22:00'DE OTOMATİK KALKAR / PIN İLE AÇILIR) -->
+<!-- 1. GERİ SAYIM KAPISI (hedef saatte otomatik kalkar / PIN ile açılır) -->
 <section id="launch-gate" aria-labelledby="launch-title" aria-live="polite">
   <div class="max-w-4xl mx-auto px-4 py-10 text-center flex flex-col items-center justify-center space-y-6">
     <div class="inline-flex items-center gap-2 px-3.5 py-1.5 bg-red-950/90 border border-red-800 text-red-400 rounded-full text-xs font-bold tracking-widest uppercase animate-pulse">
       <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
-      🔒 22:00'YE KADAR SİSTEM KİLİTLİ
+      🔒 <span data-launch="time-upper">--:--</span>'YE KADAR SİSTEM KİLİTLİ
     </div>
     
     <div class="space-y-4">
@@ -132,7 +132,7 @@
       <p id="launch-countdown" class="font-mono text-4xl sm:text-5xl font-extrabold text-red-500 tabular-nums">
         -- gün --:--:--
       </p>
-      <p class="text-xs text-zinc-400 font-medium">Hedef: 24 Eylül, Saat 22:00</p>
+      <p class="text-xs text-zinc-400 font-medium">Hedef: <span data-launch="full">-</span></p>
     </div>
 
     <!-- Giriş ve Gönüllü Butonları (Vatandaş, Vekil ve Gönüllü) -->
@@ -152,11 +152,11 @@
     <div class="flex items-center gap-2 text-xs text-emerald-400 bg-emerald-950/80 border border-emerald-800/80 px-4 py-2 rounded-xl shadow">
       <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
       <strong id="gate-volunteer-badge">1.482 Gönüllü</strong>
-      <span class="text-zinc-300">Yaşam Hakkı İçin 22:00 Nöbetinde</span>
+      <span class="text-zinc-300">Yaşam Hakkı İçin <span data-launch="time">--:--</span> Nöbetinde</span>
     </div>
 
     <p class="max-w-xl text-sm leading-relaxed text-zinc-300">
-      7527 sayılı Kanun'un iptali ve yaşam hakkı için çağrımız bu akşam saat 22:00'de burada başlayacak. Saat 22:00'ye kadar paneller kamuoyuna kapalıdır.
+      7527 sayılı Kanun'un iptali ve yaşam hakkı için çağrımız <strong data-launch="full">-</strong> itibarıyla burada başlayacak. O saate kadar paneller kamuoyuna kapalıdır.
     </p>
 
    <!-- Yetkili Ekip & Vekil Ön-Doğrulama PIN Girişi -->
@@ -165,7 +165,7 @@
     <span>🔒</span> Yetkili Ekip & Vekil Ön-Test Girişi
   </div>
   <p id="gate-pin-desc" class="text-[11px] text-zinc-400 text-center leading-relaxed">
-    Saat 22:00'ye kadar yalnızca yetkili ekip ve veiller PIN kodu ile giriş yapabilir. Lütfen PIN kodunuzu giriniz:
+    Açılışa kadar yalnızca yetkili ekip ve vekiller PIN kodu ile giriş yapabilir. Lütfen PIN kodunuzu giriniz:
   </p>
   <div class="flex gap-2">
     <input type="password" id="gate-pin-input" placeholder="PIN Giriniz..." inputmode="numeric" autocomplete="off" class="flex-1 bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-2 text-zinc-100 font-mono text-center text-sm focus:border-red-500 focus:outline-none" onkeydown="if(event.key==='Enter') submitGatePin();">
@@ -174,7 +174,7 @@
     </button>
   </div>
   <div id="gate-pin-error" class="hidden text-[11px] text-red-400 font-semibold bg-red-950/60 border border-red-800 rounded-lg p-2 text-center">
-    Hatalı PIN! Canlı yayın saat 22:00'de otomatik olarak başlayacaktır.
+    Hatalı PIN! Canlı yayın geri sayım bitiminde otomatik olarak başlayacaktır.
   </div>
   <p class="text-[10px] text-zinc-500 text-center">
     ⚠️ PIN kodu girmeden butonlara basıldığında içeri girilemez.
@@ -193,7 +193,7 @@
               </h2>
             </div>
             <p class="text-xs text-zinc-400 mt-1">
-              Saat 22:00'de sistem açıldığında her adımın eksiksiz tamamlanabilmesi için hem vatandaşlar hem de milletvekilleri için adım adım kullanım kılavuzu
+              Sistem açıldığında her adımın eksiksiz tamamlanabilmesi için hem vatandaşlar hem de milletvekilleri için adım adım kullanım kılavuzu
             </p>
           </div>
           <!-- Video Sekme Butonları -->
@@ -352,7 +352,7 @@
 <div id="team-unlocked-banner" style="display: none;" class="bg-amber-600 text-zinc-950 px-4 py-2.5 text-xs font-bold items-center justify-between shadow-lg sticky top-0 z-50">
   <div class="flex items-center gap-2">
     <span>🔓</span>
-    <span>YETKİLİ TEST MODU AKTİF (Saat 22:00 Öncesi Doğrulama Modundasınız)</span>
+    <span>YETKİLİ TEST MODU AKTİF (Açılış Öncesi Doğrulama Modundasınız)</span>
   </div>
   <button onclick="lockGateNow()" class="bg-zinc-950 text-amber-300 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 border border-amber-800 cursor-pointer shadow">
     <span>🔒</span> Oturumu Kapat & Sistemi Tekrar Kilitle
@@ -3144,6 +3144,35 @@ function downloadQRCode() {
 // Üretim hedefi: '2026-09-24T22:00:00+03:00'
 var LAUNCH_TARGET_ISO = '2026-09-25T15:00:00+03:00'; // Canlı yayın: 25 Eylül 15:00
 var TARGET_DATE = new Date(LAUNCH_TARGET_ISO).getTime();
+
+// Sayfadaki tum acilis saati metinleri BURADAN uretilir.
+// Boylece LAUNCH_TARGET_ISO degisince metinler de kendiliginden guncellenir;
+// eskiden saatler HTML'e elle yazildigi icin sayacla metin birbirini tutmuyordu.
+function launchTimeText() {
+  return new Date(TARGET_DATE).toLocaleTimeString('tr-TR', {
+    hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Istanbul'
+  });
+}
+
+function launchFullText() {
+  var t = new Date(TARGET_DATE);
+  var tarih = t.toLocaleDateString('tr-TR', {
+    day: 'numeric', month: 'long', timeZone: 'Europe/Istanbul'
+  });
+  return tarih + ', saat ' + launchTimeText();
+}
+
+function applyLaunchTexts() {
+  var saat = launchTimeText();
+  var tam = launchFullText();
+  var nodes = document.querySelectorAll('[data-launch]');
+  for (var i = 0; i < nodes.length; i++) {
+    var kind = nodes[i].getAttribute('data-launch');
+    if (kind === 'time') nodes[i].textContent = saat;
+    else if (kind === 'time-upper') nodes[i].textContent = saat;
+    else if (kind === 'full') nodes[i].textContent = tam;
+  }
+}
 var countdownInterval = null;
 
 function updateCountdown() {
@@ -3186,7 +3215,7 @@ function handleGatePanelClick(panel) {
   var desc = document.getElementById('gate-pin-desc');
   var card = document.getElementById('gate-pin-card');
   if (desc) {
-    desc.innerHTML = '<span class="text-amber-400 font-bold">🔒 ' + (panel === 'vekil' ? 'Meclis Vekil Paneli' : 'Vatandaş Paneli') + '</span> saat 20:00 itibarıyla halka açılacaktır. 20:00 saatine kadar yalnızca yetkili ekip ve vekiller PIN ile erişebilir:';
+    desc.innerHTML = '<span class="text-amber-400 font-bold">🔒 ' + (panel === 'vekil' ? 'Meclis Vekil Paneli' : 'Vatandaş Paneli') + '</span> ' + launchFullText() + ' itibarıyla halka açılacaktır. O saate kadar yalnızca yetkili ekip ve vekiller PIN ile erişebilir:';
   }
   if (card) {
     card.classList.add('ring-2', 'ring-amber-500');
@@ -3264,6 +3293,7 @@ function lockGateNow() {
 
 function setTestCountdown(sec) {
   TARGET_DATE = new Date().getTime() + (sec * 1000);
+  applyLaunchTexts();
   if (countdownInterval) clearInterval(countdownInterval);
   countdownInterval = setInterval(updateCountdown, 1000);
   updateCountdown();
@@ -3674,6 +3704,7 @@ function switchVideoTab(tab) {
       });
 
       window.addEventListener('DOMContentLoaded', function() {
+        applyLaunchTexts();
         updateCountersUI();
         refreshCounters();
         initMpDatabase();
