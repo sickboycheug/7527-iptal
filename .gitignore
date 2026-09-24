@@ -1,0 +1,9 @@
+# Acik PIN / ozel anahtar iceren dosyalar - ASLA commit edilmez
+*-GIZLI.*
+*ozel-anahtar*
+passphrase.txt
+
+# Yerel/gecici
+.DS_Store
+Thumbs.db
+node_modules/
