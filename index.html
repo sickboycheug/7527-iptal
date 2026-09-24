@@ -126,27 +126,27 @@
       7527 sayılı Kanun'un iptali ve yaşam hakkı için çağrımız bu akşam saat 22:00'de burada başlayacak. Saat 22:00'ye kadar paneller kamuoyuna kapalıdır.
     </p>
 
-    <!-- Yetkili Ekip & Vekil Ön-Doğrulama PIN Girişi (PIN: ) -->
-    <div id="gate-pin-card" class="border border-zinc-800 bg-zinc-900/90 p-5 rounded-2xl max-w-sm w-full mx-auto space-y-3 shadow-xl">
-      <div class="flex items-center justify-center gap-1.5 text-xs text-amber-400 font-bold uppercase tracking-wider">
-        <span>🔒</span> Yetkili Ekip & Vekil Ön-Test Girişi
-      </div>
-      <p id="gate-pin-desc" class="text-[11px] text-zinc-400 text-center leading-relaxed">
-        Saat 22:00'ye kadar yalnızca yetkili ekip ve vekiller PIN kodu ile giriş yapabilir. Lütfen PIN kodunuzu giriniz:
-      </p>
-      <div class="flex gap-2">
-        <input type="password" id="gate-pin-input" placeholder="Yetkili PIN (7527)" class="flex-1 bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-2 text-zinc-100 font-mono text-center text-sm focus:border-red-500 focus:outline-none" onkeydown="if(event.key==='Enter') submitGatePin();">
-        <button type="button" onclick="submitGatePin()" class="bg-red-600 hover:bg-red-500 text-white font-bold px-4 py-2 rounded-xl text-xs uppercase tracking-wider transition cursor-pointer shadow">
-          Giriş
-        </button>
-      </div>
-      <div id="gate-pin-error" class="hidden text-[11px] text-red-400 font-semibold bg-red-950/60 border border-red-800 rounded-lg p-2 text-center">
-        Hatalı PIN! Canlı yayın saat 22:00'de otomatik olarak başlayacaktır.
-      </div>
-      <p class="text-[10px] text-zinc-500 text-center">
-        ⚠️ PIN kodu girmeden butonlara basıldığında içeri girilemez.
-      </p>
-    </div>
+   <!-- Yetkili Ekip & Vekil Ön-Doğrulama PIN Girişi -->
+<div id="gate-pin-card" class="border border-zinc-800 bg-zinc-900/90 p-5 rounded-2xl max-w-sm w-full mx-auto space-y-3 shadow-xl">
+  <div class="flex items-center justify-center gap-1.5 text-xs text-amber-400 font-bold uppercase tracking-wider">
+    <span>🔒</span> Yetkili Ekip & Vekil Ön-Test Girişi
+  </div>
+  <p id="gate-pin-desc" class="text-[11px] text-zinc-400 text-center leading-relaxed">
+    Saat 22:00'ye kadar yalnızca yetkili ekip ve veiller PIN kodu ile giriş yapabilir. Lütfen PIN kodunuzu giriniz:
+  </p>
+  <div class="flex gap-2">
+    <input type="password" id="gate-pin-input" placeholder="Yetkili PIN" class="flex-1 bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-2 text-zinc-100 font-mono text-center text-sm focus:border-red-500 focus:outline-none" onkeydown="if(event.key==='Enter') submitGatePin();">
+    <button type="button" onclick="submitGatePin()" class="bg-red-600 hover:bg-red-500 text-white font-bold px-4 py-2 rounded-xl text-xs uppercase tracking-wider transition cursor-pointer shadow">
+      Giriş
+    </button>
+  </div>
+  <div id="gate-pin-error" class="hidden text-[11px] text-red-400 font-semibold bg-red-950/60 border border-red-800 rounded-lg p-2 text-center">
+    Hatalı PIN! Canlı yayın saat 22:00'de otomatik olarak başlayacaktır.
+  </div>
+  <p class="text-[10px] text-zinc-500 text-center">
+    ⚠️ PIN kodu girmeden butonlara basıldığında içeri girilemez.
+  </p>
+</div>
 
     <!-- DİLEKÇE GÖNDERME REHBER VİDEOLARI VE ADIM ADIM ANLATIM BÖLÜMÜ -->
     <div class="w-full max-w-4xl mt-4 space-y-5 text-left">
