@@ -46,25 +46,31 @@
   
   /* Geri Sayım Kapısı */
   #launch-gate {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: fixed;
     inset: 0;
-    z-index: 9999;
-    background: rgba(9, 9, 11, 0.98);
-    backdrop-filter: blur(8px);
+    z-index: 99999;
+    background: #09090b;
     overflow-y: auto;
-    border-bottom: 2px solid #7f1d1d;
     transition: opacity 0.4s ease, visibility 0.4s ease;
   }
   #launch-gate.gate-hidden {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
+    display: none !important;
   }
-  .launch-pending > header, .launch-pending > main, .launch-pending > footer {
-    opacity: 0.25;
-    pointer-events: none;
-    user-select: none;
+  body.launch-pending {
+    overflow: hidden !important;
+    height: 100vh !important;
+  }
+  body.launch-pending > header, 
+  body.launch-pending > #panel-vatandas, 
+  body.launch-pending > #panel-vekil, 
+  body.launch-pending > footer {
+    display: none !important;
   }
 </style>
 </head>
@@ -99,13 +105,10 @@
       7527 sayılı Kanun'un iptali ve yaşam hakkı için çağrımız bu akşam saat 20:00'de burada başlayacak. Yayın saati geldiğinde imza sistemi otomatik olarak açılacaktır.
     </p>
 
-    <!-- Hızlı Test Butonları (Yöneticiler ve test için) -->
-    <div class="pt-4 flex flex-wrap items-center justify-center gap-2 text-xs">
-      <button onclick="unlockGateNow()" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg font-bold transition shadow">
-        🔓 Kapıyı Hemen Aç (Test)
-      </button>
-      <button onclick="setTestCountdown(5)" class="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg font-semibold transition border border-zinc-700">
-        ⏱️ Son 5 Saniyeye Al
+    <!-- Yetkili Ekip Ön-İnceleme Girişi (PIN: 7527) -->
+    <div class="pt-6">
+      <button type="button" onclick="promptTeamPin()" class="text-zinc-600 hover:text-zinc-400 text-xs font-medium flex items-center gap-1.5 mx-auto transition cursor-pointer">
+        <span>🔒</span> Yetkili Ekip Girişi
       </button>
     </div>
   </div>
@@ -2125,15 +2128,26 @@ function unlockGateNow() {
   var gate = document.getElementById('launch-gate');
   if (gate) {
     gate.classList.add('gate-hidden');
-    setTimeout(function() { gate.style.display = 'none'; }, 400);
+    gate.style.display = 'none';
   }
   document.body.classList.remove('launch-pending');
 }
 
+function promptTeamPin() {
+  var pin = prompt("Yetkili Ekip PIN Kodunu Giriniz:");
+  if (pin === "7527") {
+    sessionStorage.setItem("7527_team_unlocked", "1");
+    unlockGateNow();
+  } else if (pin !== null && pin !== "") {
+    alert("Hatalı PIN! Canlı yayın saat 20:00'de otomatik olarak başlayacaktır.");
+  }
+}
+
 function lockGateNow() {
+  sessionStorage.removeItem("7527_team_unlocked");
   var gate = document.getElementById('launch-gate');
   if (gate) {
-    gate.style.display = 'block';
+    gate.style.display = 'flex';
     gate.classList.remove('gate-hidden');
   }
   document.body.classList.add('launch-pending');
@@ -2308,6 +2322,11 @@ window.addEventListener('DOMContentLoaded', function() {
   // Geri sayımı başlat
   countdownInterval = setInterval(updateCountdown, 1000);
   updateCountdown();
+
+  // Yetkili ekip kontrolü (?pin=7527 veya oturum kaydı)
+  if (window.location.search.indexOf('pin=7527') !== -1 || sessionStorage.getItem('7527_team_unlocked') === '1') {
+    unlockGateNow();
+  }
 });
 </script>
 </body>
