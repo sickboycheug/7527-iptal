@@ -2814,64 +2814,149 @@ function switchVideoTab(tab) {
   }
 }
 
-// --- SAYFA BAŞLATICI ---
-window.addEventListener('DOMContentLoaded', function() {
-  loadCountersFromStorage();
-  updateCountersUI();
-  updateVolunteerBadge();
-  initMpDatabase();
-  renderAlmanac();
-  initCampaignQR();
-  renderSignedMpsList();
-  selectTarget('cb');
+// --- GERİ SAYIM VE KİLİT FONKSİYONLARI ---
+      const targetDate = new Date();
+      targetDate.setHours(22, 0, 0, 0);
 
-  // Video fallback dinleyicileri
-  var cVid = document.getElementById('gate-citizen-video');
-  if (cVid) {
-    cVid.addEventListener('error', function() {
-      var fb = document.getElementById('citizen-video-fallback');
-      if (fb) fb.classList.remove('hidden');
-    }, true);
-  }
-  var mpVid = document.getElementById('gate-mp-video');
-  if (mpVid) {
-    mpVid.addEventListener('error', function() {
-      var fb = document.getElementById('mp-video-fallback');
-      if (fb) fb.classList.remove('hidden');
-    }, true);
-  }
+      function updateCountdown() {
+        const now = new Date();
+        const diff = targetDate - now;
+        const countdownElem = document.getElementById('launch-countdown');
 
-  // Tuval başlatıcıları
-  citizenSignaturePad = setupCanvas('citizen-canvas', function(data) {
-    currentSigDataUrl = data;
-    var sigContainer = document.getElementById('doc-sig-container');
-    var printSig = document.getElementById('print-sig-img');
+        if (diff <= 0) {
+          unlockGateNow();
+          if (countdownElem) countdownElem.textContent = "00:00:00";
+          return;
+        }
 
-    if (data) {
-      sigContainer.innerHTML = '<img src="' + data + '" class="max-h-12 border border-zinc-200">';
-      if (printSig) {
-        printSig.src = data;
-        printSig.style.display = 'block';
+        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((diff / 1000 / 60) % 60);
+        const seconds = Math.floor((diff / 1000) % 60);
+
+        if (countdownElem) {
+          countdownElem.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
       }
-    } else {
-      sigContainer.innerHTML = '<span class="text-zinc-400 italic text-[10px]">[İmza Bekleniyor]</span>';
-      if (printSig) printSig.style.display = 'none';
-    }
-  });
 
-  mpSignaturePad = setupCanvas('mp-canvas', function(data) {
-    currentMpSigDataUrl = data;
-  });
+      function submitGatePin() {
+        const pinInput = document.getElementById('gate-pin-input');
+        const pinError = document.getElementById('gate-pin-error');
+        
+        if (pinInput && pinInput.value.trim() === "7527") {
+          sessionStorage.setItem('7527_team_unlocked', '1');
+          unlockGateNow(true);
+        } else {
+          if (pinError) pinError.classList.remove('hidden');
+        }
+      }
 
-  // Geri sayımı başlat
-  countdownInterval = setInterval(updateCountdown, 1000);
-  updateCountdown();
+      function unlockGateNow(isTestMode = false) {
+        const gateElem = document.getElementById('launch-gate');
+        const unlockedBanner = document.getElementById('team-unlocked-banner');
+        
+        if (gateElem) gateElem.classList.add('gate-hidden');
+        document.body.classList.remove('launch-pending');
 
-  // Yetkili ekip kontrolü (?pin=7527 veya oturum kaydı)
-  if (window.location.search.indexOf('pin=7527') !== -1 || sessionStorage.getItem('7527_team_unlocked') === '1') {
-    unlockGateNow();
-  }
-});
-</script>
-</body>
+        if (isTestMode && unlockedBanner) {
+          unlockedBanner.style.display = 'flex';
+        }
+      }
+
+      function lockGateNow() {
+        const gateElem = document.getElementById('launch-gate');
+        const unlockedBanner = document.getElementById('team-unlocked-banner');
+        const pinInput = document.getElementById('gate-pin-input');
+        const pinError = document.getElementById('gate-pin-error');
+
+        sessionStorage.removeItem('7527_team_unlocked');
+        if (gateElem) gateElem.classList.remove('gate-hidden');
+        document.body.classList.add('launch-pending');
+        if (unlockedBanner) unlockedBanner.style.display = 'none';
+        if (pinInput) pinInput.value = '';
+        if (pinError) pinError.classList.add('hidden');
+      }
+
+      function switchVideoTab(tab) {
+        const vatandasContent = document.getElementById('video-content-vatandas');
+        const vekilContent = document.getElementById('video-content-vekil');
+        const btnVatandas = document.getElementById('tab-video-vatandas');
+        const btnVekil = document.getElementById('tab-video-vekil');
+
+        if (tab === 'vatandas') {
+          if (vatandasContent) vatandasContent.classList.remove('hidden');
+          if (vekilContent) vekilContent.classList.add('hidden');
+          if (btnVatandas) btnVatandas.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition bg-red-600 text-white cursor-pointer shadow";
+          if (btnVekil) btnVekil.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition bg-transparent text-zinc-400 hover:text-white cursor-pointer";
+        } else {
+          if (vatandasContent) vatandasContent.classList.add('hidden');
+          if (vekilContent) vekilContent.classList.remove('hidden');
+          if (btnVatandas) btnVatandas.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition bg-transparent text-zinc-400 hover:text-white cursor-pointer";
+          if (btnVekil) btnVekil.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition bg-emerald-600 text-white cursor-pointer shadow";
+        }
+      }
+
+      function handleGatePanelClick(panelType) {
+        alert("Saat 22:00'ye kadar paneller kilitlidir. Yalnızca yetkili PIN ile giriş yapabilirsiniz.");
+      }
+
+      // --- SAYFA BAŞLATICI ---
+      window.addEventListener('DOMContentLoaded', function() {
+        loadCountersFromStorage();
+        updateCountersUI();
+        updateVolunteerBadge();
+        initMpDatabase();
+        renderAlmanac();
+        initCampaignQR();
+        renderSignedMpsList();
+        selectTarget('cb');
+
+        // Video fallback dinleyicileri
+        var cVid = document.getElementById('gate-citizen-video');
+        if (cVid) {
+          cVid.addEventListener('error', function() {
+            var fb = document.getElementById('citizen-video-fallback');
+            if (fb) fb.classList.remove('hidden');
+          }, true);
+        }
+        var mpVid = document.getElementById('gate-mp-video');
+        if (mpVid) {
+          mpVid.addEventListener('error', function() {
+            var fb = document.getElementById('mp-video-fallback');
+            if (fb) fb.classList.remove('hidden');
+          }, true);
+        }
+
+        // Tuval başlatıcıları
+        citizenSignaturePad = setupCanvas('citizen-canvas', function(data) {
+          currentSigDataUrl = data;
+          var sigContainer = document.getElementById('doc-sig-container');
+          var printSig = document.getElementById('print-sig-img');
+
+          if (data) {
+            sigContainer.innerHTML = '<img src="' + data + '" class="max-h-12 border border-zinc-200">';
+            if (printSig) {
+              printSig.src = data;
+              printSig.style.display = 'block';
+            }
+          } else {
+            sigContainer.innerHTML = '<span class="text-zinc-400 italic text-[10px]">[İmza Bekleniyor]</span>';
+            if (printSig) printSig.style.display = 'none';
+          }
+        });
+
+        mpSignaturePad = setupCanvas('mp-canvas', function(data) {
+          currentMpSigDataUrl = data;
+        });
+
+        // Geri sayımı başlat
+        countdownInterval = setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // Yetkili ekip kontrolü (?pin=7527 veya oturum kaydı)
+        if (window.location.search.indexOf('pin=7527') !== -1 || sessionStorage.getItem('7527_team_unlocked') === '1') {
+          unlockGateNow(true);
+        }
+      });
+    </script>
+  </body>
 </html>
