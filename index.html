@@ -63,10 +63,11 @@
     display: none !important;
   }
   body.launch-pending {
-    overflow: hidden !important;
-    height: 100vh !important;
+    overflow-y: auto !important;
+    min-height: 100vh !important;
   }
   body.launch-pending > header, 
+  body.launch-pending > #team-unlocked-banner,
   body.launch-pending > #panel-vatandas, 
   body.launch-pending > #panel-vekil, 
   body.launch-pending > footer {
@@ -76,12 +77,12 @@
 </head>
 <body class="launch-pending bg-zinc-950 text-zinc-100 antialiased min-h-screen flex flex-col">
 
-<!-- 1. GERİ SAYIM KAPISI (20:00'DE OTOMATİK KALKAR) -->
+<!-- 1. GERİ SAYIM KAPISI (20:00'DE OTOMATİK KALKAR / PIN İLE AÇILIR) -->
 <section id="launch-gate" aria-labelledby="launch-title" aria-live="polite">
-  <div class="max-w-4xl mx-auto px-4 py-12 text-center flex flex-col items-center justify-center min-h-screen space-y-6">
-    <div class="inline-flex items-center gap-2 px-3 py-1 bg-red-950/80 border border-red-800 text-red-400 rounded-full text-xs font-bold tracking-widest uppercase animate-pulse">
+  <div class="max-w-4xl mx-auto px-4 py-10 text-center flex flex-col items-center justify-center space-y-6">
+    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 bg-red-950/90 border border-red-800 text-red-400 rounded-full text-xs font-bold tracking-widest uppercase animate-pulse">
       <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
-      Yayın Başlangıcına Kalan Süre
+      🔒 20:00'YE KADAR SİSTEM KİLİTLİ
     </div>
     
     <div class="space-y-2">
@@ -93,7 +94,7 @@
       </p>
     </div>
 
-    <div class="border-2 border-red-700/80 bg-zinc-900/90 px-8 py-6 rounded-2xl shadow-2xl space-y-2 max-w-md w-full">
+    <div class="border-2 border-red-700/80 bg-zinc-900/95 px-8 py-6 rounded-2xl shadow-2xl space-y-2 max-w-md w-full">
       <p class="text-xs font-semibold uppercase tracking-widest text-zinc-400">Canlı Yayına Geri Sayım</p>
       <p id="launch-countdown" class="font-mono text-4xl sm:text-5xl font-extrabold text-red-500 tabular-nums">
         -- gün --:--:--
@@ -101,18 +102,229 @@
       <p class="text-xs text-zinc-400 font-medium">Hedef: 24 Eylül, Saat 20:00</p>
     </div>
 
+    <!-- Giriş ve Gönüllü Butonları (Vatandaş, Vekil ve Gönüllü) -->
+    <div class="pt-1 flex flex-wrap justify-center gap-3 items-center">
+      <button type="button" onclick="openVolunteerModal()" class="px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition border-2 bg-emerald-600 border-emerald-500 text-white shadow-xl cursor-pointer hover:bg-emerald-500 flex items-center gap-2">
+        <span>🤝</span> GÖNÜLLÜ OL (EKİBE KATIL)
+      </button>
+      <button type="button" onclick="handleGatePanelClick('vatandas')" class="px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition border-2 bg-red-600 border-red-600 text-white shadow-xl cursor-pointer hover:bg-red-500">
+        👤 VATANDAŞ PANELİ (DİLEKÇE OLUŞTUR)
+      </button>
+      <button type="button" onclick="handleGatePanelClick('vekil')" class="px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition border-2 bg-zinc-900 border-zinc-700 text-zinc-300 hover:text-white cursor-pointer hover:border-emerald-500">
+        🏛️ MECLİS VEKİL PANELİ (VEKİL İMZASI)
+      </button>
+    </div>
+
+    <!-- Canlı Gönüllü Sayacı Rozeti -->
+    <div class="flex items-center gap-2 text-xs text-emerald-400 bg-emerald-950/80 border border-emerald-800/80 px-4 py-2 rounded-xl shadow">
+      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+      <strong id="gate-volunteer-badge">1.482 Gönüllü</strong>
+      <span class="text-zinc-300">Yaşam Hakkı İçin 20:00 Nöbetinde</span>
+    </div>
+
     <p class="max-w-xl text-sm leading-relaxed text-zinc-300">
-      7527 sayılı Kanun'un iptali ve yaşam hakkı için çağrımız bu akşam saat 20:00'de burada başlayacak. Yayın saati geldiğinde imza sistemi otomatik olarak açılacaktır.
+      7527 sayılı Kanun'un iptali ve yaşam hakkı için çağrımız bu akşam saat 20:00'de burada başlayacak. Saat 20:00'ye kadar paneller kamuoyuna kapalıdır.
     </p>
 
-    <!-- Yetkili Ekip Ön-İnceleme Girişi (PIN: 7527) -->
-    <div class="pt-6">
-      <button type="button" onclick="promptTeamPin()" class="text-zinc-600 hover:text-zinc-400 text-xs font-medium flex items-center gap-1.5 mx-auto transition cursor-pointer">
-        <span>🔒</span> Yetkili Ekip Girişi
-      </button>
+    <!-- Yetkili Ekip & Vekil Ön-Doğrulama PIN Girişi (PIN: 7527) -->
+    <div id="gate-pin-card" class="border border-zinc-800 bg-zinc-900/90 p-5 rounded-2xl max-w-sm w-full mx-auto space-y-3 shadow-xl">
+      <div class="flex items-center justify-center gap-1.5 text-xs text-amber-400 font-bold uppercase tracking-wider">
+        <span>🔒</span> Yetkili Ekip & Vekil Ön-Test Girişi
+      </div>
+      <p id="gate-pin-desc" class="text-[11px] text-zinc-400 text-center leading-relaxed">
+        Saat 20:00'ye kadar yalnızca yetkili ekip ve vekiller PIN kodu ile giriş yapabilir. Lütfen PIN kodunuzu giriniz:
+      </p>
+      <div class="flex gap-2">
+        <input type="password" id="gate-pin-input" placeholder="Yetkili PIN (7527)" class="flex-1 bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-2 text-zinc-100 font-mono text-center text-sm focus:border-red-500 focus:outline-none" onkeydown="if(event.key==='Enter') submitGatePin();">
+        <button type="button" onclick="submitGatePin()" class="bg-red-600 hover:bg-red-500 text-white font-bold px-4 py-2 rounded-xl text-xs uppercase tracking-wider transition cursor-pointer shadow">
+          Giriş
+        </button>
+      </div>
+      <div id="gate-pin-error" class="hidden text-[11px] text-red-400 font-semibold bg-red-950/60 border border-red-800 rounded-lg p-2 text-center">
+        Hatalı PIN! Canlı yayın saat 20:00'de otomatik olarak başlayacaktır.
+      </div>
+      <p class="text-[10px] text-zinc-500 text-center">
+        ⚠️ PIN kodu girmeden butonlara basıldığında içeri girilemez.
+      </p>
+    </div>
+
+    <!-- DİLEKÇE GÖNDERME REHBER VİDEOLARI VE ADIM ADIM ANLATIM BÖLÜMÜ -->
+    <div class="w-full max-w-4xl mt-4 space-y-5 text-left">
+      <div class="bg-zinc-900/95 border border-zinc-800 rounded-2xl p-6 shadow-2xl space-y-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-800 pb-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-xl">📹</span>
+              <h2 class="font-bold text-base sm:text-lg text-white uppercase tracking-wide">
+                Canlı Yayın Öncesi Dilekçe Gönderme Rehber Videoları
+              </h2>
+            </div>
+            <p class="text-xs text-zinc-400 mt-1">
+              Saat 20:00'de sistem açıldığında her adımın eksiksiz tamamlanabilmesi için hem vatandaşlar hem de milletvekilleri için adım adım kullanım kılavuzu
+            </p>
+          </div>
+          <!-- Video Sekme Butonları -->
+          <div class="flex items-center gap-1 bg-zinc-950 p-1 rounded-xl border border-zinc-800 self-start sm:self-auto shrink-0">
+            <button type="button" id="tab-video-vatandas" onclick="switchVideoTab('vatandas')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition bg-red-600 text-white cursor-pointer shadow">
+              👤 Vatandaş Rehberi
+            </button>
+            <button type="button" id="tab-video-vekil" onclick="switchVideoTab('vekil')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition bg-transparent text-zinc-400 hover:text-white cursor-pointer">
+              🏛️ Vekil İptal İmzası Rehberi
+            </button>
+          </div>
+        </div>
+
+        <!-- 1. VATANDAŞ REHBER VİDEO VE ADIMLAR KARTI -->
+        <div id="video-content-vatandas" class="space-y-5">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+            <!-- Video Oynatıcı Kolonu -->
+            <div class="lg:col-span-6 bg-black rounded-xl overflow-hidden border border-zinc-800 shadow-inner relative aspect-video flex flex-col justify-center items-center group">
+              <video id="gate-citizen-video" controls playsinline preload="metadata" class="w-full h-full object-cover" poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='450' viewBox='0 0 800 450'%3E%3Crect width='800' height='450' fill='%2309090b'/%3E%3Ccircle cx='400' cy='200' r='45' fill='%23ef4444' opacity='0.9'/%3E%3Cpolygon points='390,180 420,200 390,220' fill='%23ffffff'/%3E%3Ctext x='50%25' y='68%25' font-family='sans-serif' font-weight='bold' font-size='24' fill='%23ffffff' text-anchor='middle'%3EVATANDA%C5%9E D%C4%B0LEK%C3%87E REHBER V%C4%B0DEOSU%3C/text%3E%3Ctext x='50%25' y='78%25' font-family='sans-serif' font-size='14' fill='%23a1a1aa' text-anchor='middle'%3E5 Ad%C4%B1mda Islak %C4%B0mzal%C4%B1 Dilek%C3%A7e ve E-Posta %C4%B0letimi%3C/text%3E%3C/svg%3E">
+                <source src="campaign-video-output/kampanya-7527-iptal.mp4" type="video/mp4">
+                Tarayıcınız video etiketini desteklemiyor.
+              </video>
+              <div id="citizen-video-fallback" class="hidden absolute inset-0 bg-zinc-950/95 flex flex-col items-center justify-center p-4 text-center space-y-2">
+                <span class="text-3xl">🎬</span>
+                <p class="text-xs text-zinc-200 font-bold">Vatandaş Dilekçe Video Rehberi</p>
+                <p class="text-[11px] text-zinc-400 max-w-xs">Aşağıdaki 5 adımı uygulayarak Cumhurbaşkanlığı'na, TBMM'ye ve milletvekilinize resmi dilekçenizi saniyeler içinde iletebilirsiniz.</p>
+              </div>
+            </div>
+
+            <!-- Adım Adım Açıklama Kolonu (Her Adım Atlanmadan) -->
+            <div class="lg:col-span-6 space-y-2.5">
+              <div class="flex items-center justify-between pb-1">
+                <span class="text-xs font-bold uppercase tracking-wider text-red-400 flex items-center gap-1.5">
+                  <span>📋</span> 5 Adımda Vatandaş Dilekçesi:
+                </span>
+                <span class="text-[10px] bg-red-950/80 text-red-300 px-2 py-0.5 rounded border border-red-800">
+                  Ortalama Süre: 45 Saniye
+                </span>
+              </div>
+
+              <div class="space-y-2 text-xs">
+                <div class="p-2.5 rounded-lg bg-zinc-950 border border-zinc-800/80 flex items-start gap-2.5">
+                  <span class="w-5 h-5 rounded-full bg-red-600 text-white font-bold flex items-center justify-center shrink-0 text-[11px]">1</span>
+                  <div>
+                    <strong class="text-zinc-200">Dilekçe Hedefini Seçin:</strong>
+                    <p class="text-[11px] text-zinc-400 mt-0.5">Cumhurbaşkanlığı (CB), TBMM Başkanlığı (MB) veya doğrudan kendi şehrinizin milletvekilini seçin.</p>
+                  </div>
+                </div>
+
+                <div class="p-2.5 rounded-lg bg-zinc-950 border border-zinc-800/80 flex items-start gap-2.5">
+                  <span class="w-5 h-5 rounded-full bg-red-600 text-white font-bold flex items-center justify-center shrink-0 text-[11px]">2</span>
+                  <div>
+                    <strong class="text-zinc-200">Kimlik ve Şehir Bilgilerini Doldurun:</strong>
+                    <p class="text-[11px] text-zinc-400 mt-0.5">Ad-Soyad, 11 haneli T.C. No ve Şehrinizi girin (KVKK korumalıdır; bilgiler sunucuda saklanmaz, doğrudan resmi dilekçeye işlenir).</p>
+                  </div>
+                </div>
+
+                <div class="p-2.5 rounded-lg bg-zinc-950 border border-zinc-800/80 flex items-start gap-2.5">
+                  <span class="w-5 h-5 rounded-full bg-red-600 text-white font-bold flex items-center justify-center shrink-0 text-[11px]">3</span>
+                  <div>
+                    <strong class="text-zinc-200">Ekrana Islak İmzanızı Atın:</strong>
+                    <p class="text-[11px] text-zinc-400 mt-0.5">Dokunmatik ekranda parmağınızla veya farenizle imza tuvaline resmi imzanızı çizin (dokunmatik kayma korumalı).</p>
+                  </div>
+                </div>
+
+                <div class="p-2.5 rounded-lg bg-zinc-950 border border-zinc-800/80 flex items-start gap-2.5">
+                  <span class="w-5 h-5 rounded-full bg-red-600 text-white font-bold flex items-center justify-center shrink-0 text-[11px]">4</span>
+                  <div>
+                    <strong class="text-zinc-200">Tek Tıkla E-Posta İle Gönderin:</strong>
+                    <p class="text-[11px] text-zinc-400 mt-0.5">Sistem vekilin resmi kurumsal e-postasını, konu başlığını ve imzalı resmi metni hazırlar; e-posta uygulamanızdan onaylayıp gönderin.</p>
+                  </div>
+                </div>
+
+                <div class="p-2.5 rounded-lg bg-zinc-950 border border-zinc-800/80 flex items-start gap-2.5">
+                  <span class="w-5 h-5 rounded-full bg-red-600 text-white font-bold flex items-center justify-center shrink-0 text-[11px]">5</span>
+                  <div>
+                    <strong class="text-zinc-200">1080x1080 İmzacı Afişini İndirip Paylaşın:</strong>
+                    <p class="text-[11px] text-zinc-400 mt-0.5">Kişisel karekodlu sosyal medya afişinizi tek tıkla cihazınıza kaydedip #7527İptal etiketiyle paylaşarak kampanyayı büyütün.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. VEKİL REHBER VİDEO VE ADIMLAR KARTI -->
+        <div id="video-content-vekil" class="hidden space-y-5">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+            <!-- Video Oynatıcı Kolonu -->
+            <div class="lg:col-span-6 bg-black rounded-xl overflow-hidden border border-zinc-800 shadow-inner relative aspect-video flex flex-col justify-center items-center group">
+              <video id="gate-mp-video" controls playsinline preload="metadata" class="w-full h-full object-cover" poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='450' viewBox='0 0 800 450'%3E%3Crect width='800' height='450' fill='%2309090b'/%3E%3Ccircle cx='400' cy='200' r='45' fill='%2310b981' opacity='0.9'/%3E%3Cpolygon points='390,180 420,200 390,220' fill='%23ffffff'/%3E%3Ctext x='50%25' y='68%25' font-family='sans-serif' font-weight='bold' font-size='24' fill='%23ffffff' text-anchor='middle'%3EM%C4%B0LLETVEK%C4%B0L%C4%B0 %C4%B0MZA REHBER%C4%B0%3C/text%3E%3Ctext x='50%25' y='78%25' font-family='sans-serif' font-size='14' fill='%23a1a1aa' text-anchor='middle'%3ETBMM %C4%B0ptal Ba%C5%9Fvurusu ve Resmi Onay S%C3%BCreci%3C/text%3E%3C/svg%3E">
+                <source src="campaign-video-output/vekil-imza-rehberi.mp4" type="video/mp4">
+                <source src="campaign-video-output/kampanya-7527-iptal.mp4" type="video/mp4">
+                Tarayıcınız video etiketini desteklemiyor.
+              </video>
+              <div id="mp-video-fallback" class="hidden absolute inset-0 bg-zinc-950/95 flex flex-col items-center justify-center p-4 text-center space-y-2">
+                <span class="text-3xl">🏛️</span>
+                <p class="text-xs text-zinc-200 font-bold">Milletvekili İptal İmzası Rehberi</p>
+                <p class="text-[11px] text-zinc-400 max-w-xs">Sayın Milletvekilleri aşağıdaki 4 adımı izleyerek TBMM resmi kurumsal e-postaları ile yaşam hakkı iptal dilekçesini imzalayabilirler.</p>
+              </div>
+            </div>
+
+            <!-- Adım Adım Açıklama Kolonu (Her Adım Atlanmadan) -->
+            <div class="lg:col-span-6 space-y-2.5">
+              <div class="flex items-center justify-between pb-1">
+                <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+                  <span>🏛️</span> 4 Adımda Milletvekili İptal İmzası:
+                </span>
+                <span class="text-[10px] bg-emerald-950/80 text-emerald-300 px-2 py-0.5 rounded border border-emerald-800">
+                  TBMM Resmi Süreci
+                </span>
+              </div>
+
+              <div class="space-y-2 text-xs">
+                <div class="p-2.5 rounded-lg bg-zinc-950 border border-zinc-800/80 flex items-start gap-2.5">
+                  <span class="w-5 h-5 rounded-full bg-emerald-600 text-white font-bold flex items-center justify-center shrink-0 text-[11px]">1</span>
+                  <div>
+                    <strong class="text-zinc-200">Meclis Vekil Paneline Geçiş:</strong>
+                    <p class="text-[11px] text-zinc-400 mt-0.5">Üstteki veya kapıdaki "Meclis Vekil Paneli" butonuna tıklayarak vekillere özel imza alanını açın.</p>
+                  </div>
+                </div>
+
+                <div class="p-2.5 rounded-lg bg-zinc-950 border border-zinc-800/80 flex items-start gap-2.5">
+                  <span class="w-5 h-5 rounded-full bg-emerald-600 text-white font-bold flex items-center justify-center shrink-0 text-[11px]">2</span>
+                  <div>
+                    <strong class="text-zinc-200">592 Vekil Listesinden Adınızı Arayın:</strong>
+                    <p class="text-[11px] text-zinc-400 mt-0.5">A'dan Z'ye sıralı listede arama kutusuna adınızı veya şehrinizi yazarak profilinizi tek tıkla seçin; parti ve il otomatik doğrulanır.</p>
+                  </div>
+                </div>
+
+                <div class="p-2.5 rounded-lg bg-zinc-950 border border-zinc-800/80 flex items-start gap-2.5">
+                  <span class="w-5 h-5 rounded-full bg-emerald-600 text-white font-bold flex items-center justify-center shrink-0 text-[11px]">3</span>
+                  <div>
+                    <strong class="text-zinc-200">TBMM Kurumsal E-Postanızı Girip İmzalayın:</strong>
+                    <p class="text-[11px] text-zinc-400 mt-0.5">Vekilliğin teyidi için resmi @tbmm.gov.tr e-posta adresinizi girin ve ekranda resmi iptal imzanızı atın.</p>
+                  </div>
+                </div>
+
+                <div class="p-2.5 rounded-lg bg-zinc-950 border border-zinc-800/80 flex items-start gap-2.5">
+                  <span class="w-5 h-5 rounded-full bg-emerald-600 text-white font-bold flex items-center justify-center shrink-0 text-[11px]">4</span>
+                  <div>
+                    <strong class="text-zinc-200">Canlı Meclis Sayacına Yeşil Rozetle Eklenin:</strong>
+                    <p class="text-[11px] text-zinc-400 mt-0.5">İmzanız sayaca eklenir, isminiz kamuoyuna açık "İptal İmzası Veren Onurlu Vekiller" listesinde yeşil rozetle yayınlanır.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
+
+<!-- Yetkili Giriş Bildirim Bandı (PIN ile Açıldığında Görünür) -->
+<div id="team-unlocked-banner" style="display: none;" class="bg-amber-600 text-zinc-950 px-4 py-2.5 text-xs font-bold items-center justify-between shadow-lg sticky top-0 z-50">
+  <div class="flex items-center gap-2">
+    <span>🔓</span>
+    <span>YETKİLİ TEST MODU AKTİF (Saat 20:00 Öncesi Doğrulama Modundasınız)</span>
+  </div>
+  <button onclick="lockGateNow()" class="bg-zinc-950 text-amber-300 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 border border-amber-800 cursor-pointer shadow">
+    <span>🔒</span> Oturumu Kapat & Sistemi Tekrar Kilitle
+  </button>
+</div>
 
 <!-- 2. ANA BAŞLIK & LOGO ALANI -->
 <header class="border-b border-zinc-800 py-8 px-4 text-center bg-zinc-900/80 backdrop-blur-sm">
@@ -184,11 +396,11 @@
           <div class="flex justify-between items-baseline text-xs">
             <span class="font-bold text-white">🐾 VATANDAŞ İMZA HEDEFİ</span>
             <span id="citizen-counter" class="font-bold text-red-500 font-mono text-base">
-              1.420 / 3.000.000
+              0 / 3.000.000
             </span>
           </div>
           <div class="w-full bg-zinc-950 rounded-full h-3 overflow-hidden border border-zinc-800">
-            <div id="citizen-progress" class="bg-gradient-to-r from-red-700 to-red-500 h-3 rounded-full transition-all duration-500" style="width: 1%"></div>
+            <div id="citizen-progress" class="bg-gradient-to-r from-red-700 to-red-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
           </div>
         </div>
 
@@ -207,15 +419,15 @@
         <div class="grid grid-cols-3 gap-2 pt-2 border-t border-zinc-800/60 text-center text-xs">
           <div class="bg-zinc-950 rounded-xl p-2.5 border border-amber-900/30">
             <div class="text-[10px] text-amber-400 font-bold">🏛️ CB'ye Giden</div>
-            <div id="cb-counter" class="text-amber-400 font-mono font-bold text-sm mt-0.5">540</div>
+            <div id="cb-counter" class="text-amber-400 font-mono font-bold text-sm mt-0.5">0</div>
           </div>
           <div class="bg-zinc-950 rounded-xl p-2.5 border border-amber-900/30">
             <div class="text-[10px] text-amber-400 font-bold">🏛️ TBMM'ye Giden</div>
-            <div id="mb-counter" class="text-amber-400 font-mono font-bold text-sm mt-0.5">390</div>
+            <div id="mb-counter" class="text-amber-400 font-mono font-bold text-sm mt-0.5">0</div>
           </div>
           <div class="bg-zinc-950 rounded-xl p-2.5 border border-sky-900/30">
             <div class="text-[10px] text-sky-400 font-bold">✉️ Vekillere Giden</div>
-            <div id="mp-sent-counter" class="text-sky-400 font-mono font-bold text-sm mt-0.5">490</div>
+            <div id="mp-sent-counter" class="text-sky-400 font-mono font-bold text-sm mt-0.5">0</div>
           </div>
         </div>
       </div>
@@ -513,10 +725,20 @@
 
     <div class="space-y-4 text-xs">
       <div>
-        <label class="block text-zinc-300 font-semibold mb-1">MİLLETVEKİLİ ADINIZ VE ŞEHRİNİZ *</label>
-        <select id="mp-sign-select" class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-2.5 text-zinc-100 text-xs">
-          <option value="">Lütfen listeden isminizi seçin (592 Vekil)...</option>
-        </select>
+        <label class="block text-zinc-300 font-semibold mb-1">MİLLETVEKİLİ ADINIZ VE ŞEHRİNİZ (A'DAN Z'YE SIRALI) *</label>
+        <div class="space-y-2">
+          <input type="text" id="mp-sign-search" oninput="filterMpSignDropdown()" placeholder="🔍 Adınızı, soyadınızı veya ilinizi yazarak arayın (Örn: Ali, Özkaya, Ankara...)" class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-2 text-zinc-100 text-xs focus:border-emerald-500 focus:outline-none">
+          <select id="mp-sign-select" onchange="onMpSignSelectChange()" class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-2.5 text-zinc-100 text-xs focus:border-emerald-500 focus:outline-none">
+            <option value="">Lütfen listeden isminizi seçin (592 Vekil - A'dan Z'ye Sıralı)...</option>
+          </select>
+          <div id="mp-sign-selected-badge" class="hidden p-2.5 bg-emerald-950/80 border border-emerald-700 rounded-lg text-xs text-emerald-200 flex items-center justify-between">
+            <div>
+              <strong>Seçilen Vekil:</strong> <span id="mp-sign-badge-name">-</span>
+              <div class="text-[10px] text-emerald-400 font-mono" id="mp-sign-badge-detail">-</div>
+            </div>
+            <span class="text-emerald-400 font-bold">✓ Seçildi</span>
+          </div>
+        </div>
       </div>
 
       <div>
@@ -618,6 +840,93 @@
   </div>
 </div>
 
+<!-- GÖNÜLLÜ OL MODALI -->
+<div id="volunteer-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" style="display: none;">
+  <div class="bg-zinc-900 border-2 border-emerald-600/80 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl text-xs text-left relative max-h-[90vh] overflow-y-auto">
+    <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
+      <div class="flex items-center gap-2">
+        <span class="p-1.5 bg-emerald-900/60 text-emerald-400 rounded-lg text-base">🐾</span>
+        <div>
+          <h3 class="font-bold text-sm text-white uppercase tracking-wide">Yaşam Hakkı Gönüllüsü Ol</h3>
+          <p class="text-[11px] text-emerald-400 font-medium">7527 İptal Kampanya Ağına Katılın</p>
+        </div>
+      </div>
+      <button onclick="closeVolunteerModal()" class="text-zinc-400 hover:text-white p-1 rounded-lg text-base cursor-pointer">✕</button>
+    </div>
+
+    <!-- Form Görünümü -->
+    <div id="volunteer-form-view" class="space-y-3.5">
+      <p class="text-[11px] text-zinc-300 leading-relaxed">
+        Saat 20:00'deki canlı yayın ve imza süresince sesimizi büyütmek, vekilleri bilgilendirmek ve illerde koordinasyon sağlamak için bize katılın!
+      </p>
+
+      <form onsubmit="submitVolunteer(event)" class="space-y-3">
+        <div>
+          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Adınız Soyadınız *</label>
+          <input type="text" id="vol-name" required placeholder="Adınız Soyadınız" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 text-xs focus:border-emerald-500 focus:outline-none">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Telefon / WhatsApp *</label>
+            <input type="tel" id="vol-phone" required placeholder="05XX XXX XX XX" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 text-xs focus:border-emerald-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Bulunduğunuz Şehir *</label>
+            <select id="vol-city" required class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-2.5 py-2 text-zinc-100 text-xs focus:border-emerald-500 focus:outline-none">
+              <option value="">İl Seçiniz...</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold text-zinc-300 mb-1">Destek Verebileceğiniz Alan *</label>
+          <select id="vol-role" required class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-2.5 py-2 text-zinc-100 text-xs focus:border-emerald-500 focus:outline-none">
+            <option value="Sosyal Medya & Dijital Yayılım">📣 Sosyal Medya & Dijital Yayılım (X, IG, TikTok)</option>
+            <option value="Hukuki Destek & Mevzuat">⚖️ Hukuki Destek & Mevzuat İnceleme</option>
+            <option value="Saha & Şehir İmza Koordinasyonu">📍 Saha & Şehir İmza Koordinasyonu</option>
+            <option value="Bilişim & Teknik Destek">💻 Bilişim & Dijital / Teknik Destek</option>
+            <option value="Basın & Medya İletişimi">📢 Basın & Medya İletişimi</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Notunuz veya Uzmanlığınız (İsteğe Bağlı)</label>
+          <textarea id="vol-note" rows="2" placeholder="Varsa dernek, meslek veya katkı sağlayabileceğiniz özel konu..." class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 text-xs focus:border-emerald-500 focus:outline-none resize-none"></textarea>
+        </div>
+
+        <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs uppercase tracking-wider transition shadow-lg cursor-pointer flex items-center justify-center gap-2">
+          <span>🤝</span> Gönüllü Olarak Kaydol
+        </button>
+      </form>
+    </div>
+
+    <!-- Başarı Görünümü -->
+    <div id="volunteer-success-view" class="hidden space-y-4 text-center py-2">
+      <div class="w-12 h-12 rounded-full bg-emerald-950 border-2 border-emerald-500 text-emerald-300 flex items-center justify-center mx-auto text-xl font-bold">
+        ✓
+      </div>
+      <div class="space-y-1">
+        <h4 class="font-bold text-sm text-white">Aramıza Hoş Geldiniz!</h4>
+        <p class="text-xs text-zinc-300 leading-relaxed max-w-sm mx-auto">
+          Gönüllü kaydınız başarıyla alındı. Koordinasyon ekibimiz WhatsApp üzerinden sizinle irtibata geçecektir.
+        </p>
+      </div>
+
+      <div class="p-3 bg-zinc-950 rounded-xl border border-zinc-800 space-y-2">
+        <p class="text-[11px] text-amber-300 font-semibold">Kampanyayı Şimdi Arkadaşlarınızla Paylaşın:</p>
+        <a id="vol-share-wa" href="#" target="_blank" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold text-xs transition flex items-center justify-center gap-2">
+          <span>📲</span> WhatsApp'ta Arkadaşlarına Duyur
+        </a>
+      </div>
+
+      <button type="button" onclick="closeVolunteerModal()" class="w-full py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-lg text-xs font-semibold">
+        Tamamla ve Kapat
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- 9. YÖNETİCİ PANELİ MODALI (PIN: 7527) -->
 <div id="admin-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
   <div class="bg-zinc-900 border border-zinc-700 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl text-xs">
@@ -660,6 +969,9 @@
           </button>
           <button onclick="exportSignatures('csv')" class="py-2 bg-zinc-800 hover:bg-zinc-700 rounded font-semibold text-zinc-200">
             CSV Olarak İndir
+          </button>
+          <button onclick="exportVolunteersCSV()" class="col-span-2 py-2 bg-emerald-800 hover:bg-emerald-700 rounded font-semibold text-white flex items-center justify-center gap-1.5">
+            <span>🤝</span> Gönüllü Listesini İndir (CSV)
           </button>
         </div>
       </div>
@@ -1368,12 +1680,12 @@ var mpSignaturePad = null;
 var currentSigDataUrl = '';
 var currentMpSigDataUrl = '';
 
-// Canlı Sayaçlar
+// Canlı Sayaçlar (Başlangıçta Sıfır)
 var counters = {
-  citizen: 1420,
-  cb: 540,
-  mb: 390,
-  mpSent: 490,
+  citizen: 0,
+  cb: 0,
+  mb: 0,
+  mpSent: 0,
   mpSigned: 0
 };
 
@@ -1389,7 +1701,7 @@ function generateTbmmEmail(name) {
   return parts.slice(0, -1).join('.') + '.' + parts[parts.length - 1] + '@tbmm.gov.tr';
 }
 
-// 592 Vekil Veritabanını Parse Et
+// 592 Vekil Veritabanını Parse Et ve A'dan Z'ye Sırala
 function initMpDatabase() {
   var lines = RAW_MP_STRING.trim().split('\n');
   var parties = new Set();
@@ -1412,6 +1724,11 @@ function initMpDatabase() {
     }
   }
 
+  // 592 Vekili A'dan Z'ye Türkçe Alfabetik Sırala
+  MP_DATABASE.sort(function(a, b) {
+    return a.name.localeCompare(b.name, 'tr', { sensitivity: 'base' });
+  });
+
   // Parti filtrelerini doldur
   var partySelect = document.getElementById('mp-party-filter');
   if (partySelect) {
@@ -1423,24 +1740,8 @@ function initMpDatabase() {
     });
   }
 
-  // Meclis Vekil kayıt seçicisini doldur
-  var mpSignSelect = document.getElementById('mp-sign-select');
-  if (mpSignSelect) {
-    MP_DATABASE.forEach(function(m) {
-      var opt = document.createElement('option');
-      opt.value = m.id;
-      opt.textContent = m.name + ' (' + m.party + ' - ' + m.city + ')';
-      mpSignSelect.appendChild(opt);
-    });
-
-    mpSignSelect.addEventListener('change', function() {
-      var id = parseInt(this.value, 10);
-      var m = MP_DATABASE.find(function(x) { return x.id === id; });
-      if (m) {
-        document.getElementById('mp-sign-email').value = m.email;
-      }
-    });
-  }
+  // Meclis Vekil kayıt seçicisini A-Z alfabetik doldur
+  renderMpSignDropdown('');
 
   // Şehir filtrelerini doldur
   var mpCityFilter = document.getElementById('mp-city-filter');
@@ -1909,6 +2210,60 @@ function submitVolunteerForm() {
   document.getElementById('vol-note').value = '';
 }
 
+// --- MECLİS VEKİL İMZA SEÇİCİSİ (A-Z VE ANLIK ARAMA) ---
+function renderMpSignDropdown(filterQuery) {
+  var mpSignSelect = document.getElementById('mp-sign-select');
+  if (!mpSignSelect) return;
+  mpSignSelect.innerHTML = '<option value="">Lütfen listeden isminizi seçin (592 Vekil - A-Z Alfabetik Sıralı)...</option>';
+
+  var q = (filterQuery || '').toLowerCase().trim();
+  var filtered = MP_DATABASE.filter(function(m) {
+    if (!q) return true;
+    return m.name.toLowerCase().indexOf(q) !== -1 ||
+           m.city.toLowerCase().indexOf(q) !== -1 ||
+           m.party.toLowerCase().indexOf(q) !== -1;
+  });
+
+  filtered.forEach(function(m) {
+    var opt = document.createElement('option');
+    opt.value = m.id;
+    opt.textContent = m.name + ' — ' + m.party + ' (' + m.city + ')';
+    mpSignSelect.appendChild(opt);
+  });
+
+  if (filtered.length === 1) {
+    mpSignSelect.value = filtered[0].id;
+    onMpSignSelectChange();
+  }
+}
+
+function filterMpSignDropdown() {
+  var input = document.getElementById('mp-sign-search');
+  var q = input ? input.value : '';
+  renderMpSignDropdown(q);
+}
+
+function onMpSignSelectChange() {
+  var mpSignSelect = document.getElementById('mp-sign-select');
+  var id = parseInt(mpSignSelect ? mpSignSelect.value : '0', 10);
+  var m = MP_DATABASE.find(function(x) { return x.id === id; });
+  var emailInput = document.getElementById('mp-sign-email');
+  var badge = document.getElementById('mp-sign-selected-badge');
+  var badgeName = document.getElementById('mp-sign-badge-name');
+  var badgeDetail = document.getElementById('mp-sign-badge-detail');
+
+  if (m) {
+    if (emailInput) emailInput.value = m.email;
+    if (badge && badgeName && badgeDetail) {
+      badge.classList.remove('hidden');
+      badgeName.textContent = m.name;
+      badgeDetail.textContent = m.party + ' - ' + m.city + ' | ' + m.email;
+    }
+  } else {
+    if (badge) badge.classList.add('hidden');
+  }
+}
+
 // --- MECLİS VEKİL İMZASI ---
 function submitMpSignature() {
   var mpSelect = document.getElementById('mp-sign-select');
@@ -1949,6 +2304,7 @@ function submitMpSignature() {
 
   localStorage.setItem('7527_signed_mps', JSON.stringify(signedMps));
   counters.mpSigned = signedMps.length;
+  saveCountersToStorage();
   updateCountersUI();
   renderSignedMpsList();
   alert('Sayın ' + mp.name + ', 7527 iptal çağrısına resmi imzanız başarıyla kaydedildi!');
@@ -2124,6 +2480,52 @@ function updateCountdown() {
   }
 }
 
+var pendingPanelAfterUnlock = 'vatandas';
+
+function handleGatePanelClick(panel) {
+  pendingPanelAfterUnlock = panel;
+  if (!document.body.classList.contains('launch-pending')) {
+    switchTab(panel);
+    return;
+  }
+  var input = document.getElementById('gate-pin-input');
+  if (input && input.value.trim() === '7527') {
+    submitGatePin();
+    return;
+  }
+  var desc = document.getElementById('gate-pin-desc');
+  var card = document.getElementById('gate-pin-card');
+  if (desc) {
+    desc.innerHTML = '<span class="text-amber-400 font-bold">🔒 ' + (panel === 'vekil' ? 'Meclis Vekil Paneli' : 'Vatandaş Paneli') + '</span> saat 20:00 itibarıyla halka açılacaktır. 20:00 saatine kadar yalnızca yetkili ekip ve vekiller PIN ile erişebilir:';
+  }
+  if (card) {
+    card.classList.add('ring-2', 'ring-amber-500');
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  if (input) {
+    input.focus();
+  }
+}
+
+function submitGatePin() {
+  var input = document.getElementById('gate-pin-input');
+  var err = document.getElementById('gate-pin-error');
+  var val = input ? input.value.trim() : '';
+  if (val === '7527') {
+    if (err) err.classList.add('hidden');
+    sessionStorage.setItem('7527_team_unlocked', '1');
+    unlockGateNow();
+    if (pendingPanelAfterUnlock) {
+      switchTab(pendingPanelAfterUnlock);
+    }
+  } else {
+    if (err) {
+      err.classList.remove('hidden');
+      err.textContent = 'Hatalı PIN! Canlı yayın saat 20:00 itibarıyla otomatik olarak başlayacaktır.';
+    }
+  }
+}
+
 function unlockGateNow() {
   var gate = document.getElementById('launch-gate');
   if (gate) {
@@ -2131,6 +2533,8 @@ function unlockGateNow() {
     gate.style.display = 'none';
   }
   document.body.classList.remove('launch-pending');
+  var banner = document.getElementById('team-unlocked-banner');
+  if (banner) banner.style.display = 'flex';
 }
 
 function promptTeamPin() {
@@ -2139,7 +2543,7 @@ function promptTeamPin() {
     sessionStorage.setItem("7527_team_unlocked", "1");
     unlockGateNow();
   } else if (pin !== null && pin !== "") {
-    alert("Hatalı PIN! Canlı yayın saat 20:00'de otomatik olarak başlayacaktır.");
+    alert("Hatalı PIN! Canlı yayın saat 20:00 itibarıyla otomatik olarak başlayacaktır.");
   }
 }
 
@@ -2151,6 +2555,8 @@ function lockGateNow() {
     gate.classList.remove('gate-hidden');
   }
   document.body.classList.add('launch-pending');
+  var banner = document.getElementById('team-unlocked-banner');
+  if (banner) banner.style.display = 'none';
 }
 
 function setTestCountdown(sec) {
@@ -2190,21 +2596,25 @@ function updateCountersUI() {
 
 // --- MODALLAR VE SEKME DEĞİŞİMİ ---
 function switchTab(tab) {
+  if (document.body.classList.contains('launch-pending')) {
+    handleGatePanelClick(tab);
+    return;
+  }
   var pVatandas = document.getElementById('panel-vatandas');
   var pVekil = document.getElementById('panel-vekil');
   var btnVatandas = document.getElementById('tab-btn-vatandas');
   var btnVekil = document.getElementById('tab-btn-vekil');
 
   if (tab === 'vatandas') {
-    pVatandas.classList.remove('hidden');
-    pVekil.classList.add('hidden');
-    btnVatandas.className = 'px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition border-2 bg-red-600 border-red-600 text-white shadow-xl cursor-pointer';
-    btnVekil.className = 'px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition border-2 bg-zinc-900 border-zinc-700 text-zinc-300 hover:text-white cursor-pointer';
+    if (pVatandas) pVatandas.classList.remove('hidden');
+    if (pVekil) pVekil.classList.add('hidden');
+    if (btnVatandas) btnVatandas.className = 'px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition border-2 bg-red-600 border-red-600 text-white shadow-xl cursor-pointer';
+    if (btnVekil) btnVekil.className = 'px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition border-2 bg-zinc-900 border-zinc-700 text-zinc-300 hover:text-white cursor-pointer';
   } else {
-    pVatandas.classList.add('hidden');
-    pVekil.classList.remove('hidden');
-    btnVatandas.className = 'px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition border-2 bg-zinc-900 border-zinc-700 text-zinc-300 hover:text-white cursor-pointer';
-    btnVekil.className = 'px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition border-2 bg-emerald-600 border-emerald-600 text-white shadow-xl cursor-pointer';
+    if (pVatandas) pVatandas.classList.add('hidden');
+    if (pVekil) pVekil.classList.remove('hidden');
+    if (btnVatandas) btnVatandas.className = 'px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition border-2 bg-zinc-900 border-zinc-700 text-zinc-300 hover:text-white cursor-pointer';
+    if (btnVekil) btnVekil.className = 'px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition border-2 bg-emerald-600 border-emerald-600 text-white shadow-xl cursor-pointer';
   }
 }
 
@@ -2287,15 +2697,149 @@ function exportSignatures(format) {
   a.click();
 }
 
+// --- GÖNÜLLÜ SİSTEMİ FONKSİYONLARI ---
+function updateVolunteerBadge() {
+  var list = [];
+  try {
+    list = JSON.parse(localStorage.getItem('7527_volunteers') || '[]');
+  } catch(e) {}
+  var count = 1482 + list.length;
+  var badge = document.getElementById('gate-volunteer-badge');
+  if (badge) badge.textContent = count.toLocaleString('tr-TR') + ' Gönüllü';
+}
+
+function openVolunteerModal() {
+  var modal = document.getElementById('volunteer-modal');
+  if (!modal) return;
+  modal.style.display = 'flex';
+  var formView = document.getElementById('volunteer-form-view');
+  var successView = document.getElementById('volunteer-success-view');
+  if (formView) formView.classList.remove('hidden');
+  if (successView) successView.classList.add('hidden');
+
+  var citySelect = document.getElementById('vol-city');
+  if (citySelect && citySelect.options.length <= 1) {
+    CITIES.forEach(function(c) {
+      var opt = document.createElement('option');
+      opt.value = c;
+      opt.textContent = c;
+      citySelect.appendChild(opt);
+    });
+  }
+}
+
+function closeVolunteerModal() {
+  var modal = document.getElementById('volunteer-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+function submitVolunteer(e) {
+  if (e) e.preventDefault();
+  var name = document.getElementById('vol-name').value.trim();
+  var phone = document.getElementById('vol-phone').value.trim();
+  var city = document.getElementById('vol-city').value;
+  var role = document.getElementById('vol-role').value;
+  var note = document.getElementById('vol-note').value.trim();
+
+  if (!name || !phone || !city) {
+    alert('Lütfen ad, telefon ve şehir alanlarını doldurunuz.');
+    return;
+  }
+
+  var volunteers = [];
+  try {
+    volunteers = JSON.parse(localStorage.getItem('7527_volunteers') || '[]');
+  } catch(err) {}
+
+  volunteers.push({
+    name: name,
+    phone: phone,
+    contact: phone,
+    city: city,
+    role: role,
+    note: note,
+    date: new Date().toLocaleString('tr-TR')
+  });
+
+  localStorage.setItem('7527_volunteers', JSON.stringify(volunteers));
+  updateVolunteerBadge();
+
+  var formView = document.getElementById('volunteer-form-view');
+  var successView = document.getElementById('volunteer-success-view');
+  if (formView) formView.classList.add('hidden');
+  if (successView) successView.classList.remove('hidden');
+
+  var waText = encodeURIComponent("7527 sayılı yasanın iptali ve yaşam hakkı için gönüllü oldum! Sen de katıl: https://www.7527iptal.org #7527İptal");
+  var waLink = document.getElementById('vol-share-wa');
+  if (waLink) waLink.href = "https://api.whatsapp.com/send?text=" + waText;
+}
+
+function exportVolunteersCSV() {
+  var list = [];
+  try {
+    list = JSON.parse(localStorage.getItem('7527_volunteers') || '[]');
+  } catch(e) {}
+  if (list.length === 0) {
+    alert('Henüz kayıtlı yeni gönüllü bulunmuyor.');
+    return;
+  }
+  var csv = 'Ad Soyad,Telefon,Şehir,Gönüllülük Alanı,Not,Kayıt Tarihi\n';
+  list.forEach(function(v) {
+    csv += '"' + (v.name||'') + '","' + (v.phone||'') + '","' + (v.city||'') + '","' + (v.role||'') + '","' + (v.note||'').replace(/"/g, '""') + '","' + (v.date||'') + '"\n';
+  });
+  var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  var a = document.createElement('a');
+  a.download = '7527_iptal_gonullu_listesi.csv';
+  a.href = URL.createObjectURL(blob);
+  a.click();
+}
+
+// --- VİDEO REHBER SEKME DEĞİŞTİRİCİSİ ---
+function switchVideoTab(tab) {
+  var contentVatandas = document.getElementById('video-content-vatandas');
+  var contentVekil = document.getElementById('video-content-vekil');
+  var tabBtnVatandas = document.getElementById('tab-video-vatandas');
+  var tabBtnVekil = document.getElementById('tab-video-vekil');
+
+  if (tab === 'vatandas') {
+    if (contentVatandas) contentVatandas.classList.remove('hidden');
+    if (contentVekil) contentVekil.classList.add('hidden');
+    if (tabBtnVatandas) tabBtnVatandas.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition bg-red-600 text-white cursor-pointer shadow';
+    if (tabBtnVekil) tabBtnVekil.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition bg-transparent text-zinc-400 hover:text-white cursor-pointer';
+  } else {
+    if (contentVatandas) contentVatandas.classList.add('hidden');
+    if (contentVekil) contentVekil.classList.remove('hidden');
+    if (tabBtnVatandas) tabBtnVatandas.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition bg-transparent text-zinc-400 hover:text-white cursor-pointer';
+    if (tabBtnVekil) tabBtnVekil.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold transition bg-emerald-600 text-white cursor-pointer shadow';
+  }
+}
+
 // --- SAYFA BAŞLATICI ---
 window.addEventListener('DOMContentLoaded', function() {
   loadCountersFromStorage();
   updateCountersUI();
+  updateVolunteerBadge();
   initMpDatabase();
   renderAlmanac();
   initCampaignQR();
   renderSignedMpsList();
   selectTarget('cb');
+
+  // Video fallback dinleyicileri
+  var cVid = document.getElementById('gate-citizen-video');
+  if (cVid) {
+    cVid.addEventListener('error', function() {
+      var fb = document.getElementById('citizen-video-fallback');
+      if (fb) fb.classList.remove('hidden');
+    }, true);
+  }
+  var mpVid = document.getElementById('gate-mp-video');
+  if (mpVid) {
+    mpVid.addEventListener('error', function() {
+      var fb = document.getElementById('mp-video-fallback');
+      if (fb) fb.classList.remove('hidden');
+    }, true);
+  }
 
   // Tuval başlatıcıları
   citizenSignaturePad = setupCanvas('citizen-canvas', function(data) {
