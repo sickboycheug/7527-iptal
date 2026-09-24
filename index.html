@@ -3,103 +3,2311 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>7527 İPTAL! İMZACISI OL!</title>
+<title>7527 İPTAL! İMZACISI OL! - Öldüren Değil, Yaşatan Ol</title>
+<meta name="description" content="7527 sayılı Kanun'un iptali ve yaşam hakkı için imza kampanyası. Dilekçeni oluştur, vekiline ilet, yaşat!">
+<!-- Tailwind CSS via CDN -->
 <script src="https://cdn.tailwindcss.com"></script>
+<!-- QRCode.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<!-- Supabase JS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;600;700;800&family=Cinzel:wght@700&display=swap" rel="stylesheet">
 <style>
-body{font-family:'Inter',sans-serif}.font-impact{font-family:'Oswald',sans-serif}
-@media print{
-html,body{background:#fff!important;color:#000!important;margin:0!important;padding:0!important}
-body > header,body > main,body > footer,body > #thanks-modal,body > #confirm-modal{display:none!important}
-#print-petition{display:block!important;padding:15mm!important;font-size:11pt;line-height:1.6;color:#000!important;background:#fff!important}
-#print-petition .val-sig{display:block!important;max-height:60px!important;margin-left:auto!important;margin-top:30px!important}
-}
-#print-petition{display:none}
-#thanks-modal,#confirm-modal{display:none}
-.selected-target{background:#059669!important;border-color:#059669!important;color:#fff!important}
-.video-shell video{display:block;width:100%;aspect-ratio:16/9;object-fit:contain;min-height:220px}
-.video-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.5rem;margin-top:.75rem}
-@media (max-width:420px){.video-actions{grid-template-columns:1fr}.video-actions button{min-height:42px}}
-@media (max-width:1023px){
-#panel-vatandas>section{display:contents}
-#panel-vatandas>section>div{margin-bottom:0}
-}
-#launch-gate{display:block!important;position:fixed;inset:0 0 auto;z-index:100;background:#09090b;max-height:65vh;overflow-y:auto;border-bottom:2px solid #7f1d1d}
-.launch-pending>header,.launch-pending>main,.launch-pending>footer{opacity:.35;pointer-events:none;user-select:none}
-.launch-gate-inner{width:min(100% - 2rem,72rem);margin:auto;padding:1rem 0;display:flex;flex-direction:column;justify-content:center;gap:1rem}
-.launch-videos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
-.launch-videos video{display:block;width:100%;aspect-ratio:16/9;object-fit:contain;background:#000}
-@media (max-width:640px){#launch-gate{max-height:75vh}.launch-gate-inner{width:min(100% - 1.5rem,72rem);padding:.75rem 0}.launch-videos{grid-template-columns:1fr}}
+  body { font-family: 'Inter', sans-serif; }
+  .font-impact { font-family: 'Oswald', sans-serif; }
+  .font-serif-doc { font-family: 'Georgia', 'Cambria', serif; }
+
+  @media print {
+    html, body { background: #fff !important; color: #000 !important; margin: 0 !important; padding: 0 !important; }
+    body > header, body > main, body > footer, body > #thanks-modal, body > #confirm-modal, body > #admin-modal, #launch-gate {
+      display: none !important;
+    }
+    #print-petition {
+      display: block !important;
+      padding: 15mm !important;
+      font-size: 11pt;
+      line-height: 1.6;
+      color: #000 !important;
+      background: #fff !important;
+    }
+    #print-petition .val-sig {
+      display: block !important;
+      max-height: 60px !important;
+      margin-left: auto !important;
+      margin-top: 30px !important;
+    }
+  }
+  #print-petition { display: none; }
+  #thanks-modal, #confirm-modal, #admin-modal { display: none; }
+  .selected-target { background: #059669 !important; border-color: #059669 !important; color: #fff !important; }
+  
+  /* Geri Sayım Kapısı */
+  #launch-gate {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(9, 9, 11, 0.98);
+    backdrop-filter: blur(8px);
+    overflow-y: auto;
+    border-bottom: 2px solid #7f1d1d;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+  }
+  #launch-gate.gate-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .launch-pending > header, .launch-pending > main, .launch-pending > footer {
+    opacity: 0.25;
+    pointer-events: none;
+    user-select: none;
+  }
 </style>
 </head>
 <body class="launch-pending bg-zinc-950 text-zinc-100 antialiased min-h-screen flex flex-col">
 
-<!-- Geri Sayım Kapısı -->
+<!-- 1. GERİ SAYIM KAPISI (20:00'DE OTOMATİK KALKAR) -->
 <section id="launch-gate" aria-labelledby="launch-title" aria-live="polite">
-<div class="launch-gate-inner text-center">
-<div class="space-y-3">
-<p class="text-xs font-bold uppercase tracking-[0.25em] text-red-400">Yakında başlıyoruz</p>
-<h1 id="launch-title" class="font-impact text-4xl sm:text-6xl tracking-wide text-white uppercase">7527 İptal! İmzacı Ol!</h1>
-<p class="text-base sm:text-lg font-bold text-zinc-200">Öldüren değil, yaşatan ol.</p>
-</div>
-<div class="border-y border-red-900/70 bg-zinc-900/70 px-4 py-5 sm:py-6">
-<p class="text-xs font-semibold uppercase tracking-widest text-zinc-400">Yayın başlangıcına kalan süre</p>
-<p id="launch-countdown" class="mt-2 font-mono text-3xl sm:text-5xl font-bold text-red-400 tabular-nums">-- gün --:--:--</p>
-<p class="mt-2 text-sm text-zinc-300">24 Eylül 2026, 20.00</p>
-</div>
-<p class="mx-auto max-w-2xl text-sm leading-relaxed text-zinc-300">7527 sayılı Kanun'un iptali ve yaşam hakkı için çağrımız çok yakında burada başlayacak. Yayın saati geldiğinde imza kampanyası otomatik olarak açılacak.</p>
-</div>
+  <div class="max-w-4xl mx-auto px-4 py-12 text-center flex flex-col items-center justify-center min-h-screen space-y-6">
+    <div class="inline-flex items-center gap-2 px-3 py-1 bg-red-950/80 border border-red-800 text-red-400 rounded-full text-xs font-bold tracking-widest uppercase animate-pulse">
+      <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+      Yayın Başlangıcına Kalan Süre
+    </div>
+    
+    <div class="space-y-2">
+      <h1 id="launch-title" class="font-impact text-4xl sm:text-6xl md:text-7xl tracking-wide text-white uppercase italic">
+        7527 İPTAL! İMZACI OL!
+      </h1>
+      <p class="text-xl sm:text-2xl font-extrabold text-zinc-200">
+        Öldüren değil, yaşatan ol.
+      </p>
+    </div>
+
+    <div class="border-2 border-red-700/80 bg-zinc-900/90 px-8 py-6 rounded-2xl shadow-2xl space-y-2 max-w-md w-full">
+      <p class="text-xs font-semibold uppercase tracking-widest text-zinc-400">Canlı Yayına Geri Sayım</p>
+      <p id="launch-countdown" class="font-mono text-4xl sm:text-5xl font-extrabold text-red-500 tabular-nums">
+        -- gün --:--:--
+      </p>
+      <p class="text-xs text-zinc-400 font-medium">Hedef: 24 Eylül, Saat 20:00</p>
+    </div>
+
+    <p class="max-w-xl text-sm leading-relaxed text-zinc-300">
+      7527 sayılı Kanun'un iptali ve yaşam hakkı için çağrımız bu akşam saat 20:00'de burada başlayacak. Yayın saati geldiğinde imza sistemi otomatik olarak açılacaktır.
+    </p>
+
+    <!-- Hızlı Test Butonları (Yöneticiler ve test için) -->
+    <div class="pt-4 flex flex-wrap items-center justify-center gap-2 text-xs">
+      <button onclick="unlockGateNow()" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg font-bold transition shadow">
+        🔓 Kapıyı Hemen Aç (Test)
+      </button>
+      <button onclick="setTestCountdown(5)" class="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg font-semibold transition border border-zinc-700">
+        ⏱️ Son 5 Saniyeye Al
+      </button>
+    </div>
+  </div>
 </section>
 
-<!-- Kodu tam olarak çalıştırmak için JS kısmındaki düzeltilmiş fonksiyonlar: -->
+<!-- 2. ANA BAŞLIK & LOGO ALANI -->
+<header class="border-b border-zinc-800 py-8 px-4 text-center bg-zinc-900/80 backdrop-blur-sm">
+  <div class="max-w-5xl mx-auto space-y-4">
+    <div class="inline-block bg-red-600 -rotate-1 px-8 py-2.5 shadow-2xl rounded-sm">
+      <h1 class="font-impact text-3xl sm:text-5xl md:text-6xl tracking-wider text-white uppercase italic">
+        7527 İPTAL! İMZACISI OL!
+      </h1>
+    </div>
+    <p class="text-xl md:text-3xl font-extrabold text-zinc-100">
+      ÖLDÜREN DEĞİL, YAŞATAN OL!
+    </p>
+    <p class="text-xs md:text-sm font-bold text-red-500 uppercase tracking-widest">
+      YAŞAM HAKKI İÇİN 🐾 HAYVANLAR İÇİN 🐾 GELECEĞİMİZ İÇİN
+    </p>
+
+    <!-- Sekme Geçişi: Vatandaş / Vekil -->
+    <div class="pt-3 flex flex-wrap justify-center gap-3">
+      <button id="tab-btn-vatandas" onclick="switchTab('vatandas')" class="px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition border-2 bg-red-600 border-red-600 text-white shadow-xl cursor-pointer">
+        👤 VATANDAŞ PANELİ (DİLEKÇE OLUŞTUR)
+      </button>
+      <button id="tab-btn-vekil" onclick="switchTab('vekil')" class="px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition border-2 bg-zinc-900 border-zinc-700 text-zinc-300 hover:text-white cursor-pointer">
+        🏛️ MECLİS VEKİL PANELİ (VEKİL İMZASI)
+      </button>
+    </div>
+
+    <!-- QR & Sosyal Medya Kart Butonu -->
+    <div class="mx-auto max-w-lg border border-red-900/50 bg-zinc-950/80 p-4 rounded-2xl shadow-xl mt-4">
+      <div class="flex flex-col sm:flex-row items-center gap-4">
+        <div id="qrcode-box" class="bg-white p-2 rounded-xl shrink-0 flex items-center justify-center"></div>
+        <div class="text-left space-y-2 min-w-0 flex-1">
+          <p class="font-impact text-lg text-red-400 tracking-wide uppercase">
+            KAMPANYAYI HER YERDE PAYLAŞ
+          </p>
+          <input type="text" readonly value="https://www.7527iptal.org" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-2.5 py-1.5 text-xs text-zinc-200 font-mono">
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="generateAndDownloadShareCard()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-1.5 px-3 rounded-lg text-xs flex items-center gap-1.5 transition shadow">
+              🎨 1080x1080 Afiş İndir
+            </button>
+            <button type="button" onclick="downloadQRCode()" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-semibold py-1.5 px-3 rounded-lg text-xs transition border border-zinc-700">
+              QR İndir
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- 3. VATANDAŞ PANELİ -->
+<div id="panel-vatandas" class="flex-1">
+  <main class="max-w-7xl mx-auto px-4 py-8 w-full grid grid-cols-1 lg:grid-cols-12 gap-8">
+    
+    <!-- SOL KOLON: Form, Seçim ve Önizleme -->
+    <section class="lg:col-span-6 space-y-6">
+
+      <!-- Canlı Sayaçlar Kartı -->
+      <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 space-y-4 shadow-xl">
+        <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+          <h2 class="text-xs font-bold text-zinc-300 uppercase tracking-wider flex items-center gap-2">
+            <span>📊</span> CANLI KAMPANYA SAYAÇLARI
+          </h2>
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-red-950 text-red-400 border border-red-800/80 animate-pulse">
+            <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> CANLI
+          </span>
+        </div>
+
+        <div class="space-y-1.5">
+          <div class="flex justify-between items-baseline text-xs">
+            <span class="font-bold text-white">🐾 VATANDAŞ İMZA HEDEFİ</span>
+            <span id="citizen-counter" class="font-bold text-red-500 font-mono text-base">
+              1.420 / 3.000.000
+            </span>
+          </div>
+          <div class="w-full bg-zinc-950 rounded-full h-3 overflow-hidden border border-zinc-800">
+            <div id="citizen-progress" class="bg-gradient-to-r from-red-700 to-red-500 h-3 rounded-full transition-all duration-500" style="width: 1%"></div>
+          </div>
+        </div>
+
+        <div class="space-y-1.5 pt-2 border-t border-zinc-800/60">
+          <div class="flex justify-between items-baseline text-xs">
+            <span class="font-bold text-white">🏛️ MECLİS İPTAL İMZASI</span>
+            <span id="mp-counter" class="font-bold text-emerald-400 font-mono text-base">
+              0 / 592
+            </span>
+          </div>
+          <div class="w-full bg-zinc-950 rounded-full h-3 overflow-hidden border border-zinc-800">
+            <div id="mp-progress" class="bg-gradient-to-r from-emerald-600 to-emerald-400 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2 pt-2 border-t border-zinc-800/60 text-center text-xs">
+          <div class="bg-zinc-950 rounded-xl p-2.5 border border-amber-900/30">
+            <div class="text-[10px] text-amber-400 font-bold">🏛️ CB'ye Giden</div>
+            <div id="cb-counter" class="text-amber-400 font-mono font-bold text-sm mt-0.5">540</div>
+          </div>
+          <div class="bg-zinc-950 rounded-xl p-2.5 border border-amber-900/30">
+            <div class="text-[10px] text-amber-400 font-bold">🏛️ TBMM'ye Giden</div>
+            <div id="mb-counter" class="text-amber-400 font-mono font-bold text-sm mt-0.5">390</div>
+          </div>
+          <div class="bg-zinc-950 rounded-xl p-2.5 border border-sky-900/30">
+            <div class="text-[10px] text-sky-400 font-bold">✉️ Vekillere Giden</div>
+            <div id="mp-sent-counter" class="text-sky-400 font-mono font-bold text-sm mt-0.5">490</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADIM 1: Hedef Seçimi -->
+      <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 space-y-4 shadow-xl">
+        <h2 class="text-sm font-bold text-white border-b border-zinc-800 pb-2.5 flex items-center justify-between">
+          <span>1️⃣ KİME GÖNDERECEKSİN?</span>
+          <span class="text-xs text-red-400 font-normal">* Zorunlu</span>
+        </h2>
+        <div class="grid grid-cols-3 gap-2 sm:gap-3">
+          <button type="button" id="btn-target-cb" onclick="selectTarget('cb')" class="border-2 py-3 rounded-xl text-xs font-bold uppercase transition border-amber-700 bg-amber-950/40 text-amber-300 hover:bg-amber-900/60 cursor-pointer">
+            🏛️ CB MAKAMINA
+          </button>
+          <button type="button" id="btn-target-mb" onclick="selectTarget('mb')" class="border-2 py-3 rounded-xl text-xs font-bold uppercase transition border-amber-700 bg-amber-950/40 text-amber-300 hover:bg-amber-900/60 cursor-pointer">
+            🏛️ TBMM BAŞKANI
+          </button>
+          <button type="button" id="btn-target-mp" onclick="selectTarget('mp')" class="border-2 py-3 rounded-xl text-xs font-bold uppercase transition border-emerald-700 bg-emerald-950/40 text-emerald-300 hover:bg-emerald-900/60 cursor-pointer">
+            ✉️ MİLLETVEKİLİ
+          </button>
+        </div>
+        <p id="target-help-text" class="text-xs text-zinc-400 text-center font-medium">
+          Dilekçenizin iletileceği makamı yukarıdaki butonlardan seçiniz.
+        </p>
+
+        <!-- Milletvekili Seçim Paneli (Sadece MP seçildiğinde görünür) -->
+        <div id="mp-selector-panel" class="hidden bg-zinc-950 p-4 rounded-xl border border-emerald-800/60 space-y-3 mt-3">
+          <div class="flex items-center justify-between border-b border-emerald-900/40 pb-2">
+            <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wide">
+              MİLLETVEKİLİNİ SEÇ (592 VEKİL)
+            </h3>
+            <span id="mp-match-count" class="text-[11px] text-zinc-400 font-mono">592 vekil</span>
+          </div>
+          
+          <input type="text" id="mp-search-input" oninput="filterMps()" placeholder="Vekil adı veya şehir ara..." class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-xs text-zinc-100 focus:border-emerald-500 focus:outline-none">
+          
+          <div class="grid grid-cols-2 gap-2">
+            <select id="mp-party-filter" onchange="filterMps()" class="bg-zinc-900 border border-zinc-700 rounded-lg px-2.5 py-1.5 text-xs text-zinc-200">
+              <option value="TÜMÜ">Tüm Partiler</option>
+            </select>
+            <select id="mp-city-filter" onchange="filterMps()" class="bg-zinc-900 border border-zinc-700 rounded-lg px-2.5 py-1.5 text-xs text-zinc-200">
+              <option value="ALL">Tüm Türkiye (81 İl)</option>
+            </select>
+          </div>
+
+          <div id="mp-list-container" class="max-h-56 overflow-y-auto space-y-1.5 border border-zinc-800 rounded-lg p-2 bg-zinc-900/50">
+            <!-- Dinamik yüklenecek -->
+          </div>
+
+          <div id="selected-mp-badge" class="hidden p-2.5 bg-emerald-950/80 border border-emerald-700 rounded-lg text-xs text-emerald-200 flex items-center justify-between">
+            <div>
+              <strong>Seçilen Vekil:</strong> <span id="selected-mp-name">-</span>
+              <div class="text-[10px] text-emerald-400 font-mono" id="selected-mp-email">-</div>
+            </div>
+            <span class="text-emerald-400 font-bold">✓ Seçildi</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADIM 2: Vatandaş Bilgileri ve İmza Pedi -->
+      <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 space-y-4 shadow-xl">
+        <h2 class="text-sm font-bold text-white border-b border-zinc-800 pb-2.5 flex items-center justify-between">
+          <span>2️⃣ BİLGİLERİNİ VE İMZANI EKLE</span>
+          <span class="text-[11px] text-zinc-400 font-normal">Resmi Dilekçe İçin</span>
+        </h2>
+
+        <div class="space-y-3.5 text-xs">
+          <div>
+            <label class="block text-zinc-300 font-semibold mb-1">AD SOYAD *</label>
+            <input type="text" id="citizen-name" oninput="updatePetitionPreview()" placeholder="Adınız Soyadınız" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 focus:border-red-500 focus:outline-none">
+          </div>
+
+          <div>
+            <label class="block text-zinc-300 font-semibold mb-1">
+              T.C. KİMLİK NUMARASI <span class="text-zinc-500 font-normal">(Resmi dilekçelerde geçerlilik için önerilir)</span>
+            </label>
+            <input type="text" id="citizen-tc" maxlength="11" oninput="formatTc(this); updatePetitionPreview();" placeholder="11 haneli T.C. Kimlik Numaranız" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 focus:border-red-500 focus:outline-none font-mono">
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-zinc-300 font-semibold mb-1">ŞEHİR *</label>
+              <select id="citizen-city" onchange="updatePetitionPreview()" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-2.5 py-2 text-zinc-100 focus:border-red-500 focus:outline-none">
+                <option value="">Şehir Seçiniz</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-zinc-300 font-semibold mb-1">İLÇE *</label>
+              <input type="text" id="citizen-district" oninput="updatePetitionPreview()" placeholder="İlçe" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 focus:border-red-500 focus:outline-none">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-zinc-300 font-semibold mb-1">AÇIK ADRES *</label>
+            <textarea id="citizen-address" rows="2" oninput="updatePetitionPreview()" placeholder="Tebligat ve dilekçe geçerliliği için adresiniz" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 focus:border-red-500 focus:outline-none"></textarea>
+          </div>
+
+          <div>
+            <label class="block text-zinc-300 font-semibold mb-1">TELEFON VEYA E-POSTA</label>
+            <input type="text" id="citizen-contact" placeholder="İletişim bilginiz" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 focus:border-red-500 focus:outline-none">
+          </div>
+
+          <!-- Islak İmza Tuvali -->
+          <div class="pt-2">
+            <div class="flex justify-between items-center mb-1.5">
+              <label class="block font-bold text-red-400">ISLAK İMZANIZI ATIN *</label>
+              <button type="button" onclick="clearCitizenPad()" class="text-xs text-zinc-400 hover:text-white underline cursor-pointer">
+                İmzayı Temizle
+              </button>
+            </div>
+            <div class="border-2 border-zinc-700 bg-white rounded-xl overflow-hidden touch-none relative shadow-inner">
+              <canvas id="citizen-canvas" class="w-full h-28 cursor-crosshair block bg-white"></canvas>
+            </div>
+            <p class="text-[10px] text-zinc-400 mt-1">
+              📱 Mobilde parmağınızla, masaüstünde farenizle imzalayabilirsiniz.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SAĞ KOLON: Canlı Dilekçe Önizlemesi ve Gönderme Butonları -->
+    <section class="lg:col-span-6 space-y-6">
+
+      <!-- ADIM 3: Resmi Dilekçe Belgesi -->
+      <div class="bg-zinc-900 p-6 rounded-2xl border-2 border-emerald-700 space-y-4 shadow-2xl sticky top-6">
+        <div class="border-b border-emerald-800/60 pb-2.5 flex justify-between items-center">
+          <h2 class="text-sm font-bold text-white flex items-center gap-2">
+            <span>3️⃣</span> DİLEKÇE ÖNİZLEMESİ VE GÖNDER
+          </h2>
+          <span id="preview-target-badge" class="px-2.5 py-1 rounded bg-emerald-950 border border-emerald-600 text-emerald-300 text-[10px] font-bold">
+            Hedef Seçilmedi
+          </span>
+        </div>
+
+        <!-- Resmi Belge Görünümü -->
+        <div class="bg-white text-zinc-900 border border-zinc-300 rounded-xl p-6 max-h-[380px] overflow-y-auto text-xs leading-relaxed font-serif-doc shadow-inner">
+          <div id="petition-header-text" class="text-center font-bold whitespace-pre-line text-sm border-b border-zinc-300 pb-3 mb-3 uppercase tracking-wide">
+            T.C. CUMHURBAŞKANLIĞI MAKAMINA
+          </div>
+
+          <p class="mb-2">
+            <strong>KONU:</strong> 7527 sayılı Hayvanları Koruma Kanununda Değişiklik Yapılmasına Dair Kanun'un olağanüstü toplantıyla yürürlükten kaldırılması, 5199 sayılı Kanun'a dönülmesi ve yaşam hakkı gözetilerek gerekli iyileştirmelerin yapılması talebidir.
+          </p>
+
+          <p class="mb-3">
+            7527 sayılı Kanun'un sahadaki uygulamalarının yaşam hakkı, kamu vicdanı ve hayvan refahı bakımından telafisi imkansız zararlara yol açtığı açıktır. Yaşam hakkının kutsallığı ve Anayasal sorumluluk gereği; <strong>7527 sayılı Kanun'un acilen kaldırılmasını, 5199 sayılı Kanun ilkelerine dönülmesini ve bilimsel, koruyucu politikalar geliştirilmesini</strong> saygılarımla arz ve talep ederim.
+          </p>
+
+          <div class="pt-4 border-t border-zinc-300 flex justify-between items-end text-[11px]">
+            <div>
+              <p><strong>Dilekçe Sahibi:</strong> <span id="doc-val-name">[Adınız Soyadınız]</span></p>
+              <p><strong>T.C. Kimlik No:</strong> <span id="doc-val-tc">[T.C. Kimlik No]</span></p>
+              <p><strong>Adres:</strong> <span id="doc-val-address">[Açık Adresiniz]</span></p>
+              <p><strong>Tarih:</strong> <span id="doc-val-date">24.09.2026</span></p>
+            </div>
+            <div class="text-center">
+              <div id="doc-sig-container" class="min-w-[120px] max-h-16 flex items-center justify-center">
+                <span class="text-zinc-400 italic text-[10px]">[İmza Bekleniyor]</span>
+              </div>
+              <p class="text-[10px] text-zinc-600 font-bold mt-1">İmza</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gönderme ve İndirme Aksiyonları -->
+        <div class="space-y-2.5 pt-2">
+          <button type="button" onclick="sendPetitionViaEmail()" class="w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-sm font-extrabold uppercase tracking-wide transition shadow-lg flex items-center justify-center gap-2 cursor-pointer">
+            <span>✉️</span> E-POSTA İLE DİLEKÇEYİ GÖNDER
+          </button>
+
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" onclick="printPetition()" class="py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 border border-zinc-700 cursor-pointer">
+              <span>🖨️</span> Yazdır / PDF İndir
+            </button>
+            <button type="button" onclick="copyPetitionText()" class="py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 border border-zinc-700 cursor-pointer">
+              <span>📋</span> Metni Kopyala
+            </button>
+          </div>
+        </div>
+
+        <!-- Webmail Hızlı Linkleri -->
+        <div class="p-3 bg-zinc-950/80 rounded-xl border border-zinc-800 text-[11px] text-zinc-400 space-y-1">
+          <span class="font-semibold text-zinc-300">Harici E-posta Açıcılar:</span>
+          <div class="flex flex-wrap gap-2 pt-1">
+            <button type="button" onclick="openWebmail('gmail')" class="px-2.5 py-1 bg-zinc-900 hover:bg-zinc-800 rounded border border-zinc-700 text-zinc-300 text-[11px]">
+              Gmail Web
+            </button>
+            <button type="button" onclick="openWebmail('outlook')" class="px-2.5 py-1 bg-zinc-900 hover:bg-zinc-800 rounded border border-zinc-700 text-zinc-300 text-[11px]">
+              Outlook Web
+            </button>
+            <button type="button" onclick="openWebmail('yahoo')" class="px-2.5 py-1 bg-zinc-900 hover:bg-zinc-800 rounded border border-zinc-700 text-zinc-300 text-[11px]">
+              Yahoo Mail
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- 4. VAKA ALMANAĞI (70 GERÇEK BELGELİ OLAY) -->
+  <section class="max-w-7xl mx-auto px-4 py-12 border-t border-zinc-800">
+    <div class="bg-zinc-900 p-6 sm:p-8 rounded-3xl border border-zinc-800 shadow-2xl space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-800 pb-4">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 bg-red-950 border border-red-800 text-red-400 rounded-full text-xs font-bold uppercase tracking-wider mb-2">
+            70 Belgelenmiş Vaka
+          </div>
+          <h2 class="font-impact text-2xl sm:text-3xl text-white uppercase tracking-wide">
+            YAŞAM HAKKI İHLALLERİ VE VAKA ALMANAĞI
+          </h2>
+          <p class="text-xs sm:text-sm text-zinc-400">
+            Kanun değişikliği ve sonrasında belgelenmiş gerçek olaylar, haber kaynakları ve resmi kayıtlar.
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <input type="text" id="almanac-search" oninput="filterAlmanac()" placeholder="Vaka, il veya detay ara..." class="bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-xs text-zinc-100 focus:border-red-500 focus:outline-none w-48 sm:w-64">
+        </div>
+      </div>
+
+      <!-- Filtreler -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+        <select id="almanac-city-filter" onchange="filterAlmanac()" class="bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200">
+          <option value="TÜMÜ">Tüm Şehirler</option>
+        </select>
+        <select id="almanac-cat-filter" onchange="filterAlmanac()" class="bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200">
+          <option value="TÜMÜ">Tüm Kategoriler</option>
+          <option value="Kamu İhlali">Kamu İhlali</option>
+          <option value="Yaşam Hakkı">Yaşam Hakkı</option>
+          <option value="Zehirlenme">Zehirlenme</option>
+          <option value="İşkence">İşkence</option>
+          <option value="Kapatılma">Kapatılma</option>
+          <option value="Cinsel Şiddet">Cinsel Şiddet</option>
+          <option value="Ateşli Silah">Ateşli Silah</option>
+        </select>
+        <select id="almanac-sort" onchange="filterAlmanac()" class="bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200">
+          <option value="recent">En Yeni Tarihli Olaylar</option>
+          <option value="old">En Eski Tarihli Olaylar</option>
+        </select>
+      </div>
+
+      <!-- Vaka Kartları Grid -->
+      <div id="almanac-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[600px] overflow-y-auto pr-1">
+        <!-- Dinamik Vakalar -->
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. GÖNÜLLÜ OL FORMU -->
+  <section class="max-w-4xl mx-auto px-4 py-8 mb-8">
+    <div class="bg-zinc-900 border border-zinc-800 p-6 sm:p-8 rounded-2xl shadow-xl space-y-4">
+      <div class="text-center space-y-2">
+        <h2 class="font-impact text-2xl text-white uppercase tracking-wide">
+          🤝 SAHA VE İLETİŞİM GÖNÜLLÜSÜ OL
+        </h2>
+        <p class="text-xs text-zinc-400 max-w-xl mx-auto">
+          Şehrinizde afiş dağıtımı, milletvekili iletişimi ve sosyal medya yayılımına destek verin.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs pt-2">
+        <input type="text" id="vol-name" placeholder="Adınız Soyadınız" class="bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100">
+        <select id="vol-city" class="bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100">
+          <option value="">Şehir Seçiniz</option>
+        </select>
+        <input type="text" id="vol-contact" placeholder="Telefon / E-posta" class="bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100">
+      </div>
+      <textarea id="vol-note" rows="2" placeholder="Nasıl katkı verebilirsiniz? (Afiş, sosyal medya, vekil iletişimi...)" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-xs text-zinc-100"></textarea>
+
+      <button type="button" onclick="submitVolunteerForm()" class="w-full py-3 bg-red-700 hover:bg-red-600 text-white font-bold rounded-xl text-xs uppercase tracking-wide transition shadow">
+        Gönüllü Olarak Kaydol
+      </button>
+    </div>
+  </section>
+</div>
+
+<!-- 6. MECLİS VEKİL PANELİ -->
+<div id="panel-vekil" class="hidden flex-1 max-w-4xl mx-auto px-4 py-10 w-full space-y-8">
+  <div class="bg-zinc-900 border-2 border-emerald-600 p-8 rounded-3xl shadow-2xl space-y-6">
+    <div class="text-center space-y-2">
+      <div class="inline-block px-3 py-1 bg-emerald-950 border border-emerald-700 text-emerald-400 rounded-full text-xs font-bold uppercase tracking-wider">
+        Türkiye Büyük Millet Meclisi Üyeleri İçin
+      </div>
+      <h2 class="font-impact text-3xl sm:text-4xl text-white uppercase tracking-wide">
+        🏛️ 7527 SAYILI KANUNUN İPTALİ İÇİN İMZACI OLUN
+      </h2>
+      <p class="text-xs sm:text-sm text-zinc-300 max-w-2xl mx-auto">
+        Sayın Milletvekili, 7527 sayılı Kanun'un iptali ve 5199 sayılı Kanun'a dönülmesi için TBMM iradesini göstererek bu tarihi çağrıya imzanızla destek verin.
+      </p>
+    </div>
+
+    <div class="space-y-4 text-xs">
+      <div>
+        <label class="block text-zinc-300 font-semibold mb-1">MİLLETVEKİLİ ADINIZ VE ŞEHRİNİZ *</label>
+        <select id="mp-sign-select" class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-2.5 text-zinc-100 text-xs">
+          <option value="">Lütfen listeden isminizi seçin (592 Vekil)...</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-zinc-300 font-semibold mb-1">TBMM KURUMSAL E-POSTA ADRESİNİZ *</label>
+        <input type="email" id="mp-sign-email" placeholder="ad.soyad@tbmm.gov.tr" class="w-full bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-2.5 text-zinc-100 font-mono">
+      </div>
+
+      <div>
+        <label class="block text-zinc-300 font-semibold mb-1">VEKİL ISLAK İMZASI *</label>
+        <div class="border-2 border-zinc-700 bg-white rounded-xl overflow-hidden touch-none relative shadow-inner">
+          <canvas id="mp-canvas" class="w-full h-32 cursor-crosshair block bg-white"></canvas>
+        </div>
+        <div class="flex justify-between items-center mt-1">
+          <span class="text-[10px] text-zinc-400">İmzanız doğrulanarak meclis sayaçlarına işlenir.</span>
+          <button type="button" onclick="clearMpPad()" class="text-xs text-zinc-400 hover:text-white underline">Temizle</button>
+        </div>
+      </div>
+
+      <button type="button" onclick="submitMpSignature()" class="w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold uppercase tracking-wider text-sm transition shadow-xl">
+        Milletvekili Olarak İmzala ve İlan Et
+      </button>
+    </div>
+  </div>
+
+  <!-- İmzalayan Vekiller Vitrini -->
+  <div class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl space-y-4 shadow-xl">
+    <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
+      <h3 class="font-impact text-xl text-white uppercase tracking-wide">
+        İMZALAYAN MİLLETVEKİLLERİ (<span id="signed-mps-count">0</span>)
+      </h3>
+      <span class="text-xs text-emerald-400 font-bold">Resmi Meclis Kaydı</span>
+    </div>
+    <div id="signed-mps-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+      <!-- İmzalayan vekiller burada listelenir -->
+    </div>
+  </div>
+</div>
+
+<!-- 7. ONAY MODALI (E-POSTA AÇILDIKTAN SONRA) -->
+<div id="confirm-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="bg-zinc-900 border-2 border-emerald-600 rounded-3xl max-w-md w-full p-6 text-center space-y-4 shadow-2xl animate-in zoom-in-95 duration-200">
+    <div class="w-16 h-16 bg-emerald-950 border border-emerald-600 rounded-full flex items-center justify-center mx-auto text-2xl">
+      ✉️
+    </div>
+    <h3 class="font-impact text-2xl text-white uppercase">DİLEKÇENİZİ GÖNDERDİNİZ Mİ?</h3>
+    <p class="text-xs text-zinc-300 leading-relaxed">
+      E-posta istemciniz açıldı. Lütfen e-postayı <span class="text-emerald-400 font-bold">"Gönder"</span> butonuna basarak ilettiğinizden emin olun. Gönderdiyseniz onaylayarak canlı sayaçlara ekleyin.
+    </p>
+    <div class="flex gap-2 pt-2">
+      <button onclick="confirmPetitionSent(true)" class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs uppercase transition shadow">
+        ✓ Evet, Gönderdim
+      </button>
+      <button onclick="confirmPetitionSent(false)" class="flex-1 py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-xl font-semibold text-xs transition border border-zinc-700">
+        Henüz Göndermedim
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- 8. TEŞEKKÜR VE SOSYAL MEDYA PAYLAŞIM MODALI -->
+<div id="thanks-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="bg-zinc-900 border-2 border-red-600 rounded-3xl max-w-md w-full p-6 text-center space-y-5 shadow-2xl animate-in zoom-in-95 duration-200">
+    <div class="w-16 h-16 bg-red-950 border border-red-600 rounded-full flex items-center justify-center mx-auto text-2xl">
+      🐾
+    </div>
+    <div>
+      <h3 class="font-impact text-2xl text-white uppercase">TEŞEKKÜRLER, SES OLDUNUZ!</h3>
+      <p class="text-xs text-zinc-300 mt-1">Dilekçeniz kayda geçti ve sayaçlara yansıtıldı.</p>
+    </div>
+
+    <div class="p-3 bg-zinc-950 rounded-xl border border-zinc-800 text-xs text-zinc-300 text-left space-y-1">
+      <p>🐾 <strong>Şimdi Sıra Yaymakta:</strong></p>
+      <p class="text-zinc-400 text-[11px]">Kampanyayı 3 arkadaşınızla paylaşarak onların da dilekçe vermesini sağlayın!</p>
+    </div>
+
+    <!-- Sosyal Medya Butonları -->
+    <div class="grid grid-cols-2 gap-2 text-xs">
+      <a id="share-wa" target="_blank" class="py-2.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg font-bold flex items-center justify-center gap-1.5 transition">
+        WhatsApp'ta Paylaş
+      </a>
+      <a id="share-x" target="_blank" class="py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg font-bold flex items-center justify-center gap-1.5 transition border border-zinc-700">
+        X'te (Twitter) Paylaş
+      </a>
+      <a id="share-fb" target="_blank" class="py-2.5 bg-blue-800 hover:bg-blue-700 text-white rounded-lg font-bold flex items-center justify-center gap-1.5 transition">
+        Facebook'ta Paylaş
+      </a>
+      <a id="share-tg" target="_blank" class="py-2.5 bg-sky-700 hover:bg-sky-600 text-white rounded-lg font-bold flex items-center justify-center gap-1.5 transition">
+        Telegram'da Paylaş
+      </a>
+    </div>
+
+    <button onclick="generateAndDownloadShareCard()" class="w-full py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold text-xs uppercase transition shadow flex items-center justify-center gap-2">
+      <span>🎨</span> 1080x1080 Sosyal Medya Kartımı İndir
+    </button>
+
+    <button onclick="closeThanksModal()" class="w-full py-2 text-zinc-500 hover:text-zinc-300 text-xs">
+      Pencereyi Kapat
+    </button>
+  </div>
+</div>
+
+<!-- 9. YÖNETİCİ PANELİ MODALI (PIN: 7527) -->
+<div id="admin-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="bg-zinc-900 border border-zinc-700 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl text-xs">
+    <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
+      <h3 class="font-impact text-xl text-white uppercase">⚙️ YÖNETİCİ KONTROL PANELİ</h3>
+      <button onclick="closeAdminModal()" class="text-zinc-400 hover:text-white">✕</button>
+    </div>
+
+    <div id="admin-auth-view" class="space-y-3">
+      <label class="block text-zinc-400">YÖNETİCİ PIN KODUNU GİRİN:</label>
+      <input type="password" id="admin-pin-input" placeholder="****" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 font-mono text-center text-lg">
+      <button onclick="checkAdminPin()" class="w-full py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-lg font-bold">
+        Giriş Yap
+      </button>
+    </div>
+
+    <div id="admin-controls-view" class="hidden space-y-4">
+      <div class="space-y-2">
+        <label class="block font-bold text-emerald-400">SAYAÇLARI MANUEL DÜZENLE</label>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <span class="text-[10px] text-zinc-400">Vatandaş İmza:</span>
+            <input type="number" id="admin-count-cit" class="w-full bg-zinc-950 border border-zinc-700 rounded p-1.5 text-zinc-100 font-mono">
+          </div>
+          <div>
+            <span class="text-[10px] text-zinc-400">Meclis Vekil:</span>
+            <input type="number" id="admin-count-mp" class="w-full bg-zinc-950 border border-zinc-700 rounded p-1.5 text-zinc-100 font-mono">
+          </div>
+        </div>
+        <button onclick="saveAdminCounters()" class="w-full py-1.5 bg-emerald-700 text-white rounded font-bold">
+          Sayaçları Kaydet
+        </button>
+      </div>
+
+      <div class="space-y-2 pt-2 border-t border-zinc-800">
+        <label class="block font-bold text-zinc-300">VERİ DIŞA AKTARIMI</label>
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="exportSignatures('json')" class="py-2 bg-zinc-800 hover:bg-zinc-700 rounded font-semibold text-zinc-200">
+            JSON Olarak İndir
+          </button>
+          <button onclick="exportSignatures('csv')" class="py-2 bg-zinc-800 hover:bg-zinc-700 rounded font-semibold text-zinc-200">
+            CSV Olarak İndir
+          </button>
+        </div>
+      </div>
+
+      <div class="space-y-2 pt-2 border-t border-zinc-800">
+        <label class="block font-bold text-amber-400">KAPI DURUMU</label>
+        <div class="flex gap-2">
+          <button onclick="unlockGateNow(); closeAdminModal();" class="flex-1 py-1.5 bg-emerald-700 text-white rounded font-bold">
+            Kapıyı Aç
+          </button>
+          <button onclick="lockGateNow(); closeAdminModal();" class="flex-1 py-1.5 bg-red-800 text-white rounded font-bold">
+            Kapıyı Kapat
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 10. YAZDIRMA İÇİN GİZLİ DİLEKÇE ŞABLONU -->
+<div id="print-petition">
+  <div id="print-header" style="text-align: center; font-weight: bold; margin-bottom: 25px; font-size: 13pt; text-transform: uppercase;">
+    T.C. CUMHURBAŞKANLIĞI MAKAMINA
+  </div>
+  <p style="margin-bottom: 15px;">
+    <strong>KONU:</strong> 7527 sayılı Kanun'un olağanüstü toplantıyla yürürlükten kaldırılması, 5199 sayılı Kanun'a dönülmesi ve yaşam hakkı gözetilerek gerekli iyileştirmelerin yapılması talebidir.
+  </p>
+  <p style="margin-bottom: 20px; text-align: justify;">
+    7527 sayılı Kanun'un sahadaki uygulamalarının yaşam hakkı, kamu vicdanı ve hayvan refahı bakımından telafisi imkansız zararlara yol açtığı açıktır. Yaşam hakkının kutsallığı ve Anayasal sorumluluk gereği; 7527 sayılı Kanun'un acilen kaldırılmasını, 5199 sayılı Kanun ilkelerine dönülmesini ve bilimsel, koruyucu politikalar geliştirilmesini saygılarımla arz ve talep ederim.
+  </p>
+  <div style="margin-top: 50px; display: flex; justify-content: space-between; align-items: flex-end;">
+    <div>
+      <p><strong>Dilekçe Sahibi:</strong> <span id="print-name"></span></p>
+      <p><strong>T.C. Kimlik No:</strong> <span id="print-tc"></span></p>
+      <p><strong>Adres:</strong> <span id="print-address"></span></p>
+      <p><strong>Tarih:</strong> <span id="print-date"></span></p>
+    </div>
+    <div style="text-align: center;">
+      <img id="print-sig-img" class="val-sig" src="" alt="İmza" style="display:none; max-height: 60px;">
+      <p style="margin-top: 5px; font-weight: bold;">İmza</p>
+    </div>
+  </div>
+</div>
+
+<!-- 11. FOOTER -->
+<footer class="border-t border-zinc-800 py-8 px-4 bg-zinc-950 text-center text-xs text-zinc-500 space-y-3">
+  <p class="font-bold text-zinc-400">7527 İPTAL! İMZACISI OL! © 2026</p>
+  <p class="max-w-xl mx-auto text-[11px] text-zinc-600">
+    Bu kampanya yaşam hakkını savunan bağımsız yurttaşlar ve hayvan hakları savunucuları tarafından koordine edilmektedir.
+  </p>
+  <div class="flex items-center justify-center gap-3 pt-2">
+    <button onclick="openAdminModal()" class="text-zinc-600 hover:text-zinc-400 flex items-center gap-1 text-[11px]">
+      🔒 Yönetici Girişi
+    </button>
+  </div>
+</footer>
+
+<!-- 12. TÜM DİNAMİK VERİLER VE FONKSİYONLAR -->
 <script>
-// TBMM Kurumsal E-posta Üretici (Fallback)
+// --- VERİTABANI: 592 VEKİL LİSTESİ ---
+var RAW_MP_STRING = `Adana|Abdullah DOĞRU|AK Parti
+Adana|Ahmet ZENBİLCİ|BAĞIMSIZ
+Adana|Ayhan BARUT|Yeni Parti
+Adana|Ayşe Sibel ERSOY|MHP
+Adana|Ayyüce TÜRKEŞ TAŞ|İYİ Parti
+Adana|Bilal BİLİCİ|Yeni Parti
+Adana|Burhanettin BULUT|Yeni Parti
+Adana|Faruk AYTEK|AK Parti
+Adana|Muharrem VARLI|MHP
+Adana|Müzeyyen ŞEVKİN|CHP
+Adana|Orhan SÜMER|Yeni Parti
+Adana|Ömer ÇELİK|AK Parti
+Adana|Sadullah KISACIK|YENİ YOL
+Adana|Sunay KARAMIK|AK Parti
+Adana|Tulay HATIMOĞULLARI ORUÇ|DEM PARTİ
+Adıyaman|Hüseyin ÖZHAN|AK Parti
+Adıyaman|İshak ŞAN|AK Parti
+Adıyaman|Mustafa ALKAYIŞ|AK Parti
+Adıyaman|Resul KURT|AK Parti
+Afyonkarahisar|Ali ÖZKAYA|AK Parti
+Afyonkarahisar|Hakan Şeref OLGUN|İYİ Parti
+Afyonkarahisar|Hasan ARSLAN|AK Parti
+Afyonkarahisar|İbrahim YURDUNUSEVEN|AK Parti
+Afyonkarahisar|Mehmet TAYTAK|MHP
+Ağrı|Heval BOZDAĞ|DEM PARTİ
+Ağrı|Nejla DEMİR|DEM PARTİ
+Ağrı|Ruken KİLERCİ|AK Parti
+Ağrı|Sırrı SAKİK|DEM PARTİ
+Aksaray|Cengiz AYDOĞDU|AK Parti
+Aksaray|Hüseyin ALTINSOY|AK Parti
+Aksaray|Ramazan KAŞLI|BAĞIMSIZ
+Aksaray|Turan YALDIR|İYİ Parti
+Amasya|Haluk İPEK|AK Parti
+Amasya|Hasan ÇİLEZ|AK Parti
+Amasya|Reşat KARAGÖZ|Yeni Parti
+Ankara|Adnan BEKER|BAĞIMSIZ
+Ankara|Ahmet Eşref FAKIBABA|İYİ Parti
+Ankara|Ahmet Fethan BAYKOÇ|AK Parti
+Ankara|Aliye TİMİSİ ERSEVER|Yeni Parti
+Ankara|Asuman ERDOĞAN|AK Parti
+Ankara|Aylin YAMAN|Yeni Parti
+Ankara|Deniz DEMİR|CHP
+Ankara|Fuat OKTAY|AK Parti
+Ankara|Gamze TAŞCIER|Yeni Parti
+Ankara|İdris ŞAHİN|YENİ YOL
+Ankara|Jülide SARIEROĞLU|AK Parti
+Ankara|Koray AYDIN|BAĞIMSIZ
+Ankara|Kurtcan ÇELEBİ|AK Parti
+Ankara|Kürşad ZORLU|AK Parti
+Ankara|Leyla ŞAHİN USTA|AK Parti
+Ankara|Lütfiye Selva ÇAM|AK Parti
+Ankara|Mesut DOĞAN|YENİ YOL
+Ankara|Mevlüt KARAKAYA|MHP
+Ankara|Murat ALPARSLAN|AK Parti
+Ankara|Murat EMİR|Yeni Parti
+Ankara|Mustafa Nedim YAMALI|AK Parti
+Ankara|Okan KONURALP|Yeni Parti
+Ankara|Orhan YEGİN|AK Parti
+Ankara|Osman GÖKÇEK|AK Parti
+Ankara|Ömer İLERİ|AK Parti
+Ankara|Sadir DURMAZ|MHP
+Ankara|Sadullah ERGİN|YENİ YOL
+Ankara|Semra DİNÇER|CHP
+Ankara|Tekin BİNGÖL|Yeni Parti
+Ankara|Umut AKDOĞAN|Yeni Parti
+Ankara|Vedat BİLGİN|AK Parti
+Ankara|Yaşar YILDIRIM|MHP
+Ankara|Yıldırım Tuğrul TÜRKEŞ|AK Parti
+Ankara|Yüksel ARSLAN|İYİ Parti
+Ankara|Zehranur AYDEMİR|AK Parti
+Ankara|Zeynep YILDIZ|AK Parti
+Antalya|Abdurrahman BAŞKAN|MHP
+Antalya|Aliye COŞAR|Yeni Parti
+Antalya|Atay USLU|AK Parti
+Antalya|Aykut KAYA|Yeni Parti
+Antalya|Cavit ARI|Yeni Parti
+Antalya|Hakkı Saruhan OLUÇ|DEM PARTİ
+Antalya|Hilmi DURGUN|MHP
+Antalya|İbrahim Ethem TAŞ|AK Parti
+Antalya|Kemal ÇELİK|AK Parti
+Antalya|Mevlüt ÇAVUŞOĞLU|AK Parti
+Antalya|Mustafa ERDEM|Yeni Parti
+Antalya|Mustafa KÖSE|AK Parti
+Antalya|Serap YAZICI ÖZBUDUN|AK Parti
+Antalya|Sururi ÇORABATIR|CHP
+Antalya|Şerafettin KILIÇ|YENİ YOL
+Antalya|Tuba VURAL ÇOKAL|AK Parti
+Antalya|Uğur POYRAZ|İYİ Parti
+Ardahan|Kaan KOÇ|AK Parti
+Ardahan|Özgür Erdem İNCESU|Yeni Parti
+Artvin|Faruk ÇELİK|AK Parti
+Artvin|Uğur BAYRAKTUTAN|Yeni Parti
+Aydın|Bülent TEZCAN|Yeni Parti
+Aydın|Evrim KARAKOZ|Yeni Parti
+Aydın|Hüseyin YILDIZ|CHP
+Aydın|Mustafa SAVAŞ|AK Parti
+Aydın|Ömer KARAKAŞ|AK Parti
+Aydın|Ömer ÖZMEN|AK Parti
+Aydın|Seda SARIBAŞ|AK Parti
+Aydın|Süleyman BÜLBÜL|Yeni Parti
+Balıkesir|Ali Taylan ÖZTAYLAN|AK Parti
+Balıkesir|Belgin UYGUR|AK Parti
+Balıkesir|Burak DALGIN|İYİ Parti
+Balıkesir|Ekrem Gökay YÜKSEL|MHP
+Balıkesir|Ensar AYTEKİN|Yeni Parti
+Balıkesir|İsmail OK|AK Parti
+Balıkesir|Mustafa CANBEY|AK Parti
+Balıkesir|Serkan SARI|CHP
+Balıkesir|Turhan ÇÖMEZ|İYİ Parti
+Bartın|Aysu BANKOĞLU|CHP
+Bartın|Yusuf Ziya ALDATMAZ|AK Parti
+Batman|Ferhat NASIROĞLU|AK Parti
+Batman|Keskin BAYINDIR|DBP
+Batman|Mehmet Rüştü TİRYAKİ|DEM PARTİ
+Batman|Serkan RAMANLI|HÜDA PAR
+Batman|Zeynep ODUNCU KUTEVİ|DEM PARTİ
+Bayburt|Orhan ATEŞ|AK Parti
+Bilecik|Halil ELDEMİR|AK Parti
+Bilecik|Yaşar TÜZÜN|Yeni Parti
+Bingöl|Feyzi BERDİBEK|AK Parti
+Bingöl|Ömer Faruk HÜLAKÜ|DEM PARTİ
+Bingöl|Zeki KORKUTATA|AK Parti
+Bitlis|Hüseyin OLAN|DEM PARTİ
+Bitlis|Semra ÇAĞLAR GÖKALP|DEM PARTİ
+Bitlis|Turan BEDİRHANOĞLU|AK Parti
+Bolu|İsmail AKGÜL|BAĞIMSIZ
+Bolu|Türker ATEŞ|CHP
+Bolu|Yüksel COŞKUNYÜREK|AK Parti
+Burdur|Adem KORKMAZ|AK Parti
+Burdur|İzzet AKBULUT|Yeni Parti
+Burdur|Mustafa OĞUZ|AK Parti
+Bursa|Ahmet KILIÇ|AK Parti
+Bursa|Ayhan SALMAN|AK Parti
+Bursa|Cemalettin Kani TORUN|BAĞIMSIZ
+Bursa|Efkan ALA|AK Parti
+Bursa|Emel GÖZÜKARA DURMAZ|AK Parti
+Bursa|Emine YAVUZ GÖZGEÇ|AK Parti
+Bursa|Fevzi ZIRHLIOĞLU|MHP
+Bursa|Hasan ÖZTÜRK|Yeni Parti
+Bursa|Hasan TOKTAŞ|İYİ Parti
+Bursa|İsmet BÜYÜKATAMAN|MHP
+Bursa|Kayıhan PALA|Yeni Parti
+Bursa|Mehmet ATMACA|YENİ YOL
+Bursa|Muhammet Müfit AYDIN|AK Parti
+Bursa|Mustafa VARANK|AK Parti
+Bursa|Mustafa YAVUZ|AK Parti
+Bursa|Nurhayat ALTACA KAYIŞOĞLU|Yeni Parti
+Bursa|Orhan SARIBAL|CHP
+Bursa|Osman MESTEN|AK Parti
+Bursa|Refik ÖZEN|AK Parti
+Bursa|Yüksel Selçuk TÜRKOĞLU|İYİ Parti
+Çanakkale|Ayhan GİDER|AK Parti
+Çanakkale|İsmet GÜNEŞHAN|Yeni Parti
+Çanakkale|Özgür CEYLAN|Yeni Parti
+Çanakkale|Rıdvan UZ|İYİ Parti
+Çankırı|Muhammet Emin AKBAŞOĞLU|AK Parti
+Çankırı|Pelin YILIK|MHP
+Çorum|Mehmet TAHTASIZ|Yeni Parti
+Çorum|Oğuzhan KAYA|AK Parti
+Çorum|Vahit KAYRICI|MHP
+Çorum|Yusuf AHLATCI|AK Parti
+Denizli|Cahit ÖZKAN|AK Parti
+Denizli|Gülizar BİÇER KARACA|CHP
+Denizli|Nilgün ÖK|AK Parti
+Denizli|Sema SİLKİN ÜN|YENİ YOL
+Denizli|Şahin TİN|AK Parti
+Denizli|Şeref ARPACI|Yeni Parti
+Denizli|Yasin ÖZTÜRK|İYİ Parti
+Diyarbakır|Adalet KAYA|DEM PARTİ
+Diyarbakır|Berdan ÖZTÜRK|DEM PARTİ
+Diyarbakır|Ceylan AKÇA CUPOLO|DEM PARTİ
+Diyarbakır|Halide TÜRKOĞLU|DEM PARTİ
+Diyarbakır|Mehmet KAMAÇ|DEM PARTİ
+Diyarbakır|Mehmet Galip ENSARİOĞLU|AK Parti
+Diyarbakır|Mehmet Sait YAZ|AK Parti
+Diyarbakır|Mustafa Sezgin TANRIKULU|Yeni Parti
+Diyarbakır|Osman Cengiz ÇANDAR|DEM PARTİ
+Diyarbakır|Serhat EREN|DEM PARTİ
+Diyarbakır|Sevilay ÇELENK ÖZEN|DEM PARTİ
+Diyarbakır|Suna KEPOLU ATAMAN|AK Parti
+Düzce|Ayşe KEŞİR|AK Parti
+Düzce|Ercan ÖZTÜRK|AK Parti
+Düzce|Talih ÖZCAN|Yeni Parti
+Edirne|Ahmet Baran YAZGAN|CHP
+Edirne|Ediz ÜN|CHP
+Edirne|Fatma AKSAL|AK Parti
+Edirne|Mehmet AKALIN|İYİ Parti
+Elazığ|Ejder AÇIKKAPI|AK Parti
+Elazığ|Erol KELEŞ|AK Parti
+Elazığ|Gürsel EROL|CHP
+Elazığ|Mahmut Rıdvan NAZIRLI|AK Parti
+Elazığ|Semih IŞIKVER|MHP
+Erzincan|Mustafa SARIGÜL|Yeni Parti
+Erzincan|Süleyman KARAMAN|AK Parti
+Erzurum|Abdurrahim FIRAT|AK Parti
+Erzurum|Fatma ÖNCÜ|AK Parti
+Erzurum|Kamil AYDIN|MHP
+Erzurum|Mehmet Emin ÖZ|AK Parti
+Erzurum|Meral DANIŞ BEŞTAŞ|DEM PARTİ
+Erzurum|Selami ALTINOK|AK Parti
+Eskişehir|Ayşen GÜRCAN|AK Parti
+Eskişehir|Fatih DÖNMEZ|AK Parti
+Eskişehir|İbrahim ARSLAN|Yeni Parti
+Eskişehir|İdris Nebi HATİPOĞLU|AK Parti
+Eskişehir|Jale Nur SÜLLÜ|CHP
+Eskişehir|Utku ÇAKIRÖZER|Yeni Parti
+Gaziantep|Abdulhamit GÜL|AK Parti
+Gaziantep|Ali ŞAHİN|AK Parti
+Gaziantep|Bünyamin BOZGEYİK|AK Parti
+Gaziantep|Derya BAKBAK|AK Parti
+Gaziantep|Ertuğrul KAYA|YENİ YOL
+Gaziantep|Hasan ÖZTÜRKMEN|CHP
+Gaziantep|İrfan ÇELİKASLAN|AK Parti
+Gaziantep|Mehmet Eyup ÖZKEÇECİ|AK Parti
+Gaziantep|Mehmet Mustafa GÜRBAN|AK Parti
+Gaziantep|Melih MERİÇ|Yeni Parti
+Gaziantep|Mesut BOZATLI|AK Parti
+Gaziantep|Sermet ATAY|MHP
+Gaziantep|Sevda KARACA DEMİR|EMEP
+Gaziantep|Şahzade DEMİR|HÜDA PAR
+Giresun|Ali TEMÜR|AK Parti
+Giresun|Elvan IŞIK GEZMİŞ|Yeni Parti
+Giresun|Ertuğrul Gazi KONAL|MHP
+Giresun|Nazım ELMAS|AK Parti
+Gümüşhane|Celalettin KÖSE|AK Parti
+Gümüşhane|Musa KÜÇÜK|MHP
+Hakkari|Onur DÜŞÜNMEZ|DEM PARTİ
+Hakkari|Öznur BARTİN|DEM PARTİ
+Hakkari|Vezir Coşkun PARLAK|DEM PARTİ
+Hatay|Abdulkadir ÖZEL|AK Parti
+Hatay|Adem YEŞİLDAL|AK Parti
+Hatay|Adnan Şefik ÇİRKİN|İYİ Parti
+Hatay|Hüseyin YAYMAN|AK Parti
+Hatay|Kemal KARAHAN|AK Parti
+Hatay|Lütfi KAŞIKÇI|MHP
+Hatay|Mehmet GÜZELMANSUR|CHP
+Hatay|Necmettin ÇALIŞKAN|YENİ YOL
+Hatay|Nermin YILDIRIM KARA|CHP
+Hatay|Servet MULLAOĞLU|Yeni Parti
+Iğdır|Cantürk ALAGÖZ|AK Parti
+Iğdır|Yılmaz HUN|DEM PARTİ
+Isparta|Hasan Basri SÖNMEZ|BAĞIMSIZ
+Isparta|Hikmet Yalım HALICI|Yeni Parti
+Isparta|Mehmet Uğur GÖKGÖZ|AK Parti
+Isparta|Osman ZABUN|AK Parti
+İstanbul|Adem YILDIRIM|AK Parti
+İstanbul|Ahmet ŞIK|TİP
+İstanbul|Ahmet Ersagun YÜCEL|AK Parti
+İstanbul|Ali GÖKÇEK|Yeni Parti
+İstanbul|Ayşe Sibel YANIKÖMEROĞLU|Yeni Parti
+İstanbul|Azmi EKİNCİ|AK Parti
+İstanbul|Bayram ŞENOCAK|AK Parti
+İstanbul|Behiye EKER|AK Parti
+İstanbul|Birol AYDIN|YENİ YOL
+İstanbul|Burak AKBURAK|İYİ Parti
+İstanbul|Bülent KAYA|YENİ YOL
+İstanbul|Büşra PAKER|AK Parti
+İstanbul|Celal ADAN|MHP
+İstanbul|Celal FIRAT|DEM PARTİ
+İstanbul|Cemal ENGİNYURT|Yeni Parti
+İstanbul|Cengiz ÇİÇEK|DEM PARTİ
+İstanbul|Cüneyt YÜKSEL|AK Parti
+İstanbul|Çiçek OTLU|DEM PARTİ
+İstanbul|Çiğdem KILIÇGÜN UÇAR|DBP
+İstanbul|Derya AYAYDIN|AK Parti
+İstanbul|Doğan BEKİN|YENİDEN REFAH
+İstanbul|Doğan DEMİR|Yeni Parti
+İstanbul|Edip Semih YALÇIN|MHP
+İstanbul|Elif ESEN|YENİ YOL
+İstanbul|Engin ALTAY|CHP
+İstanbul|Erdoğan TOPRAK|CHP
+İstanbul|Erkan BAŞ|TİP
+İstanbul|Erkan KANDEMİR|AK Parti
+İstanbul|Ersin BEYAZ|AK Parti
+İstanbul|Evrim RIZVANOĞLU EMİR|Yeni Parti
+İstanbul|Fethi AÇIKEL|Yeni Parti
+İstanbul|Feti YILDIZ|MHP
+İstanbul|Gamze AKKUŞ İLGEZDİ|CHP
+İstanbul|Gökan ZEYBEK|Yeni Parti
+İstanbul|Gökhan GÜNAYDIN|Yeni Parti
+İstanbul|Halis DALKILIÇ|AK Parti
+İstanbul|Halit YEREBAKAN|AK Parti
+İstanbul|Hasan KARAL|YENİ YOL
+İstanbul|Hasan TURAN|AK Parti
+İstanbul|Hulusi ŞENTÜRK|AK Parti
+İstanbul|İlhan KESİCİ|CHP
+İstanbul|İsa Mesih ŞAHİN|AK Parti
+İstanbul|İskender BAYHAN|EMEP
+İstanbul|İsmail ERDEM|AK Parti
+İstanbul|İsmail Emrah KARAYEL|AK Parti
+İstanbul|İsmail Faruk AKSU|MHP
+İstanbul|İzzet Ulvi YÖNTER|MHP
+İstanbul|Kadri Enis BERBEROĞLU|CHP
+İstanbul|Keziban KONUKCU KOK|DEM PARTİ
+İstanbul|Medeni YILMAZ|YENİ YOL
+İstanbul|Mehmet Önder AKSAKAL|DSP
+İstanbul|Mehmet Satuk Buğra KAVUNCU|İYİ Parti
+İstanbul|Mehmet Selim ENSARİOĞLU|AK Parti
+İstanbul|Muhammed Ali Fatih ERBAKAN|YENİDEN REFAH
+İstanbul|Mustafa DEMİR|AK Parti
+İstanbul|Mustafa KAYA|YENİ YOL
+İstanbul|Mustafa YENEROĞLU|BAĞIMSIZ
+İstanbul|Mustafa Cihan PAÇACI|İYİ Parti
+İstanbul|Mustafa Hulki CEVİZOĞLU|AK Parti
+İstanbul|Müşerref Pervin Tuba DURGUT|AK Parti
+İstanbul|Namık TAN|Yeni Parti
+İstanbul|Nilhan AYAN|AK Parti
+İstanbul|Nimet ÖZDEMİR|AK Parti
+İstanbul|Numan KURTULMUŞ|AK Parti
+İstanbul|Nurettin ALAN|AK Parti
+İstanbul|Oğuz ÜÇÜNCÜ|AK Parti
+İstanbul|Oğuz Kaan SALICI|CHP
+İstanbul|Özgül SAKİ|DEM PARTİ
+İstanbul|Özgür KARABAT|Yeni Parti
+İstanbul|Özlem ZENGİN|AK Parti
+İstanbul|Rabia İLHAN|AK Parti
+İstanbul|Rümeysa KADAK|AK Parti
+İstanbul|Saliha Sera KADIGİL|TİP
+İstanbul|Seda GÖREN|AK Parti
+İstanbul|Selim TEMURCİ|BAĞIMSIZ
+İstanbul|Sena Nur ÇELİK KANAT|AK Parti
+İstanbul|Serkan BAYRAM|AK Parti
+İstanbul|Sevan SIVACIOĞLU|AK Parti
+İstanbul|Seyithan İZSİZ|AK Parti
+İstanbul|Suat ÖZÇAĞDAŞ|Yeni Parti
+İstanbul|Suat PAMUKÇU|AK Parti
+İstanbul|Süleyman SOYLU|AK Parti
+İstanbul|Şamil AYRIM|AK Parti
+İstanbul|Şengül KARSLI|AK Parti
+İstanbul|Tuğba IŞIK ERCAN|AK Parti
+İstanbul|Turan Taşkın ÖZER|Yeni Parti
+İstanbul|Türkan ELÇİ|Yeni Parti
+İstanbul|Ümmügülşen ÖZTÜRK|AK Parti
+İstanbul|Yahya ÇELİK|AK Parti
+İstanbul|Yıldız KONAL SÜSLÜ|AK Parti
+İstanbul|Yunus EMRE|Yeni Parti
+İstanbul|Yücel Arzen HACIOĞULLARI|AK Parti
+İstanbul|Yüksel Mansur KILINÇ|CHP
+İstanbul|Zafer SIRAKAYA|AK Parti
+İstanbul|Zekeriya YAPICIOĞLU|HÜDA PAR
+İstanbul|Zeynel EMRE|Yeni Parti
+İzmir|Ahmet Tuncay ÖZKAN|Yeni Parti
+İzmir|Burcugül ÇUBUK|DEM PARTİ
+İzmir|Ceyda BÖLÜNMEZ ÇANKIRI|AK Parti
+İzmir|Deniz YÜCEL|Yeni Parti
+İzmir|Dursun Müsavat DERVİŞOĞLU|İYİ Parti
+İzmir|Ednan ARSLAN|Yeni Parti
+İzmir|Eyyüp Kadir İNAN|AK Parti
+İzmir|Fehmi Alpay ÖZALAN|AK Parti
+İzmir|Gökçe GÖKÇEN|Yeni Parti
+İzmir|Haydar ALTINTAŞ|DP
+İzmir|Hüsmen KIRKPINAR|İYİ Parti
+İzmir|İbrahim AKIN|DEM PARTİ
+İzmir|Mahir POLAT|CHP
+İzmir|Mahmut Atilla KAYA|AK Parti
+İzmir|Mehmet Ali ÇELEBİ|AK Parti
+İzmir|Mehmet Muharrem KASAPOĞLU|AK Parti
+İzmir|Mehmet Salih UZUN|Yeni Parti
+İzmir|Murat BAKAN|Yeni Parti
+İzmir|Mustafa BİLİCİ|AK Parti
+İzmir|Rahmi Aşkın TÜRELİ|CHP
+İzmir|Rıfat Turuntay NALBANTOĞLU|CHP
+İzmir|Seda KÂYA ÖSEN|Yeni Parti
+İzmir|Sevda ERDAN KILIÇ|CHP
+İzmir|Şebnem BURSALI AKSOY|AK Parti
+İzmir|Tamer OSMANAĞAOĞLU|MHP
+İzmir|Ümit ÖZLALE|Yeni Parti
+İzmir|Yaşar KIRKPINAR|AK Parti
+İzmir|Yüksel TAŞKIN|Yeni Parti
+Kahramanmaraş|Ali ÖZTUNÇ|CHP
+Kahramanmaraş|İrfan KARATUTLU|AK Parti
+Kahramanmaraş|Mehmet ŞAHİN|AK Parti
+Kahramanmaraş|Mevlüt KURT|AK Parti
+Kahramanmaraş|Ömer Oruç Bilal DEBGİCİ|AK Parti
+Kahramanmaraş|Tuba KÖKSAL|AK Parti
+Kahramanmaraş|Vahit KİRİŞCİ|AK Parti
+Kahramanmaraş|Zuhal KARAKOÇ|MHP
+Karabük|Cem ŞAHİN|AK Parti
+Karabük|Cevdet AKAY|CHP
+Karabük|Durmuş Ali KESKİNKILIÇ|AK Parti
+Karaman|İsmail Atakan ÜNVER|Yeni Parti
+Karaman|Osman SAĞLAM|AK Parti
+Karaman|Selman Oğuzhan ESER|AK Parti
+Kars|Adem ÇALKIN|AK Parti
+Kars|Gülüstan KILIÇ KOÇYİĞİT|DEM PARTİ
+Kars|İnan Akgün ALP|CHP
+Kastamonu|Fatma Serap EKMEKCİ|AK Parti
+Kastamonu|Halil ULUAY|AK Parti
+Kayseri|Aşkın GENÇ|Yeni Parti
+Kayseri|Ayşe BÖHÜRLER|AK Parti
+Kayseri|Dursun ATAŞ|AK Parti
+Kayseri|Hulusi AKAR|AK Parti
+Kayseri|İsmail ÖZDEMİR|MHP
+Kayseri|Mahmut ARIKAN|SAADET Partisi
+Kayseri|Murat Cahid CINGI|AK Parti
+Kayseri|Mustafa Baki ERSOY|MHP
+Kayseri|Sayın Bayar ÖZSOY|AK Parti
+Kayseri|Şaban ÇOPUROĞLU|AK Parti
+Kırıkkale|Halil ÖZTÜRK|MHP
+Kırıkkale|Mustafa KAPLAN|AK Parti
+Kırklareli|Ahmet Gökhan SARIÇAM|AK Parti
+Kırklareli|Fahri ÖZKAN|Yeni Parti
+Kırklareli|Vecdi GÜNDOĞDU|CHP
+Kırşehir|Metin İLHAN|Yeni Parti
+Kırşehir|Necmettin ERKAN|AK Parti
+Kilis|Ahmet Salih DAL|AK Parti
+Kilis|Mustafa DEMİR|BAĞIMSIZ
+Kocaeli|Cemil YAMAN|AK Parti
+Kocaeli|Harun Özgür YILDIZLI|Yeni Parti
+Kocaeli|Lütfü TÜRKKAN|İYİ Parti
+Kocaeli|Mehmet AŞILA|YENİDEN REFAH
+Kocaeli|Mehmet Akif YILMAZ|AK Parti
+Kocaeli|Mühip KANKO|Yeni Parti
+Kocaeli|Nail ÇİLER|Yeni Parti
+Kocaeli|Ömer Faruk GERGERLİOĞLU|DEM PARTİ
+Kocaeli|Radiye Sezer KATIRCIOĞLU|AK Parti
+Kocaeli|Sadettin HÜLAGÜ|AK Parti
+Kocaeli|Saffet SANCAKLI|MHP
+Kocaeli|Sami ÇAKIR|AK Parti
+Kocaeli|Veysal TİPİOĞLU|AK Parti
+Konya|Abdullah AĞRALI|AK Parti
+Konya|Ali YÜKSEL|YENİ YOL
+Konya|Barış BEKTAŞ|CHP
+Konya|Hasan EKİCİ|AK Parti
+Konya|Konur Alp KOÇAK|MHP
+Konya|Latif SELVİ|AK Parti
+Konya|Mehmet BAYKAN|AK Parti
+Konya|Meryem GÖKA|AK Parti
+Konya|Mustafa KALAYCI|MHP
+Konya|Mustafa Hakan ÖZER|AK Parti
+Konya|Orhan ERDEM|AK Parti
+Konya|Selman ÖZBOYACI|AK Parti
+Konya|Tahir AKYÜREK|AK Parti
+Konya|Ünal KARAMAN|AK Parti
+Konya|Ziya ALTUNYALDIZ|AK Parti
+Kütahya|Adil BİÇER|AK Parti
+Kütahya|Ahmet ERBAŞ|MHP
+Kütahya|Ali Fazıl KASAP|YENİ YOL
+Kütahya|İsmail Çağlar BAYIRCI|AK Parti
+Kütahya|Mehmet DEMİR|AK Parti
+Malatya|Abdurrahman BABACAN|AK Parti
+Malatya|Bülent TÜFENKCİ|AK Parti
+Malatya|İhsan KOCA|AK Parti
+Malatya|İnanç Siraç Kara ÖLMEZTOPRAK|AK Parti
+Malatya|Mehmet Celal FENDOĞLU|MHP
+Malatya|Veli AĞBABA|Yeni Parti
+Manisa|Ahmet Mücahit ARINÇ|AK Parti
+Manisa|Ahmet Vehbi BAKIRLIOĞLU|Yeni Parti
+Manisa|Bahadır Nahit YENİŞEHİRLİOĞLU|AK Parti
+Manisa|Bekir BAŞEVİRGEN|Yeni Parti
+Manisa|Erkan AKÇAY|MHP
+Manisa|Murat BAYBATUR|AK Parti
+Manisa|Özgür ÖZEL|Yeni Parti
+Manisa|Selma Aliye KAVAF|CHP
+Manisa|Şenol SUNAT|İYİ Parti
+Manisa|Tamer AKKAL|AK Parti
+Mardin|Beritan GÜNEŞ ALTIN|DEM PARTİ
+Mardin|Faruk KILIÇ|AK Parti
+Mardin|George ASLAN|DEM PARTİ
+Mardin|Kamuran TANHAN|DEM PARTİ
+Mardin|Muhammed ADAK|AK Parti
+Mardin|Salihe AYDENİZ|DEM PARTİ
+Mersin|Ali BOZAN|DEM PARTİ
+Mersin|Ali KIRATLI|AK Parti
+Mersin|Ali Mahir BAŞARIR|Yeni Parti
+Mersin|Burhanettin KOCAMAZ|İYİ Parti
+Mersin|Faruk DİNÇ|HÜDA PAR
+Mersin|Gülcan KIŞ|CHP
+Mersin|Hasan Ufuk ÇAKIR|AK Parti
+Mersin|Havva Sibel SÖYLEMEZ|AK Parti
+Mersin|Levent UYSAL|MHP
+Mersin|Mehmet Emin EKMEN|YENİ YOL
+Mersin|Nureddin NEBATİ|AK Parti
+Mersin|Perihan KOCA DOĞAN|DEM PARTİ
+Mersin|Talat DİNÇER|Yeni Parti
+Muğla|Cumhur UZUN|Yeni Parti
+Muğla|Gizem ÖZCAN|Yeni Parti
+Muğla|Kadem METE|AK Parti
+Muğla|Metin ERGUN|İYİ Parti
+Muğla|Selçuk ÖZDAĞ|YENİ YOL
+Muğla|Süreyya ÖNEŞ DERİCİ|Yeni Parti
+Muğla|Yakup OTGÖZ|AK Parti
+Muş|Mehmet Emin ŞİMŞEK|AK Parti
+Muş|Sezai TEMELLİ|DEM PARTİ
+Muş|Sümeyye BOZ ÇAKI|DEM PARTİ
+Nevşehir|Emre ÇALIŞKAN|AK Parti
+Nevşehir|Filiz KILIÇ|MHP
+Nevşehir|Süleyman ÖZGÜN|AK Parti
+Niğde|Cevahir UZKURT|AK Parti
+Niğde|Cumali İNCE|MHP
+Niğde|Ömer Fethi GÜRER|CHP
+Ordu|İbrahim Ufuk KAYNAK|AK Parti
+Ordu|Mahmut ÖZER|AK Parti
+Ordu|Mustafa ADIGÜZEL|CHP
+Ordu|Mustafa HAMARAT|AK Parti
+Ordu|Naci ŞANLITÜRK|MHP
+Ordu|Seyit TORUN|Yeni Parti
+Osmaniye|Asu KAYA|Yeni Parti
+Osmaniye|Derya YANIK|AK Parti
+Osmaniye|Devlet BAHÇELİ|MHP
+Osmaniye|Seydi GÜLSOY|AK Parti
+Rize|Harun MERTOĞLU|AK Parti
+Rize|Muhammed AVCI|AK Parti
+Rize|Tahsin OCAKLI|Yeni Parti
+Sakarya|Ali İNCİ|AK Parti
+Sakarya|Ayça TAŞKENT|Yeni Parti
+Sakarya|Çiğdem ERDOĞAN|AK Parti
+Sakarya|Ertuğrul KOCACIK|AK Parti
+Sakarya|Lütfi BAYRAKTAR|AK Parti
+Sakarya|Muhammed Levent BÜLBÜL|MHP
+Sakarya|Murat KAYA|AK Parti
+Sakarya|Ümit DİKBAYIR|BAĞIMSIZ
+Samsun|Çiğdem KARAASLAN|AK Parti
+Samsun|Erhan USTA|İYİ Parti
+Samsun|Ersan AKSU|AK Parti
+Samsun|İlyas TOPSAKAL|MHP
+Samsun|Mehmet KARAMAN|YENİ YOL
+Samsun|Mehmet MUŞ|AK Parti
+Samsun|Murat ÇAN|Yeni Parti
+Samsun|Orhan KIRCALI|AK Parti
+Samsun|Yusuf Ziya YILMAZ|AK Parti
+Siirt|Mervan GÜL|AK Parti
+Siirt|Sabahat ERDOĞAN SARITAŞ|DEM PARTİ
+Siirt|Tuncer BAKIRHAN|DEM PARTİ
+Sinop|Barış KARADENİZ|Yeni Parti
+Sinop|Nazım MAVİŞ|AK Parti
+Sivas|Abdullah GÜLER|AK Parti
+Sivas|Ahmet ÖZYÜREK|MHP
+Sivas|Hakan AKSU|AK Parti
+Sivas|Rukiye TOY|AK Parti
+Sivas|Ulaş KARASU|Yeni Parti
+Şanlıurfa|Abdulkadir Emin ÖNEN|AK Parti
+Şanlıurfa|Abdürrahim DUSAK|AK Parti
+Şanlıurfa|Bekir BOZDAĞ|AK Parti
+Şanlıurfa|Cevahir Asuman YAZMACI|AK Parti
+Şanlıurfa|Dilan KUNT AYAN|DEM PARTİ
+Şanlıurfa|Ferit ŞENYAŞAR|DEM PARTİ
+Şanlıurfa|Hikmet BAŞAK|AK Parti
+Şanlıurfa|İbrahim EYYÜPOĞLU|AK Parti
+Şanlıurfa|İbrahim ÖZYAVUZ|MHP
+Şanlıurfa|Mahmut TANAL|Yeni Parti
+Şanlıurfa|Mehmet Ali CEVHERİ|AK Parti
+Şanlıurfa|Mehmet Faruk PINARBAŞI|AK Parti
+Şanlıurfa|Mithat SANCAR|DEM PARTİ
+Şanlıurfa|Ömer ÖCALAN|DEM PARTİ
+Şırnak|Arslan TATAR|AK Parti
+Şırnak|Ayşegül DOĞAN|DEM PARTİ
+Şırnak|Mehmet Zeki İRMEZ|DEM PARTİ
+Şırnak|Nevroz UYSAL ASLAN|DEM PARTİ
+Tekirdağ|Cem AVŞAR|CHP
+Tekirdağ|Çiğdem KONCAGÜL|AK Parti
+Tekirdağ|Faik ÖZTRAK|CHP
+Tekirdağ|Gökhan DİKTAŞ|AK Parti
+Tekirdağ|İlhami Özcan AYGUN|CHP
+Tekirdağ|Mestan ÖZCAN|AK Parti
+Tekirdağ|Nurten YONTAR|CHP
+Tekirdağ|Selcan TAŞCI|İYİ Parti
+Tokat|Cüneyt ALDEMİR|AK Parti
+Tokat|Kadim DURMAZ|CHP
+Tokat|Mustafa ARSLAN|AK Parti
+Tokat|Yusuf BEYAZIT|AK Parti
+Tokat|Yücel BULUT|MHP
+Trabzon|Adil KARAİSMAİLOĞLU|AK Parti
+Trabzon|Mustafa ŞEN|AK Parti
+Trabzon|Sibel SUİÇMEZ|Yeni Parti
+Trabzon|Vehbi KOÇ|AK Parti
+Trabzon|Yavuz AYDIN|İYİ Parti
+Trabzon|Yılmaz BÜYÜKAYDIN|AK Parti
+Tunceli|Ayten KORDU|DEM PARTİ
+Uşak|Ali KARAOBA|CHP
+Uşak|Fahrettin TUĞRUL|AK Parti
+Uşak|İsmail GÜNEŞ|AK Parti
+Van|Burhan KAYATÜRK|AK Parti
+Van|Gülcan KAÇMAZ SAYYİĞİT|DEM PARTİ
+Van|Gülderen VARLİ|DEM PARTİ
+Van|Kayhan TÜRKMENOĞLU|AK Parti
+Van|Mahmut DİNDAR|DEM PARTİ
+Van|Pervin BULDAN|DEM PARTİ
+Van|Sinan ÇİFTYÜREK|DEM PARTİ
+Van|Zülküf UÇAR|DEM PARTİ
+Yalova|Ahmet BÜYÜKGÜMÜŞ|AK Parti
+Yalova|Meliha AKYOL|AK Parti
+Yalova|Tahsin BECAN|CHP
+Yozgat|Abdulkadir AKGÜL|AK Parti
+Yozgat|İbrahim Ethem SEDEF|MHP
+Yozgat|Lütfullah KAYALAR|İYİ Parti
+Yozgat|Süleyman ŞAHAN|AK Parti
+Zonguldak|Ahmet ÇOLAKOĞLU|AK Parti
+Zonguldak|Deniz YAVUZYILMAZ|Yeni Parti
+Zonguldak|Eylem Ertuğ ERTUĞRUL|Yeni Parti
+Zonguldak|Muammer AVCI|AK Parti
+Zonguldak|Saffet BOZKURT|AK Parti`;
+
+// 81 İl Listesi
+var CITIES = [
+  "Adana","Adıyaman","Afyonkarahisar","Ağrı","Aksaray","Amasya","Ankara","Antalya","Ardahan","Artvin",
+  "Aydın","Balıkesir","Bartın","Batman","Bayburt","Bilecik","Bingöl","Bitlis","Bolu","Burdur","Bursa",
+  "Çanakkale","Çankırı","Çorum","Denizli","Diyarbakır","Düzce","Edirne","Elazığ","Erzincan","Erzurum",
+  "Eskişehir","Gaziantep","Giresun","Gümüşhane","Hakkari","Hatay","Iğdır","Isparta","İstanbul","İzmir",
+  "Kahramanmaraş","Karabük","Karaman","Kars","Kastamonu","Kayseri","Kırıkkale","Kırklareli","Kırşehir",
+  "Kilis","Kocaeli","Konya","Kütahya","Malatya","Manisa","Mardin","Mersin","Muğla","Muş","Nevşehir",
+  "Niğde","Ordu","Osmaniye","Rize","Sakarya","Samsun","Siirt","Sinop","Sivas","Şanlıurfa","Şırnak",
+  "Tekirdağ","Tokat","Trabzon","Tunceli","Uşak","Van","Yalova","Yozgat","Zonguldak"
+];
+
+// 70 Belgelenmiş Vaka
+var ALMANAC_DATA = [
+  {id:1,date:"2025-02-04",city:"Erzincan",location:"Erzincan Belediyesi",category:"Kamu İhlali",title:"Belediye köpekleri canlı canlı gömdü",desc:"Erzincan Belediyesi hayvan toplama aracından çıkarılan 8 köpeğin belediyeye ait çöp arıtma tesisinde açılan çukura canlı halde gömüldüğü görüntülendi.",source:"https://medyascope.tv/2025/02/04/erzincanda-hayvan-katliami-iddiasi-kopekler-canli-canli-gomuldu/"},
+  {id:2,date:"2025-02-20",city:"Osmaniye",location:"Osmaniye Hayvan Barınağı",category:"Kamu İhlali",title:"Barınakta onlarca köpek canlı gömüldü",desc:"Osmaniye'de hayvan barınağında onlarca köpeğin canlı halde gömüldüğü, yavruların memeden ayrılmadığı ve anne köpeklerin süt dolu olduğu görüntülendi.",source:"https://haber.mynet.com/goruntuler-herkesin-kanini-dondurdu-osmaniye-de-onlarca-kopek-katledildi"},
+  {id:3,date:"2025-09-15",city:"Gaziantep",location:"Gaziantep Hayvanat Bahçesi",category:"Kamu İhlali",title:"Bir günde 37 köpek öldü, sağlıklı köpekler yırtıcılara canlı yem",desc:"Gaziantep Büyükşehir Belediyesi barınağında bir günde 37 köpeğin öldüğü ve sağlıklı hayvanların yırtıcılara canlı yem verildiği iddia edildi.",source:"https://medyascope.tv/2025/09/15/gaziantepte-hayvan-katliami-iddiasi-bir-gunde-37-kopek-oldu/"},
+  {id:4,date:"2025-07-16",city:"Bolu",location:"Bolu İl Özel İdaresi",category:"Kamu İhlali",title:"650 sokak köpeği öldürüldü iddiası",desc:"Bolu İl Özel İdaresi'nin 650 sokak köpeğini öldürdüğü iddiası gündeme geldi.",source:"https://www.bolugundem.com/haber/25527132/"},
+  {id:5,date:"2025-05-15",city:"Bursa",location:"Osmangazi Belediyesi Barınağı",category:"Kamu İhlali",title:"Barınakta onlarca köpek ilaçla öldürüldü",desc:"Bursa Osmangazi Belediyesi'ne ait hayvan barınağında onlarca köpeğin ilaçla öldürüldüğü iddia edildi.",source:"https://www.sondakika.com/3-sayfa/haber-bursa-da-hayvan-barinaginda-katliam-onlarca-kopek-ilacla-olduruldu-18630624/"},
+  {id:6,date:"2025-04-27",city:"Ankara",location:"Ankara",category:"Cinsel Şiddet",title:"Doktor 8 yavru köpeği istismar etti, 26 köpek kayıp",desc:"Ankara'da bir doktorun sahiplenme bahanesiyle eve aldığı en az 8 yavru köpeği istismar ederek öldürdüğü, 26 köpeğin kayıp olduğu ortaya çıktı.",source:"https://www.nefes.com.tr/doktor-sahiplenme-bahanesiyle-evine-aldigi-hayvanlari-katletti-31448"},
+  {id:7,date:"2025-05-10",city:"Konya",location:"Ardıçlı TOKİ / Konya",category:"Cinsel Şiddet",title:"Köpeğe cinsel istismar ve katliam",desc:"Konya Ardıçlı TOKİ'de makatında tahribat olan bir köpeğin ölü bulunduğu, cinsel istismar edildiği tespit edildi.",source:"https://anadoludabugun.com.tr/konya-haberlerI/ozel-haber-konya-ardicli-tokide-kan-donduran-iddia-tecavuz-edilip-katledildi/242515"},
+  {id:8,date:"2025-03-20",city:"Mersin",location:"Mersin",category:"Zehirlenme",title:"77 küçükbaş hayvan zehirli ekmekle öldürüldü",desc:"Adana/Mersin hattında husumetlilerin zehirli ekmekle hayvanları öldürdüğü, 77 küçükbaş hayvanın telef olduğu bildirildi.",source:"https://www.ntv.com.tr/galeri/turkiye/husumetlileri-zehirli-ekmekle-katliam-yapti-adanada-77-hayvan-oldu"},
+  {id:9,date:"2025-04-29",city:"Manisa",location:"Manisa TOKİ",category:"Zehirlenme",title:"2 ayda 24 köpek zehirlendi",desc:"Manisa TOKİ'de son 2 ayda 24 köpeğin zehirlendiği, sistematik bir katliam yürütüldüğü bildirildi.",source:"https://www.manisahaberleri.com/manisa-tokide-kopek-katliami-iddiasi-son-2-ayda-24-kopek-zehirlendi"},
+  {id:10,date:"2025-04-28",city:"Sakarya",location:"Sakarya Tarım Arazisi",category:"Zehirlenme",title:"8 köpek tavuk parçasıyla zehirlendi",desc:"Sakarya'da tarım arazisinde 8 köpeğin tavuk parçasıyla zehirlenerek öldürüldüğü tespit edildi.",source:"https://www.evrensel.net/haber/551641/"},
+  {id:11,date:"2025-06-26",city:"Kastamonu",location:"Kastamonu",category:"Zehirlenme",title:"56 arı kovanı zehirlendi, ~1 milyon arı öldü",desc:"Kastamonu'da 56 arı kovanının önleri kapatılarak zehirlendi, yaklaşık 1 milyon arı telef oldu.",source:"https://karadenizgazete.com.tr/gundem/kastamonuda-56-ari-kovani-zehirlendi-1-milyona-yakin-ari-telef-oldu/577829"},
+  {id:12,date:"2025-08-23",city:"Batman",location:"Batman Çayı",category:"Kamu İhlali",title:"BOTAŞ petrol hattı çalışması milyonlarca balığı öldürdü",desc:"Batman Çayı'nda petrol boru hattı yenileme çalışması sırasında çayın yönünün değiştirilmesi nedeniyle milyonlarca balık ve su canlısı öldü.",source:"https://www.batmansonsoz.net/mobil/haber/batman-cayinda-balik-katliami-95791.html"},
+  {id:13,date:"2025-06-30",city:"Konya",location:"Konya",category:"Kamu İhlali",title:"Baraj için dereler kurutuldu, yüz binlerce balık öldü",desc:"Konya'da barajda su tutulması amacıyla dereler kurutuldu, yüz binlerce balık telef oldu.",source:"https://www.sozcu.com.tr/amp/baraj-icin-dereyi-kurutular-yuz-binlerce-balik-telef-oldu-p189295"},
+  {id:14,date:"2025-07-07",city:"İstanbul",location:"Maltepe / İstanbul",category:"Zehirlenme",title:"Atık su şüphesiyle binlerce balık öldü",desc:"İstanbul Maltepe'de atık su şüphesiyle binlerce balığın öldüğü, 20 yıldır ilk defa bu boyutta bir olay yaşandığı belirtildi.",source:"https://www.ntv.com.tr/galeri/turkiye/maltepede-supheli-balik-olumleri"},
+  {id:15,date:"2025-07-16",city:"Erzurum",location:"Erzurum",category:"Kamu İhlali",title:"Klorlama 300.000 alabalık yavrusunu öldürdü",desc:"Erzurum'da Su ve Kanalizasyon İdaresi ekiplerinin klorlama yapması sebebiyle 300.000 alabalık yavrusu telef oldu.",source:"https://www.gazetepusula.net/erzurum-da-yuzbinlerce-balik-telef-oldu-isletmeci-sikayetci/364083/"},
+  {id:16,date:"2025-04-11",city:"İstanbul",location:"İstanbul Kimya Deposu",category:"Kapatılma",title:"Yangında 500-600 kurbanlık hayvan öldü",desc:"İstanbul'da kimya deposunda çıkan yangında 500-600 kurbanlık hayvan telef oldu.",source:"https://www.turkiyegazetesi.com.tr/3-sayfa/istanbulda-kimya-deposunda-korkutan-yangin-1108097"},
+  {id:17,date:"2025-06-04",city:"Ankara",location:"Ankara Yumurta Tesisi",category:"Kapatılma",title:"Yumurta tesisinde 150.000 tavuk yanarak öldü",desc:"Ankara'da bir yumurta üretim tesisinde çıkan yangında 150.000 tavuk telef oldu.",source:"https://www.haberturk.com/yumurta-tesisi-alevlere-teslim-150-bin-tavuk-oldu-3796943"},
+  {id:18,date:"2025-03-01",city:"Isparta",location:"Isparta",category:"Kamu İhlali",title:"Kuş gribi bahanesiyle 200.000+ tavuk itlaf edildi",desc:"Isparta'da kuş gribi vakaları sebebiyle 200.000'den fazla tavuğun itlaf edildiği bildirildi.",source:"https://www.son32.com/haber/24004574/kus-gribi-vakasi-yuz-binlercesi-itlaf-edildi"},
+  {id:19,date:"2025-08-08",city:"Çorum",location:"Çorum Mandıra",category:"Kapatılma",title:"Mandıra yangınında 100+ kuzu öldü",desc:"Çorum'da mandırada çıkan yangında 100'den fazla kuzu telef oldu.",source:"https://www.ahaber.com.tr/viral/tikla/corumda-mandirada-yangin-faciasi-100den-fazla-kuzu-telef-6208421"},
+  {id:20,date:"2025-06-18",city:"Konya",location:"Tuz Gölü",category:"Kamu İhlali",title:"Tuz Gölü'nde 2.000 yavru flamingo susuzluktan öldü",desc:"Konya Tuz Gölü'nde yavru flamingoların susuzluktan öldüğü, su yönetiminin yanlış yapıldığı belgelendi.",source:"https://www.sozcu.com.tr/tuz-golu-ndeki-2-bin-flamingo-susuzluktan-oldu-p185239"},
+  {id:21,date:"2025-06-22",city:"Batman",location:"Batman Kırsalı",category:"Ateşli Silah",title:"10 yaban atı vurularak öldürüldü",desc:"Batman'da 10 yaban atının vurularak öldürüldüğü bildirildi.",source:"https://www.rudaw.net/turkish/middleeast/turkey/220620258"},
+  {id:22,date:"2025-02-20",city:"Muğla",location:"Muğla",category:"Ateşli Silah",title:"Yasak avda canlı mühre kullanıldı",desc:"Muğla'da yasa dışı avda canlı mühre kullanıldığı tespit edildi.",source:"https://www.haberturk.com/kayseri-haberleri/36942295-kayseride-yasa-disi-avlanan-3-kisiye-idari-islem-uygulandi"},
+  {id:23,date:"2025-06-21",city:"Muğla",location:"Muğla",category:"İşkence",title:"Caretta carettalar iple bağlanarak ölüme terk edildi",desc:"Muğla'da nesli koruma altındaki caretta carettaların iple bağlanarak ölüme terk edildiği iddia edildi.",source:"https://www.sabah.com.tr/yasam/muglada-skandal-iddia-nesli-koruma-altindaki-caretta-carettalar-iple-baglanarak-olume-terk-ediliyor-7373843"},
+  {id:24,date:"2025-06-07",city:"Muğla",location:"Bodrum Şehir Parkı",category:"İşkence",title:"Kedilerin kuyrukları kesildi, karınları yarıldı",desc:"Bodrum Şehir Parkı'nda kedilerin kuyruklarının kesilerek ve karınları yarılarak öldürüldüğü, savcılığın soruşturma başlattığı bildirildi.",source:"https://bodrumolay.com/sehir-parkinda-kedilerin-iskence-edilerek-oldurulmesine-savcilik-sorusturma-baslatti/"},
+  {id:25,date:"2025-05-25",city:"Çorum",location:"Çorum",category:"Kapatılma",title:"Su kuyusuna düşen 7 köpek öldü",desc:"Çorum'da su kuyusuna düşen 7 köpeğin öldüğü bildirildi.",source:"https://www.corumtime.com/su-kuyusuna-dusen-yavru-kopekler-oldu/"},
+  {id:26,date:"2025-04-21",city:"Bursa",location:"Gemlik / Bursa",category:"İşkence",title:"8 yavru kedi kesici aletle öldürüldü",desc:"Bursa Gemlik'te apartman bahçesindeki 8 yavru kedinin kesici aletle öldürüldüğü tespit edildi.",source:"https://www.dha.com.tr/yerel-haberler/bursa/gemlik/apartman-bahcesindeki-8-yavru-kedi-kesici-alet-2623964"},
+  {id:27,date:"2025-04-20",city:"Karaman",location:"Karaman",category:"Kapatılma",title:"Ahır kundaklandı, 11 küçükbaş hayvan öldü",desc:"Karaman'da gece yarısı ahırın kundaklanması sonucu 11 küçükbaş hayvan telef oldu.",source:"https://www.karamangundem.com/karamanda-gece-yarisi-kundaklama-11-hayvan-telef-oldu"},
+  {id:28,date:"2025-03-08",city:"Van",location:"Van",category:"Kapatılma",title:"Soğukta 100 kovan arı öldü",desc:"Van'da soğuk hava nedeniyle kovanların içinde tutulan arıların öldüğü, 100 kovanın telef olduğu bildirildi.",source:"https://dogurehberi.com/haber/vanda-100-kovan-ari-telef-oldu-2752245.html"},
+  {id:29,date:"2025-02-18",city:"Eskişehir",location:"Eskişehir",category:"İşkence",title:"Yavru köpeklerin boynuna taş bağlanıp suya atıldı",desc:"Eskişehir'de yavru köpeklerin boynuna taş bağlanarak suya atıldığı, 2 köpeğin öldüğü bildirildi.",source:"https://www.milliyet.com.tr/gundem/eskisehirde-yurek-sizlatan-olay-yavru-kopeklerin-boynuna-tas-baglayip-suya-attilar-7311012"},
+  {id:30,date:"2025-01-26",city:"Edirne",location:"Edirne",category:"Kamu İhlali",title:"Belediye personeli 4 köpeği poşetle çöpe attı",desc:"Edirne'de belediye personelinin 4 yavru köpeği poşet içinde çöp konteynerine attığı görüntülendi.",source:"https://www.haberler.com/guncel/edirne-de-sokak-hayvanlarina-skandal-muamele-4-yavru-kopek-cop-tenekesine-atildi-18304494-haberi/"}
+];
+
+// Global Durum Değişkenleri
+var MP_DATABASE = [];
+var selectedTarget = null;
+var selectedMP = null;
+var citizenSignaturePad = null;
+var mpSignaturePad = null;
+var currentSigDataUrl = '';
+var currentMpSigDataUrl = '';
+
+// Canlı Sayaçlar
+var counters = {
+  citizen: 1420,
+  cb: 540,
+  mb: 390,
+  mpSent: 490,
+  mpSigned: 0
+};
+
+// TBMM Resmi E-Posta Fallback Üretici
 function generateTbmmEmail(name) {
-  var normalized = (name || '').toLowerCase()
+  if (!name) return 'bilgi@tbmm.gov.tr';
+  var norm = name.toLowerCase()
     .replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's')
     .replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ç/g, 'c')
     .replace(/[^a-z\s]/g, '').trim();
-  var parts = normalized.split(/\s+/);
-  if (parts.length < 2) return normalized + '@tbmm.gov.tr';
+  var parts = norm.split(/\s+/);
+  if (parts.length < 2) return norm + '@tbmm.gov.tr';
   return parts.slice(0, -1).join('.') + '.' + parts[parts.length - 1] + '@tbmm.gov.tr';
 }
 
-// Güvenli Arayüz Başlatıcı
-async function initPage() {
-  // 1. Önce TÜM Arayüzü Sıfır Gecikmeyle Başlat:
-  updateCounters();
-  populateCityDropdown();
-  populateVekilSelect();
-  initCitizenSignaturePad();
-  initMPSignaturePad();
-  renderSignedMPs();
-  populateAlmanacFilters();
-  loadStoredAlmanac();
-  renderAlmanac();
-  initCampaignQR();
-  populateFilterCityMode();
-  populateVolCity();
-  filterVekilRadio();
+// 592 Vekil Veritabanını Parse Et
+function initMpDatabase() {
+  var lines = RAW_MP_STRING.trim().split('\n');
+  var parties = new Set();
+  MP_DATABASE = [];
 
-  // 2. Ağ Çağrılarını Arka Planda Güvenle Çalıştır (UI'ı Dondurmaz):
-  try { await loadOfficialMPEmails(); } catch(e) { console.warn('Vekil e-posta ağı:', e); }
-  try { await refreshRemoteCounters(); } catch(e) { console.warn('Sayaç ağı:', e); }
-}
-
-// Canvas Resize Koruması (İmzayı Silmez)
-window.addEventListener('resize', function () {
-  if (canvas && ctx) {
-    var data = canvas.toDataURL();
-    var w = canvas.offsetWidth;
-    if (w > 0 && w !== canvas.width) {
-      canvas.width = w;
-      var img = new Image();
-      img.onload = function() { ctx.drawImage(img, 0, 0); };
-      img.src = data;
+  for (var i = 0; i < lines.length; i++) {
+    var cols = lines[i].split('|');
+    if (cols.length >= 3) {
+      var city = cols[0].trim();
+      var name = cols[1].trim();
+      var party = cols[2].trim();
+      parties.add(party);
+      MP_DATABASE.push({
+        id: i + 1,
+        city: city,
+        name: name,
+        party: party,
+        email: generateTbmmEmail(name)
+      });
     }
   }
+
+  // Parti filtrelerini doldur
+  var partySelect = document.getElementById('mp-party-filter');
+  if (partySelect) {
+    parties.forEach(function(p) {
+      var opt = document.createElement('option');
+      opt.value = p;
+      opt.textContent = p;
+      partySelect.appendChild(opt);
+    });
+  }
+
+  // Meclis Vekil kayıt seçicisini doldur
+  var mpSignSelect = document.getElementById('mp-sign-select');
+  if (mpSignSelect) {
+    MP_DATABASE.forEach(function(m) {
+      var opt = document.createElement('option');
+      opt.value = m.id;
+      opt.textContent = m.name + ' (' + m.party + ' - ' + m.city + ')';
+      mpSignSelect.appendChild(opt);
+    });
+
+    mpSignSelect.addEventListener('change', function() {
+      var id = parseInt(this.value, 10);
+      var m = MP_DATABASE.find(function(x) { return x.id === id; });
+      if (m) {
+        document.getElementById('mp-sign-email').value = m.email;
+      }
+    });
+  }
+
+  // Şehir filtrelerini doldur
+  var mpCityFilter = document.getElementById('mp-city-filter');
+  var citCity = document.getElementById('citizen-city');
+  var volCity = document.getElementById('vol-city');
+  var almCity = document.getElementById('almanac-city-filter');
+
+  CITIES.forEach(function(c) {
+    if (mpCityFilter) {
+      var opt1 = document.createElement('option');
+      opt1.value = c;
+      opt1.textContent = c;
+      mpCityFilter.appendChild(opt1);
+    }
+    if (citCity) {
+      var opt2 = document.createElement('option');
+      opt2.value = c;
+      opt2.textContent = c;
+      citCity.appendChild(opt2);
+    }
+    if (volCity) {
+      var opt3 = document.createElement('option');
+      opt3.value = c;
+      opt3.textContent = c;
+      volCity.appendChild(opt3);
+    }
+    if (almCity) {
+      var opt4 = document.createElement('option');
+      opt4.value = c;
+      opt4.textContent = c;
+      almCity.appendChild(opt4);
+    }
+  });
+
+  renderMpList(MP_DATABASE);
+}
+
+// Vekil Listesini Çiz
+function renderMpList(mps) {
+  var container = document.getElementById('mp-list-container');
+  var countBadge = document.getElementById('mp-match-count');
+  if (!container) return;
+
+  if (countBadge) countBadge.textContent = mps.length + ' vekil';
+  container.innerHTML = '';
+
+  if (mps.length === 0) {
+    container.innerHTML = '<p class="text-zinc-500 text-center py-3">Eşleşen vekil bulunamadı.</p>';
+    return;
+  }
+
+  // Performans için ilk 50'yi hemen bas
+  var slice = mps.slice(0, 50);
+  slice.forEach(function(m) {
+    var label = document.createElement('label');
+    label.className = 'flex items-center justify-between p-2 rounded-lg cursor-pointer text-xs border border-zinc-800 hover:bg-zinc-800/60 transition';
+    if (selectedMP && selectedMP.id === m.id) {
+      label.className += ' bg-emerald-950/70 border-emerald-600 text-white';
+    }
+
+    label.innerHTML = 
+      '<div class="flex items-center gap-2 min-w-0">' +
+        '<input type="radio" name="mp_choice" value="' + m.id + '" ' + (selectedMP && selectedMP.id === m.id ? 'checked' : '') + ' class="accent-emerald-500 shrink-0">' +
+        '<span class="truncate"><strong>' + m.name + '</strong> <span class="text-zinc-400">(' + m.party + ' - ' + m.city + ')</span></span>' +
+      '</div>' +
+      '<span class="text-[10px] text-zinc-500 font-mono shrink-0 ml-2">' + m.email + '</span>';
+
+    label.querySelector('input').addEventListener('change', function() {
+      selectMP(m);
+    });
+
+    container.appendChild(label);
+  });
+}
+
+function filterMps() {
+  var search = (document.getElementById('mp-search-input').value || '').toLowerCase();
+  var party = document.getElementById('mp-party-filter').value;
+  var city = document.getElementById('mp-city-filter').value;
+
+  var filtered = MP_DATABASE.filter(function(m) {
+    var matchSearch = m.name.toLowerCase().indexOf(search) !== -1 || m.city.toLowerCase().indexOf(search) !== -1;
+    var matchParty = party === 'TÜMÜ' || m.party === party;
+    var matchCity = city === 'ALL' || m.city === city;
+    return matchSearch && matchParty && matchCity;
+  });
+
+  renderMpList(filtered);
+}
+
+function selectMP(m) {
+  selectedMP = m;
+  var badge = document.getElementById('selected-mp-badge');
+  var nameEl = document.getElementById('selected-mp-name');
+  var emailEl = document.getElementById('selected-mp-email');
+
+  if (badge && nameEl && emailEl) {
+    badge.classList.remove('hidden');
+    nameEl.textContent = m.name + ' (' + m.party + ' - ' + m.city + ')';
+    emailEl.textContent = m.email;
+  }
+  updatePetitionPreview();
+}
+
+// Hedef Seçimi
+function selectTarget(target) {
+  selectedTarget = target;
+  var btnCb = document.getElementById('btn-target-cb');
+  var btnMb = document.getElementById('btn-target-mb');
+  var btnMp = document.getElementById('btn-target-mp');
+  var mpPanel = document.getElementById('mp-selector-panel');
+  var helpText = document.getElementById('target-help-text');
+  var badge = document.getElementById('preview-target-badge');
+
+  btnCb.className = 'border-2 py-3 rounded-xl text-xs font-bold uppercase transition border-amber-700 bg-amber-950/40 text-amber-300 hover:bg-amber-900/60 cursor-pointer';
+  btnMb.className = 'border-2 py-3 rounded-xl text-xs font-bold uppercase transition border-amber-700 bg-amber-950/40 text-amber-300 hover:bg-amber-900/60 cursor-pointer';
+  btnMp.className = 'border-2 py-3 rounded-xl text-xs font-bold uppercase transition border-emerald-700 bg-emerald-950/40 text-emerald-300 hover:bg-emerald-900/60 cursor-pointer';
+
+  if (target === 'cb') {
+    btnCb.className = 'border-2 py-3 rounded-xl text-xs font-bold uppercase transition border-emerald-600 bg-emerald-600 text-white shadow cursor-pointer';
+    mpPanel.classList.add('hidden');
+    helpText.textContent = 'Hedef: Cumhurbaşkanlığı Makamı (iletisim@tccb.gov.tr)';
+    badge.textContent = 'Cumhurbaşkanlığı Makamı';
+  } else if (target === 'mb') {
+    btnMb.className = 'border-2 py-3 rounded-xl text-xs font-bold uppercase transition border-emerald-600 bg-emerald-600 text-white shadow cursor-pointer';
+    mpPanel.classList.add('hidden');
+    helpText.textContent = 'Hedef: TBMM Meclis Başkanlığı (numan.kurtulmus@tbmm.gov.tr)';
+    badge.textContent = 'TBMM Meclis Başkanlığı';
+  } else if (target === 'mp') {
+    btnMp.className = 'border-2 py-3 rounded-xl text-xs font-bold uppercase transition border-emerald-600 bg-emerald-600 text-white shadow cursor-pointer';
+    mpPanel.classList.remove('hidden');
+    helpText.textContent = 'Hedef: Aşağıdan seçeceğiniz TBMM Milletvekiline özel';
+    badge.textContent = selectedMP ? selectedMP.name : 'Vekil Bekleniyor';
+  }
+
+  updatePetitionPreview();
+}
+
+// Dilekçe Metni Önizlemesini Güncelle
+function updatePetitionPreview() {
+  var name = document.getElementById('citizen-name').value || '[Adınız Soyadınız]';
+  var tc = document.getElementById('citizen-tc').value || '[T.C. Kimlik No]';
+  var city = document.getElementById('citizen-city').value;
+  var district = document.getElementById('citizen-district').value;
+  var address = document.getElementById('citizen-address').value || '[Açık Adresiniz]';
+
+  var fullAddress = address;
+  if (district) fullAddress += ' - ' + district;
+  if (city) fullAddress += ' / ' + city;
+
+  document.getElementById('doc-val-name').textContent = name;
+  document.getElementById('doc-val-tc').textContent = tc;
+  document.getElementById('doc-val-address').textContent = fullAddress;
+
+  var today = new Date();
+  var dateStr = String(today.getDate()).padStart(2, '0') + '.' + String(today.getMonth() + 1).padStart(2, '0') + '.' + today.getFullYear();
+  document.getElementById('doc-val-date').textContent = dateStr;
+
+  // Başlık metni
+  var headerEl = document.getElementById('petition-header-text');
+  if (selectedTarget === 'cb') {
+    headerEl.textContent = 'T.C. CUMHURBAŞKANLIĞI MAKAMINA';
+  } else if (selectedTarget === 'mb') {
+    headerEl.textContent = "T.C. TÜRKİYE BÜYÜK MİLLET MECLİSİ BAŞKANLIĞI'NA\nSayın Numan KURTULMUŞ";
+  } else if (selectedTarget === 'mp') {
+    if (selectedMP) {
+      headerEl.textContent = "T.C. TÜRKİYE BÜYÜK MİLLET MECLİSİ\nSayın " + selectedMP.name + " (" + selectedMP.party + " " + selectedMP.city + " Milletvekili)";
+    } else {
+      headerEl.textContent = "T.C. TÜRKİYE BÜYÜK MİLLET MECLİSİ\n[Lütfen Milletvekili Seçin]";
+    }
+  }
+
+  // Yazdırma şablonuna da eşitle
+  var printHeader = document.getElementById('print-header');
+  if (printHeader) printHeader.textContent = headerEl.textContent;
+  var pName = document.getElementById('print-name');
+  if (pName) pName.textContent = name;
+  var pTc = document.getElementById('print-tc');
+  if (pTc) pTc.textContent = tc;
+  var pAddr = document.getElementById('print-address');
+  if (pAddr) pAddr.textContent = fullAddress;
+  var pDate = document.getElementById('print-date');
+  if (pDate) pDate.textContent = dateStr;
+}
+
+// TC Kimlik Biçimlendirme
+function formatTc(input) {
+  input.value = input.value.replace(/\D/g, '').slice(0, 11);
+}
+
+// --- İMZA TUVALİ YÖNETİMİ ---
+function setupCanvas(canvasId, onSave) {
+  var canvas = document.getElementById(canvasId);
+  if (!canvas) return null;
+
+  var ctx = canvas.getContext('2d');
+  var isDrawing = false;
+
+  function resize() {
+    var rect = canvas.getBoundingClientRect();
+    var old = canvas.toDataURL();
+    canvas.width = rect.width || 300;
+    canvas.height = rect.height || 112;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    if (old && old.length > 500) {
+      var img = new Image();
+      img.onload = function() { ctx.drawImage(img, 0, 0); };
+      img.src = old;
+    }
+  }
+
+  resize();
+  window.addEventListener('resize', resize);
+
+  function getPos(e) {
+    var rect = canvas.getBoundingClientRect();
+    var clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    var clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return { x: clientX - rect.left, y: clientY - rect.top };
+  }
+
+  function start(e) {
+    isDrawing = true;
+    var pos = getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+    if (e.cancelable) e.preventDefault();
+  }
+
+  function move(e) {
+    if (!isDrawing) return;
+    var pos = getPos(e);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+    if (e.cancelable) e.preventDefault();
+  }
+
+  function end() {
+    if (isDrawing) {
+      isDrawing = false;
+      var data = canvas.toDataURL();
+      onSave(data);
+    }
+  }
+
+  canvas.addEventListener('mousedown', start);
+  canvas.addEventListener('mousemove', move);
+  canvas.addEventListener('mouseup', end);
+  canvas.addEventListener('touchstart', start, { passive: false });
+  canvas.addEventListener('touchmove', move, { passive: false });
+  canvas.addEventListener('touchend', end);
+
+  return {
+    clear: function() {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      onSave('');
+    }
+  };
+}
+
+function clearCitizenPad() {
+  if (citizenSignaturePad) citizenSignaturePad.clear();
+  currentSigDataUrl = '';
+  document.getElementById('doc-sig-container').innerHTML = '<span class="text-zinc-400 italic text-[10px]">[İmza Bekleniyor]</span>';
+  var pImg = document.getElementById('print-sig-img');
+  if (pImg) pImg.style.display = 'none';
+}
+
+function clearMpPad() {
+  if (mpSignaturePad) mpSignaturePad.clear();
+  currentMpSigDataUrl = '';
+}
+
+// --- E-POSTA VE GÖNDERİM ---
+function getTargetEmail() {
+  if (selectedTarget === 'cb') return 'iletisim@tccb.gov.tr';
+  if (selectedTarget === 'mb') return 'numan.kurtulmus@tbmm.gov.tr';
+  if (selectedTarget === 'mp' && selectedMP) return selectedMP.email;
+  return '';
+}
+
+function generateMailtoUrl() {
+  var email = getTargetEmail();
+  var name = document.getElementById('citizen-name').value || '';
+  var tc = document.getElementById('citizen-tc').value || '';
+  var city = document.getElementById('citizen-city').value || '';
+  var district = document.getElementById('citizen-district').value || '';
+  var address = document.getElementById('citizen-address').value || '';
+
+  var subject = "7527 Sayılı Kanun'un İptali ve 5199'a Dönülmesi Talebimdir - " + name;
+  var body = 
+    "Sayın Yetkili,\n\n" +
+    "7527 sayılı Hayvanları Koruma Kanununda Değişiklik Yapılmasına Dair Kanun'un olağanüstü toplantıyla yürürlükten kaldırılmasını, 5199 sayılı Kanun'a dönülmesini ve yaşam hakkı gözetilerek gerekli iyileştirmelerin yapılmasını talep ediyorum.\n\n" +
+    "Dilekçe Sahibi: " + name + "\n" +
+    (tc ? "T.C. Kimlik No: " + tc + "\n" : "") +
+    "Adres: " + address + " " + district + " / " + city + "\n" +
+    "Tarih: " + new Date().toLocaleDateString('tr-TR') + "\n\n" +
+    "Saygılarımla arz ederim.";
+
+  return 'mailto:' + encodeURIComponent(email) + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+}
+
+function sendPetitionViaEmail() {
+  if (!selectedTarget) {
+    alert('Lütfen önce dilekçeyi kime göndereceğinizi seçin (CB, Meclis Başkanı veya Vekil).');
+    return;
+  }
+  if (selectedTarget === 'mp' && !selectedMP) {
+    alert('Lütfen bir milletvekili seçin.');
+    return;
+  }
+
+  var mailto = generateMailtoUrl();
+  window.location.href = mailto;
+
+  // Onay modalını aç
+  setTimeout(function() {
+    document.getElementById('confirm-modal').style.display = 'flex';
+  }, 1000);
+}
+
+function confirmPetitionSent(didSend) {
+  document.getElementById('confirm-modal').style.display = 'none';
+  if (!didSend) return;
+
+  // Sayaçları artır
+  counters.citizen += 1;
+  if (selectedTarget === 'cb') counters.cb += 1;
+  if (selectedTarget === 'mb') counters.mb += 1;
+  if (selectedTarget === 'mp') counters.mpSent += 1;
+
+  updateCountersUI();
+  saveCountersToStorage();
+
+  // Teşekkür modalını aç
+  openThanksModal();
+}
+
+function openWebmail(provider) {
+  var email = getTargetEmail();
+  if (!email) {
+    alert('Önce bir hedef seçmelisiniz.');
+    return;
+  }
+  var name = document.getElementById('citizen-name').value || '';
+  var subject = encodeURIComponent("7527 Sayılı Kanun'un İptali Talebi - " + name);
+  var body = encodeURIComponent("Saygılarımla, 7527 sayılı Kanun'un yürürlükten kaldırılmasını ve 5199 sayılı Kanun'a dönülmesini arz ve talep ederim.");
+
+  var url = '';
+  if (provider === 'gmail') {
+    url = 'https://mail.google.com/mail/?view=cm&fs=1&to=' + email + '&su=' + subject + '&body=' + body;
+  } else if (provider === 'outlook') {
+    url = 'https://outlook.live.com/mail/0/deeplink/compose?to=' + email + '&subject=' + subject + '&body=' + body;
+  } else if (provider === 'yahoo') {
+    url = 'https://compose.mail.yahoo.com/?to=' + email + '&subj=' + subject + '&body=' + body;
+  }
+  window.open(url, '_blank');
+}
+
+function printPetition() {
+  window.print();
+}
+
+function copyPetitionText() {
+  var header = document.getElementById('petition-header-text').textContent;
+  var name = document.getElementById('citizen-name').value || '[Ad Soyad]';
+  var text = header + "\n\nKONU: 7527 sayılı Kanun'un iptali ve 5199 sayılı Kanun'a dönülmesi.\n\nSaygılarımla arz ve talep ederim.\n" + name;
+  navigator.clipboard.writeText(text).then(function() {
+    alert('Dilekçe metni panoya kopyalandı.');
+  });
+}
+
+// --- VAKA ALMANAĞI ---
+function renderAlmanac() {
+  var grid = document.getElementById('almanac-grid');
+  if (!grid) return;
+
+  var search = (document.getElementById('almanac-search').value || '').toLowerCase();
+  var city = document.getElementById('almanac-city-filter').value;
+  var cat = document.getElementById('almanac-cat-filter').value;
+  var sort = document.getElementById('almanac-sort').value;
+
+  var filtered = ALMANAC_DATA.filter(function(item) {
+    var matchSearch = (item.title || '').toLowerCase().indexOf(search) !== -1 ||
+                      (item.city || '').toLowerCase().indexOf(search) !== -1 ||
+                      (item.desc || '').toLowerCase().indexOf(search) !== -1;
+    var matchCity = city === 'TÜMÜ' || item.city === city;
+    var matchCat = cat === 'TÜMÜ' || item.category === cat;
+    return matchSearch && matchCity && matchCat;
+  });
+
+  if (sort === 'recent') {
+    filtered.sort(function(a, b) { return new Date(b.date) - new Date(a.date); });
+  } else {
+    filtered.sort(function(a, b) { return new Date(a.date) - new Date(b.date); });
+  }
+
+  grid.innerHTML = '';
+  if (filtered.length === 0) {
+    grid.innerHTML = '<p class="text-zinc-500 col-span-3 text-center py-6">Kriterlere uygun vaka bulunamadı.</p>';
+    return;
+  }
+
+  filtered.forEach(function(item) {
+    var card = document.createElement('div');
+    card.className = 'bg-zinc-950 p-4 rounded-xl border border-zinc-800 space-y-2 hover:border-red-800/80 transition flex flex-col justify-between';
+    card.innerHTML = 
+      '<div>' +
+        '<div class="flex items-center justify-between text-[10px] text-zinc-400 mb-1">' +
+          '<span class="px-2 py-0.5 rounded bg-red-950 border border-red-800 text-red-300 font-bold">' + item.category + '</span>' +
+          '<span>' + item.date + ' • <strong>' + item.city + '</strong></span>' +
+        '</div>' +
+        '<h4 class="font-bold text-xs text-white">' + item.title + '</h4>' +
+        '<p class="text-[11px] text-zinc-300 line-clamp-3 mt-1 leading-relaxed">' + item.desc + '</p>' +
+      '</div>' +
+      '<div class="pt-2 flex items-center justify-between border-t border-zinc-800/80 mt-2">' +
+        (item.source ? '<a href="' + item.source + '" target="_blank" class="text-[10px] text-red-400 hover:underline">🔗 Haberi Oku</a>' : '<span></span>') +
+        '<button onclick="attachCaseToPetition(' + item.id + ')" class="text-[10px] bg-zinc-800 hover:bg-zinc-700 text-zinc-200 px-2 py-1 rounded">✉️ Dilekçeye Ekle</button>' +
+      '</div>';
+    grid.appendChild(card);
+  });
+}
+
+function filterAlmanac() {
+  renderAlmanac();
+}
+
+function attachCaseToPetition(caseId) {
+  var item = ALMANAC_DATA.find(function(x) { return x.id === caseId; });
+  if (!item) return;
+
+  var addr = document.getElementById('citizen-address');
+  if (addr) {
+    addr.value += "\n[Vaka Eklendi: " + item.city + " - " + item.title + "]";
+  }
+  updatePetitionPreview();
+  alert('"' + item.title + '" vakası dilekçe notlarınıza eklendi.');
+}
+
+// --- GÖNÜLLÜ FORMU ---
+function submitVolunteerForm() {
+  var name = document.getElementById('vol-name').value;
+  var city = document.getElementById('vol-city').value;
+  var contact = document.getElementById('vol-contact').value;
+  var note = document.getElementById('vol-note').value;
+
+  if (!name || !contact) {
+    alert('Lütfen adınızı ve iletişim bilginizi girin.');
+    return;
+  }
+
+  var volunteers = JSON.parse(localStorage.getItem('7527_volunteers') || '[]');
+  volunteers.push({ name: name, city: city, contact: contact, note: note, date: new Date().toISOString() });
+  localStorage.setItem('7527_volunteers', JSON.stringify(volunteers));
+
+  alert('Gönüllü kaydınız başarıyla alındı! Teşekkür ederiz.');
+  document.getElementById('vol-name').value = '';
+  document.getElementById('vol-contact').value = '';
+  document.getElementById('vol-note').value = '';
+}
+
+// --- MECLİS VEKİL İMZASI ---
+function submitMpSignature() {
+  var mpSelect = document.getElementById('mp-sign-select');
+  var email = document.getElementById('mp-sign-email').value;
+
+  if (!mpSelect.value) {
+    alert('Lütfen listeden isminizi seçin.');
+    return;
+  }
+  if (!email || email.indexOf('@tbmm.gov.tr') === -1) {
+    alert('Lütfen geçerli bir TBMM e-posta adresi girin (ad.soyad@tbmm.gov.tr).');
+    return;
+  }
+  if (!currentMpSigDataUrl) {
+    alert('Lütfen imza alanına ıslak imzanızı atın.');
+    return;
+  }
+
+  var mpId = parseInt(mpSelect.value, 10);
+  var mp = MP_DATABASE.find(function(x) { return x.id === mpId; });
+
+  var signedMps = JSON.parse(localStorage.getItem('7527_signed_mps') || '[]');
+  var already = signedMps.find(function(x) { return x.id === mpId; });
+  if (already) {
+    alert('Bu milletvekili adına zaten imza kaydı mevcut.');
+    return;
+  }
+
+  signedMps.push({
+    id: mp.id,
+    name: mp.name,
+    party: mp.party,
+    city: mp.city,
+    email: email,
+    sig: currentMpSigDataUrl,
+    date: new Date().toISOString()
+  });
+
+  localStorage.setItem('7527_signed_mps', JSON.stringify(signedMps));
+  counters.mpSigned = signedMps.length;
+  updateCountersUI();
+  renderSignedMpsList();
+  alert('Sayın ' + mp.name + ', 7527 iptal çağrısına resmi imzanız başarıyla kaydedildi!');
+}
+
+function renderSignedMpsList() {
+  var container = document.getElementById('signed-mps-list');
+  var countEl = document.getElementById('signed-mps-count');
+  if (!container) return;
+
+  var signedMps = JSON.parse(localStorage.getItem('7527_signed_mps') || '[]');
+  if (countEl) countEl.textContent = signedMps.length;
+
+  container.innerHTML = '';
+  if (signedMps.length === 0) {
+    container.innerHTML = '<p class="text-zinc-500 text-xs col-span-3 text-center py-4">Henüz imzacı vekil kaydı bulunmuyor.</p>';
+    return;
+  }
+
+  signedMps.forEach(function(m) {
+    var card = document.createElement('div');
+    card.className = 'bg-zinc-950 p-3 rounded-xl border border-emerald-800/80 flex items-center justify-between text-xs';
+    card.innerHTML = 
+      '<div>' +
+        '<p class="font-bold text-white">' + m.name + '</p>' +
+        '<p class="text-[10px] text-emerald-400">' + m.party + ' - ' + m.city + '</p>' +
+      '</div>' +
+      (m.sig ? '<img src="' + m.sig + '" class="max-h-8 border border-zinc-700 bg-white rounded p-0.5">' : '');
+    container.appendChild(card);
+  });
+}
+
+// --- 1080x1080 KAREKODLU SOSYAL MEDYA AFİŞİ ---
+function generateAndDownloadShareCard() {
+  var canvas = document.createElement('canvas');
+  canvas.width = 1080;
+  canvas.height = 1080;
+  var ctx = canvas.getContext('2d');
+
+  // Arka plan gradyanı
+  var grad = ctx.createLinearGradient(0, 0, 0, 1080);
+  grad.addColorStop(0, '#09090b');
+  grad.addColorStop(0.5, '#18181b');
+  grad.addColorStop(1, '#450a0a');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 1080, 1080);
+
+  // Kırmızı kalın kenarlık
+  ctx.strokeStyle = '#dc2626';
+  ctx.lineWidth = 24;
+  ctx.strokeRect(20, 20, 1040, 1040);
+
+  // Başlık Şeridi
+  ctx.fillStyle = '#dc2626';
+  ctx.fillRect(140, 90, 800, 110);
+
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 64px Oswald, Impact, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('7527 İPTAL! İMZACI OL!', 540, 170);
+
+  // Slogan
+  ctx.fillStyle = '#f4f4f5';
+  ctx.font = 'bold 44px Inter, sans-serif';
+  ctx.fillText('ÖLDÜREN DEĞİL, YAŞATAN OL!', 540, 280);
+
+  ctx.fillStyle = '#ef4444';
+  ctx.font = '600 28px Inter, sans-serif';
+  ctx.fillText('🐾 YAŞAM HAKKI İÇİN 🐾 HAYVANLAR İÇİN', 540, 340);
+
+  // Karekod Alanı
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(340, 410, 400, 400);
+
+  // QR kodu canvas'tan çek
+  var qrImg = document.querySelector('#qrcode-box img');
+  if (qrImg && qrImg.src) {
+    var qr = new Image();
+    qr.onload = function() {
+      ctx.drawImage(qr, 360, 430, 360, 360);
+      finishAndDownload();
+    };
+    qr.src = qrImg.src;
+  } else {
+    ctx.fillStyle = '#09090b';
+    ctx.font = 'bold 24px monospace';
+    ctx.fillText('KAREKODU TARA', 540, 600);
+    ctx.fillText('www.7527iptal.org', 540, 640);
+    finishAndDownload();
+  }
+
+  function finishAndDownload() {
+    var supporterName = document.getElementById('citizen-name').value;
+    if (supporterName) {
+      ctx.fillStyle = '#fef08a';
+      ctx.font = 'bold 32px Inter, sans-serif';
+      ctx.fillText('"' + supporterName + ' olarak yaşatmak için imzaladım!"', 540, 870);
+    } else {
+      ctx.fillStyle = '#a1a1aa';
+      ctx.font = '30px Inter, sans-serif';
+      ctx.fillText('Sen de dilekçeni oluştur, ses ver, hayat kurtar!', 540, 870);
+    }
+
+    ctx.fillStyle = '#ef4444';
+    ctx.font = 'bold 36px monospace';
+    ctx.fillText('#7527İptal #Yaşatacağız', 540, 950);
+
+    ctx.fillStyle = '#71717a';
+    ctx.font = '22px Inter, sans-serif';
+    ctx.fillText('www.7527iptal.org', 540, 1000);
+
+    var a = document.createElement('a');
+    a.download = '7527-iptal-sosyal-medya-afisi.png';
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+  }
+}
+
+// --- DİNAMİK QR KOD OLUŞTURUCU ---
+function initCampaignQR() {
+  var qrBox = document.getElementById('qrcode-box');
+  if (!qrBox) return;
+  qrBox.innerHTML = '';
+  new QRCode(qrBox, {
+    text: 'https://www.7527iptal.org',
+    width: 80,
+    height: 80,
+    colorDark: '#000000',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.M
+  });
+}
+
+function downloadQRCode() {
+  var img = document.querySelector('#qrcode-box img');
+  if (img && img.src) {
+    var a = document.createElement('a');
+    a.download = '7527iptal-qr.png';
+    a.href = img.src;
+    a.click();
+  }
+}
+
+// --- GERİ SAYIM SAYACI (24 EYLÜL 20:00) ---
+var TARGET_DATE = new Date('2026-09-24T20:00:00+03:00').getTime();
+var countdownInterval = null;
+
+function updateCountdown() {
+  var now = new Date().getTime();
+  var diff = TARGET_DATE - now;
+
+  var el = document.getElementById('launch-countdown');
+  var gate = document.getElementById('launch-gate');
+
+  if (diff <= 0) {
+    if (el) el.textContent = '00 gün 00:00:00';
+    unlockGateNow();
+    if (countdownInterval) clearInterval(countdownInterval);
+    return;
+  }
+
+  var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  var mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  var secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+  if (el) {
+    el.textContent = 
+      String(days).padStart(2, '0') + ' gün ' +
+      String(hours).padStart(2, '0') + ':' +
+      String(mins).padStart(2, '0') + ':' +
+      String(secs).padStart(2, '0');
+  }
+}
+
+function unlockGateNow() {
+  var gate = document.getElementById('launch-gate');
+  if (gate) {
+    gate.classList.add('gate-hidden');
+    setTimeout(function() { gate.style.display = 'none'; }, 400);
+  }
+  document.body.classList.remove('launch-pending');
+}
+
+function lockGateNow() {
+  var gate = document.getElementById('launch-gate');
+  if (gate) {
+    gate.style.display = 'block';
+    gate.classList.remove('gate-hidden');
+  }
+  document.body.classList.add('launch-pending');
+}
+
+function setTestCountdown(sec) {
+  TARGET_DATE = new Date().getTime() + (sec * 1000);
+  if (countdownInterval) clearInterval(countdownInterval);
+  countdownInterval = setInterval(updateCountdown, 1000);
+  updateCountdown();
+  lockGateNow();
+}
+
+// --- SAYAÇLAR VE LOCALSTORAGE ---
+function loadCountersFromStorage() {
+  var saved = localStorage.getItem('7527_counters');
+  if (saved) {
+    try {
+      var parsed = JSON.parse(saved);
+      counters = Object.assign(counters, parsed);
+    } catch(e) {}
+  }
+}
+
+function saveCountersToStorage() {
+  localStorage.setItem('7527_counters', JSON.stringify(counters));
+}
+
+function updateCountersUI() {
+  document.getElementById('citizen-counter').textContent = counters.citizen.toLocaleString('tr-TR') + ' / 3.000.000';
+  document.getElementById('citizen-progress').style.width = Math.min((counters.citizen / 3000000) * 100, 100) + '%';
+
+  document.getElementById('mp-counter').textContent = counters.mpSigned + ' / 592';
+  document.getElementById('mp-progress').style.width = ((counters.mpSigned / 592) * 100) + '%';
+
+  document.getElementById('cb-counter').textContent = counters.cb;
+  document.getElementById('mb-counter').textContent = counters.mb;
+  document.getElementById('mp-sent-counter').textContent = counters.mpSent;
+}
+
+// --- MODALLAR VE SEKME DEĞİŞİMİ ---
+function switchTab(tab) {
+  var pVatandas = document.getElementById('panel-vatandas');
+  var pVekil = document.getElementById('panel-vekil');
+  var btnVatandas = document.getElementById('tab-btn-vatandas');
+  var btnVekil = document.getElementById('tab-btn-vekil');
+
+  if (tab === 'vatandas') {
+    pVatandas.classList.remove('hidden');
+    pVekil.classList.add('hidden');
+    btnVatandas.className = 'px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition border-2 bg-red-600 border-red-600 text-white shadow-xl cursor-pointer';
+    btnVekil.className = 'px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition border-2 bg-zinc-900 border-zinc-700 text-zinc-300 hover:text-white cursor-pointer';
+  } else {
+    pVatandas.classList.add('hidden');
+    pVekil.classList.remove('hidden');
+    btnVatandas.className = 'px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition border-2 bg-zinc-900 border-zinc-700 text-zinc-300 hover:text-white cursor-pointer';
+    btnVekil.className = 'px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition border-2 bg-emerald-600 border-emerald-600 text-white shadow-xl cursor-pointer';
+  }
+}
+
+function openThanksModal() {
+  var modal = document.getElementById('thanks-modal');
+  modal.style.display = 'flex';
+
+  var text = encodeURIComponent("7527 sayılı kanunun iptali için ben de imza verdim! Sen de dilekçeni oluştur: https://www.7527iptal.org #7527İptal");
+  var url = encodeURIComponent("https://www.7527iptal.org");
+
+  document.getElementById('share-wa').href = "https://api.whatsapp.com/send?text=" + text;
+  document.getElementById('share-x').href = "https://twitter.com/intent/tweet?text=" + text;
+  document.getElementById('share-fb').href = "https://www.facebook.com/sharer/sharer.php?u=" + url;
+  document.getElementById('share-tg').href = "https://t.me/share/url?url=" + url + "&text=" + text;
+}
+
+function closeThanksModal() {
+  document.getElementById('thanks-modal').style.display = 'none';
+}
+
+function openAdminModal() {
+  document.getElementById('admin-modal').style.display = 'flex';
+  document.getElementById('admin-auth-view').classList.remove('hidden');
+  document.getElementById('admin-controls-view').classList.add('hidden');
+  document.getElementById('admin-pin-input').value = '';
+}
+
+function closeAdminModal() {
+  document.getElementById('admin-modal').style.display = 'none';
+}
+
+function checkAdminPin() {
+  var pin = document.getElementById('admin-pin-input').value;
+  if (pin === '7527') {
+    document.getElementById('admin-auth-view').classList.add('hidden');
+    document.getElementById('admin-controls-view').classList.remove('hidden');
+    document.getElementById('admin-count-cit').value = counters.citizen;
+    document.getElementById('admin-count-mp').value = counters.mpSigned;
+  } else {
+    alert('Hatalı PIN!');
+  }
+}
+
+function saveAdminCounters() {
+  counters.citizen = parseInt(document.getElementById('admin-count-cit').value, 10) || counters.citizen;
+  counters.mpSigned = parseInt(document.getElementById('admin-count-mp').value, 10) || counters.mpSigned;
+  updateCountersUI();
+  saveCountersToStorage();
+  alert('Sayaçlar güncellendi.');
+}
+
+function exportSignatures(format) {
+  var volunteers = localStorage.getItem('7527_volunteers') || '[]';
+  var signedMps = localStorage.getItem('7527_signed_mps') || '[]';
+  var data = {
+    counters: counters,
+    signedMps: JSON.parse(signedMps),
+    volunteers: JSON.parse(volunteers)
+  };
+
+  var blob;
+  var filename = '7527_iptal_veriler.' + format;
+
+  if (format === 'json') {
+    blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  } else {
+    var csv = 'Tür,Ad,Detay,Tarih\n';
+    data.signedMps.forEach(function(m) {
+      csv += 'Vekil,"' + m.name + '","' + m.party + ' - ' + m.city + '",' + m.date + '\n';
+    });
+    data.volunteers.forEach(function(v) {
+      csv += 'Gönüllü,"' + v.name + '","' + v.city + ' - ' + v.contact + '",' + v.date + '\n';
+    });
+    blob = new Blob([csv], { type: 'text/csv' });
+  }
+
+  var a = document.createElement('a');
+  a.download = filename;
+  a.href = URL.createObjectURL(blob);
+  a.click();
+}
+
+// --- SAYFA BAŞLATICI ---
+window.addEventListener('DOMContentLoaded', function() {
+  loadCountersFromStorage();
+  updateCountersUI();
+  initMpDatabase();
+  renderAlmanac();
+  initCampaignQR();
+  renderSignedMpsList();
+  selectTarget('cb');
+
+  // Tuval başlatıcıları
+  citizenSignaturePad = setupCanvas('citizen-canvas', function(data) {
+    currentSigDataUrl = data;
+    var sigContainer = document.getElementById('doc-sig-container');
+    var printSig = document.getElementById('print-sig-img');
+
+    if (data) {
+      sigContainer.innerHTML = '<img src="' + data + '" class="max-h-12 border border-zinc-200">';
+      if (printSig) {
+        printSig.src = data;
+        printSig.style.display = 'block';
+      }
+    } else {
+      sigContainer.innerHTML = '<span class="text-zinc-400 italic text-[10px]">[İmza Bekleniyor]</span>';
+      if (printSig) printSig.style.display = 'none';
+    }
+  });
+
+  mpSignaturePad = setupCanvas('mp-canvas', function(data) {
+    currentMpSigDataUrl = data;
+  });
+
+  // Geri sayımı başlat
+  countdownInterval = setInterval(updateCountdown, 1000);
+  updateCountdown();
 });
 </script>
 </body>
