@@ -1182,6 +1182,48 @@
             Kapıyı Kapat
           </button>
         </div>
+      <details class="pt-2 border-t border-zinc-800 group">
+        <summary class="font-bold text-red-500 cursor-pointer select-none list-none flex items-center justify-between">
+          <span>⚠️ VERİ TEMİZLİĞİ</span>
+          <span class="text-zinc-500 text-[10px] group-open:hidden">aç</span>
+        </summary>
+        <div class="pt-3 space-y-2">
+          <p class="text-[10px] text-red-400 bg-red-950/40 border border-red-900 rounded p-2 leading-relaxed">
+            Bu işlemler <strong>geri alınamaz</strong>. Silmeden önce ilgili listeyi
+            Excel olarak dışa aktarmanızı öneririm — şifreli kayıtlar özel anahtarsız
+            geri getirilemez.
+          </p>
+
+          <div class="bg-zinc-950 border border-zinc-800 rounded p-2 space-y-1.5">
+            <div class="flex items-center justify-between gap-2">
+              <div class="min-w-0">
+                <p class="text-[11px] text-zinc-200 font-semibold">Vekil İmzaları</p>
+                <p class="text-[10px] text-zinc-500"><span id="del-mp-count">-</span> kayıt · vitrin ve meclis sayacı sıfırlanır</p>
+              </div>
+              <button type="button" id="del-mp-btn" onclick="adminDelete('mp')" class="shrink-0 px-2.5 py-1.5 bg-red-900 hover:bg-red-800 text-red-100 rounded text-[10px] font-bold disabled:opacity-50">Sil</button>
+            </div>
+
+            <div class="flex items-center justify-between gap-2 border-t border-zinc-800 pt-1.5">
+              <div class="min-w-0">
+                <p class="text-[11px] text-zinc-200 font-semibold">Vatandaş Dilekçeleri</p>
+                <p class="text-[10px] text-zinc-500"><span id="del-pet-count">-</span> kayıt · sayaçlar sıfırlanır, numara 1’den başlar</p>
+              </div>
+              <button type="button" id="del-pet-btn" onclick="adminDelete('petitions')" class="shrink-0 px-2.5 py-1.5 bg-red-900 hover:bg-red-800 text-red-100 rounded text-[10px] font-bold disabled:opacity-50">Sil</button>
+            </div>
+
+            <div class="flex items-center justify-between gap-2 border-t border-zinc-800 pt-1.5">
+              <div class="min-w-0">
+                <p class="text-[11px] text-zinc-200 font-semibold">IP Hız Sınırı</p>
+                <p class="text-[10px] text-zinc-500">Test sırasında sınıra takıldıysanız sıfırlar · kişisel veri silmez</p>
+              </div>
+              <button type="button" id="del-rate-btn" onclick="adminDelete('rate')" class="shrink-0 px-2.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded text-[10px] font-bold disabled:opacity-50">Sıfırla</button>
+            </div>
+          </div>
+
+          <p id="del-status" class="text-[10px] text-zinc-500 min-h-[14px]"></p>
+        </div>
+      </details>
+
       </div>
     </div>
   </div>
@@ -3906,6 +3948,7 @@ async function checkAdminPin() {
       initAlmanacAdminFields();
       clearAlmanacForm();
       loadAlmanacAdmin();
+      refreshDeleteCounts();
       document.getElementById('admin-auth-view').classList.add('hidden');
       document.getElementById('admin-controls-view').classList.remove('hidden');
       document.getElementById('admin-count-cit').value = counters.citizen;
@@ -4202,6 +4245,80 @@ async function deleteAlmanacCase(id, title) {
     await loadAlmanacFromServer();
   } catch (e) {
     almStatus(dataErrorText(e), 'text-red-400');
+  }
+}
+
+// --- VERİ TEMİZLİĞİ ------------------------------------------------
+var DELETE_ACTIONS = {
+  mp: {
+    rpc: 'admin_delete_mp_signatures',
+    btn: 'del-mp-btn',
+    ad: 'vekil imzas\u0131',
+    onay: 'Vekil imzalar\u0131n\u0131n TAMAMI silinecek.',
+    yaz: true
+  },
+  petitions: {
+    rpc: 'admin_delete_petitions',
+    btn: 'del-pet-btn',
+    ad: 'dilek\u00e7e',
+    onay: 'Vatanda\u015f dilek\u00e7elerinin TAMAMI silinecek ve dilek\u00e7e numaras\u0131 1\u2019den ba\u015flayacak.',
+    yaz: true
+  },
+  rate: {
+    rpc: 'admin_reset_rate_limit',
+    btn: 'del-rate-btn',
+    ad: 'h\u0131z s\u0131n\u0131r\u0131 kayd\u0131',
+    onay: 'IP h\u0131z s\u0131n\u0131r\u0131 kay\u0131tlar\u0131 s\u0131f\u0131rlanacak.',
+    yaz: false
+  }
+};
+
+function delStatus(msg, cls) {
+  var el = document.getElementById('del-status');
+  if (el) { el.textContent = msg || ''; el.className = 'text-[10px] min-h-[14px] ' + (cls || 'text-zinc-500'); }
+}
+
+// Silinebilecek kayit sayilarini gosterir
+function refreshDeleteCounts() {
+  var mp = document.getElementById('del-mp-count');
+  var pet = document.getElementById('del-pet-count');
+  if (mp) mp.textContent = counters.mpSigned || 0;
+  if (pet) pet.textContent = counters.citizen || 0;
+}
+
+async function adminDelete(kind) {
+  var conf = DELETE_ACTIONS[kind];
+  if (!conf) return;
+  if (!adminPinCache) { alert('Oturum d\u00fc\u015fm\u00fc\u015f. PIN\u2019i tekrar girin.'); return; }
+
+  if (!confirm(conf.onay + '\n\nBu i\u015flem geri al\u0131namaz. Devam edilsin mi?')) return;
+
+  // Kalici silmelerde ikinci bir onay: kullanici SIL yazmali
+  if (conf.yaz) {
+    var cevap = prompt('Onaylamak i\u00e7in SIL yaz\u0131n:');
+    if (cevap === null) return;
+    if (cevap.trim().toLocaleUpperCase('tr') !== 'SIL') {
+      delStatus('\u0130\u015flem iptal edildi (onay metni e\u015fle\u015fmedi).', 'text-amber-400');
+      return;
+    }
+  }
+
+  var btn = document.getElementById(conf.btn);
+  var eski = btn ? btn.textContent : '';
+  if (btn) { btn.disabled = true; btn.textContent = '...'; }
+  delStatus('Siliniyor...');
+
+  try {
+    var adet = await callRpc(conf.rpc, { p_pin: adminPinCache });
+    delStatus('\u2713 ' + (adet || 0) + ' ' + conf.ad + ' silindi.', 'text-emerald-400');
+
+    await refreshCounters();
+    refreshDeleteCounts();
+    if (kind === 'mp') renderSignedMpsList();
+  } catch (e) {
+    delStatus(dataErrorText(e), 'text-red-400');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = eski; }
   }
 }
 
