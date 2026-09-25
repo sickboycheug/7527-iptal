@@ -2924,27 +2924,51 @@ function getTargetEmail() {
   return '';
 }
 
+// Mail govdesi, onizlemede ve PDF'te gorunen dilekce metninin AYNISIDIR.
+// Metin sunucudaki sablondan (petition_templates) gelir; eskiden burada
+// ayrica sabit yazilmisti ve sablon degistiginde ikisi birbirini tutmuyordu.
 function generateMailtoUrl() {
   var email = getTargetEmail();
-  var name = document.getElementById('citizen-name').value || '';
-  var tc = document.getElementById('citizen-tc').value || '';
-  var city = document.getElementById('citizen-city').value || '';
+  var tpl = currentTemplate();
+
+  var name     = (document.getElementById('citizen-name').value || '').trim();
+  var tc       = (document.getElementById('citizen-tc').value || '').trim();
+  var city     = document.getElementById('citizen-city').value || '';
   var district = document.getElementById('citizen-district').value || '';
-  var address = document.getElementById('citizen-address').value || '';
+  var address  = (document.getElementById('citizen-address').value || '').trim();
+  var contact  = (document.getElementById('citizen-contact').value || '').trim();
 
-  var subject = "7527 Sayılı Kanun'un İptali ve 5199'a Dönülmesi Talebimdir - " + name;
-  var body = 
-    "Sayın Yetkili,\n\n" +
-    "7527 sayılı Hayvanları Koruma Kanununda Değişiklik Yapılmasına Dair Kanun'un olağanüstü toplantıyla yürürlükten kaldırılmasını, 5199 sayılı Kanun'a dönülmesini ve yaşam hakkı gözetilerek gerekli iyileştirmelerin yapılmasını talep ediyorum.\n\n" +
-    "Dilekçe Sahibi: " + name + "\n" +
-    (tc ? "T.C. Kimlik No: " + tc + "\n" : "") +
-    "Adres: " + address + " " + district + " / " + city + "\n" +
-    "Tarih: " + new Date().toLocaleDateString('tr-TR') + "\n" +
-    (lastPetitionNumber ? "Dilekçe No: " + lastPetitionNumber + "\n" : "") + "\n" +
-    "Islak imzalı dilekçem ektedir.\n\n" +
-    "Saygılarımla arz ederim.";
+  var yer = [address, district, city].filter(Boolean).join(' / ');
+  var tarih = new Date().toLocaleDateString('tr-TR');
 
-  return 'mailto:' + encodeURIComponent(email) + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+  var subject = "7527 Sayılı Kanun'un İptali ve 5199'a Dönülmesi Talebimdir" +
+                (name ? ' - ' + name : '');
+
+  var satirlar = [
+    fillTemplatePlaceholders(tpl.header),
+    '',
+    'KONU: ' + tpl.konu,
+    '',
+    tpl.body,
+    '',
+    '---',
+    'Dilekçe Sahibi: ' + name
+  ];
+
+  if (tc) satirlar.push('T.C. Kimlik No: ' + tc);
+  if (yer) satirlar.push('Adres: ' + yer);
+  if (contact) satirlar.push('İletişim: ' + contact);
+  satirlar.push('Tarih: ' + tarih);
+  if (lastPetitionNumber) satirlar.push('Dilekçe No: ' + lastPetitionNumber);
+
+  satirlar.push('');
+  satirlar.push('Islak imzalı dilekçem ektedir.');
+
+  var body = satirlar.join('\n');
+
+  return 'mailto:' + encodeURIComponent(email) +
+         '?subject=' + encodeURIComponent(subject) +
+         '&body=' + encodeURIComponent(body);
 }
 
 function openKvkkModal() {
