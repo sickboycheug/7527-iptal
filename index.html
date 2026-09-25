@@ -374,12 +374,15 @@
     </p>
 
     <!-- Sekme Geçişi: Vatandaş / Vekil -->
-    <div class="pt-3 flex flex-wrap justify-center gap-3">
-      <button id="tab-btn-vatandas" onclick="switchTab('vatandas')" class="px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition border-2 bg-red-600 border-red-600 text-white shadow-xl cursor-pointer">
-        👤 VATANDAŞ PANELİ (DİLEKÇE OLUŞTUR)
+    <div class="pt-3 flex flex-wrap justify-center gap-2">
+      <button id="tab-btn-vatandas" onclick="switchTab('vatandas')" class="px-4 py-2 rounded-lg font-bold text-[11px] uppercase tracking-wide transition border-2 cursor-pointer bg-red-600 border-red-600 text-white shadow-lg">
+        👤 VATANDAŞ PANELİ
       </button>
-      <button id="tab-btn-vekil" onclick="switchTab('vekil')" class="px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition border-2 bg-zinc-900 border-zinc-700 text-zinc-300 hover:text-white cursor-pointer">
-        🏛️ MECLİS VEKİL PANELİ (VEKİL İMZASI)
+      <button id="tab-btn-vekil" onclick="switchTab('vekil')" class="px-4 py-2 rounded-lg font-bold text-[11px] uppercase tracking-wide transition border-2 cursor-pointer bg-zinc-900 border-zinc-700 text-zinc-300 hover:text-white">
+        🏛️ MECLİS VEKİL PANELİ
+      </button>
+      <button type="button" onclick="scrollToVolunteerForm()" class="px-4 py-2 rounded-lg font-bold text-[11px] uppercase tracking-wide transition border-2 cursor-pointer bg-emerald-600 border-emerald-500 text-white hover:bg-emerald-500 shadow-lg">
+        🤝 GÖNÜLLÜ OL
       </button>
     </div>
 
@@ -1270,6 +1273,45 @@
     <span>7527iptal.org</span>
   </div>
 </div>
+
+<!-- GÖNÜLLÜ OL FORMU (footer'in hemen ustunde) -->
+<section id="volunteer-section" class="max-w-4xl mx-auto px-4 py-10 w-full">
+  <div class="bg-zinc-900 border border-zinc-800 p-6 sm:p-8 rounded-2xl shadow-xl space-y-4">
+    <div class="text-center space-y-2">
+      <h2 class="font-impact text-2xl text-white uppercase tracking-wide">
+        🤝 SAHA VE İLETİŞİM GÖNÜLLÜSÜ OL
+      </h2>
+      <p class="text-xs text-zinc-400 max-w-xl mx-auto leading-relaxed">
+        Şehrinizde afiş dağıtımı, milletvekili iletişimi ve sosyal medya yayılımına
+        destek verin. <strong class="text-emerald-400"><span id="vol-count-badge">0 Gönüllü</span></strong> aramıza katıldı.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+      <input type="text" id="vol-name" placeholder="Adınız Soyadınız" class="bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 text-xs focus:border-emerald-500 focus:outline-none">
+      <select id="vol-city" class="bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 text-xs focus:border-emerald-500 focus:outline-none">
+        <option value="">Şehir Seçiniz</option>
+      </select>
+      <input type="text" id="vol-contact" placeholder="Telefon / E-posta" class="bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 text-xs focus:border-emerald-500 focus:outline-none">
+    </div>
+
+    <textarea id="vol-note" rows="2" placeholder="Nasıl katkı verebilirsiniz? (Afiş, sosyal medya, vekil iletişimi...)" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 text-xs focus:border-emerald-500 focus:outline-none"></textarea>
+
+    <label class="flex items-start gap-2 text-[11px] text-zinc-400 leading-relaxed cursor-pointer bg-zinc-950/60 border border-zinc-800 rounded-xl p-3">
+      <input type="checkbox" id="vol-consent" class="mt-0.5 shrink-0 accent-emerald-600">
+      <span>
+        Adım, iletişim bilgim ve şehrimin bu kampanyanın gönüllü organizasyonu
+        amacıyla işlenmesini ve saklanmasını kabul ediyorum. Verilerim üçüncü
+        kişilerle paylaşılmaz; talep etmeniz halinde silinir.
+        <button type="button" onclick="openKvkkModal()" class="text-emerald-400 hover:text-emerald-300 underline font-semibold cursor-pointer">Aydınlatma Metni</button>
+      </span>
+    </label>
+
+    <button type="button" id="vol-submit-btn" onclick="submitVolunteerForm()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs uppercase tracking-wide transition shadow disabled:opacity-50 disabled:cursor-not-allowed">
+      Gönüllü Olarak Kaydol
+    </button>
+  </div>
+</section>
 
 <!-- 11. FOOTER -->
 <footer class="border-t border-zinc-800 py-8 px-4 bg-zinc-950 text-center text-xs text-zinc-500 space-y-3">
@@ -4539,10 +4581,14 @@ function exportSignatures() {
 var VOLUNTEER_BASELINE = 0;
 
 function updateVolunteerBadge() {
-  var badge = document.getElementById('gate-volunteer-badge');
-  if (!badge) return;
+  // Ayni sayi iki yerde gosteriliyor: kapi ekrani ve gonullu formu
+  var hedefler = [
+    document.getElementById('gate-volunteer-badge'),
+    document.getElementById('vol-count-badge')
+  ];
   var total = VOLUNTEER_BASELINE + (counters.volunteers || 0);
-  badge.textContent = total.toLocaleString('tr-TR') + ' G\u00f6n\u00fcll\u00fc';
+  var metin = total.toLocaleString('tr-TR') + ' G\u00f6n\u00fcll\u00fc';
+  hedefler.forEach(function(el) { if (el) el.textContent = metin; });
 }
 
 // Gonullu formuna kaydir (kapi kapaliyken de calisir; form #volunteer-section footer ustunde)
