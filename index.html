@@ -1220,6 +1220,17 @@
             </div>
           </div>
 
+          <div class="bg-zinc-950 border border-zinc-800 rounded p-2 space-y-2">
+            <div class="flex items-center justify-between gap-2">
+              <div class="min-w-0">
+                <p class="text-[11px] text-zinc-200 font-semibold">Gönüllü Kayıtları</p>
+                <p class="text-[10px] text-zinc-500">KVKK silme talebi için tek tek silin · anahtar gerekir</p>
+              </div>
+              <button type="button" id="vol-list-btn" onclick="loadVolunteerAdmin()" class="shrink-0 px-2.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded text-[10px] font-bold disabled:opacity-50">Listele</button>
+            </div>
+            <div id="vol-admin-list" class="hidden max-h-44 overflow-y-auto space-y-1 border border-zinc-800 rounded p-1.5 bg-zinc-900/60"></div>
+          </div>
+
           <p id="del-status" class="text-[10px] text-zinc-500 min-h-[14px]"></p>
         </div>
       </details>
@@ -3922,6 +3933,9 @@ function closeAdminModal() {
   if (pass) pass.value = '';
   var status = document.getElementById('admin-key-status');
   if (status) { status.textContent = 'Anahtar y\u00fcklenmedi.'; status.className = 'text-[10px] text-zinc-500'; }
+  // Çözülmüş kişisel veri ekranda kalmasın
+  var volBox = document.getElementById('vol-admin-list');
+  if (volBox) { volBox.innerHTML = ''; volBox.classList.add('hidden'); }
 }
 
 var adminPinBusy = false;
@@ -4319,6 +4333,95 @@ async function adminDelete(kind) {
     delStatus(dataErrorText(e), 'text-red-400');
   } finally {
     if (btn) { btn.disabled = false; btn.textContent = eski; }
+  }
+}
+
+// --- GÖNÜLLÜ KAYITLARI (KVKK m.11 silme) ------------------------
+// Ad ve iletişim şifreli saklanıyor; listelemek için özel anahtar
+// gerekiyor. Çözme işlemi bu tarayıcıda yapılır, sunucuya gitmez.
+async function loadVolunteerAdmin() {
+  var btn = document.getElementById('vol-list-btn');
+  var box = document.getElementById('vol-admin-list');
+  if (!box) return;
+  if (!adminPinCache) { alert('Oturum d\u00fc\u015fm\u00fc\u015f. PIN\u2019i tekrar girin.'); return; }
+
+  var eski = btn ? btn.textContent : '';
+  if (btn) { btn.disabled = true; btn.textContent = '...'; }
+  delStatus('Anahtar a\u00e7\u0131l\u0131yor...');
+
+  try {
+    var privateKey = await loadAdminPrivateKey();
+    if (!privateKey) { delStatus('\u00d6zel anahtar dosyas\u0131 ve parolas\u0131 gerekiyor (yukar\u0131daki alan).', 'text-amber-400'); return; }
+
+    delStatus('Kay\u0131tlar al\u0131n\u0131yor...');
+    var rows = await callRpc('export_volunteers', { p_pin: adminPinCache }) || [];
+
+    box.innerHTML = '';
+    box.classList.remove('hidden');
+    if (rows.length === 0) {
+      box.innerHTML = '<p class="text-[10px] text-zinc-500 text-center py-2">Kay\u0131t yok.</p>';
+      delStatus('');
+      return;
+    }
+
+    for (var i = 0; i < rows.length; i++) {
+      var r = rows[i];
+      var c = {};
+      try { c = await decryptPayload(privateKey, r.payload_enc); }
+      catch (err) { c = { name: '[\u00c7\u00d6Z\u00dcLEMED\u0130]', contact: '' }; }
+      box.appendChild(buildVolunteerRow(r, c));
+    }
+    delStatus('\u2713 ' + rows.length + ' kay\u0131t listelendi.', 'text-emerald-400');
+  } catch (e) {
+    delStatus(dataErrorText(e), 'text-red-400');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = eski; }
+  }
+}
+
+function buildVolunteerRow(r, c) {
+  var row = document.createElement('div');
+  row.className = 'flex items-center gap-1.5 p-1 rounded hover:bg-zinc-900 text-[10px]';
+  row.dataset.volId = r.id;
+
+  var info = document.createElement('div');
+  info.className = 'flex-1 min-w-0';
+  var ad = document.createElement('p');
+  ad.className = 'truncate text-zinc-200';
+  ad.textContent = c.name || '(ad yok)';
+  var alt = document.createElement('p');
+  alt.className = 'text-zinc-500 truncate';
+  alt.textContent = [c.contact, r.city, new Date(r.created_at).toLocaleDateString('tr-TR')]
+    .filter(Boolean).join(' \u00b7 ');
+  info.appendChild(ad);
+  info.appendChild(alt);
+
+  var del = document.createElement('button');
+  del.type = 'button';
+  del.textContent = 'Sil';
+  del.className = 'shrink-0 px-1.5 py-0.5 bg-red-900 hover:bg-red-800 rounded text-red-200';
+  del.onclick = function() { deleteVolunteer(r.id, c.name || '(ad yok)', row); };
+
+  row.appendChild(info);
+  row.appendChild(del);
+  return row;
+}
+
+async function deleteVolunteer(id, ad, row) {
+  if (!adminPinCache) { alert('Oturum d\u00fc\u015fm\u00fc\u015f. PIN\u2019i tekrar girin.'); return; }
+  if (!confirm('Bu g\u00f6n\u00fcll\u00fc kayd\u0131 kal\u0131c\u0131 olarak silinecek:\n\n' + ad + '\n\nDevam edilsin mi?')) return;
+
+  try {
+    var ok = await callRpc('admin_delete_volunteer', { p_pin: adminPinCache, p_id: id });
+    if (ok) {
+      if (row && row.parentNode) row.parentNode.removeChild(row);
+      delStatus('\u2713 Kay\u0131t silindi.', 'text-emerald-400');
+      await refreshCounters();
+    } else {
+      delStatus('Kay\u0131t bulunamad\u0131 (zaten silinmi\u015f olabilir).', 'text-amber-400');
+    }
+  } catch (e) {
+    delStatus(dataErrorText(e), 'text-red-400');
   }
 }
 
