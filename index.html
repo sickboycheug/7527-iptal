@@ -3647,6 +3647,16 @@ function generateAndDownloadShareCard() {
 function initCampaignQR() {
   var qrBox = document.getElementById('qrcode-box');
   if (!qrBox) return;
+
+  // Kutuphane cdnjs'ten geliyor; erisilemezse sayfanin geri kalani
+  // etkilenmemeli. QR olmazsa kutuyu gizleyip geciyoruz.
+  if (typeof QRCode === 'undefined') {
+    console.warn('[qr] QRCode kütüphanesi yüklenemedi, karekod atlandı');
+    qrBox.style.display = 'none';
+    return;
+  }
+
+  qrBox.style.display = '';
   qrBox.innerHTML = '';
   new QRCode(qrBox, {
     text: 'https://www.7527iptal.org',
@@ -3731,6 +3741,14 @@ function updateCountdown() {
       String(mins).padStart(2, '0') + ':' +
       String(secs).padStart(2, '0');
   }
+}
+
+// Geri sayimi baslatir. Acilis zincirinin EN BASINDA cagrilir:
+// boylece sonraki adimlardan biri hata verse bile kapi yine de acilir.
+function startCountdown() {
+  if (countdownInterval) clearInterval(countdownInterval);
+  countdownInterval = setInterval(updateCountdown, 1000);
+  updateCountdown();
 }
 
 var pendingPanelAfterUnlock = 'vatandas';
@@ -4688,20 +4706,36 @@ function switchVideoTab(tab) {
         if (e.key === 'Escape') { closeKvkkModal(); closeShareModal(); }
       });
 
-      window.addEventListener('DOMContentLoaded', function() {
-        applyLaunchTexts();
-        updateCountersUI();
-        refreshCounters();
-        initMpDatabase();
-        refreshMpEmails();
-        loadPetitionTemplates();
-        loadAlmanacFromServer();
-        initCampaignQR();
-        renderSignedMpsList();
-        updateMpDocument();
-        selectTarget('cb');
+      // Bir adimin hatasi digerlerini durdurmasin. Eskiden hepsi tek bir
+      // korumasiz zincirdi: QRCode kutuphanesi yuklenemediginde initCampaignQR()
+      // patliyor, arkasindaki setInterval hic calismiyor ve kapi acilmiyordu.
+      function guvenli(ad, fn) {
+        try { fn(); } catch (e) { console.error('[açılış] ' + ad + ' başarısız:', e); }
+      }
 
-        // Video fallback dinleyicileri
+      window.addEventListener('DOMContentLoaded', function() {
+        // ÖNCE KAPI: her şeyden önce, hiçbir şeye bağlı olmadan
+        guvenli('açılış metinleri', applyLaunchTexts);
+        guvenli('geri sayım', startCountdown);
+
+        // Oturumda PIN ile açılmışsa kapalı tutma
+        guvenli('oturum kontrolü', function() {
+          if (sessionStorage.getItem('7527_team_unlocked') === '1') unlockGateNow(true);
+        });
+
+        // Geri kalanı — biri patlarsa diğerleri çalışmaya devam eder
+        guvenli('sayaçlar', updateCountersUI);
+        guvenli('sunucu sayaçları', refreshCounters);
+        guvenli('vekil listesi', initMpDatabase);
+        guvenli('vekil e-postaları', refreshMpEmails);
+        guvenli('dilekçe şablonları', loadPetitionTemplates);
+        guvenli('vaka almanağı', loadAlmanacFromServer);
+        guvenli('karekod', initCampaignQR);
+        guvenli('imzacı vekiller', renderSignedMpsList);
+        guvenli('vekil beyanı', updateMpDocument);
+        guvenli('hedef seçimi', function() { selectTarget('cb'); });
+
+        guvenli('video dinleyicileri', function() {
         var cVid = document.getElementById('gate-citizen-video');
         if (cVid) {
           cVid.addEventListener('error', function() {
@@ -4716,8 +4750,9 @@ function switchVideoTab(tab) {
             if (fb) fb.classList.remove('hidden');
           }, true);
         }
+      });
 
-        // Tuval başlatıcıları
+        guvenli('imza tuvalleri', function() {
         citizenSignaturePad = setupCanvas('citizen-canvas', function(data) {
           currentSigDataUrl = data;
           var sigContainer = document.getElementById('doc-sig-container');
@@ -4739,16 +4774,7 @@ function switchVideoTab(tab) {
           currentMpSigDataUrl = data;
           updateMpDocument();
         });
-
-        // Geri sayımı başlat
-        countdownInterval = setInterval(updateCountdown, 1000);
-        updateCountdown();
-
-        // Yetkili ekip kontrolü: yalnızca bu oturumda PIN ile açılmışsa.
-        // URL ile PIN bypass'ı kaldırıldı (?pin=... artık çalışmaz).
-        if (sessionStorage.getItem('7527_team_unlocked') === '1') {
-          unlockGateNow(true);
-        }
+      });
 
         // Geri sayım testi: ?test=<saniye>  (örn. ?test=14400 -> 4 saat)
         // Kapıyı yeniden kilitler ve sayacı verilen süreden geri saydırır.
