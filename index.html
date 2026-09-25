@@ -565,8 +565,9 @@
           </div>
 
           <div>
-            <label class="block text-zinc-300 font-semibold mb-1">TELEFON VEYA E-POSTA</label>
-            <input type="text" id="citizen-contact" placeholder="İletişim bilginiz" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 focus:border-red-500 focus:outline-none">
+            <label class="block text-zinc-300 font-semibold mb-1">TELEFON VEYA E-POSTA *</label>
+            <input type="text" id="citizen-contact" inputmode="text" autocomplete="off" oninput="updateContactFeedback()" placeholder="05XX XXX XX XX veya ad@ornek.com" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 focus:border-red-500 focus:outline-none">
+            <p id="contact-feedback" class="hidden text-[11px] mt-1 font-semibold"></p>
           </div>
 
           <!-- Islak İmza Tuvali -->
@@ -2632,6 +2633,53 @@ function updatePetitionPreview() {
 }
 
 // TC Kimlik Biçimlendirme
+// Iletisim bilgisi dogrulama: e-posta VEYA Turkiye telefon numarasi.
+// Dilekcenin kuruma ulasip geri donus yapilabilmesi icin zorunlu.
+function validateContact(value) {
+  var v = String(value || '').trim();
+  if (v.length === 0) return false;
+
+  // E-posta
+  if (v.indexOf('@') !== -1) {
+    return /^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/.test(v);
+  }
+
+  // Telefon: rakam disi her seyi at, +90 / 0 onekini temizle
+  var d = v.replace(/\D/g, '');
+  if (d.length === 12 && d.indexOf('90') === 0) d = d.slice(2);
+  if (d.length === 11 && d.indexOf('0') === 0)  d = d.slice(1);
+
+  // Gecerli: 10 hane, alan/operator kodu 2-5 ile baslar
+  return /^[2-5][0-9]{9}$/.test(d);
+}
+
+function updateContactFeedback() {
+  var input = document.getElementById('citizen-contact');
+  var note = document.getElementById('contact-feedback');
+  if (!input || !note) return;
+
+  var v = input.value.trim();
+  var base = 'w-full bg-zinc-950 border rounded-lg px-3 py-2 text-zinc-100 focus:outline-none';
+
+  if (v.length === 0) {
+    input.className = base + ' border-zinc-700 focus:border-red-500';
+    note.className = 'hidden text-[11px] mt-1 font-semibold';
+    return;
+  }
+
+  if (validateContact(v)) {
+    input.className = base + ' border-emerald-600 focus:border-emerald-500';
+    note.className = 'text-[11px] mt-1 font-semibold text-emerald-400';
+    note.textContent = v.indexOf('@') !== -1 ? '✓ Geçerli e-posta adresi' : '✓ Geçerli telefon numarası';
+  } else {
+    input.className = base + ' border-amber-600 focus:border-amber-500';
+    note.className = 'text-[11px] mt-1 font-semibold text-amber-400';
+    note.textContent = v.indexOf('@') !== -1
+      ? 'E-posta adresi eksik görünüyor (örn. ad@ornek.com)'
+      : 'Telefon numarası 10 haneli olmalı (örn. 0532 123 45 67)';
+  }
+}
+
 // T.C. Kimlik Numarasi dogrulama algoritmasi
 //  - 11 hane, tamami rakam, ilk hane 0 olamaz
 //  - 10. hane : ((1,3,5,7,9. hanelerin toplami * 7) - (2,4,6,8. hanelerin toplami)) mod 10
@@ -2955,6 +3003,16 @@ async function sendPetitionViaEmail() {
     document.getElementById('citizen-name').focus();
     return;
   }
+  var contactInput = document.getElementById('citizen-contact');
+  var contact = contactInput ? contactInput.value.trim() : '';
+  if (!validateContact(contact)) {
+    alert(contact.length === 0
+      ? 'Lütfen telefon numaranızı veya e-posta adresinizi girin.'
+      : 'İletişim bilginiz geçerli görünmüyor. Telefon 10 haneli olmalı (örn. 0532 123 45 67) veya geçerli bir e-posta adresi girin.');
+    if (contactInput) { contactInput.focus(); contactInput.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    return;
+  }
+
   if (tc.length > 0 && !validateTc(tc)) {
     alert('Girdiğiniz T.C. kimlik numarası geçerli değil.\n\n' +
           'Resmi dilekçenin geçerli olması için doğru olması gerekir. ' +
@@ -3007,6 +3065,10 @@ async function sendPetitionViaEmail() {
       p_recipient_id: selectedTarget === 'mp' && selectedMP ? selectedMP.id : null,
       p_payload_enc: envelope
     });
+
+    // Dilekceyi olusturan herkes imzaci sayilir; sayac burada guncellenir.
+    // Onay adimi ('Evet, gonderdim') yalnizca bilgi amacli kaydedilir.
+    refreshCounters();
 
     step('PDF hazırlanıyor...');
     fillPrintPetition(lastPetitionNumber);
@@ -4532,18 +4594,51 @@ function triggerDownload(blob, filename) {
 }
 
 // --- SIFRE COZMELI DISA AKTARIM -------------------------------------
+function hedefAdi(tur) {
+  if (tur === 'cb') return 'Cumhurbaşkanlığı';
+  if (tur === 'mb') return 'TBMM Başkanlığı';
+  if (tur === 'mp') return 'Milletvekili';
+  return tur || '';
+}
+
 var EXPORT_KINDS = {
   petitions: {
     rpc: 'export_petitions',
     dosya: '7527-dilekceler',
     sayfa: 'Dilek\u00e7eler',
-    baslik: ['S\u0131ra', 'Dilek\u00e7e No', 'Hedef', 'Ad Soyad', 'T.C. Kimlik No', '\u015eehir', '\u0130l\u00e7e', 'Adres', '\u0130leti\u015fim', 'Tarih'],
-    genislik: [6, 34, 10, 26, 14, 14, 14, 40, 26, 20],
+    baslik: ['Sıra', 'Dilekçe No', 'Gönderim Onayı', 'Hedef', 'Hedef Vekil',
+             'Ad Soyad', 'T.C. Kimlik No', 'Şehir', 'İlçe', 'Adres', 'İletişim', 'Tarih'],
+    genislik: [6, 34, 16, 22, 24, 26, 14, 14, 14, 40, 26, 20],
     satir: function(r, c, i) {
-      return [i + 1, r.petition_number, (r.recipient_type || '').toUpperCase(),
+      return [i + 1,
+              r.petition_number,
+              r.confirmed ? 'Onayladı' : 'Onaylamadı',
+              hedefAdi(r.recipient_type),
+              c.targetName || '',
               c.name || '', c.tc || '', c.city || '', c.district || '',
               c.address || '', c.contact || '',
               r.created_at ? new Date(r.created_at).toLocaleString('tr-TR') : ''];
+    },
+    // Ek 'Özet' sayfasi: sitedeki sayac ile satir sayisi arasindaki
+    // farki aciklar (onaylayanlar / onaylamayanlar).
+    ozet: function(rows) {
+      var turler = [['cb', 'Cumhurbaşkanlığı'], ['mb', 'TBMM Başkanlığı'], ['mp', 'Milletvekili']];
+      var satirlar = [['Hedef', 'Toplam Oluşturulan', 'Onayladı', 'Onaylamadı']];
+      var t = 0, o = 0;
+      turler.forEach(function(x) {
+        var grup = rows.filter(function(r) { return r.recipient_type === x[0]; });
+        var onayli = grup.filter(function(r) { return r.confirmed; }).length;
+        satirlar.push([x[1], grup.length, onayli, grup.length - onayli]);
+        t += grup.length; o += onayli;
+      });
+      satirlar.push(['TOPLAM', t, o, t - o]);
+      satirlar.push([]);
+      satirlar.push(['Sitedeki sayaç TOPLAM satırını gösterir: ' + t]);
+      satirlar.push(['Dilekçeyi oluşturup PDF’ini indiren herkes imzacı sayılır.']);
+      satirlar.push([]);
+      satirlar.push(['“Onayladı” sütunu, ek olarak “Evet, gönderdim” adımını']);
+      satirlar.push(['işaretleyenleri gösterir. Sayacı etkilemez, yalnızca bilgi amaçlıdır.']);
+      return { ad: 'Özet', satirlar: satirlar, genislik: [30, 20, 14, 14] };
     }
   },
   mps: {
@@ -4679,6 +4774,13 @@ async function exportEncrypted(kind) {
     }) };
     var wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, conf.sayfa);
+
+    if (conf.ozet) {
+      var oz = conf.ozet(rows);
+      var ws2 = XLSX.utils.aoa_to_sheet(oz.satirlar);
+      ws2['!cols'] = oz.genislik.map(function(w) { return { wch: w }; });
+      XLSX.utils.book_append_sheet(wb, ws2, oz.ad);
+    }
     var buf = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
     var blob = new Blob([buf], {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
