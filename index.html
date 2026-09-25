@@ -3823,11 +3823,26 @@ function unlockGateNow() {
     gate.style.display = 'none';
   }
   document.body.classList.remove('launch-pending');
+
+  // Sari "yetkili test modu" bandi yalnizca ACILIS SAATINDEN ONCE,
+  // yani PIN ile erken girildiginde anlamli. Saat gectikten sonra site
+  // herkese acik oldugu icin band da, yeniden kilitleme dugmesi de
+  // gorunmemeli.
   var banner = document.getElementById('team-unlocked-banner');
-  if (banner) banner.style.display = 'flex';
+  if (banner) {
+    var acilisOncesi = Date.now() < TARGET_DATE;
+    banner.style.display = acilisOncesi ? 'flex' : 'none';
+  }
 }
 
 function lockGateNow() {
+  // Acilis saati gectiyse kilitleme kapali. Aksi halde geri sayim
+  // bitmis oldugu icin kapi bir daha acilmaz ve site kamuya kapanir.
+  if (Date.now() >= TARGET_DATE) {
+    alert('Açılış saati geçti, sistem kamuya açık. Yeniden kilitlemek için geri sayım hedefinin ileri bir tarihe alınması gerekir.');
+    return;
+  }
+
   sessionStorage.removeItem("7527_team_unlocked");
   var gate = document.getElementById('launch-gate');
   if (gate) {
