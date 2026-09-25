@@ -741,6 +741,33 @@
       </div>
 
       <div>
+        <!-- İmzalanacak beyan belgesi -->
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between">
+            <label class="block text-zinc-300 font-semibold">İMZALAYACAĞINIZ BEYAN</label>
+            <span class="text-[10px] text-zinc-500">Aşağıdaki metni okuyup imzalayınız</span>
+          </div>
+          <div class="bg-white text-zinc-900 rounded-xl p-5 sm:p-6 font-serif-doc text-[12px] leading-relaxed shadow-inner max-h-72 overflow-y-auto">
+            <p class="text-right text-[11px] font-bold text-zinc-500" id="mp-doc-date">-</p>
+            <h4 class="text-center font-bold text-[13px] tracking-wide uppercase border-b border-zinc-300 pb-2.5 mb-3" id="mp-doc-header">-</h4>
+            <p class="mb-2"><strong>KONU:</strong> <span id="mp-doc-konu"></span></p>
+            <p class="whitespace-pre-line text-justify" id="mp-doc-body"></p>
+            <div class="pt-5 mt-6 border-t border-zinc-300 flex justify-between items-end gap-4 text-[11px]">
+              <div class="space-y-0.5">
+                <p><strong>Teklif Sahibi Vekil:</strong> <span id="mp-doc-name">.................</span></p>
+                <p><strong>Seçim Çevresi:</strong> <span id="mp-doc-city">.................</span></p>
+                <p><strong>Partisi:</strong> <span id="mp-doc-party">.................</span></p>
+              </div>
+              <div class="text-center shrink-0">
+                <div id="mp-doc-sig" class="min-h-[38px] flex items-end justify-center">
+                  <span class="text-zinc-400 italic text-[10px]">[İmza Bekleniyor]</span>
+                </div>
+                <p class="border-t border-zinc-800 pt-1 mt-1 font-bold">TBMM Milletvekili</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <label class="block text-zinc-300 font-semibold mb-1">VEKİL ISLAK İMZASI *</label>
         <div class="border-2 border-zinc-700 bg-white rounded-xl overflow-hidden touch-none relative shadow-inner">
           <canvas id="mp-canvas" class="w-full h-32 cursor-crosshair block bg-white"></canvas>
@@ -940,7 +967,7 @@
 
 <!-- 9. YÖNETİCİ PANELİ MODALI (PIN Supabase'de saklanır) -->
 <div id="admin-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-  <div class="bg-zinc-900 border border-zinc-700 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl text-xs">
+  <div class="bg-zinc-900 border border-zinc-700 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl text-xs max-h-[90vh] overflow-y-auto overscroll-contain">
     <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
       <h3 class="font-impact text-xl text-white uppercase">⚙️ YÖNETİCİ KONTROL PANELİ</h3>
       <button onclick="closeAdminModal()" class="text-zinc-400 hover:text-white">✕</button>
@@ -1018,6 +1045,7 @@
             <button type="button" id="tpl-tab-mb" onclick="selectTemplateTab('mb')" class="py-1.5 rounded text-[10px] font-bold bg-zinc-800 text-zinc-300">TBMM BAŞKANI</button>
             <button type="button" id="tpl-tab-mp" onclick="selectTemplateTab('mp')" class="py-1.5 rounded text-[10px] font-bold bg-zinc-800 text-zinc-300">MİLLETVEKİLİ</button>
           </div>
+          <button type="button" id="tpl-tab-mp_sign" onclick="selectTemplateTab('mp_sign')" class="w-full py-1.5 rounded text-[10px] font-bold bg-zinc-800 text-zinc-300">VEKİL İMZA BEYANI (vekil panelinde imzalanan belge)</button>
 
           <div>
             <label class="block text-[10px] text-zinc-400 mb-1">Başlık <span class="text-zinc-600">(satır atlamak için Enter)</span></label>
@@ -1069,7 +1097,14 @@
             </div>
             <div class="grid grid-cols-2 gap-2">
               <div><label class="block text-[10px] text-zinc-400 mb-0.5">Yer</label><input type="text" id="alm-location" placeholder="Barınak, barınaj, ilçe..." class="w-full bg-zinc-900 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px] focus:border-emerald-500 focus:outline-none"></div>
-              <div><label class="block text-[10px] text-zinc-400 mb-0.5">Kategori *</label><input type="text" id="alm-category" list="alm-cat-list" class="w-full bg-zinc-900 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px] focus:border-emerald-500 focus:outline-none"><datalist id="alm-cat-list"></datalist></div>
+              <div>
+                <label class="block text-[10px] text-zinc-400 mb-0.5">Kategori *</label>
+                <select id="alm-category-select" onchange="onAlmCategoryChange()" class="w-full bg-zinc-900 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px] focus:border-emerald-500 focus:outline-none"></select>
+              </div>
+            </div>
+            <div id="alm-newcat-row" class="hidden">
+              <label class="block text-[10px] text-zinc-400 mb-0.5">Yeni kategori adı *</label>
+              <input type="text" id="alm-category-new" placeholder="Örn. Trafik, Boğulma, Terk" class="w-full bg-zinc-900 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px] focus:border-emerald-500 focus:outline-none">
             </div>
             <div><label class="block text-[10px] text-zinc-400 mb-0.5">Başlık *</label><input type="text" id="alm-title" class="w-full bg-zinc-900 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px] focus:border-emerald-500 focus:outline-none"></div>
             <div><label class="block text-[10px] text-zinc-400 mb-0.5">Açıklama *</label><textarea id="alm-desc" rows="3" class="w-full bg-zinc-900 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px] leading-relaxed focus:border-emerald-500 focus:outline-none"></textarea></div>
@@ -1078,7 +1113,10 @@
               <input type="checkbox" id="alm-published" checked class="accent-emerald-600"> Sitede yayında
             </label>
             <p id="alm-status" class="text-[10px] text-zinc-500"></p>
-            <button type="button" id="alm-save-btn" onclick="saveAlmanacCase()" class="w-full py-2 bg-red-800 hover:bg-red-700 text-white rounded font-bold text-[11px] disabled:opacity-50">Kaydet</button>
+            <div class="grid grid-cols-2 gap-2 sticky bottom-0 bg-zinc-950 pt-1">
+              <button type="button" onclick="clearAlmanacForm()" class="py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded font-semibold text-[11px]">İptal</button>
+              <button type="button" id="alm-save-btn" onclick="saveAlmanacCase()" class="py-2 bg-red-800 hover:bg-red-700 text-white rounded font-bold text-[11px] disabled:opacity-50">Kaydet</button>
+            </div>
           </div>
         </div>
       </details>
@@ -2052,6 +2090,11 @@ var DEFAULT_TEMPLATES = {
     konu: '7527 sayılı Hayvanları Koruma Kanununda Değişiklik Yapılmasına Dair Kanun\'un olağanüstü toplantıyla yürürlükten kaldırılması, 5199 sayılı Kanun\'a dönülmesi ve yaşam hakkı gözetilerek gerekli iyileştirmelerin yapılması talebidir.',
     body: '7527 sayılı Kanun\'un sahadaki uygulamalarının yaşam hakkı, kamu vicdanı ve hayvan refahı bakımından telafisi imkansız zararlara yol açtığı açıktır. Yaşam hakkının kutsallığı ve Anayasal sorumluluk gereği; 7527 sayılı Kanun\'un acilen kaldırılmasını, 5199 sayılı Kanun ilkelerine dönülmesini ve bilimsel, koruyucu politikalar geliştirilmesini saygılarımla arz ve talep ederim.'
   },
+  mp_sign: {
+    header: 'TÜRKİYE BÜYÜK MİLLET MECLİSİ BAŞKANLIĞINA',
+    konu: '7527 Sayılı Kanun Değişiklik Teklifine Katılma ve Sunma Beyanı Hk.',
+    body: 'Sivil toplum kuruluşları ve yurttaşlar tarafından hazırlanan 7527 Sayılı Kanunda Değişiklik Yapılmasına Dair Kanun Teklifi ve Genel Gerekçe metnini incelemiş bulunmaktayım.\n\nAnayasal yaşam hakkı ve toplumsal vicdan ilkesi gereğince söz konusu kanun teklifini TBMM Milletvekili sıfatımla imzalayarak TBMM Başkanlığına sunmayı kabul ve beyan ederim.'
+  },
   mp: {
     header: 'T.C. TÜRKİYE BÜYÜK MİLLET MECLİSİ\nSayın {VEKIL_AD} ({VEKIL_PARTI} {VEKIL_SEHIR} Milletvekili)',
     konu: '7527 sayılı Hayvanları Koruma Kanununda Değişiklik Yapılmasına Dair Kanun\'un olağanüstü toplantıyla yürürlükten kaldırılması, 5199 sayılı Kanun\'a dönülmesi ve yaşam hakkı gözetilerek gerekli iyileştirmelerin yapılması talebidir.',
@@ -2074,6 +2117,7 @@ async function loadPetitionTemplates() {
       }
     });
     updatePetitionPreview();
+    updateMpDocument();
   } catch (e) {
     console.warn('[sablon] sunucudan alınamadı, varsayılanlar kullanılıyor:', e.message);
   }
@@ -2675,6 +2719,7 @@ function clearCitizenPad() {
 function clearMpPad() {
   if (mpSignaturePad) mpSignaturePad.clear();
   currentMpSigDataUrl = '';
+  updateMpDocument();
 }
 
 // --- E-POSTA VE GÖNDERİM ---
@@ -3094,6 +3139,45 @@ async function submitVolunteerForm() {
 }
 
 // --- MECLİS VEKİL İMZA SEÇİCİSİ (A-Z VE ANLIK ARAMA) ---
+// Vekil panelindeki beyan belgesini gunceller
+function updateMpDocument() {
+  var tpl = PETITION_TEMPLATES.mp_sign || DEFAULT_TEMPLATES.mp_sign;
+  if (!tpl) return;
+
+  function set(id, val) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = val;
+  }
+
+  set('mp-doc-date', new Date().toLocaleDateString('tr-TR'));
+  set('mp-doc-header', tpl.header);
+  set('mp-doc-konu', tpl.konu);
+  set('mp-doc-body', tpl.body);
+
+  var sel = document.getElementById('mp-sign-select');
+  var mp = null;
+  if (sel && sel.value) {
+    var id = parseInt(sel.value, 10);
+    mp = MP_DATABASE.find(function(x) { return x.id === id; });
+  }
+  set('mp-doc-name', mp ? mp.name : '.................');
+  set('mp-doc-city', mp ? mp.city : '.................');
+  set('mp-doc-party', mp ? mp.party : '.................');
+
+  var sig = document.getElementById('mp-doc-sig');
+  if (sig) {
+    if (currentMpSigDataUrl) {
+      sig.innerHTML = '';
+      var img = document.createElement('img');
+      img.src = currentMpSigDataUrl;
+      img.className = 'max-h-9';
+      sig.appendChild(img);
+    } else {
+      sig.innerHTML = '<span class="text-zinc-400 italic text-[10px]">[İmza Bekleniyor]</span>';
+    }
+  }
+}
+
 function renderMpSignDropdown(filterQuery) {
   var mpSignSelect = document.getElementById('mp-sign-select');
   if (!mpSignSelect) return;
@@ -3127,6 +3211,7 @@ function filterMpSignDropdown() {
 }
 
 function onMpSignSelectChange() {
+  updateMpDocument();
   var mpSignSelect = document.getElementById('mp-sign-select');
   var id = parseInt(mpSignSelect ? mpSignSelect.value : '0', 10);
   var m = MP_DATABASE.find(function(x) { return x.id === id; });
@@ -3673,7 +3758,7 @@ function tplStatus(msg, cls) {
 
 function selectTemplateTab(type) {
   tplTab = type;
-  ['cb', 'mb', 'mp'].forEach(function(t) {
+  ['cb', 'mb', 'mp', 'mp_sign'].forEach(function(t) {
     var b = document.getElementById('tpl-tab-' + t);
     if (b) b.className = 'py-1.5 rounded text-[10px] font-bold ' +
       (t === type ? 'bg-emerald-700 text-white' : 'bg-zinc-800 text-zinc-300');
@@ -3721,6 +3806,7 @@ async function saveTemplate() {
     });
     PETITION_TEMPLATES[tplTab] = { header: header, konu: konu, body: body };
     updatePetitionPreview();
+    updateMpDocument();
     tplStatus('✓ Kaydedildi ve sitede güncellendi.', 'text-emerald-400');
   } catch (e) {
     tplStatus(dataErrorText(e), 'text-red-400');
@@ -3742,13 +3828,69 @@ function clearAlmanacForm() {
   document.getElementById('alm-date').value = '';
   document.getElementById('alm-city').value = '';
   document.getElementById('alm-location').value = '';
-  document.getElementById('alm-category').value = '';
+  fillAlmCategorySelect('');
+  var yeniKat = document.getElementById('alm-category-new');
+  if (yeniKat) yeniKat.value = '';
   document.getElementById('alm-title').value = '';
   document.getElementById('alm-desc').value = '';
   document.getElementById('alm-source').value = '';
   document.getElementById('alm-published').checked = true;
   document.getElementById('alm-form-title').textContent = 'Yeni Vaka';
   almStatus('');
+}
+
+var ALM_OTHER = '__diger__';
+
+// 'Diğer' seçilince yeni kategori girdisini açar
+function onAlmCategoryChange() {
+  var sel = document.getElementById('alm-category-select');
+  var row = document.getElementById('alm-newcat-row');
+  var inp = document.getElementById('alm-category-new');
+  if (!sel || !row) return;
+  var other = sel.value === ALM_OTHER;
+  row.classList.toggle('hidden', !other);
+  if (other && inp) inp.focus();
+  if (!other && inp) inp.value = '';
+}
+
+// Formdan seçilen kategoriyi döndürür
+function currentAlmCategory() {
+  var sel = document.getElementById('alm-category-select');
+  if (!sel) return '';
+  if (sel.value === ALM_OTHER) {
+    var inp = document.getElementById('alm-category-new');
+    return inp ? inp.value.trim() : '';
+  }
+  return sel.value;
+}
+
+// Kategori listesini veriden kurar; gerekirse verilen değeri seçili bırakır
+function fillAlmCategorySelect(secili) {
+  var sel = document.getElementById('alm-category-select');
+  if (!sel) return;
+
+  var kats = [];
+  function ekle(k) { if (k && kats.indexOf(k) === -1) kats.push(k); }
+  ALMANAC_DATA.forEach(function(v) { ekle(v.category); });
+  almAdminRows.forEach(function(r) { ekle(r.category); });
+  ekle(secili);
+  kats.sort(function(a, b) { return a.localeCompare(b, 'tr'); });
+
+  sel.innerHTML = '';
+  var bos = document.createElement('option');
+  bos.value = ''; bos.textContent = 'Seçiniz';
+  sel.appendChild(bos);
+  kats.forEach(function(k) {
+    var o = document.createElement('option');
+    o.value = k; o.textContent = k;
+    sel.appendChild(o);
+  });
+  var dig = document.createElement('option');
+  dig.value = ALM_OTHER; dig.textContent = '+ Diğer (yeni kategori ekle)';
+  sel.appendChild(dig);
+
+  sel.value = secili || '';
+  onAlmCategoryChange();
 }
 
 function initAlmanacAdminFields() {
@@ -3761,13 +3903,8 @@ function initAlmanacAdminFields() {
       citySel.appendChild(o);
     });
   }
-  var dl = document.getElementById('alm-cat-list');
-  if (dl) {
-    var kats = [];
-    ALMANAC_DATA.forEach(function(v) { if (v.category && kats.indexOf(v.category) === -1) kats.push(v.category); });
-    dl.innerHTML = '';
-    kats.forEach(function(k) { var o = document.createElement('option'); o.value = k; dl.appendChild(o); });
-  }
+  fillAlmCategorySelect(document.getElementById('alm-category-select') ?
+    document.getElementById('alm-category-select').value : '');
 }
 
 async function loadAlmanacAdmin() {
@@ -3826,7 +3963,7 @@ function editAlmanacCase(id) {
   document.getElementById('alm-date').value = r.case_date;
   document.getElementById('alm-city').value = r.city;
   document.getElementById('alm-location').value = r.location || '';
-  document.getElementById('alm-category').value = r.category;
+  fillAlmCategorySelect(r.category);
   document.getElementById('alm-title').value = r.title;
   document.getElementById('alm-desc').value = r.description;
   document.getElementById('alm-source').value = r.source_url || '';
@@ -3846,7 +3983,7 @@ async function saveAlmanacCase() {
     p_case_date: document.getElementById('alm-date').value,
     p_city: document.getElementById('alm-city').value,
     p_location: document.getElementById('alm-location').value.trim(),
-    p_category: document.getElementById('alm-category').value.trim(),
+    p_category: currentAlmCategory(),
     p_title: document.getElementById('alm-title').value.trim(),
     p_description: document.getElementById('alm-desc').value.trim(),
     p_source_url: document.getElementById('alm-source').value.trim(),
@@ -3856,6 +3993,10 @@ async function saveAlmanacCase() {
   if (!args.p_case_date || !args.p_city || args.p_category.length < 2 ||
       args.p_title.length < 5 || args.p_description.length < 10) {
     almStatus('Zorunlu alanları doldurun (tarih, şehir, kategori, başlık, açıklama).', 'text-red-400');
+    if (args.p_category.length < 2) {
+      var sel = document.getElementById('alm-category-select');
+      if (sel) sel.focus();
+    }
     return;
   }
 
@@ -3866,7 +4007,7 @@ async function saveAlmanacCase() {
     clearAlmanacForm();
     await loadAlmanacAdmin();
     await loadAlmanacFromServer();
-    initAlmanacAdminFields();
+    fillAlmCategorySelect('');
   } catch (e) {
     var m = (e && e.message) || '';
     if (m.indexOf('invalid_date') !== -1)        almStatus('Tarih geçersiz veya gelecekte.', 'text-red-400');
@@ -4164,6 +4305,7 @@ function switchVideoTab(tab) {
         loadAlmanacFromServer();
         initCampaignQR();
         renderSignedMpsList();
+        updateMpDocument();
         selectTarget('cb');
 
         // Video fallback dinleyicileri
@@ -4202,6 +4344,7 @@ function switchVideoTab(tab) {
 
         mpSignaturePad = setupCanvas('mp-canvas', function(data) {
           currentMpSigDataUrl = data;
+          updateMpDocument();
         });
 
         // Geri sayımı başlat
