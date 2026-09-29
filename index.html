@@ -4806,17 +4806,17 @@ var EXPORT_KINDS = {
     rpc: 'export_petitions',
     dosya: '7527-dilekceler',
     sayfa: 'Dilek\u00e7eler',
-    baslik: ['Sıra', 'Dilekçe No', 'Gönderim Onayı', 'Hedef', 'Hedef Vekil',
-             'Ad Soyad', 'T.C. Kimlik No', 'Şehir', 'İlçe', 'Adres', 'İletişim', 'Tarih'],
-    genislik: [6, 34, 16, 22, 24, 26, 14, 14, 14, 40, 26, 20],
+        baslik: ['Sıra', 'Dilekçe No', 'Gönderim Onayı', 'Hedef', 'Hedef Vekil',
+             'Ad Soyad', 'Şehir', 'İlçe', 'İletişim', 'Tarih'],
+    genislik: [6, 34, 16, 22, 24, 26, 14, 14, 26, 20],
     satir: function(r, c, i) {
       return [i + 1,
               r.petition_number,
               r.confirmed ? 'Onayladı' : 'Onaylamadı',
               hedefAdi(r.recipient_type),
               c.targetName || '',
-              c.name || '', c.tc || '', c.city || '', c.district || '',
-              c.address || '', c.contact || '',
+              c.name || '', c.city || '', c.district || '',
+              c.contact || '',
               r.created_at ? new Date(r.created_at).toLocaleString('tr-TR') : ''];
     },
     // Ek 'Özet' sayfasi: sitedeki sayac ile satir sayisi arasindaki
