@@ -3242,6 +3242,19 @@ function closeKvkkModal() {
 }
 
 var lastPetitionNumber = '';
+var lastPdfBlob = null;
+var lastPdfName = '';
+async function pdfiTekrarVer() {
+  if (!lastPdfBlob) { alert('PDF bulunamadı. Lütfen sayfayı yenileyip tekrar deneyin.'); return; }
+  try {
+    var f = new File([lastPdfBlob], lastPdfName, { type: 'application/pdf' });
+    if (navigator.canShare && navigator.canShare({ files: [f] })) {
+      await navigator.share({ files: [f], title: lastPdfName });
+      return;
+    }
+  } catch (e) { if (e && e.name === 'AbortError') return; }
+  triggerDownload(lastPdfBlob, lastPdfName);
+}
 
 // --- DILEKCE PDF URETIMI --------------------------------------------
 // html2canvas + jsPDF yalnizca gonderim aninda yuklenir.
