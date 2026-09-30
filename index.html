@@ -3211,9 +3211,8 @@ async function sendPetitionViaEmail() {
     consent.focus();
     return;
   }
-  var tekrarAnahtar = '7527_gonderim_' + selectedTarget + '_' +
-    (selectedTarget === 'mp' && selectedMP ? selectedMP.id : '0') + '_' +
-    contact.toLowerCase().replace(/\s+/g, '');
+    var tekrarAnahtar = '7527_gonderim_' + selectedTarget +
+    (selectedTarget === 'mp' && selectedMP ? '_' + selectedMP.id : '');
   try {
   if (localStorage.getItem(tekrarAnahtar)) {
       alert('Bu hedefe dilekçeniz zaten oluşturuldu.\n\nLütfen indirilenler klasörünüzdeki PDF dosyasını ve e-posta programınızı kontrol edin. Aynı dilekçe tekrar oluşturulmaz.');
