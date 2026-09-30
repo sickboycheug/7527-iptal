@@ -3624,6 +3624,11 @@ async function submitVolunteerForm() {
     alert('L\u00fctfen ad\u0131n\u0131z\u0131 ve ge\u00e7erli bir ileti\u015fim bilginizi girin.');
     return;
   }
+    if (!city) {
+    alert('Lütfen şehrinizi seçin.');
+    document.getElementById('vol-city').focus();
+    return;
+  }
   if (consent && !consent.checked) {
     alert('Kayd\u0131n\u0131z\u0131 olu\u015fturabilmemiz i\u00e7in verilerinizin i\u015flenmesini onaylaman\u0131z gerekir.');
     consent.focus();
