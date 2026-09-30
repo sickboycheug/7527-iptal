@@ -3198,9 +3198,7 @@ async function sendPetitionViaEmail() {
     alert('Lütfen bir milletvekili seçin.');
     return;
   }
-  if (!currentSigDataUrl) {
-    alert('Lütfen ıslak imzanızı atın.');
-    return;
+
   }
   if (consent && !consent.checked) {
     alert('Devam edebilmek için aydınlatma metnini okuyup onay kutusunu işaretlemeniz gerekir.');
