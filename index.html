@@ -3173,12 +3173,12 @@ function generateMailtoUrl() {
 
   var name     = (document.getElementById('citizen-name').value || '').trim();
   var tc       = (document.getElementById('citizen-tc').value || '').trim();
-  var city     = document.getElementById('citizen-city').value || '';
-  var district = document.getElementById('citizen-district').value || '';
+  var city     = getPlace().city;
+  var district = getPlace().district;
   var address  = (document.getElementById('citizen-address').value || '').trim();
   var contact  = (document.getElementById('citizen-contact').value || '').trim();
 
-  var yer = [address, district, city].filter(Boolean).join(' / ');
+  var yer = [address, district, city, getPlace().country].filter(Boolean).join(' / ');
   var tarih = new Date().toLocaleDateString('tr-TR');
 
   var subject = "7527 Sayılı Kanun'un İptali ve 5199'a Dönülmesi Talebimdir" +
