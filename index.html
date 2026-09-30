@@ -3256,10 +3256,10 @@ function fillPrintPetition(number) {
   var printHeader = document.getElementById('print-header');
   if (header && printHeader) printHeader.textContent = header.textContent.trim();
 
-  var city = document.getElementById('citizen-city').value || '';
-  var district = document.getElementById('citizen-district').value || '';
+  var city = getPlace().city;
+  var district = getPlace().district;
   var address = (document.getElementById('citizen-address').value || '').trim();
-  var yer = [address, district, city].filter(Boolean).join(' / ');
+  var yer = [address, district, city, getPlace().country].filter(Boolean).join(' / ');
 
   set('print-name', (document.getElementById('citizen-name').value || '').trim());
   set('print-tc', (document.getElementById('citizen-tc').value || '').trim());
