@@ -4999,15 +4999,15 @@ var EXPORT_KINDS = {
     dosya: '7527-dilekceler',
     sayfa: 'Dilek\u00e7eler',
         baslik: ['Sıra', 'Dilekçe No', 'Gönderim Onayı', 'Hedef', 'Hedef Vekil',
-             'Ad Soyad', 'Şehir', 'İlçe', 'İletişim', 'Tarih'],
-    genislik: [6, 34, 16, 22, 24, 26, 14, 14, 26, 20],
+             'Ad Soyad', 'Ülke', 'Şehir', 'İlçe', 'İletişim', 'Tarih'],
+    genislik: [6, 34, 16, 22, 24, 26, 14, 14, 14, 26, 20],
     satir: function(r, c, i) {
       return [i + 1,
               r.petition_number,
               r.confirmed ? 'Onayladı' : 'Onaylamadı',
               hedefAdi(r.recipient_type),
               c.targetName || '',
-              c.name || '', c.city || '', c.district || '',
+              c.name || '', c.country || '', c.city || '', c.district || '',
               c.contact || '',
               r.created_at ? new Date(r.created_at).toLocaleString('tr-TR') : ''];
     },
