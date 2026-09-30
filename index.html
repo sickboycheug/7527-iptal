@@ -3329,6 +3329,11 @@ async function sendPetitionViaEmail() {
     if (tcInput) { tcInput.focus(); tcInput.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
     return;
   }
+  var abrChk = getAbroad();
+  if (abrChk.on && (!abrChk.country || !abrChk.city)) {
+    alert('Lütfen ülkenizi ve şehrinizi seçin veya yazın.');
+    return;
+  }
   if (!selectedTarget) {
     alert('Lütfen önce dilekçeyi kime göndereceğinizi seçin (CB, Meclis Başkanı veya Vekil).');
     return;
