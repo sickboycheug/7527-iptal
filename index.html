@@ -2627,6 +2627,18 @@ async function refreshMpEmails() {
 }
 
 // Vekil Listesini Çiz
+  function mpVoteBadge(id) {
+  var v = (typeof MP_VOTES !== 'undefined') ? MP_VOTES[id] : '';
+  var map = {
+    K: ['7527: Kabul etti', 'text-red-300 bg-red-950/60 border-red-800'],
+    R: ['7527: Ret etti', 'text-emerald-300 bg-emerald-950/60 border-emerald-800'],
+    Y: ['7527: Oylamada yoktu', 'text-amber-300 bg-amber-950/60 border-amber-800'],
+    C: ['7527: Çekimser', 'text-zinc-300 bg-zinc-800 border-zinc-600']
+  };
+  var x = map[v];
+  if (!x) return '';
+  return '<span class="text-[10px] px-2 py-0.5 rounded-full border shrink-0 ml-2 ' + x[1] + '">' + x[0] + '</span>';
+}
 function renderMpList(mps) {
   var container = document.getElementById('mp-list-container');
   var countBadge = document.getElementById('mp-match-count');
