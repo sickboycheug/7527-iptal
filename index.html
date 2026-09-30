@@ -2925,7 +2925,12 @@ function validateContact(value) {
   if (v.indexOf('@') !== -1) {
     return /^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/.test(v);
   }
-
+  // Yurt disi: '+' ile baslayan uluslararasi numara (7-15 hane)
+  var abr = document.getElementById('abroad-check');
+  if (abr && abr.checked && v.charAt(0) === '+') {
+    var n = v.replace(/\D/g, '');
+    return n.length >= 7 && n.length <= 15;
+  }
   // Telefon: rakam disi her seyi at, +90 / 0 onekini temizle
   var d = v.replace(/\D/g, '');
   if (d.length === 12 && d.indexOf('90') === 0) d = d.slice(2);
