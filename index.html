@@ -3251,11 +3251,9 @@ function fillPrintPetition(number) {
     var el = document.getElementById(id);
     if (el) el.textContent = val || '-';
   }
-
   var header = document.getElementById('petition-header-text');
   var printHeader = document.getElementById('print-header');
   if (header && printHeader) printHeader.textContent = header.textContent.trim();
-
   var city = getPlace().city;
   var district = getPlace().district;
   var address = (document.getElementById('citizen-address').value || '').trim();
