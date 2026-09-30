@@ -3632,7 +3632,10 @@ async function submitVolunteerForm() {
   var name    = (document.getElementById('vol-name').value || '').trim();
   var city    = document.getElementById('vol-city').value || '';
   var contact = (document.getElementById('vol-contact').value || '').trim();
-  var note    = (document.getElementById('vol-note').value || '').trim();
+  var note    = Array.prototype.map.call(
+    document.querySelectorAll('.vol-area:checked'),
+    function(el) { return el.value; }
+  ).join(', ');
   var consent = document.getElementById('vol-consent');
 
   if (name.length < 2 || contact.length < 5) {
@@ -3667,7 +3670,7 @@ async function submitVolunteerForm() {
     document.getElementById('vol-name').value = '';
     document.getElementById('vol-city').value = '';
     document.getElementById('vol-contact').value = '';
-    document.getElementById('vol-note').value = '';
+    Array.prototype.forEach.call(document.querySelectorAll('.vol-area'), function(el) { el.checked = false; });.getElementById('vol-note').value = '';
     if (consent) consent.checked = false;
 
     await refreshCounters();
