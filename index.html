@@ -2631,7 +2631,7 @@ async function refreshMpEmails() {
 
 function mpCountBadge(id) {
   var n = MP_COUNTS[id] || 0;
-  return '<span class="text-[10px] px-2 py-0.5 rounded-full border shrink-0 ml-2 text-zinc-300 bg-zinc-800 border-zinc-600">' + n + ' dilekçe</span>';
+  return '<span class="text-[10px] px-2 py-0.5 rounded-full border shrink-0 ml-2 text-zinc-300 bg-zinc-800 border-zinc-600" title="Bu vekile gönderilen dilekçe">✉ ' + n + '</span>';
 }
 
 async function loadMpCounts(tries) {
