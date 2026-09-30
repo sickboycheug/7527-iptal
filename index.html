@@ -3344,6 +3344,11 @@ async function sendPetitionViaEmail() {
     alert('Lütfen ülkenizi ve şehrinizi seçin veya yazın.');
     return;
   }
+  var yerChk = getPlace();
+  if (!abrChk.on && (!yerChk.city || !yerChk.district)) {
+    alert('Lütfen şehir ve ilçenizi seçin.');
+    return;
+  }
   if (!selectedTarget) {
     alert('Lütfen önce dilekçeyi kime göndereceğinizi seçin (CB, Meclis Başkanı veya Vekil).');
     return;
