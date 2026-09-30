@@ -3355,8 +3355,9 @@ async function sendPetitionViaEmail() {
     step('Şifreleniyor...');
     var envelope = await encryptPayload({
       name: name,
-      city: document.getElementById('citizen-city').value || '',
-      district: document.getElementById('citizen-district').value || '',
+      country: getPlace().country,
+      city: getPlace().city,
+      district: getPlace().district,
       contact: (document.getElementById('citizen-contact').value || '').trim(),
       target: selectedTarget,
       targetName: selectedTarget === 'mp' && selectedMP ? selectedMP.name : '',
