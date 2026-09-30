@@ -2870,14 +2870,14 @@ function selectTarget(target) {
 function updatePetitionPreview() {
   var name = document.getElementById('citizen-name').value || '[Adınız Soyadınız]';
   var tc = document.getElementById('citizen-tc').value || '[T.C. Kimlik No]';
-  var city = document.getElementById('citizen-city').value;
-  var district = document.getElementById('citizen-district').value;
+  var city = getPlace().city;
+  var district = getPlace().district;
   var address = document.getElementById('citizen-address').value || '[Açık Adresiniz]';
 
   var fullAddress = address;
   if (district) fullAddress += ' - ' + district;
   if (city) fullAddress += ' / ' + city;
-
+  if (getPlace().country) fullAddress += ' / ' + getPlace().country;
   document.getElementById('doc-val-name').textContent = name;
   document.getElementById('doc-val-tc').textContent = tc;
   document.getElementById('doc-val-address').textContent = fullAddress;
