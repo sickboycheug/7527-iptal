@@ -3933,11 +3933,11 @@ function onMpSignSelectChange() {
   var badgeDetail = document.getElementById('mp-sign-badge-detail');
 
   if (m) {
-    if (emailInput) emailInput.value = m.email;
+    if (emailInput) emailInput.value = '';
     if (badge && badgeName && badgeDetail) {
       badge.classList.remove('hidden');
       badgeName.textContent = m.name;
-      badgeDetail.textContent = m.party + ' - ' + m.city + ' | ' + m.email;
+      badgeDetail.textContent = m.party + ' - ' + m.city;
     }
   } else {
     if (badge) badge.classList.add('hidden');
@@ -3975,6 +3975,10 @@ async function submitMpSignature() {
   var mpId = parseInt(mpSelect.value, 10);
   var mp = MP_DATABASE.find(function(x) { return x.id === mpId; });
   if (!mp) return;
+    if (String(email).trim().toLowerCase() !== String(mp.email).trim().toLowerCase()) {
+    alert('Girdiğiniz e-posta adresi, seçtiğiniz milletvekilinin sistemimizde kayıtlı adresiyle eşleşmiyor.');
+    return;
+  }
 
   mpSignBusy = true;
   try {
