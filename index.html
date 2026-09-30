@@ -3670,7 +3670,7 @@ async function submitVolunteerForm() {
     document.getElementById('vol-name').value = '';
     document.getElementById('vol-city').value = '';
     document.getElementById('vol-contact').value = '';
-    Array.prototype.forEach.call(document.querySelectorAll('.vol-area'), function(el) { el.checked = false; });.getElementById('vol-note').value = '';
+    Array.prototype.forEach.call(document.querySelectorAll('.vol-area'), function(el) { el.checked = false; });
     if (consent) consent.checked = false;
 
     await refreshCounters();
