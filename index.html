@@ -5149,7 +5149,20 @@ async function exportEncrypted(kind) {
     if (!privateKey) return;
 
     if (btn) btn.textContent = 'Kay\u0131tlar al\u0131n\u0131yor...';
-    var rows = await callRpc(conf.rpc, { p_pin: adminPinCache }) || [];
+        var rows;
+    if (kind === 'petitions') {
+      var dFrom = (document.getElementById('exp-from') || {}).value || null;
+      var dTo = (document.getElementById('exp-to') || {}).value || null;
+      rows = [];
+      for (var off = 0; ; off += 100) {
+        var part = await callRpc('export_petitions_range', { p_pin: adminPinCache, p_from: dFrom, p_to: dTo, p_offset: off, p_limit: 100 }) || [];
+        rows = rows.concat(part);
+        if (btn) btn.textContent = 'Kayıtlar alınıyor (' + rows.length + ')...';
+        if (part.length < 100) break;
+      }
+    } else {
+      rows = await callRpc(conf.rpc, { p_pin: adminPinCache }) || [];
+    }
     if (rows.length === 0) {
       alert('Hen\u00fcz kay\u0131t bulunmuyor.');
       return;
