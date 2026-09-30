@@ -2535,7 +2535,75 @@ function initMpDatabase() {
   updateSentMpNotice();
 }
 
-// Seçilen ilin ilçelerini açılır listeye doldurur
+// Seçilen ilin ilçelerini veya yurtdışı katılım için ülke ve şehir açılır listeye doldurur
+  function abroadFillCountries() {
+  var sel = document.getElementById('abroad-country');
+  if (sel.options.length > 1) return;
+  WORLD_COUNTRIES.forEach(function (c) {
+    var o = document.createElement('option');
+    o.value = c[0]; o.textContent = c[1];
+    sel.appendChild(o);
+  });
+  var d = document.createElement('option');
+  d.value = '__other'; d.textContent = 'Diğer (listede yok, elle yazın)';
+  sel.appendChild(d);
+}
+function onAbroadToggle() {
+  var on = document.getElementById('abroad-check').checked;
+  document.getElementById('abroad-box').classList.toggle('hidden', !on);
+  if (on) abroadFillCountries();
+  updatePetitionPreview();
+}
+function onAbroadCountryChange() {
+  var code = document.getElementById('abroad-country').value;
+  var citySel = document.getElementById('abroad-city');
+  var cOther = document.getElementById('abroad-country-other');
+  var ctOther = document.getElementById('abroad-city-other');
+  cOther.classList.toggle('hidden', code !== '__other');
+  cOther.value = ''; ctOther.value = '';
+  citySel.innerHTML = '';
+  if (!code) {
+    citySel.innerHTML = '<option value="">Önce ülke seçiniz</option>';
+    citySel.disabled = true;
+    ctOther.classList.add('hidden');
+  } else {
+    var list = (code === '__other') ? [] : (WORLD_CITIES[code] || []);
+    var first = document.createElement('option');
+    first.value = ''; first.textContent = 'Şehir Seçiniz';
+    citySel.appendChild(first);
+    list.forEach(function (n) {
+      var o = document.createElement('option');
+      o.value = n; o.textContent = n;
+      citySel.appendChild(o);
+    });
+    var d = document.createElement('option');
+    d.value = '__other'; d.textContent = 'Diğer (listede yok, elle yazın)';
+    citySel.appendChild(d);
+    citySel.disabled = false;
+    if (list.length === 0) { citySel.value = '__other'; }
+    ctOther.classList.toggle('hidden', citySel.value !== '__other');
+  }
+  updatePetitionPreview();
+}
+function onAbroadCityChange() {
+  var v = document.getElementById('abroad-city').value;
+  var ctOther = document.getElementById('abroad-city-other');
+  ctOther.classList.toggle('hidden', v !== '__other');
+  ctOther.value = '';
+  updatePetitionPreview();
+}
+function getAbroad() {
+  var out = { on: false, country: '', city: '' };
+  if (!document.getElementById('abroad-check').checked) return out;
+  out.on = true;
+  var cs = document.getElementById('abroad-country');
+  if (cs.value === '__other') out.country = (document.getElementById('abroad-country-other').value || '').trim();
+  else if (cs.value) out.country = cs.options[cs.selectedIndex].textContent;
+  var ct = document.getElementById('abroad-city');
+  if (ct.value === '__other') out.city = (document.getElementById('abroad-city-other').value || '').trim();
+  else out.city = ct.value || '';
+  return out;
+}
 function onCitizenCityChange() {
   var citySelect = document.getElementById('citizen-city');
   var districtSelect = document.getElementById('citizen-district');
