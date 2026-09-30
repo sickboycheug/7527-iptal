@@ -3211,7 +3211,15 @@ async function sendPetitionViaEmail() {
     consent.focus();
     return;
   }
-
+  var tekrarAnahtar = '7527_gonderim_' + selectedTarget + '_' +
+    (selectedTarget === 'mp' && selectedMP ? selectedMP.id : '0') + '_' +
+    contact.toLowerCase().replace(/\s+/g, '');
+  try {
+  if (localStorage.getItem(tekrarAnahtar)) {
+      alert('Bu hedefe dilekçeniz zaten oluşturuldu.\n\nLütfen indirilenler klasörünüzdeki PDF dosyasını ve e-posta programınızı kontrol edin. Aynı dilekçe tekrar oluşturulmaz.');
+      return;
+    }
+  } catch (e) {}
   petitionBusy = true;
   var oldHtml = btn ? btn.innerHTML : '';
   function step(msg) { if (btn) btn.textContent = msg; }
@@ -3235,7 +3243,7 @@ async function sendPetitionViaEmail() {
       p_recipient_id: selectedTarget === 'mp' && selectedMP ? selectedMP.id : null,
       p_payload_enc: envelope
     });
-
+    try { localStorage.setItem(tekrarAnahtar, lastPetitionNumber); } catch (e) {}
     // Dilekceyi olusturan herkes imzaci sayilir; sayac burada guncellenir.
     // Onay adimi ('Evet, gonderdim') yalnizca bilgi amacli kaydedilir.
     refreshCounters();
