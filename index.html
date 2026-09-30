@@ -604,7 +604,28 @@
               </select>
             </div>
           </div>
-
+          <div class="border border-zinc-800 rounded-lg p-3">
+            <label class="flex items-center gap-2 text-zinc-300 font-semibold cursor-pointer">
+              <input type="checkbox" id="abroad-check" onchange="onAbroadToggle()" class="accent-red-600">
+              Yurt dışından katılıyorum
+            </label>
+            <div id="abroad-box" class="hidden mt-3 space-y-2">
+              <div>
+                <label class="block text-zinc-300 font-semibold mb-1">ÜLKE *</label>
+                <select id="abroad-country" onchange="onAbroadCountryChange()" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-2.5 py-2 text-zinc-100 focus:border-red-500 focus:outline-none">
+                  <option value="">Ülke Seçiniz</option>
+                </select>
+                <input type="text" id="abroad-country-other" oninput="updatePetitionPreview()" placeholder="Ülke adını yazın" class="hidden mt-2 w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 focus:border-red-500 focus:outline-none">
+              </div>
+              <div>
+                <label class="block text-zinc-300 font-semibold mb-1">ŞEHİR *</label>
+                <select id="abroad-city" onchange="onAbroadCityChange()" disabled class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-2.5 py-2 text-zinc-100 focus:border-red-500 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed">
+                  <option value="">Önce ülke seçiniz</option>
+                </select>
+                <input type="text" id="abroad-city-other" oninput="updatePetitionPreview()" placeholder="Şehir adını yazın" class="hidden mt-2 w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 focus:border-red-500 focus:outline-none">
+              </div>
+            </div>
+          </div>
           <div>
             <label class="block text-zinc-300 font-semibold mb-1">AÇIK ADRES <span class="text-zinc-500 font-normal">(isteğe bağlı)</span></label>
             <textarea id="citizen-address" rows="2" oninput="updatePetitionPreview()" placeholder="Tebligat ve dilekçe geçerliliği için adresiniz" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 focus:border-red-500 focus:outline-none"></textarea>
