@@ -2592,6 +2592,15 @@ function onAbroadCityChange() {
   ctOther.value = '';
   updatePetitionPreview();
 }
+  function getPlace() {
+  var a = getAbroad();
+  if (a.on) return { country: a.country, city: a.city, district: '' };
+  return {
+    country: '',
+    city: document.getElementById('citizen-city').value || '',
+    district: document.getElementById('citizen-district').value || ''
+  };
+}
 function getAbroad() {
   var out = { on: false, country: '', city: '' };
   if (!document.getElementById('abroad-check').checked) return out;
