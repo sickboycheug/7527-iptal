@@ -2668,7 +2668,7 @@ function renderMpList(mps) {
       '<div class="flex items-center gap-2 min-w-0">' +
         '<input type="radio" name="mp_choice" value="' + m.id + '" ' + (selectedMP && selectedMP.id === m.id ? 'checked' : '') + ' class="accent-emerald-500 shrink-0">' +
         '<span class="truncate"><strong>' + m.name + '</strong> <span class="text-zinc-400">(' + m.party + ' - ' + m.city + ')</span></span>' +
-        '</div>';
+        '</div>'+ mpVoteBadge(m.id);
 
     label.querySelector('input').addEventListener('change', function() {
       selectMP(m);
