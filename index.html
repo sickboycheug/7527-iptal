@@ -3422,6 +3422,7 @@ async function sendPetitionViaEmail() {
     fillPrintPetition(lastPetitionNumber);
     var blob = await generatePetitionPdf();
     var dosya = 'dilekce-' + lastPetitionNumber + '.pdf';
+    lastPdfBlob = blob; lastPdfName = dosya;
     triggerDownload(blob, dosya);
 
     var box = document.getElementById('confirm-file-name');
