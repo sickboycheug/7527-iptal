@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gönüllü Merkezi - 7527 İPTAL!</title>
+<meta name="description" content="7527 iptal kampanyası gönüllü başvurusu ve görev panosu.">
+<meta name="robots" content="noindex">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  .font-impact { font-family: 'Oswald', sans-serif; }
+  .inp { background:#09090b; border:1px solid #3f3f46; border-radius:.5rem; padding:.5rem .75rem; color:#f4f4f5; font-size:.75rem; width:100%; }
+  .inp:focus { border-color:#10b981; outline:none; }
+  .btn { border-radius:.75rem; font-weight:700; font-size:.75rem; padding:.6rem 1rem; transition:.15s; cursor:pointer; }
+  .btn:disabled { opacity:.5; cursor:not-allowed; }
+</style>
+</head>
+<body class="bg-zinc-950 text-zinc-100 antialiased min-h-screen flex flex-col">
+
+<div id="inapp-warning" style="display:none" class="bg-amber-500 text-black text-sm font-semibold text-center px-4 py-3">
+  ⚠️ Sorunsuz çalışması için sayfayı Safari / Chrome'da açın: sağ üstteki ⋯ veya paylaş simgesine dokunup "Tarayıcıda aç" seçin.
+</div>
+
+<header class="border-b border-zinc-800 bg-zinc-950">
+  <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+    <a href="/" class="text-xs text-zinc-400 hover:text-white font-semibold">← Ana sayfa</a>
+    <span class="font-impact text-lg tracking-wide uppercase text-white">7527 İPTAL · Gönüllü Merkezi</span>
+    <span id="who" class="text-xs text-emerald-400 font-semibold"></span>
+  </div>
+</header>
+
+<main class="flex-1 w-full max-w-4xl mx-auto px-4 py-8 space-y-8">
+
+  <!-- ===== MİSAFİR GÖRÜNÜMÜ: başvuru + giriş ===== -->
+  <div id="view-guest" class="space-y-8">
+
+    <section id="vol-form-box" class="bg-zinc-900 border border-zinc-800 p-6 sm:p-8 rounded-2xl shadow-xl space-y-4">
+      <div class="text-center space-y-2">
+        <h2 class="font-impact text-2xl text-white uppercase tracking-wide">🤝 Saha ve İletişim Gönüllüsü Ol</h2>
+        <p class="text-xs text-zinc-400 max-w-xl mx-auto leading-relaxed">
+          Şehrinizde afiş dağıtımı, milletvekili iletişimi ve sosyal medya yayılımına destek verin.
+          <strong class="text-emerald-400"><span id="vol-count-badge"></span></strong>
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+        <input type="text" id="vol-name" placeholder="Adınız Soyadınız" class="inp" autocomplete="name">
+        <select id="vol-city" class="inp"><option value="">Şehir Seçiniz</option></select>
+        <input type="text" id="vol-contact" placeholder="Telefon / E-posta" class="inp" autocomplete="off">
+      </div>
+
+      <div class="bg-zinc-950/60 border border-zinc-800 rounded-xl p-3 space-y-2">
+        <p class="text-[11px] font-semibold text-zinc-300">Hangi alanlarda katkı verebilirsiniz? (birden fazla seçebilirsiniz)</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 text-[11px] text-zinc-300">
+          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="vol-area accent-emerald-600" value="Afiş ve broşür dağıtımı"> Afiş ve broşür dağıtımı</label>
+          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="vol-area accent-emerald-600" value="Sosyal medya paylaşımı"> Sosyal medya paylaşımı</label>
+          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="vol-area accent-emerald-600" value="Milletvekili iletişimi"> Milletvekili iletişimi</label>
+          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="vol-area accent-emerald-600" value="Saha ve etkinlik organizasyonu"> Saha ve etkinlik organizasyonu</label>
+          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="vol-area accent-emerald-600" value="Basın ve medya iletişimi"> Basın ve medya iletişimi</label>
+          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="vol-area accent-emerald-600" value="Hukuki destek"> Hukuki destek</label>
+          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="vol-area accent-emerald-600" value="Tasarım ve video"> Tasarım ve video</label>
+          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="vol-area accent-emerald-600" value="Yazılım ve teknik destek"> Yazılım ve teknik destek</label>
+          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="vol-area accent-emerald-600" value="Çeviri"> Çeviri</label>
+          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="vol-area accent-emerald-600" value="Bağış ve kaynak yaratma"> Bağış ve kaynak yaratma</label>
+          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="vol-area accent-emerald-600" value="Diğer"> Diğer</label>
+        </div>
+      </div>
+
+      <label class="flex items-start gap-2 text-[11px] text-zinc-400 leading-relaxed cursor-pointer bg-zinc-950/60 border border-zinc-800 rounded-xl p-3">
+        <input type="checkbox" id="vol-consent" class="mt-0.5 shrink-0 accent-emerald-600">
+        <span>
+          Adım, iletişim bilgim ve şehrimin bu kampanyanın gönüllü organizasyonu
+          amacıyla işlenmesini ve saklanmasını kabul ediyorum. Verilerim üçüncü
+          kişilerle paylaşılmaz; talep etmeniz halinde silinir.
+          <button type="button" onclick="openKvkkModal()" class="text-emerald-400 hover:text-emerald-300 underline font-semibold cursor-pointer">Aydınlatma Metni</button>
+        </span>
+      </label>
+
+      <button type="button" id="vol-submit-btn" onclick="submitVolunteerForm()" class="btn w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white uppercase tracking-wide">
+        Gönüllü Olarak Kaydol
+      </button>
+    </section>
+
+    <section id="vol-done-box" class="hidden bg-zinc-900 border border-emerald-700 p-6 sm:p-8 rounded-2xl shadow-xl text-center space-y-3">
+      <div class="text-4xl">🤝</div>
+      <h2 class="font-impact text-2xl text-white uppercase tracking-wide">Aramıza Hoş Geldin!</h2>
+      <p class="text-sm text-zinc-300 max-w-md mx-auto leading-relaxed">
+        Başvurun alındı. Kaydın onaylandığında, verdiğin iletişim bilgisi üzerinden sana kişisel
+        <strong class="text-emerald-400">gönüllü kodun</strong> iletilecek. Kodunla bu sayfadan giriş yapıp görev alabilirsin.
+      </p>
+    </section>
+
+    <section class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl shadow-xl space-y-3">
+      <div class="text-center space-y-1">
+        <h2 class="font-impact text-xl text-white uppercase tracking-wide">🔑 Gönüllü Girişi</h2>
+        <p class="text-xs text-zinc-400">Sana iletilen gönüllü kodunu gir.</p>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+        <input type="text" id="login-code" placeholder="XXXX-XXXX-XXXX" maxlength="20" autocomplete="off" autocapitalize="characters"
+               class="inp text-center font-mono tracking-widest" onkeydown="if(event.key==='Enter')loginClick()">
+        <button type="button" id="login-btn" onclick="loginClick()" class="btn bg-emerald-600 hover:bg-emerald-500 text-white whitespace-nowrap">Giriş Yap</button>
+      </div>
+      <p id="login-msg" class="text-xs text-center text-red-400 min-h-[16px]"></p>
+    </section>
+  </div>
+
+  <!-- ===== GÖNÜLLÜ PANOSU ===== -->
+  <div id="view-board" class="hidden space-y-6">
+    <div class="flex items-center justify-between gap-3">
+      <h2 class="font-impact text-2xl text-white uppercase tracking-wide">📋 Görev Panosu</h2>
+      <button type="button" onclick="logout()" class="text-xs text-zinc-400 hover:text-white underline cursor-pointer">Çıkış</button>
+    </div>
+
+    <div id="announce-box" class="hidden bg-emerald-950/60 border border-emerald-700 rounded-2xl p-4">
+      <p class="text-[11px] font-bold uppercase tracking-wider text-emerald-400 mb-1">📢 Duyuru</p>
+      <p id="announce-text" class="text-sm text-zinc-100 leading-relaxed whitespace-pre-line"></p>
+    </div>
+
+    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-3">
+      <div class="flex items-center justify-between text-xs text-zinc-300">
+        <span id="prog-label" class="font-semibold"></span>
+        <span id="prog-today" class="text-emerald-400 font-bold"></span>
+      </div>
+      <div class="w-full h-3 bg-zinc-800 rounded-full overflow-hidden"><div id="prog-bar" class="h-3 bg-emerald-500 rounded-full transition-all" style="width:0%"></div></div>
+      <div class="grid grid-cols-3 gap-2 text-center text-[11px] text-zinc-400">
+        <div><div id="st-open" class="text-lg font-extrabold text-white">0</div>açık görev</div>
+        <div><div id="st-claimed" class="text-lg font-extrabold text-white">0</div>üstlenilen</div>
+        <div><div id="st-vol" class="text-lg font-extrabold text-white">0</div>gönüllü</div>
+      </div>
+    </div>
+
+    <p id="board-msg" class="text-xs text-red-400 min-h-[16px]"></p>
+    <div id="task-list" class="space-y-3"></div>
+  </div>
+
+  <!-- ===== YÖNETİCİ ===== -->
+  <section id="admin-box" class="hidden bg-zinc-900 border border-zinc-700 rounded-2xl p-5 space-y-5">
+    <div class="flex items-center justify-between">
+      <h2 class="font-impact text-xl text-white uppercase tracking-wide">🔒 Yönetici</h2>
+      <button type="button" onclick="closeAdmin()" class="text-xs text-zinc-400 hover:text-white underline cursor-pointer">Kapat</button>
+    </div>
+
+    <div id="admin-login" class="flex flex-col sm:flex-row gap-3 max-w-md">
+      <input type="password" id="admin-pin" placeholder="Yönetici PIN" class="inp" autocomplete="off" onkeydown="if(event.key==='Enter')adminLogin()">
+      <button type="button" onclick="adminLogin()" class="btn bg-emerald-600 hover:bg-emerald-500 text-white whitespace-nowrap">Giriş</button>
+    </div>
+    <p id="admin-msg" class="text-xs text-red-400 min-h-[16px]"></p>
+
+    <div id="admin-main" class="hidden space-y-6">
+      <div class="space-y-2">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400">Duyuru</h3>
+        <textarea id="adm-announce" rows="3" maxlength="1000" class="inp" placeholder="Gönüllülerin panoda göreceği duyuru (boş bırakırsan görünmez)"></textarea>
+        <button type="button" onclick="adminSaveAnnounce()" class="btn bg-zinc-800 hover:bg-zinc-700 text-white">Duyuruyu Kaydet</button>
+      </div>
+
+      <div class="space-y-2">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400">Yeni Görev</h3>
+        <input type="text" id="adm-t-title" maxlength="140" placeholder="Görev başlığı (örn. Bu vekile dilekçe gönder)" class="inp">
+        <textarea id="adm-t-desc" rows="2" maxlength="1000" placeholder="Açıklama (isteğe bağlı)" class="inp"></textarea>
+        <input type="text" id="adm-t-link" placeholder="Bağlantı (isteğe bağlı, https:// ile başlamalı)" class="inp">
+        <button type="button" onclick="adminAddTask()" class="btn bg-emerald-600 hover:bg-emerald-500 text-white">Görevi Ekle</button>
+      </div>
+
+      <div class="space-y-2">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400">Görevler</h3>
+        <div id="adm-tasks" class="space-y-2"></div>
+      </div>
+
+      <div class="space-y-2">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400">Gönüllü Kodu Üret</h3>
+        <div class="flex flex-col sm:flex-row gap-3 max-w-md">
+          <input type="text" id="adm-m-nick" maxlength="30" placeholder="Takma ad (panoda görünür)" class="inp">
+          <button type="button" onclick="adminAddMember()" class="btn bg-emerald-600 hover:bg-emerald-500 text-white whitespace-nowrap">Kod Üret</button>
+        </div>
+        <div id="adm-newcode" class="hidden bg-amber-950/60 border border-amber-600 rounded-xl p-3 space-y-2">
+          <p class="text-[11px] text-amber-300">Bu kod yalnızca şimdi gösterilir, kaydet ve gönüllüye ilet:</p>
+          <div class="flex items-center gap-3">
+            <span id="adm-newcode-val" class="font-mono text-xl font-bold tracking-widest text-white select-all"></span>
+            <button type="button" onclick="copyNewCode()" class="btn bg-zinc-800 hover:bg-zinc-700 text-white">Kopyala</button>
+          </div>
+        </div>
+        <div id="adm-members" class="space-y-1 pt-2"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="border-t border-zinc-800 py-6 px-4 bg-zinc-950 text-center text-xs text-zinc-500">
+  <p class="font-bold text-zinc-400">7527 İPTAL! İMZACISI OL! © 2026</p>
+  <button type="button" onclick="openAdmin()" class="mt-2 text-zinc-600 hover:text-zinc-400 text-[11px]">🔒 Yönetici Girişi</button>
+</footer>
+
+<!-- KVKK AYDINLATMA METNI MODALI -->
+<div id="kvkk-modal" class="fixed inset-0 z-[100000] bg-black/85 backdrop-blur-sm flex items-center justify-center p-4" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="kvkk-title">
+  <div class="bg-zinc-900 border border-zinc-700 rounded-3xl max-w-2xl w-full shadow-2xl flex flex-col max-h-[88vh]">
+    <div class="flex justify-between items-start gap-3 border-b border-zinc-800 p-5">
+      <div>
+        <h3 id="kvkk-title" class="font-impact text-lg text-white uppercase tracking-wide">Aydınlatma Metni</h3>
+        <p class="text-[11px] text-zinc-500 mt-0.5">6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında</p>
+      </div>
+      <button type="button" onclick="closeKvkkModal()" aria-label="Kapat" class="text-zinc-500 hover:text-white text-2xl leading-none shrink-0 cursor-pointer">&times;</button>
+    </div>
+
+    <div class="overflow-y-auto p-5 space-y-4 text-xs text-zinc-300 leading-relaxed">
+
+      <div>
+        <h4 class="font-bold text-emerald-400 uppercase text-[11px] tracking-wider mb-1">1. Veri Sorumlusu</h4>
+        <p>Bu kampanya kapsamında kişisel verilerinizin veri sorumlusu
+        <strong class="text-white">Ümit Güzel</strong>'dir.
+        Verileriniz aşağıda açıklanan kapsam ve amaçlarla işlenir.</p>
+        <p class="mt-1.5">İletişim:
+          <a href="mailto:iletisim@7527iptal.org" class="text-emerald-400 hover:text-emerald-300 font-mono font-bold">iletisim@7527iptal.org</a>
+        </p>
+      </div>
+
+      <div>
+        <h4 class="font-bold text-emerald-400 uppercase text-[11px] tracking-wider mb-1">2. Dilekçe Formu Kapsamında İşlenen Kişisel Veriler</h4>
+        <p>Dilekçe formu aracılığıyla <strong class="text-white">ad-soyad, il/ilçe (yurt dışından katılım hâlinde ülke/şehir) ile telefon numarası veya e-posta adresi</strong> bilgileriniz, dilekçenizin kampanya sayımına dâhil edilmesi amacıyla şifrelenmek suretiyle kaydedilmektedir. Bu bilgilere ek olarak dilekçenin iletildiği makam ve gönderim tarihi de kaydedilmektedir.</p>
+        <p class="mt-1.5"><strong class="text-white">T.C. kimlik numarası, açık adres ve ıslak imza</strong> alanları isteğe bağlıdır. Bu bilgiler yalnızca kullanıcının tarayıcısında işlenmekte olup <strong class="text-white">sunucularımıza iletilmemekte, kaydedilmemekte ve saklanmamaktadır.</strong> Söz konusu bilgiler yalnızca kullanıcı tarafından oluşturulan dilekçe metninde yer almaktadır.</p>
+        <p class="mt-1.5"><strong class="text-white">İşleme amacı ve hukuki sebep:</strong> Kişisel verileriniz; kampanyaya verilen desteğin sayılması ve doğrulanması ile gerektiğinde tarafınızla iletişim kurulması amacıyla, 6698 sayılı Kanun'un 5/1. maddesi uyarınca dilekçe ekranındaki onay kutusunun işaretlenmesi suretiyle verdiğiniz açık rızanıza dayanılarak işlenmektedir.</p>
+        <p class="mt-1.5"><strong class="text-white">Saklama süresi ve aktarım:</strong> Kaydedilen veriler kampanya sona erene kadar saklanır, kampanyanın sona ermesiyle birlikte silinir. Veriler üçüncü kişilere aktarılmaz, satılmaz ve reklam amacıyla kullanılmaz.</p>
+        <p class="mt-1.5 text-zinc-400">Dilekçenin kendi e-posta hesabınız üzerinden veya elden ilgili kuruma iletilmesi hâlinde, dilekçede yer alan bilgiler alıcı kurumun (Cumhurbaşkanlığı, TBMM veya milletvekili) kendi mevzuatı çerçevesinde ve kendi sorumluluğunda işlenir.</p>
+      </div>
+      <div>
+        <h4 class="font-bold text-emerald-400 uppercase text-[11px] tracking-wider mb-1">3. Gönüllü Kaydı — Bu Veriler Saklanır</h4>
+        <p>Gönüllü formunu doldurmanız halinde <strong class="text-white">ad-soyadınız,
+        iletişim bilginiz (telefon veya e-posta), şehriniz ve varsa notunuz</strong> kayıt altına alınır.</p>
+        <ul class="mt-1.5 space-y-1 list-disc list-inside text-zinc-400">
+          <li><span class="text-zinc-300">Amaç:</span> kampanyanın gönüllü organizasyonu, saha koordinasyonu ve sizinle iletişim kurulması</li>
+          <li><span class="text-zinc-300">Hukuki sebep:</span> KVKK m.5/1 uyarınca açık rızanız</li>
+          <li><span class="text-zinc-300">Toplama yöntemi:</span> bu web sitesindeki form aracılığıyla, elektronik ortamda</li>
+          <li><span class="text-zinc-300">Saklama süresi:</span> kampanya süresince; kampanya sona erdikten en geç 6 ay sonra silinir</li>
+          <li><span class="text-zinc-300">Aktarım:</span> verileriniz üçüncü kişilerle paylaşılmaz, satılmaz, reklam amaçlı kullanılmaz</li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="font-bold text-emerald-400 uppercase text-[11px] tracking-wider mb-1">4. Haklarınız (KVKK m.11)</h4>
+        <p>Kişisel verilerinizin işlenip işlenmediğini öğrenme, işlenmişse bilgi talep etme,
+        düzeltilmesini veya <strong class="text-white">silinmesini</strong> isteme ve işleme itiraz etme
+        haklarına sahipsiniz.</p>
+        <p class="mt-1.5">Başvurularınız için:
+          <a href="mailto:iletisim@7527iptal.org" class="text-emerald-400 hover:text-emerald-300 font-mono font-bold">iletisim@7527iptal.org</a>
+        </p>
+        <p class="mt-1.5 text-zinc-400">Silme talebiniz en geç 30 gün içinde sonuçlandırılır.</p>
+      </div>
+      
+      <div>
+        <h4 class="font-bold text-emerald-400 uppercase text-[11px] tracking-wider mb-1">5. Veri Güvenliği</h4>
+        <ul class="space-y-1 list-disc list-inside text-zinc-400">
+          <li><span class="text-zinc-300">Uçtan uca şifreleme:</span> bilgileriniz, siz "gönder" dediğiniz anda kendi tarayıcınızda şifrelenir ve sunucuya yalnızca şifreli hâliyle ulaşır. Güçlü ve güncel şifreleme yöntemleri (AES-256, RSA-4096) kullanılır.</li>
+          <li><span class="text-zinc-300">Okunamaz kayıt:</span> kayıtlar sunucuda şifreli tutulur; sunucuya ya da veritabanına erişen biri bile bilgilerinizi okuyamaz.</li>
+          <li><span class="text-zinc-300">Yetkisiz erişime karşı koruma:</span> kayıtlara erişim yalnızca yetkili kişiyle sınırlıdır.</li>
+          <li><span class="text-zinc-300">Güvenli bağlantı:</span> tarayıcınızla site arasındaki tüm iletişim HTTPS ile korunur.</li>
+          <li><span class="text-zinc-300">Az veri:</span> T.C. kimlik numarası, açık adres ve ıslak imza hiçbir zaman sunucuya gönderilmez.</li>
+        </ul>
+        <p class="mt-1.5 text-zinc-400">Hiçbir sistem için mutlak güvenlik garanti edilemez; ancak verileriniz yukarıdaki önlemlerle korunur. Bir güvenlik sorunu fark ederseniz
+          <a href="mailto:iletisim@7527iptal.org" class="text-emerald-400 hover:text-emerald-300 font-mono font-bold">iletisim@7527iptal.org</a>
+          adresine bildirebilirsiniz.</p>
+      </div>
+      <div>
+        
+      </div>
+
+    </div>
+
+    <div class="border-t border-zinc-800 p-4">
+      <button type="button" onclick="closeKvkkModal()" class="w-full py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-100 rounded-xl text-xs font-bold uppercase tracking-wide transition cursor-pointer">
+        Okudum, Kapat
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Publishable (anon) anahtar tarayicida bulunmak uzere tasarlanmistir, gizli degildir.
+var SUPABASE_URL = 'https://mednnlpprdgupdajmrin.supabase.co';
+var SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_4xahmL7yt4C53MAJuorucg_qhImIEwn';
+var supabaseClient = (window.supabase && window.supabase.createClient)
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
+  : null;
+
+var CAMPAIGN_PUBLIC_KEY =
+  'MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAnShdubUXBMgm+bhP3sVUUaKZwSlnhKxf' +
+  'MlqDtvXA6Sb7vxWjkUplx2WSHFOZK6Ew24VLyNKnhJwAYlPp8JOsFHbEP1LsLB+L4nbEmYORRpFe' +
+  'lsbcFJK9YxDaQrY5NhsdpDXidb0E6LBVJQqnSgWai5yCRvYhKmAZt11iJsoDmNOdmWJsFYRrnm+A' +
+  '30HAtcUWCp1LX7NDa0UAl2i3mCtux878DJ6aUzEWqPchW3tI+horndhGA03PUFUh6MDebZdy9fhc' +
+  '+KcIXyNQ6p5110QZHXAbyi5NG09uxbnsKJb78YcEYyypAMAm9aTqs4ptL3yDhbnaJptr7jSG94K7' +
+  'KFOeS05HmFa5B5/YKmlCLpBNSLkr0NuyVuNLwfZDriAljO4/XqQQyXF14oVHd0WrxdlMMjSxU8kD' +
+  'VmLDelcw8VivKQsrZYulGk+wchujayEbxsucNzd6ohm0hvvqUL7AZ1USVQFgRYpfLiwzSp+7F/6V' +
+  '7H6Ah7cUKVzz+Ipvt0gwkcr4o7hmggjGsKebyDiFfvT4tqT3fIlCd9pVMveTyUPm/DAvt3HiSVgJ' +
+  'C5MbvqPgDOoZvwV2dEKTNWjl3xGNFgFgh8sljxoFygvrarmtn09gDzUb8UxRypTU3QGOwTV2NhI9' +
+  'bWs3OMNU+RgAs3s41xqbwGOXoMkLbbXm7puarX1XIQ8CAwEAAQ==';
+
+function b64ToBuf(b64) {
+  var bin = atob(b64);
+  var buf = new Uint8Array(bin.length);
+  for (var i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+  return buf.buffer;
+}
+
+function bufToB64(buf) {
+  var bytes = new Uint8Array(buf);
+  var bin = '';
+  // Buyuk imza gorsellerinde yigin tasmasini onlemek icin parcali
+  for (var i = 0; i < bytes.length; i += 8192) {
+    bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 8192));
+  }
+  return btoa(bin);
+}
+
+var _campaignKeyPromise = null;
+function getCampaignPublicKey() {
+  if (!_campaignKeyPromise) {
+    _campaignKeyPromise = crypto.subtle.importKey(
+      'spki', b64ToBuf(CAMPAIGN_PUBLIC_KEY),
+      { name: 'RSA-OAEP', hash: 'SHA-256' }, false, ['encrypt']);
+  }
+  return _campaignKeyPromise;
+}
+
+// WebCrypto yalnizca guvenli baglamda calisir (https veya localhost).
+function cryptoAvailable() {
+  return !!(window.crypto && window.crypto.subtle && window.isSecureContext);
+}
+
+// Verilen nesneyi sifreleyip sunucuya gonderilecek zarfi dondurur.
+// Zarf '{"v":1' ile baslar; sunucu bu bicimi dogrular.
+async function encryptPayload(obj) {
+  if (!cryptoAvailable()) throw new Error('crypto_unavailable');
+  var pub = await getCampaignPublicKey();
+  var aesKey = await crypto.subtle.generateKey(
+    { name: 'AES-GCM', length: 256 }, true, ['encrypt']);
+  var iv = crypto.getRandomValues(new Uint8Array(12));
+  var plain = new TextEncoder().encode(JSON.stringify(obj));
+  var ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, aesKey, plain);
+  var rawAes = await crypto.subtle.exportKey('raw', aesKey);
+  var wrapped = await crypto.subtle.encrypt({ name: 'RSA-OAEP' }, pub, rawAes);
+  return JSON.stringify({
+    v: 1,
+    k: bufToB64(wrapped),
+    iv: bufToB64(iv),
+    ct: bufToB64(ct)
+  });
+}
+
+var CITIES = [
+  "Adana","Adıyaman","Afyonkarahisar","Ağrı","Aksaray","Amasya","Ankara","Antalya","Ardahan","Artvin",
+  "Aydın","Balıkesir","Bartın","Batman","Bayburt","Bilecik","Bingöl","Bitlis","Bolu","Burdur","Bursa",
+  "Çanakkale","Çankırı","Çorum","Denizli","Diyarbakır","Düzce","Edirne","Elazığ","Erzincan","Erzurum",
+  "Eskişehir","Gaziantep","Giresun","Gümüşhane","Hakkari","Hatay","Iğdır","Isparta","İstanbul","İzmir",
+  "Kahramanmaraş","Karabük","Karaman","Kars","Kastamonu","Kayseri","Kırıkkale","Kırklareli","Kırşehir",
+  "Kilis","Kocaeli","Konya","Kütahya","Malatya","Manisa","Mardin","Mersin","Muğla","Muş","Nevşehir",
+  "Niğde","Ordu","Osmaniye","Rize","Sakarya","Samsun","Siirt","Sinop","Sivas","Şanlıurfa","Şırnak",
+  "Tekirdağ","Tokat","Trabzon","Tunceli","Uşak","Van","Yalova","Yozgat","Zonguldak"
+];
+
+// ---------- yardimcilar ----------
+function $(id) { return document.getElementById(id); }
+
+function errText(e) {
+  var m = (e && e.message) || '';
+  if (m.indexOf('unauthorized') !== -1)     return 'Kod ya da PIN geçersiz.';
+  if (m.indexOf('task_unavailable') !== -1) return 'Bu görev artık müsait değil, pano yenilendi.';
+  if (m.indexOf('too_many_claims') !== -1)  return 'Aynı anda en fazla 3 görev üstlenebilirsin. Önce birini tamamla ya da bırak.';
+  if (m === 'crypto_unavailable')           return 'Güvenli bağlantı gerekiyor. Lütfen sayfayı https:// ile açın.';
+  if (m === 'not_installed')                return 'Sunucu servisi kurulu değil.';
+  return 'Bağlantı kurulamadı. Instagram veya Facebook içinden açtıysanız Safari ya da Chrome ile açıp tekrar deneyin. (Hata: ' + (m || 'bilinmiyor').slice(0, 80) + ')';
+}
+
+async function callRpc(fn, args) {
+  if (!supabaseClient) throw new Error('no_client');
+  var res = await supabaseClient.rpc(fn, args);
+  if (res.error) {
+    console.error('[rpc:' + fn + ']', res.error);
+    if (res.error.code === 'PGRST202') throw new Error('not_installed');
+    throw new Error(res.error.message || 'rpc_error');
+  }
+  return res.data;
+}
+
+// Guvenli DOM uretimi: kullanici metni her zaman textContent ile yazilir
+function h(tag, cls, text) {
+  var n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text != null) n.textContent = text;
+  return n;
+}
+function safeUrl(u) { return (typeof u === 'string' && /^https:\/\//i.test(u)) ? u : ''; }
+function store(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} }
+function load(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+
+function openKvkkModal()  { var m = $('kvkk-modal'); if (m) m.style.display = 'flex'; }
+function closeKvkkModal() { var m = $('kvkk-modal'); if (m) m.style.display = 'none'; }
+
+// Uygulama ici tarayici uyarisi
+(function () {
+  var ua = navigator.userAgent || '';
+  if (/Instagram|FBAN|FBAV|FB_IAB|musical_ly|Twitter|Line\//i.test(ua)) $('inapp-warning').style.display = 'block';
+})();
+
+// ---------- sehir listesi ----------
+(function () {
+  var sel = $('vol-city');
+  CITIES.forEach(function (c) { var o = document.createElement('option'); o.value = c; o.textContent = c; sel.appendChild(o); });
+})();
+
+// ---------- gonullu basvurusu (index.html ile ayni sifreleme ve ayni RPC) ----------
+var volunteerBusy = false;
+async function submitVolunteerForm() {
+  if (volunteerBusy) return;
+  var btn = $('vol-submit-btn');
+  var name = ($('vol-name').value || '').trim();
+  var city = $('vol-city').value || '';
+  var contact = ($('vol-contact').value || '').trim();
+  var note = Array.prototype.map.call(document.querySelectorAll('.vol-area:checked'), function (el) { return el.value; }).join(', ');
+  var consent = $('vol-consent');
+
+  if (name.length < 2 || contact.length < 5) { alert('Lütfen adınızı ve geçerli bir iletişim bilginizi girin.'); return; }
+  if (!city) { alert('Lütfen şehrinizi seçin.'); $('vol-city').focus(); return; }
+  if (!consent.checked) { alert('Kaydınızı oluşturabilmemiz için verilerinizin işlenmesini onaylamanız gerekir.'); consent.focus(); return; }
+
+  volunteerBusy = true;
+  var oldLabel = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Şifreleniyor...';
+  try {
+    var envelope = await encryptPayload({ name: name, contact: contact, note: note, at: new Date().toISOString() });
+    btn.textContent = 'Kaydediliyor...';
+    await callRpc('add_volunteer_enc', { p_city: city, p_payload_enc: envelope });
+    $('vol-form-box').classList.add('hidden');
+    $('vol-done-box').classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } catch (e) {
+    alert(errText(e));
+  } finally {
+    volunteerBusy = false;
+    btn.disabled = false; btn.textContent = oldLabel;
+  }
+}
+
+async function loadVolCount() {
+  try {
+    var rows = await callRpc('campaign_counts', {});
+    var r = Array.isArray(rows) ? rows[0] : rows;
+    var n = r && (r.volunteers != null ? r.volunteers : r.volunteer_count);
+    if (n != null) $('vol-count-badge').textContent = Number(n).toLocaleString('tr-TR') + ' gönüllü aramıza katıldı.';
+  } catch (e) { /* sayaç zorunlu degil */ }
+}
+
+// ---------- gonullu girisi ----------
+var memberCode = '';
+var boardTimer = null;
+
+async function loginClick() {
+  var code = ($('login-code').value || '').trim();
+  var msg = $('login-msg');
+  msg.textContent = '';
+  if (code.replace(/[^0-9a-zA-Z]/g, '').length < 8) { msg.textContent = 'Lütfen kodunuzu eksiksiz girin.'; return; }
+  var btn = $('login-btn'); btn.disabled = true;
+  try {
+    var nick = await callRpc('gv_login', { p_code: code });
+    memberCode = code;
+    store('gv_code', code);
+    enterBoard(nick);
+  } catch (e) {
+    msg.textContent = errText(e);
+  } finally { btn.disabled = false; }
+}
+
+function enterBoard(nick) {
+  $('who').textContent = '👤 ' + nick;
+  $('view-guest').classList.add('hidden');
+  $('view-board').classList.remove('hidden');
+  refreshBoard();
+  if (boardTimer) clearInterval(boardTimer);
+  boardTimer = setInterval(function () { if (document.visibilityState === 'visible' && memberCode) refreshBoard(); }, 60000);
+}
+
+function logout() {
+  memberCode = ''; store('gv_code', null);
+  if (boardTimer) { clearInterval(boardTimer); boardTimer = null; }
+  $('who').textContent = '';
+  $('view-board').classList.add('hidden');
+  $('view-guest').classList.remove('hidden');
+  $('login-code').value = '';
+}
+
+async function refreshBoard() {
+  if (!memberCode) return;
+  try {
+    var b = await callRpc('gv_board', { p_code: memberCode });
+    $('board-msg').textContent = '';
+    renderBoard(b);
+  } catch (e) {
+    if ((e.message || '').indexOf('unauthorized') !== -1) { logout(); $('login-msg').textContent = 'Kodun artık geçerli değil.'; return; }
+    $('board-msg').textContent = errText(e);
+  }
+}
+
+function renderBoard(b) {
+  var st = b.stats || {};
+  var open = Number(st.open || 0), claimed = Number(st.claimed || 0), done = Number(st.done_total || 0);
+  var total = open + claimed + done;
+  $('st-open').textContent = open;
+  $('st-claimed').textContent = claimed;
+  $('st-vol').textContent = st.volunteers || 0;
+  $('prog-label').textContent = done + ' / ' + total + ' görev tamamlandı';
+  $('prog-today').textContent = 'Bugün ' + (st.done_today || 0) + ' görev tamamlandı';
+  $('prog-bar').style.width = (total ? Math.round(done * 100 / total) : 0) + '%';
+
+  var an = (b.announcement || '').trim();
+  $('announce-box').classList.toggle('hidden', !an);
+  $('announce-text').textContent = an;
+
+  var list = $('task-list');
+  list.textContent = '';
+  var tasks = b.tasks || [];
+  if (!tasks.length) { list.appendChild(h('p', 'text-sm text-zinc-500 text-center py-6', 'Şu an açık görev yok. Yeni görevler eklendiğinde burada görünecek.')); return; }
+
+  tasks.forEach(function (t) {
+    var card = h('div', 'border rounded-2xl p-4 space-y-2 ' +
+      (t.status === 'done' ? 'bg-zinc-900/50 border-zinc-800 opacity-70' :
+       t.mine ? 'bg-emerald-950/40 border-emerald-700' : 'bg-zinc-900 border-zinc-800'));
+    card.appendChild(h('h3', 'font-bold text-sm text-white', t.title));
+    if (t.description) card.appendChild(h('p', 'text-xs text-zinc-400 leading-relaxed whitespace-pre-line', t.description));
+    var u = safeUrl(t.link_url);
+    if (u) {
+      var a = h('a', 'inline-block text-xs text-emerald-400 hover:text-emerald-300 underline break-all', u);
+      a.href = u; a.target = '_blank'; a.rel = 'noopener noreferrer';
+      card.appendChild(a);
+    }
+    var row = h('div', 'flex flex-wrap items-center gap-2 pt-1');
+    if (t.status === 'open') {
+      row.appendChild(actBtn('Ben alıyorum', 'bg-emerald-600 hover:bg-emerald-500 text-white', function () { act('gv_claim', t.id); }));
+    } else if (t.status === 'claimed' && t.mine) {
+      row.appendChild(actBtn('✓ Yaptım', 'bg-emerald-600 hover:bg-emerald-500 text-white', function () { act('gv_complete', t.id); }));
+      row.appendChild(actBtn('Bırak', 'bg-zinc-800 hover:bg-zinc-700 text-zinc-200', function () { act('gv_release', t.id); }));
+      row.appendChild(h('span', 'text-[11px] text-emerald-400 font-semibold', 'Sende'));
+    } else if (t.status === 'claimed') {
+      row.appendChild(h('span', 'text-[11px] text-amber-400 font-semibold', '⏳ ' + (t.claimed_nick || 'Bir gönüllü') + ' üstlendi'));
+    } else {
+      row.appendChild(h('span', 'text-[11px] text-emerald-400 font-semibold', '✓ ' + (t.claimed_nick || 'Bir gönüllü') + ' tamamladı'));
+    }
+    card.appendChild(row);
+    list.appendChild(card);
+  });
+}
+
+function actBtn(label, cls, fn) {
+  var b = h('button', 'btn ' + cls, label);
+  b.type = 'button';
+  b.onclick = fn;
+  return b;
+}
+
+var actBusy = false;
+async function act(fn, id) {
+  if (actBusy) return;
+  actBusy = true;
+  try {
+    await callRpc(fn, { p_code: memberCode, p_task_id: id });
+    $('board-msg').textContent = '';
+  } catch (e) {
+    $('board-msg').textContent = errText(e);
+  } finally {
+    actBusy = false;
+    refreshBoard();
+  }
+}
+
+// ---------- yonetici ----------
+var adminPin = '';
+function openAdmin() { $('admin-box').classList.remove('hidden'); $('admin-box').scrollIntoView({ behavior: 'smooth' }); setTimeout(function () { var p = $('admin-pin'); if (p && !adminPin) p.focus(); }, 300); }
+function closeAdmin() { adminPin = ''; $('admin-pin').value = ''; $('admin-main').classList.add('hidden'); $('admin-login').classList.remove('hidden'); $('admin-box').classList.add('hidden'); $('adm-newcode').classList.add('hidden'); }
+
+async function adminLogin() {
+  var pin = ($('admin-pin').value || '').trim();
+  $('admin-msg').textContent = '';
+  if (!pin) return;
+  try {
+    var s = await callRpc('gv_admin_state', { p_pin: pin });
+    adminPin = pin;
+    $('admin-pin').value = '';
+    $('admin-login').classList.add('hidden');
+    $('admin-main').classList.remove('hidden');
+    renderAdmin(s);
+  } catch (e) { $('admin-msg').textContent = errText(e); }
+}
+
+async function adminReload() {
+  try { renderAdmin(await callRpc('gv_admin_state', { p_pin: adminPin })); $('admin-msg').textContent = ''; }
+  catch (e) { $('admin-msg').textContent = errText(e); }
+}
+
+var admTasks = [];
+function renderAdmin(s) {
+  $('adm-announce').value = s.announcement || '';
+  admTasks = s.tasks || [];
+  var tl = $('adm-tasks'); tl.textContent = '';
+  if (!admTasks.length) tl.appendChild(h('p', 'text-xs text-zinc-500', 'Henüz görev yok.'));
+  var label = { open: 'Açık', claimed: 'Üstlenildi', done: 'Tamamlandı', closed: 'Kapalı' };
+  admTasks.forEach(function (t) {
+    var row = h('div', 'flex flex-wrap items-center gap-2 bg-zinc-950/60 border border-zinc-800 rounded-lg p-2');
+    row.appendChild(h('span', 'text-xs text-white font-semibold flex-1 min-w-[10rem]', t.title));
+    row.appendChild(h('span', 'text-[11px] text-zinc-400', (label[t.status] || t.status) + (t.claimed_nick ? ' · ' + t.claimed_nick : '')));
+    if (t.status !== 'open') row.appendChild(actBtn('Aç', 'bg-zinc-800 hover:bg-zinc-700 text-zinc-100', function () { adminSetStatus(t, 'open'); }));
+    if (t.status !== 'closed') row.appendChild(actBtn('Kapat', 'bg-zinc-800 hover:bg-zinc-700 text-zinc-100', function () { adminSetStatus(t, 'closed'); }));
+    row.appendChild(actBtn('Sil', 'bg-red-900 hover:bg-red-800 text-white', function () { adminDeleteTask(t); }));
+    tl.appendChild(row);
+  });
+
+  var ml = $('adm-members'); ml.textContent = '';
+  var ms = s.members || [];
+  if (ms.length) ml.appendChild(h('p', 'text-[11px] text-zinc-500 pb-1', ms.length + ' kayıtlı kod'));
+  ms.forEach(function (m) {
+    var row = h('div', 'flex flex-wrap items-center gap-2 bg-zinc-950/60 border border-zinc-800 rounded-lg p-2' + (m.active ? '' : ' opacity-50'));
+    row.appendChild(h('span', 'text-xs text-white font-semibold flex-1 min-w-[8rem]', m.nickname));
+    row.appendChild(h('span', 'text-[11px] text-zinc-400', 'üstünde ' + m.claimed + ' · biten ' + m.done));
+    row.appendChild(actBtn(m.active ? 'Pasife al' : 'Aktif et', 'bg-zinc-800 hover:bg-zinc-700 text-zinc-100', function () { adminToggleMember(m); }));
+    ml.appendChild(row);
+  });
+}
+
+async function adminAct(fn, args) {
+  try { await callRpc(fn, args); $('admin-msg').textContent = ''; return true; }
+  catch (e) { $('admin-msg').textContent = errText(e); return false; }
+  finally { adminReload(); }
+}
+
+function adminSaveAnnounce() { adminAct('gv_admin_set_announcement', { p_pin: adminPin, p_body: $('adm-announce').value || '' }); }
+
+async function adminAddTask() {
+  var title = ($('adm-t-title').value || '').trim();
+  var link = ($('adm-t-link').value || '').trim();
+  if (title.length < 3) { $('admin-msg').textContent = 'Görev başlığı en az 3 karakter olmalı.'; return; }
+  if (link && !/^https:\/\//i.test(link)) { $('admin-msg').textContent = 'Bağlantı https:// ile başlamalı.'; return; }
+  var ok = await adminAct('gv_admin_save_task', { p_pin: adminPin, p_id: null, p_title: title, p_description: $('adm-t-desc').value || '', p_link_url: link, p_status: null });
+  if (ok) { $('adm-t-title').value = ''; $('adm-t-desc').value = ''; $('adm-t-link').value = ''; }
+}
+
+function adminSetStatus(t, status) {
+  adminAct('gv_admin_save_task', { p_pin: adminPin, p_id: t.id, p_title: t.title, p_description: t.description || '', p_link_url: t.link_url || '', p_status: status });
+}
+function adminDeleteTask(t) {
+  if (!confirm('"' + t.title + '" görevi silinsin mi?')) return;
+  adminAct('gv_admin_delete_task', { p_pin: adminPin, p_id: t.id });
+}
+function adminToggleMember(m) {
+  adminAct('gv_admin_set_member_active', { p_pin: adminPin, p_id: m.id, p_active: !m.active });
+}
+
+async function adminAddMember() {
+  var nick = ($('adm-m-nick').value || '').trim();
+  if (nick.length < 2) { $('admin-msg').textContent = 'Takma ad en az 2 karakter olmalı.'; return; }
+  try {
+    var code = await callRpc('gv_admin_create_member', { p_pin: adminPin, p_nickname: nick });
+    $('adm-m-nick').value = '';
+    $('adm-newcode-val').textContent = code;
+    $('adm-newcode').classList.remove('hidden');
+    $('admin-msg').textContent = '';
+  } catch (e) { $('admin-msg').textContent = errText(e); }
+  adminReload();
+}
+
+function copyNewCode() {
+  var c = $('adm-newcode-val').textContent;
+  try { navigator.clipboard.writeText(c); } catch (e) {}
+}
+
+// ---------- acilis ----------
+(async function init() {
+  loadVolCount();
+  var saved = load('gv_code');
+  if (saved) {
+    try {
+      var nick = await callRpc('gv_login', { p_code: saved });
+      memberCode = saved;
+      enterBoard(nick);
+    } catch (e) {
+      if ((e.message || '').indexOf('unauthorized') !== -1) store('gv_code', null);
+    }
+  }
+})();
+</script>
+</body>
+</html>
