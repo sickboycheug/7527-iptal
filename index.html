@@ -4452,6 +4452,17 @@ function openThanksModal() {
   document.getElementById('share-tg').href = "https://t.me/share/url?url=" + url + "&text=" + text;
 }
 
+async function shareThanksNative() {
+  if (!navigator.share) return;
+  try {
+    await navigator.share({
+      title: '7527 İptal',
+      text: '7527 sayılı kanunun iptali için ben de imza verdim! Sen de dilekçeni oluştur. #7527İptal',
+      url: 'https://www.7527iptal.org'
+    });
+  } catch (e) {}
+}
+
 function closeThanksModal() {
   document.getElementById('thanks-modal').style.display = 'none';
 }
