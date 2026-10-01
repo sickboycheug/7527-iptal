@@ -880,7 +880,10 @@
     </div>
     <h3 class="font-impact text-2xl text-white uppercase">DİLEKÇENİZİ GÖNDERDİNİZ Mİ?</h3>
     <div class="text-xs text-zinc-300 leading-relaxed space-y-2 text-left">
-      <p class="text-center">Dilekçeniz PDF olarak indirildi ve e-posta programınız açıldı.</p>
+      <p class="text-center">Dilekçeniz hazırlandı ve PDF olarak cihazınıza kaydedildi.</p>
+      <button type="button" onclick="window.location.href = generateMailtoUrl()" class="w-full py-3 bg-sky-600 hover:bg-sky-500 text-white rounded-xl font-bold text-xs transition shadow">
+        ✉️ E-posta Uygulamasını Aç
+      </button>
       <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-3 space-y-1.5">
         <p class="text-[11px] text-zinc-400">İndirilenler klasöründeki dosya:</p>
         <p id="confirm-file-name" class="font-mono text-[11px] text-emerald-400 break-all">-</p>
