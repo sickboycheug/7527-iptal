@@ -34,6 +34,16 @@
   </div>
 </header>
 
+<div class="bg-zinc-900 border-b border-zinc-800">
+  <div class="max-w-4xl mx-auto px-4 py-3 grid grid-cols-2 sm:grid-cols-5 gap-3 text-center">
+    <div><div id="c-sign" class="text-xl font-extrabold text-white">–</div><div class="text-[10px] uppercase tracking-wider text-zinc-400">İmzacı</div></div>
+    <div><div id="c-vol" class="text-xl font-extrabold text-emerald-400">–</div><div class="text-[10px] uppercase tracking-wider text-zinc-400">Gönüllü</div></div>
+    <div><div id="c-cb" class="text-xl font-extrabold text-white">–</div><div class="text-[10px] uppercase tracking-wider text-zinc-400">Cumhurbaşkanlığı</div></div>
+    <div><div id="c-mb" class="text-xl font-extrabold text-white">–</div><div class="text-[10px] uppercase tracking-wider text-zinc-400">TBMM Başkanlığı</div></div>
+    <div class="col-span-2 sm:col-span-1"><div id="c-day" class="text-xl font-extrabold text-red-400">–</div><div class="text-[10px] uppercase tracking-wider text-zinc-400">Kampanya günü</div></div>
+  </div>
+</div>
+
 <main class="flex-1 w-full max-w-4xl mx-auto px-4 py-8 space-y-8">
 
   <!-- ===== MİSAFİR GÖRÜNÜMÜ: başvuru + giriş ===== -->
@@ -152,6 +162,26 @@
     <p id="admin-msg" class="text-xs text-red-400 min-h-[16px]"></p>
 
     <div id="admin-main" class="hidden space-y-6">
+      <div id="adm-newcode" class="hidden bg-amber-950/60 border border-amber-600 rounded-xl p-3 space-y-2">
+        <p class="text-[11px] text-amber-300">Yeni gönüllü kodu. Yalnızca şimdi gösterilir, kaydet ve gönüllüye ilet:</p>
+        <div class="flex items-center gap-3">
+          <span id="adm-newcode-val" class="font-mono text-xl font-bold tracking-widest text-white select-all"></span>
+          <button type="button" onclick="copyNewCode()" class="btn bg-zinc-800 hover:bg-zinc-700 text-white">Kopyala</button>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400">Gönüllü Başvuruları</h3>
+        <p class="text-[11px] text-zinc-400">Başvurular şifrelidir. Özel anahtar dosyanı ve parolanı seç; çözme yalnızca bu tarayıcıda yapılır, anahtarın hiçbir yere gönderilmez.</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <input type="file" id="adm-key-file" accept=".json,application/json" class="inp">
+          <input type="password" id="adm-key-pass" placeholder="Anahtar parolası" class="inp" autocomplete="off">
+        </div>
+        <button type="button" onclick="adminLoadApps()" class="btn bg-zinc-800 hover:bg-zinc-700 text-white">Başvuruları Yükle</button>
+        <p id="adm-apps-status" class="text-[11px] text-zinc-500 min-h-[16px]"></p>
+        <div id="adm-apps" class="space-y-2"></div>
+      </div>
+
       <div class="space-y-2">
         <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400">Duyuru</h3>
         <textarea id="adm-announce" rows="3" maxlength="1000" class="inp" placeholder="Gönüllülerin panoda göreceği duyuru (boş bırakırsan görünmez)"></textarea>
@@ -172,17 +202,10 @@
       </div>
 
       <div class="space-y-2">
-        <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400">Gönüllü Kodu Üret</h3>
+        <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400">Başvurusuz Gönüllü Kodu Üret</h3>
         <div class="flex flex-col sm:flex-row gap-3 max-w-md">
           <input type="text" id="adm-m-nick" maxlength="30" placeholder="Takma ad (panoda görünür)" class="inp">
           <button type="button" onclick="adminAddMember()" class="btn bg-emerald-600 hover:bg-emerald-500 text-white whitespace-nowrap">Kod Üret</button>
-        </div>
-        <div id="adm-newcode" class="hidden bg-amber-950/60 border border-amber-600 rounded-xl p-3 space-y-2">
-          <p class="text-[11px] text-amber-300">Bu kod yalnızca şimdi gösterilir, kaydet ve gönüllüye ilet:</p>
-          <div class="flex items-center gap-3">
-            <span id="adm-newcode-val" class="font-mono text-xl font-bold tracking-widest text-white select-all"></span>
-            <button type="button" onclick="copyNewCode()" class="btn bg-zinc-800 hover:bg-zinc-700 text-white">Kopyala</button>
-          </div>
         </div>
         <div id="adm-members" class="space-y-1 pt-2"></div>
       </div>
@@ -349,6 +372,32 @@ async function encryptPayload(obj) {
   });
 }
 
+// --- COZME (yalnizca yonetici disa aktariminda kullanilir) -----------
+async function unwrapPrivateKey(keyFile, passphrase) {
+  var baseKey = await crypto.subtle.importKey(
+    'raw', new TextEncoder().encode(passphrase), 'PBKDF2', false, ['deriveKey']);
+  var wrapKey = await crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt: b64ToBuf(keyFile.salt),
+      iterations: keyFile.iterations, hash: 'SHA-256' },
+    baseKey, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+  var pkcs8 = await crypto.subtle.decrypt(
+    { name: 'AES-GCM', iv: b64ToBuf(keyFile.iv) },
+    wrapKey, b64ToBuf(keyFile.wrappedPrivateKey));
+  return crypto.subtle.importKey(
+    'pkcs8', pkcs8, { name: 'RSA-OAEP', hash: 'SHA-256' }, false, ['decrypt']);
+}
+
+async function decryptPayload(privateKey, envelopeText) {
+  var env = JSON.parse(envelopeText);
+  var rawAes = await crypto.subtle.decrypt(
+    { name: 'RSA-OAEP' }, privateKey, b64ToBuf(env.k));
+  var aesKey = await crypto.subtle.importKey(
+    'raw', rawAes, { name: 'AES-GCM' }, false, ['decrypt']);
+  var plain = await crypto.subtle.decrypt(
+    { name: 'AES-GCM', iv: b64ToBuf(env.iv) }, aesKey, b64ToBuf(env.ct));
+  return JSON.parse(new TextDecoder().decode(plain));
+}
+
 var CITIES = [
   "Adana","Adıyaman","Afyonkarahisar","Ağrı","Aksaray","Amasya","Ankara","Antalya","Ardahan","Artvin",
   "Aydın","Balıkesir","Bartın","Batman","Bayburt","Bilecik","Bingöl","Bitlis","Bolu","Burdur","Bursa",
@@ -367,6 +416,7 @@ function errText(e) {
   var m = (e && e.message) || '';
   if (m.indexOf('unauthorized') !== -1)     return 'Kod ya da PIN geçersiz.';
   if (m.indexOf('task_unavailable') !== -1) return 'Bu görev artık müsait değil, pano yenilendi.';
+  if (m.indexOf('already_has_code') !== -1) return 'Bu başvuruya zaten kod verilmiş.';
   if (m.indexOf('too_many_claims') !== -1)  return 'Aynı anda en fazla 3 görev üstlenebilirsin. Önce birini tamamla ya da bırak.';
   if (m === 'crypto_unavailable')           return 'Güvenli bağlantı gerekiyor. Lütfen sayfayı https:// ile açın.';
   if (m === 'not_installed')                return 'Sunucu servisi kurulu değil.';
@@ -443,13 +493,26 @@ async function submitVolunteerForm() {
   }
 }
 
-async function loadVolCount() {
+var CAMPAIGN_START = '2026-09-25';
+function fmtN(n) { return Number(n || 0).toLocaleString('tr-TR'); }
+async function loadCounters() {
+  // Kampanya gunu (Istanbul saatine gore, 25 Eylul = 1. gun)
+  try {
+    var today = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' });
+    var a = today.split('-'), b = CAMPAIGN_START.split('-');
+    var days = Math.floor((Date.UTC(+a[0], +a[1] - 1, +a[2]) - Date.UTC(+b[0], +b[1] - 1, +b[2])) / 86400000) + 1;
+    if (days >= 1) $('c-day').textContent = days + '. gün';
+  } catch (e) {}
   try {
     var rows = await callRpc('campaign_counts', {});
     var r = Array.isArray(rows) ? rows[0] : rows;
-    var n = r && (r.volunteers != null ? r.volunteers : r.volunteer_count);
-    if (n != null) $('vol-count-badge').textContent = Number(n).toLocaleString('tr-TR') + ' gönüllü aramıza katıldı.';
-  } catch (e) { /* sayaç zorunlu degil */ }
+    if (!r) return;
+    $('c-sign').textContent = fmtN(r.citizen_total);
+    $('c-vol').textContent  = fmtN(r.volunteers);
+    $('c-cb').textContent   = fmtN(r.cb_total);
+    $('c-mb').textContent   = fmtN(r.mb_total);
+    $('vol-count-badge').textContent = fmtN(r.volunteers) + ' gönüllü aramıza katıldı.';
+  } catch (e) { /* sayaclar zorunlu degil */ }
 }
 
 // ---------- gonullu girisi ----------
@@ -576,7 +639,7 @@ async function act(fn, id) {
 // ---------- yonetici ----------
 var adminPin = '';
 function openAdmin() { $('admin-box').classList.remove('hidden'); $('admin-box').scrollIntoView({ behavior: 'smooth' }); setTimeout(function () { var p = $('admin-pin'); if (p && !adminPin) p.focus(); }, 300); }
-function closeAdmin() { adminPin = ''; $('admin-pin').value = ''; $('admin-main').classList.add('hidden'); $('admin-login').classList.remove('hidden'); $('admin-box').classList.add('hidden'); $('adm-newcode').classList.add('hidden'); }
+function closeAdmin() { adminPin = ''; adminKey = null; adminApps = []; $('adm-apps').textContent = ''; $('adm-key-pass').value = ''; $('admin-pin').value = ''; $('admin-main').classList.add('hidden'); $('admin-login').classList.remove('hidden'); $('admin-box').classList.add('hidden'); $('adm-newcode').classList.add('hidden'); }
 
 async function adminLogin() {
   var pin = ($('admin-pin').value || '').trim();
@@ -597,7 +660,98 @@ async function adminReload() {
   catch (e) { $('admin-msg').textContent = errText(e); }
 }
 
-var admTasks = [];
+var admTasks = [], admMembers = [], adminKey = null, adminApps = [];
+
+// Ad Soyad -> "Ayşe K."
+function suggestNick(name) {
+  var p = (name || '').trim().split(/\s+/).filter(Boolean);
+  if (!p.length) return '';
+  function cap(w) { return w.charAt(0).toLocaleUpperCase('tr') + w.slice(1).toLocaleLowerCase('tr'); }
+  if (p.length === 1) return cap(p[0]);
+  return cap(p[0]) + ' ' + p[p.length - 1].charAt(0).toLocaleUpperCase('tr') + '.';
+}
+
+async function adminLoadKey() {
+  var f = $('adm-key-file'), pass = $('adm-key-pass').value;
+  if (!f.files || !f.files[0]) throw new Error('key_file');
+  if (!pass) throw new Error('key_pass');
+  var keyFile;
+  try { keyFile = JSON.parse(await f.files[0].text()); } catch (e) { throw new Error('key_file'); }
+  if (keyFile.format !== '7527-campaign-private-key') throw new Error('key_file');
+  try { return await unwrapPrivateKey(keyFile, pass); } catch (e) { throw new Error('key_pass'); }
+}
+
+async function adminLoadApps() {
+  var st = $('adm-apps-status');
+  st.className = 'text-[11px] text-zinc-500 min-h-[16px]';
+  st.textContent = 'Anahtar açılıyor...';
+  try {
+    adminKey = await adminLoadKey();
+    st.textContent = 'Başvurular alınıyor...';
+    var rows = await callRpc('export_volunteers', { p_pin: adminPin }) || [];
+    adminApps = [];
+    for (var i = 0; i < rows.length; i++) {
+      var r = rows[i], c = null;
+      try { c = await decryptPayload(adminKey, r.payload_enc); } catch (e) { c = null; }
+      adminApps.push({ id: r.id, city: r.city || '', created_at: r.created_at, ok: !!c,
+        name: c ? (c.name || '') : '', contact: c ? (c.contact || '') : '', note: c ? (c.note || '') : '' });
+    }
+    $('adm-key-pass').value = '';
+    renderApps();
+  } catch (e) {
+    adminKey = null;
+    st.className = 'text-[11px] text-red-400 min-h-[16px]';
+    var m = e && e.message;
+    st.textContent = m === 'key_file' ? 'Geçerli bir özel anahtar dosyası (.json) seçin.'
+                   : m === 'key_pass' ? 'Anahtar parolası yanlış.' : errText(e);
+  }
+}
+
+function renderApps() {
+  var box = $('adm-apps'); box.textContent = '';
+  var st = $('adm-apps-status');
+  var used = {};
+  admMembers.forEach(function (m) { if (m.application_id != null) used[m.application_id] = m; });
+  var todo = adminApps.filter(function (a) { return !used[a.id]; });
+  var done = adminApps.filter(function (a) { return used[a.id]; });
+  st.className = 'text-[11px] text-emerald-400 min-h-[16px]';
+  st.textContent = '✓ ' + adminApps.length + ' başvuru · ' + todo.length + ' kod bekliyor · ' + done.length + ' kod verildi';
+
+  todo.concat(done).forEach(function (a) {
+    var m = used[a.id];
+    var row = h('div', 'bg-zinc-950/60 border border-zinc-800 rounded-lg p-3 space-y-2' + (m ? ' opacity-60' : ''));
+    row.appendChild(h('div', 'text-xs text-white font-semibold', a.ok ? (a.name || '(ad yok)') : '[ÇÖZÜLEMEDİ]'));
+    var meta = [a.contact, a.city, a.created_at ? new Date(a.created_at).toLocaleDateString('tr-TR') : ''].filter(Boolean).join(' · ');
+    if (meta) row.appendChild(h('div', 'text-[11px] text-zinc-400', meta));
+    if (a.note) row.appendChild(h('div', 'text-[11px] text-zinc-500', a.note));
+    if (m) {
+      row.appendChild(h('div', 'text-[11px] text-emerald-400 font-semibold', '✓ Kod verildi · takma ad: ' + m.nickname + (m.active ? '' : ' (pasif)')));
+    } else if (a.ok) {
+      var line = h('div', 'flex flex-col sm:flex-row gap-2');
+      var inp = h('input', 'inp'); inp.type = 'text'; inp.maxLength = 30; inp.value = suggestNick(a.name);
+      inp.setAttribute('aria-label', 'Takma ad');
+      var btn = actBtn('Kod Üret', 'bg-emerald-600 hover:bg-emerald-500 text-white whitespace-nowrap', function () { adminAppCode(a, inp, btn); });
+      line.appendChild(inp); line.appendChild(btn);
+      row.appendChild(line);
+    }
+    box.appendChild(row);
+  });
+}
+
+async function adminAppCode(app, inp, btn) {
+  var nick = (inp.value || '').trim();
+  if (nick.length < 2) { $('admin-msg').textContent = 'Takma ad en az 2 karakter olmalı.'; return; }
+  btn.disabled = true;
+  try {
+    var code = await callRpc('gv_admin_create_member', { p_pin: adminPin, p_nickname: nick, p_application_id: app.id, p_city: app.city, p_areas: app.note });
+    $('adm-newcode-val').textContent = code;
+    $('adm-newcode').classList.remove('hidden');
+    $('adm-newcode').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    $('admin-msg').textContent = '';
+  } catch (e) { $('admin-msg').textContent = errText(e); }
+  btn.disabled = false;
+  adminReload();
+}
 function renderAdmin(s) {
   $('adm-announce').value = s.announcement || '';
   admTasks = s.tasks || [];
@@ -616,10 +770,12 @@ function renderAdmin(s) {
 
   var ml = $('adm-members'); ml.textContent = '';
   var ms = s.members || [];
+  admMembers = ms;
+  if (adminApps.length) renderApps();
   if (ms.length) ml.appendChild(h('p', 'text-[11px] text-zinc-500 pb-1', ms.length + ' kayıtlı kod'));
   ms.forEach(function (m) {
     var row = h('div', 'flex flex-wrap items-center gap-2 bg-zinc-950/60 border border-zinc-800 rounded-lg p-2' + (m.active ? '' : ' opacity-50'));
-    row.appendChild(h('span', 'text-xs text-white font-semibold flex-1 min-w-[8rem]', m.nickname));
+    row.appendChild(h('span', 'text-xs text-white font-semibold flex-1 min-w-[8rem]', m.nickname + (m.city ? ' · ' + m.city : '')));
     row.appendChild(h('span', 'text-[11px] text-zinc-400', 'üstünde ' + m.claimed + ' · biten ' + m.done));
     row.appendChild(actBtn(m.active ? 'Pasife al' : 'Aktif et', 'bg-zinc-800 hover:bg-zinc-700 text-zinc-100', function () { adminToggleMember(m); }));
     ml.appendChild(row);
@@ -658,7 +814,7 @@ async function adminAddMember() {
   var nick = ($('adm-m-nick').value || '').trim();
   if (nick.length < 2) { $('admin-msg').textContent = 'Takma ad en az 2 karakter olmalı.'; return; }
   try {
-    var code = await callRpc('gv_admin_create_member', { p_pin: adminPin, p_nickname: nick });
+    var code = await callRpc('gv_admin_create_member', { p_pin: adminPin, p_nickname: nick, p_application_id: null, p_city: null, p_areas: null });
     $('adm-m-nick').value = '';
     $('adm-newcode-val').textContent = code;
     $('adm-newcode').classList.remove('hidden');
@@ -674,7 +830,7 @@ function copyNewCode() {
 
 // ---------- acilis ----------
 (async function init() {
-  loadVolCount();
+  loadCounters();
   var saved = load('gv_code');
   if (saved) {
     try {
