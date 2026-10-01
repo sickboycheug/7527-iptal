@@ -5006,6 +5006,8 @@ function updateVolunteerBadge() {
 
 // Gonullu formuna kaydir (kapi kapaliyken de calisir; form #volunteer-section footer ustunde)
 function scrollToVolunteerForm() {
+  window.location.href = "/gorev.html";
+  return;
   var section = document.getElementById("volunteer-section");
   if (!section) return;
   section.scrollIntoView({ behavior: "smooth", block: "center" });
