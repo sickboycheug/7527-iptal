@@ -3435,7 +3435,7 @@ async function sendPetitionViaEmail() {
     if (box) box.textContent = dosya;
 
     step('E-posta açılıyor...');
-    window.location.href = generateMailtoUrl();
+    // E-posta, onay penceresindeki düğmeyle açılır (mobilde talimatın arkada kalmaması için)
 
     setTimeout(function() {
       document.getElementById('confirm-modal').style.display = 'flex';
