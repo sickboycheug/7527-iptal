@@ -210,7 +210,11 @@
           <input type="file" id="adm-key-file" accept=".json,application/json" class="inp">
           <input type="password" id="adm-key-pass" placeholder="Anahtar parolası" class="inp" autocomplete="off">
         </div>
-        <button type="button" onclick="adminLoadApps()" class="btn bg-zinc-800 hover:bg-zinc-700 text-white">Başvuruları Yükle</button>
+        <div class="flex flex-wrap gap-2">
+          <button type="button" onclick="adminLoadApps()" class="btn bg-zinc-800 hover:bg-zinc-700 text-white">Başvuruları Yükle</button>
+          <button type="button" id="adm-bulk-btn" onclick="adminBulkCodes()" class="btn hidden bg-emerald-700 hover:bg-emerald-600 text-white">Bekleyenlerin hepsine kod üret</button>
+          <button type="button" id="adm-csv-btn" onclick="downloadCodesCsv()" class="btn hidden bg-zinc-800 hover:bg-zinc-700 text-white">Kodları CSV indir</button>
+        </div>
         <p id="adm-apps-status" class="text-[11px] text-zinc-500 min-h-[16px]"></p>
         <div id="adm-apps" class="space-y-2"></div>
       </div>
@@ -884,7 +888,7 @@ async function act(fn, id) {
 // ---------- yonetici ----------
 var adminPin = '';
 function openAdmin() { $('admin-box').classList.remove('hidden'); $('admin-box').scrollIntoView({ behavior: 'smooth' }); setTimeout(function () { var p = $('admin-pin'); if (p && !adminPin) p.focus(); }, 300); }
-function closeAdmin() { adminPin = ''; adminKey = null; adminApps = []; $('adm-apps').textContent = ''; $('adm-key-pass').value = ''; $('admin-pin').value = ''; $('admin-main').classList.add('hidden'); $('admin-login').classList.remove('hidden'); $('admin-box').classList.add('hidden'); $('adm-newcode').classList.add('hidden'); }
+function closeAdmin() { adminPin = ''; adminKey = null; adminApps = []; codesByApp = {}; $('adm-apps').textContent = ''; $('adm-key-pass').value = ''; $('admin-pin').value = ''; $('admin-main').classList.add('hidden'); $('admin-login').classList.remove('hidden'); $('admin-box').classList.add('hidden'); $('adm-newcode').classList.add('hidden'); }
 
 async function adminLogin() {
   var pin = ($('admin-pin').value || '').trim();
@@ -955,6 +959,31 @@ async function adminLoadApps() {
   }
 }
 
+var codesByApp = {};   // yalnizca bu oturumda uretilen kodlar (sunucuda duz kod saklanmaz)
+
+function firstName(name) {
+  var w = (name || '').trim().split(/\s+/)[0] || '';
+  return w ? w.charAt(0).toLocaleUpperCase('tr') + w.slice(1).toLocaleLowerCase('tr') : '';
+}
+function inviteText(a, code) {
+  var fn = firstName(a.name);
+  return 'Merhaba' + (fn ? ' ' + fn : '') + ', 7527 iptal kampanyası gönüllü kaydınız için kişisel kodunuz: ' + code + '\n\n' +
+    'Kodunuzla https://www.7527iptal.org/gorev.html adresinden giriş yapıp görev panosuna ve ilinizdeki ekibe katılabilirsiniz. ' +
+    'Zorunluluk yoktur; yapabildiğiniz kadarıyla katkı verirsiniz. Teşekkürler.';
+}
+function contactKind(contact) {
+  var c = (contact || '').trim();
+  var em = c.match(/[^\s@,;]+@[^\s@,;]+\.[^\s@,;]+/);
+  if (em) return { type: 'email', value: em[0] };
+  var digits = c.replace(/[^0-9]/g, '');
+  if (digits.length >= 10 && digits.length <= 15) {
+    if (digits.length === 11 && digits.charAt(0) === '0') digits = '90' + digits.slice(1);
+    else if (digits.length === 10 && digits.charAt(0) === '5') digits = '90' + digits;
+    return { type: 'phone', value: digits };
+  }
+  return { type: 'none', value: '' };
+}
+
 function renderApps() {
   var box = $('adm-apps'); box.textContent = '';
   var st = $('adm-apps-status');
@@ -965,15 +994,21 @@ function renderApps() {
   var done = adminApps.filter(function (a) { return memberOf(a); });
   st.className = 'text-[11px] text-emerald-400 min-h-[16px]';
   st.textContent = '✓ ' + adminApps.length + ' başvuru · ' + todo.length + ' kod bekliyor · ' + done.length + ' kod verildi';
+  $('adm-bulk-btn').classList.toggle('hidden', !todo.some(function (a) { return a.ok; }));
+  $('adm-csv-btn').classList.toggle('hidden', !Object.keys(codesByApp).length);
 
   todo.concat(done).forEach(function (a) {
     var m = memberOf(a);
-    var row = h('div', 'bg-zinc-950/60 border border-zinc-800 rounded-lg p-3 space-y-2' + (m ? ' opacity-60' : ''));
+    var code = codesByApp[a.id];
+    var row = h('div', 'bg-zinc-950/60 border border-zinc-800 rounded-lg p-3 space-y-2' + (m && !code ? ' opacity-60' : ''));
     row.appendChild(h('div', 'text-xs text-white font-semibold', a.ok ? (a.name || '(ad yok)') : '[ÇÖZÜLEMEDİ]'));
     var meta = [a.contact, [a.country, a.city, a.district].filter(Boolean).join(' / '), a.created_at ? new Date(a.created_at).toLocaleDateString('tr-TR') : ''].filter(Boolean).join(' · ');
     if (meta) row.appendChild(h('div', 'text-[11px] text-zinc-400', meta));
     if (a.note) row.appendChild(h('div', 'text-[11px] text-zinc-500', a.note));
-    if (m) {
+    if (code) {
+      row.appendChild(h('div', 'font-mono text-base font-bold tracking-widest text-white select-all', code));
+      row.appendChild(sendButtons(a, code));
+    } else if (m) {
       row.appendChild(h('div', 'text-[11px] text-emerald-400 font-semibold', '✓ Kod verildi · takma ad: ' + m.nickname + (m.active ? '' : ' (pasif)')));
     } else if (a.ok) {
       var line = h('div', 'flex flex-col sm:flex-row gap-2');
@@ -987,20 +1022,81 @@ function renderApps() {
   });
 }
 
+function sendButtons(a, code) {
+  var wrap = h('div', 'flex flex-wrap gap-2');
+  var text = inviteText(a, code);
+  var ck = contactKind(a.contact);
+  if (ck.type === 'phone') {
+    var wa = h('a', 'btn bg-emerald-700 hover:bg-emerald-600 text-white', '💬 WhatsApp ile gönder');
+    wa.href = 'https://wa.me/' + ck.value + '?text=' + encodeURIComponent(text); wa.target = '_blank'; wa.rel = 'noopener noreferrer';
+    wrap.appendChild(wa);
+  } else if (ck.type === 'email') {
+    var ml = h('a', 'btn bg-sky-700 hover:bg-sky-600 text-white', '✉ E-posta ile gönder');
+    ml.href = 'mailto:' + ck.value + '?subject=' + encodeURIComponent('7527 İptal gönüllü kodunuz') + '&body=' + encodeURIComponent(text);
+    wrap.appendChild(ml);
+  }
+  wrap.appendChild(actBtn('Mesajı kopyala', 'bg-zinc-800 hover:bg-zinc-700 text-white', function () { try { navigator.clipboard.writeText(text); } catch (e) {} }));
+  return wrap;
+}
+
+async function createCodeForApp(app, nick) {
+  var code = await callRpc('gv_admin_create_member', { p_pin: adminPin, p_nickname: nick, p_application_id: app.id,
+    p_city: app.city, p_areas: app.note });
+  codesByApp[app.id] = code;
+  return code;
+}
+
 async function adminAppCode(app, inp, btn) {
   var nick = (inp.value || '').trim();
   if (nick.length < 2) { $('admin-msg').textContent = 'Takma ad en az 2 karakter olmalı.'; return; }
   btn.disabled = true;
   try {
-    var code = await callRpc('gv_admin_create_member', { p_pin: adminPin, p_nickname: nick, p_application_id: app.id,
-      p_city: app.city, p_areas: app.note });
-    $('adm-newcode-val').textContent = code;
-    $('adm-newcode').classList.remove('hidden');
-    $('adm-newcode').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    await createCodeForApp(app, nick);
     $('admin-msg').textContent = '';
   } catch (e) { $('admin-msg').textContent = errText(e); }
   btn.disabled = false;
   adminReload();
+}
+
+var bulkBusy = false;
+async function adminBulkCodes() {
+  if (bulkBusy) return;
+  var used = {};
+  admMembers.forEach(function (m) { if (m.application_id != null) used[m.application_id] = 1; if (m.ref) used['r' + m.ref] = 1; });
+  var todo = adminApps.filter(function (a) { return a.ok && !used[a.id] && !(a.ref && used['r' + a.ref]); });
+  if (!todo.length) return;
+  if (!confirm(todo.length + ' başvuruya takma ad önerileriyle kod üretilecek.\n\nKodlar yalnızca bu sayfa açıkken görünür; üretimden sonra "Kodları CSV indir" ile kaydetmeyi unutma.\n\nDevam edilsin mi?')) return;
+  bulkBusy = true;
+  var st = $('adm-apps-status'), fail = 0;
+  for (var i = 0; i < todo.length; i++) {
+    st.className = 'text-[11px] text-zinc-400 min-h-[16px]';
+    st.textContent = 'Kod üretiliyor: ' + (i + 1) + ' / ' + todo.length;
+    try { await createCodeForApp(todo[i], suggestNick(todo[i].name) || 'Gönüllü'); }
+    catch (e) { fail++; }
+  }
+  bulkBusy = false;
+  await adminReload();
+  if (fail) { st.className = 'text-[11px] text-amber-400 min-h-[16px]'; st.textContent += ' · ' + fail + ' başvuruda hata oluştu, tekrar deneyin.'; }
+}
+
+function csvCell(v) { v = String(v == null ? '' : v); return /[",\n;]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+function buildCodesCsv() {
+  var byApp = {};
+  admMembers.forEach(function (m) { if (m.application_id != null) byApp[m.application_id] = m; });
+  var lines = [['Ad Soyad', 'İletişim', 'Şehir', 'Takma ad', 'Kod'].join(';')];
+  adminApps.forEach(function (a) {
+    var code = codesByApp[a.id]; if (!code) return;
+    var m = byApp[a.id];
+    lines.push([a.name, a.contact, a.city, m ? m.nickname : '', code].map(csvCell).join(';'));
+  });
+  return '﻿' + lines.join('\r\n');
+}
+function downloadCodesCsv() {
+  var blob = new Blob([buildCodesCsv()], { type: 'text/csv;charset=utf-8' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'gonullu-kodlari.csv';
+  document.body.appendChild(a); a.click();
+  setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
 }
 
 function renderTeams() {
