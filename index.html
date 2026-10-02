@@ -3437,9 +3437,7 @@ async function sendPetitionViaEmail() {
     step('E-posta açılıyor...');
     // E-posta, onay penceresindeki düğmeyle açılır (mobilde talimatın arkada kalmaması için)
 
-    setTimeout(function() {
-      document.getElementById('confirm-modal').style.display = 'flex';
-    }, 800);
+    document.getElementById('confirm-modal').style.display = 'flex';
   } catch (e) {
     if (e && e.message === 'pdf_lib') {
       alert('PDF kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip tekrar deneyin.');
