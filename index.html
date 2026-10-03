@@ -311,15 +311,15 @@
         <div id="video-content-vatandas" class="space-y-5">
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
             <!-- Video Oynatıcı Kolonu -->
-            <div class="lg:col-span-6 bg-black rounded-xl overflow-hidden border border-zinc-800 shadow-inner relative aspect-video flex flex-col justify-center items-center group">
-              <video id="gate-citizen-video" controls playsinline preload="metadata" class="w-full h-full object-cover" poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='450' viewBox='0 0 800 450'%3E%3Crect width='800' height='450' fill='%2309090b'/%3E%3Ccircle cx='400' cy='200' r='45' fill='%23ef4444' opacity='0.9'/%3E%3Cpolygon points='390,180 420,200 390,220' fill='%23ffffff'/%3E%3Ctext x='50%25' y='68%25' font-family='sans-serif' font-weight='bold' font-size='24' fill='%23ffffff' text-anchor='middle'%3EVATANDA%C5%9E D%C4%B0LEK%C3%87E REHBER V%C4%B0DEOSU%3C/text%3E%3Ctext x='50%25' y='78%25' font-family='sans-serif' font-size='14' fill='%23a1a1aa' text-anchor='middle'%3E5 Ad%C4%B1mda Islak %C4%B0mzal%C4%B1 Dilek%C3%A7e ve E-Posta %C4%B0letimi%3C/text%3E%3C/svg%3E">
-                <source src="campaign-video-output/vatandas-7527-iptal.mp4" type="video/mp4">
+            <div class="lg:col-span-5 bg-black rounded-xl overflow-hidden border border-zinc-800 shadow-inner relative flex flex-col justify-center items-center group mx-auto w-full max-w-sm lg:max-w-none" style="aspect-ratio:9/16">
+              <video id="gate-citizen-video" controls playsinline preload="metadata" class="w-full h-full object-contain" poster="acilis.jpg">
+                <source src="vatandas-video.mp4" type="video/mp4">
                 Tarayıcınız video etiketini desteklemiyor.
               </video>
               <div id="citizen-video-fallback" class="hidden absolute inset-0 bg-zinc-950/95 flex flex-col items-center justify-center p-4 text-center space-y-2">
                 <span class="text-3xl">🎬</span>
                 <p class="text-xs text-zinc-200 font-bold">Vatandaş Dilekçe Video Rehberi</p>
-                <p class="text-[11px] text-zinc-400 max-w-xs">Aşağıdaki 5 adımı uygulayarak Cumhurbaşkanlığı'na, TBMM'ye ve milletvekilinize resmi dilekçenizi saniyeler içinde iletebilirsiniz.</p>
+                <p class="text-[11px] text-zinc-400 max-w-xs">Video açılmadıysa aşağıdaki adımları uygulayarak Cumhurbaşkanlığı'na, TBMM'ye ve milletvekilinize resmi dilekçenizi saniyeler içinde iletebilirsiniz.</p>
               </div>
             </div>
 
@@ -358,7 +358,13 @@
                     <p class="text-[11px] text-zinc-400 mt-0.5">Sistem vekilin resmi kurumsal e-postasını, konu başlığını ve resmi metni hazırlar; e-posta uygulamanızdan onaylayıp gönderin.</p>
                   </div>
                 </div>
-
+                <div class="p-2.5 rounded-lg bg-zinc-950 border border-zinc-800/80 flex items-start gap-2.5">
+                  <span class="w-5 h-5 rounded-full bg-red-600 text-white font-bold flex items-center justify-center shrink-0 text-[11px]">4</span>
+                  <div>
+                    <strong class="text-zinc-200">PDF'i Ekleyip Gönderin, Sonra "Gönderdim"e Basın:</strong>
+                    <p class="text-[11px] text-zinc-400 mt-0.5">E-posta uygulamanız hazır mesajla açılır. İndirilen PDF'i ekleyip gönderin, ardından siteye dönüp "Gönderdim" düğmesine basın. Sayaca böyle yansır.</p>
+                  </div>
+                </div>
                 <div class="p-2.5 rounded-lg bg-zinc-950 border border-zinc-800/80 flex items-start gap-2.5">
                   <span class="w-5 h-5 rounded-full bg-red-600 text-white font-bold flex items-center justify-center shrink-0 text-[11px]">5</span>
                   <div>
