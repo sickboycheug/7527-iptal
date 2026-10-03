@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gönderim testi</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+body{font-family:sans-serif;background:#111;color:#eee;padding:16px;max-width:480px;margin:auto}
+button{display:block;width:100%;padding:16px;margin:12px 0;font-size:16px;font-weight:bold;border:0;border-radius:12px;background:#dc2626;color:#fff}
+p{font-size:13px;color:#aaa}#log{white-space:pre-wrap;background:#000;padding:10px;border-radius:8px;font-size:12px}
+</style></head><body>
+<h2>Gönderim testi</h2>
+<p>Her düğmeye sırayla basın, ne olduğunu not edin. Gerçek kişiye gitmez; alıcı test adresidir.</p>
+<button onclick="t1()">1) Paylaş menüsü (PDF ekli)</button>
+<button onclick="t2()">2) Kısa e-posta (mailto)</button>
+<button onclick="t3()">3) Gmail ile aç</button>
+<div id="log"></div>
+<script>
+var TO='test@example.com',SUB='Test dilekçe',BODY='Merhaba, bu bir test mesajıdır.';
+function log(s){document.getElementById('log').textContent+=s+'\n'}
+log('Tarayıcı: '+navigator.userAgent);
+log('share destekli: '+!!navigator.share+' | dosya paylaşımı: '+!!(navigator.canShare));
+function pdf(){var d=new jspdf.jsPDF();d.text('Test dilekce',20,20);return new File([d.output('blob')],'dilekce-test.pdf',{type:'application/pdf'})}
+async function t1(){
+  try{var f=pdf();
+    if(navigator.canShare&&navigator.canShare({files:[f]})){
+      await navigator.share({files:[f],title:SUB,text:BODY});log('1: paylasildi');
+    }else log('1: dosya paylaşımı desteklenmiyor');
+  }catch(e){log('1 hata: '+e.name+' '+e.message)}
+}
+function t2(){location.href='mailto:'+TO+'?subject='+encodeURIComponent(SUB)+'&body='+encodeURIComponent(BODY);log('2: acildi')}
+function t3(){window.open('https://mail.google.com/mail/?view=cm&to='+TO+'&su='+encodeURIComponent(SUB)+'&body='+encodeURIComponent(BODY),'_blank');log('3: acildi')}
+</script></body></html>
