@@ -77,7 +77,7 @@
   }
   /* Gönüllü formu: kapı kapalıyken de erişilebilir olmalı */
   /* Imza tuvallerinde parmakla cizerken sayfa kaymasin */
-  #citizen-canvas, #mp-canvas {
+  #mp-canvas {
     touch-action: none;
   }
   #volunteer-section {
@@ -502,10 +502,10 @@
         </div>
       </div>
 
-      <!-- ADIM 1: Hedef Seçimi -->
-      <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 space-y-4 shadow-xl">
+    <!-- ADIM 1: Hedef Seçimi -->
+      <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 border-l-4 border-l-red-600 space-y-4 shadow-xl">
         <h2 class="text-sm font-bold text-white border-b border-zinc-800 pb-2.5 flex items-center justify-between">
-          <span>1️⃣ KİME GÖNDERECEKSİN?</span>
+          <span class="flex items-center gap-2.5"><span class="w-7 h-7 rounded-full bg-red-600 text-white flex items-center justify-center font-extrabold text-sm shrink-0">1</span> KİME GÖNDERECEKSİN?</span>
           <span class="text-xs text-red-400 font-normal">* Zorunlu</span>
         </h2>
         <div class="grid grid-cols-3 gap-2 sm:gap-3">
@@ -561,10 +561,12 @@
         </div>
       </div>
 
+            <div class="flex flex-col items-center -my-3" aria-hidden="true"><div class="w-0.5 h-4 bg-red-600"></div><div class="text-red-500 text-sm leading-none">▼</div></div>
+
       <!-- ADIM 2: Vatandaş Bilgileri ve İmza Pedi -->
-      <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 space-y-4 shadow-xl">
+      <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 border-l-4 border-l-red-600 space-y-4 shadow-xl">
         <h2 class="text-sm font-bold text-white border-b border-zinc-800 pb-2.5 flex items-center justify-between">
-          <span>2️⃣ BİLGİLERİNİ EKLE</span>
+          <span class="flex items-center gap-2.5"><span class="w-7 h-7 rounded-full bg-red-600 text-white flex items-center justify-center font-extrabold text-sm shrink-0">2</span> BİLGİLERİNİ EKLE</span>
         </h2>
 
         <div class="space-y-3.5 text-xs">
@@ -628,14 +630,14 @@
             <div class="space-y-3.5 mt-3">
               <div>
                 <label class="block text-zinc-300 font-semibold mb-1">
-                  T.C. KİMLİK NUMARASI <span class="text-zinc-500 font-normal">(Resmi dilekçelerde geçerlilik için önerilir)</span>
+                 T.C. KİMLİK NUMARASI
                 </label>
                 <input type="text" id="citizen-tc" maxlength="11" inputmode="numeric" autocomplete="off" oninput="formatTc(this); updatePetitionPreview();" placeholder="11 haneli T.C. Kimlik Numaranız" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 focus:border-red-500 focus:outline-none font-mono">
                 <p id="tc-feedback" class="hidden text-[11px] mt-1 font-semibold"></p>
               </div>
 
               <div>
-                <label class="block text-zinc-300 font-semibold mb-1">AÇIK ADRES <span class="text-zinc-500 font-normal">(isteğe bağlı)</span></label>
+                <label class="block text-zinc-300 font-semibold mb-1">AÇIK ADRES</label>
                 <textarea id="citizen-address" rows="2" oninput="updatePetitionPreview()" placeholder="Tebligat ve dilekçe geçerliliği için adresiniz" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 focus:border-red-500 focus:outline-none"></textarea>
               </div>
             </div>
@@ -657,11 +659,13 @@
     <!-- SAĞ KOLON: Canlı Dilekçe Önizlemesi ve Gönderme Butonları -->
     <section class="lg:col-span-6 space-y-6">
 
+          <div class="lg:hidden -mt-3"><div class="flex flex-col items-center -my-3" aria-hidden="true"><div class="w-0.5 h-4 bg-red-600"></div><div class="text-red-500 text-sm leading-none">▼</div></div></div>
+
       <!-- ADIM 3: Resmi Dilekçe Belgesi -->
-      <div class="bg-zinc-900 p-6 rounded-2xl border-2 border-emerald-700 space-y-4 shadow-2xl sticky top-6">
+      <div class="bg-zinc-900 p-6 rounded-2xl border-2 border-emerald-700 border-l-4 border-l-red-600 space-y-4 shadow-2xl sticky top-6">
         <div class="border-b border-emerald-800/60 pb-2.5 flex justify-between items-center">
-          <h2 class="text-sm font-bold text-white flex items-center gap-2">
-            <span>3️⃣</span> DİLEKÇE ÖNİZLEMESİ VE GÖNDER
+          <h2 class="text-sm font-bold text-white flex items-center gap-2.5">
+            <span class="w-7 h-7 rounded-full bg-red-600 text-white flex items-center justify-center font-extrabold text-sm shrink-0">3</span> DİLEKÇE ÖNİZLEMESİ VE GÖNDER
           </h2>
           <span id="preview-target-badge" class="px-2.5 py-1 rounded bg-emerald-950 border border-emerald-600 text-emerald-300 text-[10px] font-bold">
             Hedef Seçilmedi
@@ -1384,7 +1388,6 @@
       <p style="margin:0;"><strong>Tarih:</strong> <span id="print-date"></span></p>
     </div>
     <div style="text-align:center; min-width:45mm;">
-      <img id="print-sig-img" src="" alt="" style="display:none; max-height:22mm; max-width:45mm;">
       <div style="border-top:1px solid #000; margin-top:2mm; padding-top:1.5mm; font-weight:bold;">İmza</div>
     </div>
   </div>
@@ -2431,9 +2434,7 @@ var MP_VOTES = {1:"K",2:"K",3:"R",4:"K",5:"Y",6:"R",7:"R",8:"K",9:"K",10:"R",11:
 var MP_DATABASE = [];
 var selectedTarget = null;
 var selectedMP = null;
-var citizenSignaturePad = null;
 var mpSignaturePad = null;
-var currentSigDataUrl = '';
 var currentMpSigDataUrl = '';
 
 // Canlı Sayaçlar (Başlangıçta Sıfır)
@@ -3037,11 +3038,11 @@ function updateTcFeedback() {
   if (validateTc(tc)) {
     input.className = base + ' border-emerald-600 focus:border-emerald-500';
     note.className = 'text-[11px] mt-1 font-semibold text-emerald-400';
-    note.textContent = '✓ Geçerli T.C. kimlik numarası';
+    note.textContent = '✓ Biçim uygun';
   } else {
     input.className = base + ' border-red-600 focus:border-red-500';
     note.className = 'text-[11px] mt-1 font-semibold text-red-400';
-    note.textContent = '✕ Geçersiz T.C. kimlik numarası. Lütfen kontrol edin.';
+    note.textContent = '✕ Biçim uygun değil. Lütfen kontrol edin.';
   }
 }
 
@@ -3161,14 +3162,6 @@ function setupCanvas(canvasId, onSave) {
     },
     isEmpty: function() { return isEmpty; }
   };
-}
-
-function clearCitizenPad() {
-  if (citizenSignaturePad) citizenSignaturePad.clear();
-  currentSigDataUrl = '';
-  document.getElementById('doc-sig-container').innerHTML = '<span class="text-zinc-400 italic text-[10px]">[İmza Bekleniyor]</span>';
-  var pImg = document.getElementById('print-sig-img');
-  if (pImg) pImg.style.display = 'none';
 }
 
 function clearMpPad() {
@@ -3296,12 +3289,6 @@ function fillPrintPetition(number) {
   set('print-contact', (document.getElementById('citizen-contact').value || '').trim());
   set('print-date', new Date().toLocaleDateString('tr-TR'));
   set('print-number', number || '-');
-
-  var sig = document.getElementById('print-sig-img');
-  if (sig) {
-    if (currentSigDataUrl) { sig.src = currentSigDataUrl; sig.style.display = 'block'; }
-    else { sig.removeAttribute('src'); sig.style.display = 'none'; }
-  }
 }
 
 // Yalnizca #print-petition bolumunu A4 PDF'e cevirir
@@ -3329,8 +3316,6 @@ async function sendPetitionViaEmail() {
 
   var btn = document.getElementById('petition-send-btn');
   var name = (document.getElementById('citizen-name').value || '').trim();
-  var tcInput = document.getElementById('citizen-tc');
-  var tc = tcInput ? tcInput.value.trim() : '';
   var consent = document.getElementById('petition-consent');
 
   if (name.length < 3) {
@@ -5326,23 +5311,7 @@ function switchVideoTab(tab) {
       });
 
         guvenli('imza tuvalleri', function() {
-        citizenSignaturePad = setupCanvas('citizen-canvas', function(data) {
-          currentSigDataUrl = data;
-          var sigContainer = document.getElementById('doc-sig-container');
-          var printSig = document.getElementById('print-sig-img');
-
-          if (data) {
-            sigContainer.innerHTML = '<img src="' + data + '" class="max-h-12 border border-zinc-200">';
-            if (printSig) {
-              printSig.src = data;
-              printSig.style.display = 'block';
-            }
-          } else {
-            sigContainer.innerHTML = '<span class="text-zinc-400 italic text-[10px]">[İmza Bekleniyor]</span>';
-            if (printSig) printSig.style.display = 'none';
-          }
-        });
-
+        
         mpSignaturePad = setupCanvas('mp-canvas', function(data) {
           currentMpSigDataUrl = data;
           updateMpDocument();
