@@ -160,7 +160,7 @@
         </p>
         <ul class="text-sm text-zinc-300 leading-relaxed list-disc list-inside space-y-1">
           <li><strong class="text-white">Zorunlu alanlar:</strong> Ad-soyad, il/ilçe (yurt dışı için ülke/şehir) ile telefon numarası veya e-posta adresi bilgileri, şifrelenmek suretiyle kayıt altına alınır.</li>
-          <li><strong class="text-white">İsteğe bağlı alanlar:</strong> T.C. kimlik numarası, açık adres ve ıslak imza bilgilerinin paylaşılması tamamen isteğe bağlıdır. Bu bilgiler sunucularımıza iletilmez, kayıt altına alınmaz ve yalnızca kullanıcı tarafından oluşturulan dilekçede yer alır.</li>
+          <li><strong class="text-white">Resmi dilekçe (elle gönderim):</strong> Dilekçeyi indirip kendiniz doldurup imzalayarak posta yoluyla göndermek isteyenler T.C. kimlik numarası ve açık adres girebilir. Bu bilgiler sunucularımıza iletilmez ve kayıt altına alınmaz; yalnızca sizin PDF dilekçenizde yer alır.</li>
         </ul>
       </div>
 
@@ -290,23 +290,15 @@
                   <span class="w-5 h-5 rounded-full bg-red-600 text-white font-bold flex items-center justify-center shrink-0 text-[11px]">2</span>
                   <div>
                     <strong class="text-zinc-200">Kimlik ve Şehir Bilgilerini Doldurun:</strong>
-                    <p class="text-[11px] text-zinc-400 mt-0.5">Ad-Soyad, İl-İlçe (Ülke-Şehir) ve Telefon veya E-posta zorunludur. T.C. No, açık adres ve ıslak imza isteğe bağlıdır ve hiçbir şekilde kaydedilmez; yalnızca sizin oluşturduğunuz dilekçe üzerinde yer alır. <button type="button" onclick="openKvkkModal()" class="text-emerald-400 hover:text-emerald-300 underline cursor-pointer">Aydınlatma Metni</button></p>
+                    <p class="text-[11px] text-zinc-400 mt-0.5">Ad-Soyad, İl-İlçe (Ülke-Şehir) ve Telefon veya E-posta zorunludur. Posta ile elle göndermek isteyenler T.C. No ve açık adres alanını da doldurabilir; bu bilgiler kaydedilmez, yalnızca kendi PDF dilekçenizde yer alır. <button type="button" onclick="openKvkkModal()" class="text-emerald-400 hover:text-emerald-300 underline cursor-pointer">Aydınlatma Metni</button></p>
                   </div>
                 </div>
 
                 <div class="p-2.5 rounded-lg bg-zinc-950 border border-zinc-800/80 flex items-start gap-2.5">
                   <span class="w-5 h-5 rounded-full bg-red-600 text-white font-bold flex items-center justify-center shrink-0 text-[11px]">3</span>
                   <div>
-                    <strong class="text-zinc-200">Ekrana Islak İmzanızı Atın:</strong>
-                    <p class="text-[11px] text-zinc-400 mt-0.5">Dokunmatik ekranda parmağınızla veya farenizle imza tuvaline resmi imzanızı çizin (dokunmatik kayma korumalı).</p>
-                  </div>
-                </div>
-
-                <div class="p-2.5 rounded-lg bg-zinc-950 border border-zinc-800/80 flex items-start gap-2.5">
-                  <span class="w-5 h-5 rounded-full bg-red-600 text-white font-bold flex items-center justify-center shrink-0 text-[11px]">4</span>
-                  <div>
                     <strong class="text-zinc-200">Tek Tıkla E-Posta İle Gönderin:</strong>
-                    <p class="text-[11px] text-zinc-400 mt-0.5">Sistem vekilin resmi kurumsal e-postasını, konu başlığını ve imzalı resmi metni hazırlar; e-posta uygulamanızdan onaylayıp gönderin.</p>
+                    <p class="text-[11px] text-zinc-400 mt-0.5">Sistem vekilin resmi kurumsal e-postasını, konu başlığını ve resmi metni hazırlar; e-posta uygulamanızdan onaylayıp gönderin.</p>
                   </div>
                 </div>
 
@@ -572,8 +564,7 @@
       <!-- ADIM 2: Vatandaş Bilgileri ve İmza Pedi -->
       <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 space-y-4 shadow-xl">
         <h2 class="text-sm font-bold text-white border-b border-zinc-800 pb-2.5 flex items-center justify-between">
-          <span>2️⃣ BİLGİLERİNİ VE İMZANI EKLE</span>
-          <span class="text-[11px] text-zinc-400 font-normal">Resmi Dilekçe İçin</span>
+          <span>2️⃣ BİLGİLERİNİ EKLE</span>
         </h2>
 
         <div class="space-y-3.5 text-xs">
@@ -582,15 +573,8 @@
             <input type="text" id="citizen-name" oninput="updatePetitionPreview()" placeholder="Adınız Soyadınız" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 focus:border-red-500 focus:outline-none">
           </div>
 
-          <div>
-            <label class="block text-zinc-300 font-semibold mb-1">
-              T.C. KİMLİK NUMARASI <span class="text-zinc-500 font-normal">(Resmi dilekçelerde geçerlilik için önerilir)</span>
-            </label>
-            <input type="text" id="citizen-tc" maxlength="11" inputmode="numeric" autocomplete="off" oninput="formatTc(this); updatePetitionPreview();" placeholder="11 haneli T.C. Kimlik Numaranız" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 focus:border-red-500 focus:outline-none font-mono">
-            <p id="tc-feedback" class="hidden text-[11px] mt-1 font-semibold"></p>
-          </div>
-
-                    <div class="flex gap-2">
+          
+          <div class="flex gap-2">
             <button type="button" id="plc-tr" onclick="setAbroad(false)" class="flex-1 py-2 rounded-lg border-2 text-xs font-bold transition bg-red-600 border-red-600 text-white">Türkiye</button>
             <button type="button" id="plc-ab" onclick="setAbroad(true)" class="flex-1 py-2 rounded-lg border-2 text-xs font-bold transition bg-zinc-950 border-zinc-700 text-zinc-300">Yurtdışı</button>
           </div>
@@ -625,39 +609,46 @@
                 <input type="text" id="abroad-city-other" oninput="updatePetitionPreview()" placeholder="Şehir adını yazın" class="hidden mt-2 w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 focus:border-red-500 focus:outline-none">
               </div>
           </div>
-          <div>
-            <label class="block text-zinc-300 font-semibold mb-1">AÇIK ADRES <span class="text-zinc-500 font-normal">(isteğe bağlı)</span></label>
-            <textarea id="citizen-address" rows="2" oninput="updatePetitionPreview()" placeholder="Tebligat ve dilekçe geçerliliği için adresiniz" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 focus:border-red-500 focus:outline-none"></textarea>
-          </div>
-
+        
           <div>
             <label class="block text-zinc-300 font-semibold mb-1">TELEFON VEYA E-POSTA *</label>
             <input type="text" id="citizen-contact" inputmode="text" autocomplete="off" oninput="updateContactFeedback()" placeholder="05XX XXX XX XX veya ad@ornek.com" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 focus:border-red-500 focus:outline-none">
             <p id="contact-feedback" class="hidden text-[11px] mt-1 font-semibold"></p>
           </div>
-
-          <!-- Islak İmza Tuvali -->
-          <div class="pt-2">
-            <div class="flex justify-between items-center mb-1.5">
-                <label class="block font-bold text-red-400">ISLAK İMZANIZI ATIN <span class="text-zinc-500 font-normal">(isteğe bağlı)</span></label>
-              <button type="button" onclick="clearCitizenPad()" class="text-xs text-zinc-400 hover:text-white underline cursor-pointer">
-                İmzayı Temizle
-              </button>
-            </div>
-            <div class="border-2 border-zinc-700 bg-white rounded-xl overflow-hidden touch-none relative shadow-inner">
-              <canvas id="citizen-canvas" class="w-full h-28 cursor-crosshair block bg-white"></canvas>
-            </div>
-            <p class="text-[10px] text-zinc-400 mt-1">
-              📱 Mobilde parmağınızla, masaüstünde farenizle imzalayabilirsiniz.
-            </p>
-
-            <label class="flex items-start gap-2 text-[11px] text-zinc-400 leading-relaxed cursor-pointer bg-zinc-950/60 border border-zinc-800 rounded-xl p-3 mt-3">
-              <input type="checkbox" id="petition-consent" class="mt-0.5 shrink-0 accent-emerald-600">
+          
+          <details class="group border-t border-zinc-800 pt-3 mt-1">
+            <summary class="cursor-pointer list-none flex items-start justify-between gap-2">
               <span>
-              <strong class="text-zinc-200">T.C. kimlik numarası, açık adres ve ıslak imza bilgilerinin paylaşılması isteğe bağlıdır; bu veriler sunucularımıza aktarılmaz, kayıt altına alınmaz ve saklanmaz, yalnızca tarafımdan indirilen PDF dilekçede ve gönderilen e-postada yer alır.</strong> Ad-soyad, il/ilçe (veya ülke/şehir) ile iletişim bilgilerimin, kampanya kapsamında ve yalnızca kampanya amacıyla, şifrelenmek suretiyle kaydedilmesini kabul ediyorum.
-                <button type="button" onclick="openKvkkModal()" class="text-emerald-400 hover:text-emerald-300 underline font-semibold cursor-pointer">Aydınlatma Metni</button>
+                <span class="block text-xs font-bold text-zinc-200 uppercase tracking-wide">Resmi dilekçe: posta ile elle gönderim</span>
+                <span class="block text-[11px] text-zinc-400 mt-0.5 font-normal">Dilekçeyi indirip kendiniz doldurup imzalayarak posta yoluyla göndermek isteyenler içindir. T.C. no ve açık adres yalnızca sizin PDF dilekçenizde yer alır.</span>
               </span>
-            </label>
+              <span class="text-zinc-300 text-xs font-bold shrink-0 mt-0.5 group-open:hidden">Aç ▾</span>
+              <span class="text-zinc-300 text-xs font-bold shrink-0 mt-0.5 hidden group-open:inline">Kapat ▴</span>
+            </summary>
+            <div class="space-y-3.5 mt-3">
+              <div>
+                <label class="block text-zinc-300 font-semibold mb-1">
+                  T.C. KİMLİK NUMARASI <span class="text-zinc-500 font-normal">(Resmi dilekçelerde geçerlilik için önerilir)</span>
+                </label>
+                <input type="text" id="citizen-tc" maxlength="11" inputmode="numeric" autocomplete="off" oninput="formatTc(this); updatePetitionPreview();" placeholder="11 haneli T.C. Kimlik Numaranız" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 focus:border-red-500 focus:outline-none font-mono">
+                <p id="tc-feedback" class="hidden text-[11px] mt-1 font-semibold"></p>
+              </div>
+
+              <div>
+                <label class="block text-zinc-300 font-semibold mb-1">AÇIK ADRES <span class="text-zinc-500 font-normal">(isteğe bağlı)</span></label>
+                <textarea id="citizen-address" rows="2" oninput="updatePetitionPreview()" placeholder="Tebligat ve dilekçe geçerliliği için adresiniz" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 focus:border-red-500 focus:outline-none"></textarea>
+              </div>
+            </div>
+          </details>
+        
+          <div class="pt-2">     
+            <label class="flex items-start gap-2 text-[11px] text-zinc-400 leading-relaxed cursor-pointer bg-zinc-950/60 border border-zinc-800 rounded-xl p-3 mt-3">
+            <input type="checkbox" id="petition-consent" class="mt-0.5 shrink-0 accent-emerald-600">
+            <span>
+              Ad-soyad, il/ilçe (veya ülke/şehir) ile iletişim bilgilerimin, kampanya kapsamında ve yalnızca kampanya amacıyla kaydedilmesini kabul ediyorum.
+              <button type="button" onclick="openKvkkModal()" class="text-emerald-400 hover:text-emerald-300 underline font-semibold cursor-pointer">Aydınlatma Metni</button>
+            </span>
+          </label>
           </div>
         </div>
       </div>
@@ -690,14 +681,12 @@
           <div class="pt-4 border-t border-zinc-300 flex justify-between items-end text-[11px]">
             <div>
               <p><strong>Dilekçe Sahibi:</strong> <span id="doc-val-name">[Adınız Soyadınız]</span></p>
-              <p><strong>T.C. Kimlik No:</strong> <span id="doc-val-tc">[T.C. Kimlik No]</span></p>
-              <p><strong>Adres:</strong> <span id="doc-val-address">[Açık Adresiniz]</span></p>
+              <p><strong>T.C. Kimlik No:</strong> <span id="doc-val-tc">……………</span></p>
+              <p><strong>Adres:</strong> <span id="doc-val-address">……………</span></p>
               <p><strong>Tarih:</strong> <span id="doc-val-date">24.09.2026</span></p>
             </div>
             <div class="text-center">
-              <div id="doc-sig-container" class="min-w-[120px] max-h-16 flex items-center justify-center">
-                <span class="text-zinc-400 italic text-[10px]">[İmza Bekleniyor]</span>
-              </div>
+              <div id="doc-sig-container" class="min-w-[120px] h-10 flex items-center justify-center"></div>
               <p class="text-[10px] text-zinc-600 font-bold mt-1">İmza</p>
             </div>
           </div>
@@ -832,7 +821,7 @@
           </div>
         </div>
 
-        <label class="block text-zinc-300 font-semibold mb-1">VEKİL ISLAK İMZASI *</label>
+        <label class="block text-zinc-300 font-semibold mb-1">VEKİL EKRAN İMZASI *</label>
         <div class="border-2 border-zinc-700 bg-white rounded-xl overflow-hidden touch-none relative shadow-inner">
           <canvas id="mp-canvas" class="w-full h-32 cursor-crosshair block bg-white"></canvas>
         </div>
@@ -1037,7 +1026,7 @@
       <div>
         <h4 class="font-bold text-emerald-400 uppercase text-[11px] tracking-wider mb-1">2. Dilekçe Formu Kapsamında İşlenen Kişisel Veriler</h4>
         <p>Dilekçe formu aracılığıyla <strong class="text-white">ad-soyad, il/ilçe (yurt dışından katılım hâlinde ülke/şehir) ile telefon numarası veya e-posta adresi</strong> bilgileriniz, dilekçenizin kampanya sayımına dâhil edilmesi amacıyla şifrelenmek suretiyle kaydedilmektedir. Bu bilgilere ek olarak dilekçenin iletildiği makam ve gönderim tarihi de kaydedilmektedir.</p>
-        <p class="mt-1.5"><strong class="text-white">T.C. kimlik numarası, açık adres ve ıslak imza</strong> alanları isteğe bağlıdır. Bu bilgiler yalnızca kullanıcının tarayıcısında işlenmekte olup <strong class="text-white">sunucularımıza iletilmemekte, kaydedilmemekte ve saklanmamaktadır.</strong> Söz konusu bilgiler yalnızca kullanıcı tarafından oluşturulan dilekçe metninde yer almaktadır.</p>
+        <p class="mt-1.5">Posta ile elle gönderim için sunulan <strong class="text-white">T.C. kimlik numarası ve açık adres</strong> alanları yalnızca kullanıcının tarayıcısında işlenmekte olup <strong class="text-white">sunucularımıza iletilmemekte, kaydedilmemekte ve saklanmamaktadır.</strong> Bu bilgiler yalnızca kullanıcının kendi oluşturduğu PDF dilekçede yer almaktadır.</p>
         <p class="mt-1.5"><strong class="text-white">İşleme amacı ve hukuki sebep:</strong> Kişisel verileriniz; kampanyaya verilen desteğin sayılması ve doğrulanması ile gerektiğinde tarafınızla iletişim kurulması amacıyla, 6698 sayılı Kanun'un 5/1. maddesi uyarınca dilekçe ekranındaki onay kutusunun işaretlenmesi suretiyle verdiğiniz açık rızanıza dayanılarak işlenmektedir.</p>
         <p class="mt-1.5"><strong class="text-white">Saklama süresi ve aktarım:</strong> Kaydedilen veriler kampanya sona erene kadar saklanır, kampanyanın sona ermesiyle birlikte silinir. Veriler üçüncü kişilere aktarılmaz, satılmaz ve reklam amacıyla kullanılmaz.</p>
         <p class="mt-1.5 text-zinc-400">Dilekçenin kendi e-posta hesabınız üzerinden veya elden ilgili kuruma iletilmesi hâlinde, dilekçede yer alan bilgiler alıcı kurumun (Cumhurbaşkanlığı, TBMM veya milletvekili) kendi mevzuatı çerçevesinde ve kendi sorumluluğunda işlenir.</p>
@@ -1073,7 +1062,7 @@
           <li><span class="text-zinc-300">Okunamaz kayıt:</span> kayıtlar sunucuda şifreli tutulur; sunucuya ya da veritabanına erişen biri bile bilgilerinizi okuyamaz.</li>
           <li><span class="text-zinc-300">Yetkisiz erişime karşı koruma:</span> kayıtlara erişim yalnızca yetkili kişiyle sınırlıdır.</li>
           <li><span class="text-zinc-300">Güvenli bağlantı:</span> tarayıcınızla site arasındaki tüm iletişim HTTPS ile korunur.</li>
-          <li><span class="text-zinc-300">Az veri:</span> T.C. kimlik numarası, açık adres ve ıslak imza hiçbir zaman sunucuya gönderilmez.</li>
+          <li><span class="text-zinc-300">Az veri:</span> T.C. kimlik numarası ve açık adres hiçbir zaman sunucuya gönderilmez.</li>
         </ul>
         <p class="mt-1.5 text-zinc-400">Hiçbir sistem için mutlak güvenlik garanti edilemez; ancak verileriniz yukarıdaki önlemlerle korunur. Bir güvenlik sorunu fark ederseniz
           <a href="mailto:iletisim@7527iptal.org" class="text-emerald-400 hover:text-emerald-300 font-mono font-bold">iletisim@7527iptal.org</a>
@@ -2897,17 +2886,14 @@ function selectTarget(target) {
 }
 
 // Dilekçe Metni Önizlemesini Güncelle
-function updatePetitionPreview() {
+  function updatePetitionPreview() {
   var name = document.getElementById('citizen-name').value || '[Adınız Soyadınız]';
-  var tc = document.getElementById('citizen-tc').value || '[T.C. Kimlik No]';
+  var tc = (document.getElementById('citizen-tc').value || '').trim() || '……………';
   var city = getPlace().city;
   var district = getPlace().district;
-  var address = document.getElementById('citizen-address').value || '[Açık Adresiniz]';
+  var address = (document.getElementById('citizen-address').value || '').trim();
 
-  var fullAddress = address;
-  if (district) fullAddress += ' - ' + district;
-  if (city) fullAddress += ' / ' + city;
-  if (getPlace().country) fullAddress += ' / ' + getPlace().country;
+  var fullAddress = [address, district, city, getPlace().country].filter(Boolean).join(' / ') || '……………';
   document.getElementById('doc-val-name').textContent = name;
   document.getElementById('doc-val-tc').textContent = tc;
   document.getElementById('doc-val-address').textContent = fullAddress;
@@ -3207,13 +3193,11 @@ function generateMailtoUrl() {
   var tpl = currentTemplate();
 
   var name     = (document.getElementById('citizen-name').value || '').trim();
-  var tc       = (document.getElementById('citizen-tc').value || '').trim();
   var city     = getPlace().city;
   var district = getPlace().district;
-  var address  = (document.getElementById('citizen-address').value || '').trim();
   var contact  = (document.getElementById('citizen-contact').value || '').trim();
 
-  var yer = [address, district, city, getPlace().country].filter(Boolean).join(' / ');
+  var yer = [district, city, getPlace().country].filter(Boolean).join(' / ');
   var tarih = new Date().toLocaleDateString('tr-TR');
 
   var subject = "7527 Sayılı Kanun'un İptali ve 5199'a Dönülmesi Talebimdir" +
@@ -3230,14 +3214,13 @@ function generateMailtoUrl() {
     'Dilekçe Sahibi: ' + name
   ];
 
-  if (tc) satirlar.push('T.C. Kimlik No: ' + tc);
   if (yer) satirlar.push('Adres: ' + yer);
   if (contact) satirlar.push('İletişim: ' + contact);
   satirlar.push('Tarih: ' + tarih);
   if (lastPetitionNumber) satirlar.push('Dilekçe No: ' + lastPetitionNumber);
 
   satirlar.push('');
-  satirlar.push('Islak imzalı dilekçem ektedir.');
+  satirlar.push('Dilekçemin PDF hali ektedir.');
 
   var body = satirlar.join('\n');
 
@@ -3308,7 +3291,7 @@ function fillPrintPetition(number) {
   var yer = [address, district, city, getPlace().country].filter(Boolean).join(' / ');
 
   set('print-name', (document.getElementById('citizen-name').value || '').trim());
-  set('print-tc', (document.getElementById('citizen-tc').value || '').trim());
+  set('print-tc', (document.getElementById('citizen-tc').value || '').trim() || '……………………');
   set('print-address', yer);
   set('print-contact', (document.getElementById('citizen-contact').value || '').trim());
   set('print-date', new Date().toLocaleDateString('tr-TR'));
@@ -3362,14 +3345,6 @@ async function sendPetitionViaEmail() {
       ? 'Lütfen telefon numaranızı veya e-posta adresinizi girin.'
       : 'İletişim bilginiz geçerli görünmüyor. Telefon 10 haneli olmalı (örn. 0532 123 45 67) veya geçerli bir e-posta adresi girin.');
     if (contactInput) { contactInput.focus(); contactInput.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
-    return;
-  }
-
-  if (tc.length > 0 && !validateTc(tc)) {
-    alert('Girdiğiniz T.C. kimlik numarası geçerli değil.\n\n' +
-          'Resmi dilekçenin geçerli olması için doğru olması gerekir. ' +
-          'Lütfen kontrol edin veya alanı boş bırakın.');
-    if (tcInput) { tcInput.focus(); tcInput.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
     return;
   }
   var abrChk = getAbroad();
