@@ -1011,7 +1011,15 @@ function renderApps() {
       row.appendChild(sendButtons(a, code));
     } else if (m) {
       row.appendChild(h('div', 'text-[11px] text-emerald-400 font-semibold', '✓ Kod verildi · takma ad: ' + m.nickname + (m.active ? '' : ' (pasif)')));
-    } else if (a.ok) {
+      if (m.application_id != null) {
+        row.appendChild(actBtn('Yeni kod üret ve gönder', 'bg-amber-600 hover:bg-amber-500 text-white', async function () {
+          try {
+            codesByApp[a.id] = await callRpc('gv_admin_reissue_code', { p_pin: adminPin, p_application_id: a.id });
+            $('admin-msg').textContent = '';
+          } catch (e) { $('admin-msg').textContent = errText(e); }
+          adminReload();
+        }));
+      }    } else if (a.ok) {
       var line = h('div', 'flex flex-col sm:flex-row gap-2');
       var inp = h('input', 'inp'); inp.type = 'text'; inp.maxLength = 30; inp.value = suggestNick(a.name);
       inp.setAttribute('aria-label', 'Takma ad');
