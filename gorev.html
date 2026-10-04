@@ -177,6 +177,19 @@
       Süresi dolup yapılmayan görev serbest kalır; üç kez böyle olursa izleyici moduna geçilir (iletişim listesinde kalırsın, yeni görev alamazsın).
     </p>
 
+    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-3">
+      <div class="flex items-center justify-between gap-2">
+        <h3 class="text-sm font-bold text-white">💬 Kampanya Ofisi</h3>
+        <span class="text-[11px] text-zinc-500">Mesajlar 24 saat sonra silinir</span>
+      </div>
+      <div id="chat-list" class="space-y-2 max-h-72 overflow-y-auto text-sm"></div>
+      <div class="flex gap-2">
+        <input type="text" id="chat-input" maxlength="300" placeholder="Etkinlik, duyuru veya çalışmanı paylaş…" class="inp" autocomplete="off" onkeydown="if(event.key==='Enter')sendChat()">
+        <button type="button" onclick="sendChat()" class="btn bg-emerald-600 hover:bg-emerald-500 text-white whitespace-nowrap">Gönder</button>
+      </div>
+      <p id="chat-msg" class="text-xs text-red-400 min-h-[16px]"></p>
+    </div>
+
     <p id="board-msg" class="text-xs text-red-400 min-h-[16px]"></p>
     <div id="task-list" class="space-y-3"></div>
   </div>
@@ -766,6 +779,52 @@ async function refreshBoard() {
 
 var AREAS = ['Afiş ve broşür dağıtımı','Sosyal medya paylaşımı','Milletvekili iletişimi','Saha ve etkinlik organizasyonu',
   'Basın ve medya iletişimi','Hukuki destek','Tasarım ve video','Yazılım ve teknik destek','Çeviri','Bağış ve kaynak yaratma','Diğer'];
+
+var chatCount = -1, chatBusy = false;
+async function refreshChat() {
+  if (!memberCode || chatBusy) return;
+  try {
+    var rows = await callRpc('gv_chat_list', { p_code: memberCode });
+    var box = $('chat-list');
+    var atEnd = box.scrollTop + box.clientHeight >= box.scrollHeight - 30;
+    box.textContent = '';
+    if (!rows.length) box.appendChild(h('div', 'text-[12px] text-zinc-500', 'Henüz mesaj yok. İlk mesajı sen yaz.'));
+    rows.forEach(function (r) {
+      var row = h('div', 'rounded-lg px-3 py-2 ' + (r.mine ? 'bg-emerald-950/60 border border-emerald-800' : 'bg-zinc-950/60 border border-zinc-800'));
+      var t = new Date(r.at);
+      row.appendChild(h('div', 'text-[11px] text-zinc-400', r.nick + ' · ' + t.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })));
+      row.appendChild(h('div', 'text-zinc-100 whitespace-pre-line break-words', r.body));
+      box.appendChild(row);
+    });
+    if (atEnd || rows.length !== chatCount) box.scrollTop = box.scrollHeight;
+    chatCount = rows.length;
+  } catch (e) {}
+}
+
+async function sendChat() {
+  var inp = $('chat-input'), msg = $('chat-msg');
+  var text = (inp.value || '').trim();
+  if (!text || chatBusy || !memberCode) return;
+  chatBusy = true;
+  try {
+    await callRpc('gv_chat_send', { p_code: memberCode, p_body: text });
+    inp.value = ''; msg.textContent = '';
+  } catch (e) {
+    var m = (e && e.message) || '';
+    if (m.indexOf('blocked_word') !== -1) msg.textContent = 'Mesajın uygunsuz bir ifade içeriyor, gönderilmedi.';
+    else if (m.indexOf('blocked_content') !== -1) msg.textContent = 'Bağlantı, e-posta ve @ kullanılamaz.';
+    else if (m.indexOf('invalid_message') !== -1) msg.textContent = 'Mesaj 1-300 karakter olmalı.';
+    else if (m.indexOf('rate_limited') !== -1) msg.textContent = 'Çok hızlı yazıyorsun, birkaç saniye bekle.';
+    else if (m.indexOf('unauthorized') !== -1) msg.textContent = 'Kodun artık geçerli değil.';
+    else msg.textContent = errText(e);
+  }
+  chatBusy = false;
+  refreshChat();
+}
+
+setInterval(function () {
+  if (memberCode && document.visibilityState === 'visible' && !$('view-board').classList.contains('hidden')) refreshChat();
+}, 5000);
 
 function fmtLeft(iso) {
   if (!iso) return '';
