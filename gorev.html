@@ -182,7 +182,7 @@
         <h3 class="text-sm font-bold text-white">💬 Kampanya Ofisi</h3>
         <span class="text-[11px] text-zinc-500">Mesajlar 24 saat sonra silinir</span>
       </div>
-      <div id="chat-list" class="space-y-2 max-h-72 overflow-y-auto text-sm"></div>
+      <div id="chat-list" class="space-y-2 h-80 overflow-y-auto overscroll-contain pr-1 text-sm"></div>
       <div class="flex gap-2">
         <input type="text" id="chat-input" maxlength="300" placeholder="Etkinlik, duyuru veya çalışmanı paylaş…" class="inp" autocomplete="off" onkeydown="if(event.key==='Enter')sendChat()">
         <button type="button" onclick="sendChat()" class="btn bg-emerald-600 hover:bg-emerald-500 text-white whitespace-nowrap">Gönder</button>
