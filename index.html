@@ -2921,8 +2921,10 @@ function filterMps() {
 
   var filtered = MP_DATABASE.filter(function(m) {
     if (sent.indexOf(m.id) !== -1) return false;
-    var hay = ' ' + mpNorm(m.name) + ' ' + mpNorm(m.city) + ' ' + mpNorm(m.party);
-    var matchSearch = tokens.every(function(t) { return hay.indexOf(' ' + t) !== -1; });
+    if (!window._mpPW) { window._mpPW = {}; MP_DATABASE.forEach(function (x) { mpNorm(x.party).split(/\s+/).forEach(function (w) { if (w) window._mpPW[w] = 1; }); }); }
+    var nameCity = mpNorm(m.name) + ' ' + mpNorm(m.city);
+    var partyTxt = ' ' + mpNorm(m.party) + ' ';
+    var matchSearch = tokens.every(function (t) { return window._mpPW[t] ? partyTxt.indexOf(' ' + t + ' ') !== -1 : nameCity.indexOf(t) !== -1; });
     var matchParty = party === 'TÜMÜ' || m.party === party;
     var matchCity = city === 'ALL' || m.city === city;
     return matchSearch && matchParty && matchCity;
