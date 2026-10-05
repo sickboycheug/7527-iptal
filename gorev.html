@@ -664,7 +664,9 @@ async function submitVolunteerForm() {
   var consent = $('vol-consent');
   var place = getVolPlace();
 
-  if (name.length < 2 || contact.length < 5) { alert('Lütfen adınızı ve geçerli bir iletişim bilginizi girin.'); return; }
+  if (name.split(/\s+/).filter(function (p) { return p.length >= 2; }).length < 2) { alert('Lütfen adınızı ve soyadınızı birlikte yazın.'); $('vol-name').focus(); return; }
+  var ckv = contactKind(contact);
+  if (ckv.type !== 'phone' && ckv.type !== 'email') { alert('Lütfen geçerli bir telefon numarası veya e-posta adresi yazın.'); $('vol-contact').focus(); return; }
   if (nick.length < 2) { alert('Lütfen panoda görünecek bir takma ad yazın (en az 2 karakter).'); $('vol-nick').focus(); return; }
   if (!place) { alert($('vol-abroad').checked ? 'Lütfen ülke ve şehrinizi girin.' : 'Lütfen il ve ilçenizi seçin.'); return; }
   if (!consent.checked) { alert('Kaydınızı oluşturabilmemiz için verilerinizin işlenmesini onaylamanız gerekir.'); consent.focus(); return; }
