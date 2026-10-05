@@ -781,6 +781,26 @@ async function refreshBoard() {
 var AREAS = ['Afiş ve broşür dağıtımı','Sosyal medya paylaşımı','Milletvekili iletişimi','Saha ve etkinlik organizasyonu',
   'Basın ve medya iletişimi','Hukuki destek','Tasarım ve video','Yazılım ve teknik destek','Çeviri','Bağış ve kaynak yaratma','Diğer'];
 
+var presCh = null;
+function setOnline(n) {
+  var el = $('online-count');
+  if (el) el.textContent = n ? '🟢 ' + n + ' kişi çevrimiçi' : '';
+}
+function presenceTick() {
+  var inBoard = !!memberCode && !$('view-board').classList.contains('hidden');
+  if (inBoard && !presCh && supabaseClient) {
+    try {
+      presCh = supabaseClient.channel('online-panel', { config: { presence: { key: 'v' + Math.random().toString(36).slice(2, 10) } } });
+      presCh.on('presence', { event: 'sync' }, function () { setOnline(Object.keys(presCh.presenceState()).length); })
+        .subscribe(function (status) { if (status === 'SUBSCRIBED') presCh.track({ at: Date.now() }); });
+    } catch (e) { presCh = null; }
+  } else if (!inBoard && presCh) {
+    try { supabaseClient.removeChannel(presCh); } catch (e) {}
+    presCh = null; setOnline(0);
+  }
+}
+setInterval(presenceTick, 2000);
+
 var chatCount = -1, chatBusy = false;
 async function refreshChat() {
   if (!memberCode || chatBusy) return;
