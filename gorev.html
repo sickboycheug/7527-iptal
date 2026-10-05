@@ -192,7 +192,75 @@
     </div>
 
     <p id="board-msg" class="text-xs text-red-400 min-h-[16px]"></p>
-    <div id="task-list" class="space-y-3"></div>
+    <div id="mp-rank-card" class="bg-zinc-900 border border-zinc-700 rounded-2xl p-4 space-y-3">
+  <div class="flex items-center justify-between gap-2">
+    <h3 class="font-impact text-lg text-white uppercase tracking-wide">🎯 En Çok Dilekçe Alan Vekiller</h3>
+    <button type="button" id="mp-rank-toggle" class="text-xs text-zinc-400 underline cursor-pointer">Tümünü göster</button>
+  </div>
+  <p class="text-[11px] text-zinc-500 leading-relaxed">Baskı stratejisi için: dilekçe sayısı yüksek vekiller zaten baskı altında. Hedef seçerken bu listeye bak. Sayı ne kadar düşükse o vekile baskı o kadar az demektir.</p>
+  <div id="mp-rank-list" class="space-y-1 text-xs text-zinc-300">Yükleniyor...</div>
+</div>
+<script>
+(function () {
+  var all = [], showAll = false;
+  function parseMps(txt) {
+    var m = txt.match(/var RAW_MP_STRING = `([\s\S]*?)`/);
+    if (!m) return null;
+    var out = {}, lines = m[1].trim().split('\n');
+    for (var i = 0; i < lines.length; i++) {
+      var c = lines[i].split('|');
+      if (c.length >= 3) out[i + 1] = { city: c[0].trim(), name: c[1].trim(), party: c[2].trim() };
+    }
+    return out;
+  }
+  function render() {
+    var box = document.getElementById('mp-rank-list');
+    if (!box) return;
+    box.textContent = '';
+    var rows = showAll ? all : all.slice(0, 20);
+    if (!rows.length) { box.textContent = 'Henüz dilekçe yok.'; return; }
+    rows.forEach(function (r, i) {
+      var d = document.createElement('div');
+      d.className = 'flex items-center justify-between gap-2 bg-zinc-800 rounded-lg px-3 py-2';
+      var l = document.createElement('span');
+      l.textContent = (i + 1) + '. ' + r.name + ' · ' + r.party + ' · ' + r.city;
+      var n = document.createElement('strong');
+      n.className = 'text-white shrink-0';
+      n.textContent = r.total;
+      d.appendChild(l);
+      d.appendChild(n);
+      box.appendChild(d);
+    });
+  }
+  async function load() {
+    var box = document.getElementById('mp-rank-list');
+    try {
+      var res = await Promise.all([
+        callRpc('mp_petition_counts', {}),
+        fetch('/index.html').then(function (r) { return r.text(); })
+      ]);
+      var mps = parseMps(res[1]);
+      if (!mps) throw new Error('liste');
+      all = (res[0] || []).map(function (r) {
+        var m = mps[r.mp_id] || { city: '', name: 'Vekil #' + r.mp_id, party: '' };
+        return { name: m.name, party: m.party, city: m.city, total: Number(r.total) };
+      }).filter(function (r) { return r.total > 0; })
+        .sort(function (a, b) { return b.total - a.total; });
+      render();
+    } catch (e) {
+      if (box) box.textContent = 'Sıralama yüklenemedi.';
+    }
+  }
+  var tg = document.getElementById('mp-rank-toggle');
+  if (tg) tg.addEventListener('click', function () {
+    showAll = !showAll;
+    tg.textContent = showAll ? 'İlk 20' : 'Tümünü göster';
+    render();
+  });
+  window.addEventListener('load', function () { load(); setInterval(load, 60000); });
+})();
+</script>
+<div id="task-list" class="space-y-3"></div>
   </div>
 
   <!-- ===== YÖNETİCİ ===== -->
