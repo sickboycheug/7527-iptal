@@ -1032,6 +1032,8 @@ function inviteText(a, code) {
 }
 function contactKind(contact) {
   var c = (contact || '').trim();
+  var atPos = c.indexOf('@');
+  if (atPos > 0 && /\s/.test(c.slice(0, atPos).trim())) return { type: 'badmail', value: '' };
   var em = c.match(/[^\s@,;]+@[^\s@,;]+\.[^\s@,;]+/);
   if (em) return { type: 'email', value: em[0] };
   var digits = c.replace(/[^0-9]/g, '');
