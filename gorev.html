@@ -218,6 +218,11 @@
     if (!box) return;
     box.textContent = '';
     var rows = showAll ? all : all.slice(0, 20);
+    var tg0 = document.getElementById('mp-rank-toggle');
+if (tg0) tg0.textContent = showAll ? 'En çok alandan başla' : 'En az alandan başla';
+box.style.maxHeight = '24rem';
+box.style.overflowY = 'auto';
+rows = showAll ? all.slice().reverse() : all;
     if (!rows.length) { box.textContent = 'Henüz dilekçe yok.'; return; }
     rows.forEach(function (r, i) {
       var d = document.createElement('div');
@@ -245,7 +250,12 @@
         var m = mps[r.mp_id] || { city: '', name: 'Vekil #' + r.mp_id, party: '' };
         return { name: m.name, party: m.party, city: m.city, total: Number(r.total) };
       }).filter(function (r) { return r.total > 0; })
-        .sort(function (a, b) { return b.total - a.total; });
+       .sort(function (a, b) { return b.total - a.total; });
+      var seen = {};
+      (res[0] || []).forEach(function (r) { if (Number(r.total) > 0) seen[r.mp_id] = true; });
+      Object.keys(mps).forEach(function (id) {
+        if (!seen[id]) all.push({ name: mps[id].name, party: mps[id].party, city: mps[id].city, total: 0 });
+      });
       render();
     } catch (e) {
       if (box) box.textContent = 'Sıralama yüklenemedi.';
