@@ -2906,7 +2906,32 @@ function renderMpList(mps) {
   });
 }
 
+function mpNorm(s) {
+  return String(s || '').toLocaleLowerCase('tr')
+    .replace(/ı/g, 'i').replace(/ş/g, 's').replace(/ğ/g, 'g')
+    .replace(/ü/g, 'u').replace(/ö/g, 'o').replace(/ç/g, 'c')
+    .replace(/\u0307/g, '').trim();
+}
+
 function filterMps() {
+  var tokens = mpNorm(document.getElementById('mp-search-input').value).split(/\s+/).filter(Boolean);
+  var party = document.getElementById('mp-party-filter').value;
+  var city = document.getElementById('mp-city-filter').value;
+  var sent = getSentMpIds();
+
+  var filtered = MP_DATABASE.filter(function(m) {
+    if (sent.indexOf(m.id) !== -1) return false;
+    var hay = mpNorm(m.name) + ' ' + mpNorm(m.city) + ' ' + mpNorm(m.party);
+    var matchSearch = tokens.every(function(t) { return hay.indexOf(t) !== -1; });
+    var matchParty = party === 'TÜMÜ' || m.party === party;
+    var matchCity = city === 'ALL' || m.city === city;
+    return matchSearch && matchParty && matchCity;
+  });
+
+  renderMpList(filtered);
+}
+
+function filterMpsOld() {
   var search = (document.getElementById('mp-search-input').value || '').toLowerCase();
   var party = document.getElementById('mp-party-filter').value;
   var city = document.getElementById('mp-city-filter').value;
