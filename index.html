@@ -1532,6 +1532,26 @@
 <!-- 12. TÜM DİNAMİK VERİLER VE FONKSİYONLAR -->
 <script>
 // --- VERİTABANI: 592 VEKİL LİSTESİ ---
+var presSite = null;
+function setOnlineSite(n) {
+  var el = document.getElementById('online-count');
+  if (el) el.textContent = n ? '🟢 Şu an sitede ' + n + ' kişi var' : '';
+}
+function presenceTickSite() {
+  var visible = document.visibilityState === 'visible';
+  if (visible && !presSite && typeof supabaseClient !== 'undefined' && supabaseClient) {
+    try {
+      presSite = supabaseClient.channel('online-site', { config: { presence: { key: 'v' + Math.random().toString(36).slice(2, 10) } } });
+      presSite.on('presence', { event: 'sync' }, function () { setOnlineSite(Object.keys(presSite.presenceState()).length); })
+        .subscribe(function (status) { if (status === 'SUBSCRIBED') presSite.track({ at: Date.now() }); });
+    } catch (e) { presSite = null; }
+  } else if (!visible && presSite) {
+    try { supabaseClient.removeChannel(presSite); } catch (e) {}
+    presSite = null; setOnlineSite(0);
+  }
+}
+setInterval(presenceTickSite, 2000);
+
 // --- SUPABASE BAGLANTISI ---
 // Publishable (anon) anahtar tarayicida bulunmak uzere tasarlanmistir, gizli degildir.
 // Yetki sinirlari RLS ve security-definer fonksiyonlarla sunucuda uygulanir.
