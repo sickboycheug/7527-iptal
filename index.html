@@ -2921,7 +2921,7 @@ function filterMps() {
 
   var filtered = MP_DATABASE.filter(function(m) {
     if (sent.indexOf(m.id) !== -1) return false;
-    var hay = mpNorm(m.name) + ' ' + mpNorm(m.city) + ' ' + mpNorm(m.party);
+    var matchSearch = tokens.every(function(t) { return hay.indexOf(' ' + t) !== -1; });
     var matchSearch = tokens.every(function(t) { return hay.indexOf(t) !== -1; });
     var matchParty = party === 'TÜMÜ' || m.party === party;
     var matchCity = city === 'ALL' || m.city === city;
