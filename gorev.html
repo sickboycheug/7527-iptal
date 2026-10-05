@@ -1099,8 +1099,19 @@ function sendButtons(a, code) {
     wa.href = 'https://wa.me/' + ck.value + '?text=' + encodeURIComponent(text); wa.target = '_blank'; wa.rel = 'noopener noreferrer';
     wrap.appendChild(wa);
   } else if (ck.type === 'email') {
-    var ml = h('a', 'btn bg-sky-700 hover:bg-sky-600 text-white', '✉ E-posta ile gönder');
-    ml.href = 'mailto:' + ck.value + '?subject=' + encodeURIComponent('7527 İptal gönüllü kodunuz') + '&body=' + encodeURIComponent(text);
+        var ml = actBtn('✉ E-posta ile gönder', 'bg-sky-700 hover:bg-sky-600 text-white', async function () {
+      ml.disabled = true;
+      $('admin-msg').textContent = 'E-posta gönderiliyor…';
+      try {
+    var res = await supabaseClient.functions.invoke('send-invite', { body: { pin: adminPin, to: ck.value, subject: '7527 İptal gönüllü kodunuz', text: text } });
+        if (res.error) throw res.error;
+        $('admin-msg').textContent = '';
+        ml.textContent = '✓ E-posta gönderildi';
+      } catch (e) {
+        ml.disabled = false;
+        $('admin-msg').textContent = 'E-posta gönderilemedi. Tekrar deneyin.';
+      }
+    });
     wrap.appendChild(ml);
   }
   wrap.appendChild(actBtn('Mesajı kopyala', 'bg-zinc-800 hover:bg-zinc-700 text-white', function () { try { navigator.clipboard.writeText(text); } catch (e) {} }));
