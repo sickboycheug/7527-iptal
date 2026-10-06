@@ -1009,6 +1009,12 @@ function taskCard(t, me) {
         if (confirm('Bu görevi üstlenirsen ' + fmtHours(t.due_hours) + ' içinde yapman beklenir.\n\nYapamayacaksan "Bırak" demen yeterli, bunun cezası yok.\n\nÜstleniyor musun?')) act('gv_claim', t.id);
       }));
       row.appendChild(h('span', 'text-[11px] text-zinc-500', 'Süre: ' + fmtHours(t.due_hours)));
+      if (t.claim_count > 0 || t.done_count > 0) {
+        var info = [];
+        if (t.claim_count > 0) info.push('⏳ ' + t.claim_count + ' kişi üzerinde çalışıyor');
+        if (t.done_count > 0) info.push('✓ ' + t.done_count + ' kişi tamamladı');
+        row.appendChild(h('span', 'text-[11px] text-amber-400 font-semibold', info.join(' · ')));
+      }
     }
   } else if (t.status === 'claimed' && t.mine) {
     row.appendChild(actBtn('✓ Yaptım', 'bg-emerald-600 hover:bg-emerald-500 text-white', function () { act('gv_complete', t.id); }));
