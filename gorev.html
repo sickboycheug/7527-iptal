@@ -246,6 +246,9 @@ rows = showAll ? all.slice().reverse() : all;
       ]);
       var mps = parseMps(res[1]);
       if (!mps) throw new Error('liste');
+      var votes = {};
+      var vm = res[1].match(/var MP_VOTES = \{([\s\S]*?)\};/);
+      if (vm) vm[1].replace(/(\d+):"([KRYC])"/g, function (_, id, v) { votes[id] = v; return ''; });
       all = (res[0] || []).map(function (r) {
         var m = mps[r.mp_id] || { city: '', name: 'Vekil #' + r.mp_id, party: '' };
         return { name: m.name, party: m.party, city: m.city, total: Number(r.total) };
