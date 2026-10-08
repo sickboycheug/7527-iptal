@@ -885,6 +885,7 @@ function enterBoard(nick) {
   $('view-board').classList.remove('hidden');
   refreshBoard();
   loadMaterials();
+  loadMap();
   if (boardTimer) clearInterval(boardTimer);
   boardTimer = setInterval(function () { if (document.visibilityState === 'visible' && memberCode) refreshBoard(); }, 60000);
 }
