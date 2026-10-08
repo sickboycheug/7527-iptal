@@ -1391,7 +1391,7 @@ async function adminAddMaterial() {
     $('adm-m-title').value = ''; $('adm-m-desc').value = ''; $('adm-m-body').value = ''; $('adm-m-url').value = '';
     $('admin-msg').textContent = '';
     alert('Materyal eklendi.');
-  } catch (e) { $('admin-msg').textContent = errText(e); }
+    } catch (e) { alert('HATA: ' + (e && e.message ? e.message : e)); }
 }
 async function adminAddTask() {
   var title = ($('adm-t-title').value || '').trim();
