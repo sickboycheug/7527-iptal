@@ -18,6 +18,23 @@
   .inp:focus { border-color:#10b981; outline:none; }
   .btn { border-radius:.75rem; font-weight:700; font-size:.75rem; padding:.6rem 1rem; transition:.15s; cursor:pointer; }
   .btn:disabled { opacity:.5; cursor:not-allowed; }
+    /* Gönüllü panosu düzeni: mobilde tek sütun, geniş ekranda iki sütun */
+  #view-board:not(.hidden) { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.5rem; align-items: start; }
+  #view-board > * { grid-column: 1 / -1; margin-top: 0 !important; }
+  #view-board > div:first-child { order: 1; }
+  #view-board > #announce-box { order: 4; }
+  #view-board > div:has(#prog-label) { order: 5; }
+  #view-board > #me-box { order: 6; }
+  #view-board > p:not(#board-msg) { order: 7; }
+  #view-board > #board-msg { order: 8; }
+  #view-board > #task-list { order: 8; }
+  #view-board > div:has(#chat-list) { order: 9; }
+  #view-board > #mp-rank-card { order: 10; }
+  #view-board > #mat-box { order: 11; }
+  @media (min-width: 1024px) {
+    #view-board:not(.hidden) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    #view-board > div:has(#chat-list), #view-board > #mp-rank-card { grid-column: auto; }
+  }
 </style>
 </head>
 <body class="bg-zinc-950 text-zinc-100 antialiased min-h-screen flex flex-col">
