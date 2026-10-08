@@ -274,7 +274,7 @@ rows = showAll ? all.slice().reverse() : all;
       var seen = {};
       (res[0] || []).forEach(function (r) { if (Number(r.total) > 0) seen[r.mp_id] = true; });
       Object.keys(mps).forEach(function (id) {
-        if (!seen[id]) all.push({ name: mps[id].name, party: mps[id].party, city: mps[id].city, total: 0 });
+        if (!seen[id]) all.push({ name: mps[id].name, party: mps[id].party, city: mps[id].city, total: 0, vote: votes[id] || '' });
       });
       render();
     } catch (e) {
