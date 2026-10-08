@@ -1572,6 +1572,19 @@ async function loadMap() {
     if (!rows.length) box.textContent = 'Henüz haritada gösterilecek gönüllü yok.';
   } catch (e) { box.textContent = 'Harita yüklenemedi.'; }
 }
+  async function refreshOnline() {
+  var box = $('online-list');
+  if (!box || !memberCode) return;
+  try {
+    var rows = await callRpc('gv_online', { p_code: memberCode }) || [];
+    box.textContent = '';
+    if (!rows.length) return;
+    box.textContent = '🟢 Şu an panoda (' + rows.length + '): ' + rows.map(function (r) {
+      var yer = r.country ? r.country : r.city;
+      return r.nick + (yer ? ' (' + yer + ')' : '');
+    }).join(', ');
+  } catch (e) {}
+}
 async function loadMaterials() {
   var box = $('mat-list');
   if (!box || !memberCode) return;
