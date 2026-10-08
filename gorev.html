@@ -887,6 +887,8 @@ function enterBoard(nick) {
   refreshBoard();
   loadMaterials();
   loadMap();
+  refreshOnline();
+  if (!window._onlineTimer) window._onlineTimer = setInterval(function () { if (document.visibilityState === 'visible' && memberCode) refreshOnline(); }, 60000);
   if (boardTimer) clearInterval(boardTimer);
   boardTimer = setInterval(function () { if (document.visibilityState === 'visible' && memberCode) refreshBoard(); }, 60000);
 }
