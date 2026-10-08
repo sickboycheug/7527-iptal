@@ -1564,6 +1564,7 @@ async function loadMap() {
     var svg = document.createElementNS(NS, 'svg');
     svg.setAttribute('viewBox', '0 0 620 300');
     svg.setAttribute('class', 'w-full');
+    drawBorders(svg);
     var abroad = [], total = 0;
     function show(r) {
       var info = $('map-info'); info.textContent = '';
