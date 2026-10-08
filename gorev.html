@@ -31,6 +31,7 @@
   #view-board > div:has(#chat-list) { order: 9; }
   #view-board > #mp-rank-card { order: 10; }
   #view-board > #mat-box { order: 11; }
+  div:has(> #adm-teams) { display: none; }
   @media (min-width: 1024px) {
     #view-board:not(.hidden) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     #view-board > div:has(#chat-list), #view-board > #mp-rank-card { grid-column: auto; }
