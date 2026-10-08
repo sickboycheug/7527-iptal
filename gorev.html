@@ -1427,6 +1427,21 @@ async function adminDeleteMaterial(m) {
     loadAdminMaterials();
   } catch (e) { alert('HATA: ' + (e && e.message ? e.message : e)); }
 }
+  async function adminEditApp(a) {
+  var name = prompt('Ad Soyad:', a.name); if (name === null) return;
+  var contact = prompt('Telefon veya e-posta:', a.contact); if (contact === null) return;
+  name = name.trim(); contact = contact.trim();
+  if (name.split(/\s+/).filter(function (p) { return p.length >= 2; }).length < 2) { alert('Ad ve soyad birlikte yazılmalı.'); return; }
+  var ck = contactKind(contact);
+  if (ck.type !== 'phone' && ck.type !== 'email') { alert('Geçerli bir telefon veya e-posta yazın.'); return; }
+  try {
+    var env = await encryptPayload({ name: name, contact: contact, note: a.note, country: a.country, city: a.city, district: a.district, ref: a.ref, at: a.created_at || new Date().toISOString() });
+    await callRpc('admin_update_volunteer_enc', { p_pin: adminPin, p_id: a.id, p_payload_enc: env });
+    a.name = name; a.contact = contact;
+    renderApps();
+    alert('Kayıt güncellendi.');
+  } catch (e) { alert('HATA: ' + (e && e.message ? e.message : e)); }
+}
   async function adminAddMaterial() {
   var kind = $('adm-m-kind').value;
   var title = ($('adm-m-title').value || '').trim();
