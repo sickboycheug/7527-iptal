@@ -1399,7 +1399,31 @@ async function adminAct(fn, args) {
 }
 
 function adminSaveAnnounce() { adminAct('gv_admin_set_announcement', { p_pin: adminPin, p_body: $('adm-announce').value || '' }); }
-async function adminAddMaterial() {
+async function loadAdminMaterials() {
+  var box = $('adm-materials');
+  if (!box || !adminPin) return;
+  try {
+    var rows = await callRpc('gv_admin_list_materials', { p_pin: adminPin });
+    box.textContent = '';
+    if (!rows || !rows.length) { box.appendChild(h('p', 'text-xs text-zinc-500', 'Henüz materyal yok.')); return; }
+    rows.forEach(function (m) {
+      var row = h('div', 'flex flex-wrap items-center gap-2 bg-zinc-950/60 border border-zinc-800 rounded-lg p-2');
+      row.appendChild(h('span', 'text-xs text-white font-semibold flex-1 min-w-[10rem]', m.title));
+      row.appendChild(h('span', 'text-[11px] text-zinc-400', m.kind));
+      row.appendChild(actBtn('Sil', 'bg-red-900 hover:bg-red-800 text-white', function () { adminDeleteMaterial(m); }));
+      box.appendChild(row);
+    });
+  } catch (e) { box.textContent = 'Liste yüklenemedi.'; }
+}
+
+async function adminDeleteMaterial(m) {
+  if (!confirm('"' + m.title + '" materyali silinsin mi?')) return;
+  try {
+    await callRpc('gv_admin_delete_material', { p_pin: adminPin, p_id: m.id });
+    loadAdminMaterials();
+  } catch (e) { alert('HATA: ' + (e && e.message ? e.message : e)); }
+}
+  async function adminAddMaterial() {
   var kind = $('adm-m-kind').value;
   var title = ($('adm-m-title').value || '').trim();
   var body = ($('adm-m-body').value || '').trim();
