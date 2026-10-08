@@ -1410,7 +1410,7 @@ async function loadAdminMaterials() {
     rows.forEach(function (m) {
       var row = h('div', 'flex flex-wrap items-center gap-2 bg-zinc-950/60 border border-zinc-800 rounded-lg p-2');
       row.appendChild(h('span', 'text-xs text-white font-semibold flex-1 min-w-[10rem]', m.title));
-      row.appendChild(h('span', 'text-[11px] text-zinc-400', m.kind));
+      row.appendChild(h('span', 'text-[11px] text-zinc-400', ({ print: 'Afiş / broşür', image: 'Görsel', video: 'Video', audio: 'Müzik', text: 'Metin', link: 'Link' })[m.kind] || m.kind));
       row.appendChild(actBtn('Sil', 'bg-red-900 hover:bg-red-800 text-white', function () { adminDeleteMaterial(m); }));
       box.appendChild(row);
     });
