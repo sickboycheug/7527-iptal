@@ -1376,7 +1376,23 @@ async function adminAct(fn, args) {
 }
 
 function adminSaveAnnounce() { adminAct('gv_admin_set_announcement', { p_pin: adminPin, p_body: $('adm-announce').value || '' }); }
-
+async function adminAddMaterial() {
+  var kind = $('adm-m-kind').value;
+  var title = ($('adm-m-title').value || '').trim();
+  var body = ($('adm-m-body').value || '').trim();
+  var url = ($('adm-m-url').value || '').trim();
+  if (title.length < 3) { $('admin-msg').textContent = 'Başlık en az 3 karakter olmalı.'; return; }
+  if (kind === 'text' && !body) { $('admin-msg').textContent = 'Metin türünde paylaşılacak metni yazın.'; return; }
+  if (kind !== 'text' && !url) { $('admin-msg').textContent = 'Dosya veya link adresini yazın.'; return; }
+  if (url && !/^https:\/\//i.test(url)) { $('admin-msg').textContent = 'Adres https:// ile başlamalı.'; return; }
+  try {
+    await callRpc('gv_admin_save_material', { p_pin: adminPin, p_id: null, p_kind: kind, p_title: title,
+      p_description: $('adm-m-desc').value || '', p_body: body, p_url: url, p_active: true });
+    $('adm-m-title').value = ''; $('adm-m-desc').value = ''; $('adm-m-body').value = ''; $('adm-m-url').value = '';
+    $('admin-msg').textContent = '';
+    alert('Materyal eklendi.');
+  } catch (e) { $('admin-msg').textContent = errText(e); }
+}
 async function adminAddTask() {
   var title = ($('adm-t-title').value || '').trim();
   var link = ($('adm-t-link').value || '').trim();
