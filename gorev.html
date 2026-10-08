@@ -1225,6 +1225,7 @@ function renderApps() {
       row.appendChild(sendButtons(a, code));
     } else if (m) {
       row.appendChild(h('div', 'text-[11px] text-emerald-400 font-semibold', '✓ Kod verildi · takma ad: ' + m.nickname + (m.active ? '' : ' (pasif)')));
+      if (a.ok) row.appendChild(actBtn('✎ Düzenle', 'bg-zinc-800 hover:bg-zinc-700 text-white', function () { adminEditApp(a); }));
       if (m.application_id != null) {
         row.appendChild(actBtn('Yeni kod üret ve gönder', 'bg-amber-600 hover:bg-amber-500 text-white', async function () {
           try {
