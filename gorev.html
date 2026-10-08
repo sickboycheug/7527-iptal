@@ -1456,7 +1456,43 @@ function copyNewCode() {
   var c = $('adm-newcode-val').textContent;
   try { navigator.clipboard.writeText(c); } catch (e) {}
 }
-
+async function loadMaterials() {
+  var box = $('mat-list');
+  if (!box || !memberCode) return;
+  try {
+    var rows = await callRpc('gv_materials_list', { p_code: memberCode });
+    box.textContent = '';
+    if (!rows || !rows.length) { box.appendChild(h('p', 'text-zinc-500', 'Henüz materyal eklenmedi.')); return; }
+    var labels = { print: '🖨️ Afiş / broşür', image: '🖼️ Görsel', video: '🎬 Video', audio: '🎵 Müzik', text: '📝 Metin', link: '🔗 Link' };
+    rows.forEach(function (m) {
+      var card = h('div', 'bg-zinc-950/60 border border-zinc-800 rounded-xl p-3 space-y-2');
+      card.appendChild(h('div', 'text-[10px] text-emerald-400 font-bold uppercase', labels[m.kind] || m.kind));
+      card.appendChild(h('div', 'text-sm font-bold text-white', m.title));
+      if (m.description) card.appendChild(h('p', 'text-[11px] text-zinc-400 whitespace-pre-line', m.description));
+      if (m.kind === 'text' && m.body) card.appendChild(h('p', 'text-xs text-zinc-300 whitespace-pre-line bg-zinc-900 rounded-lg p-2', m.body));
+      var u = safeUrl(m.url);
+      if (m.kind === 'image' && u) { var img = h('img', 'w-full rounded-lg'); img.src = u; img.alt = m.title; img.loading = 'lazy'; card.appendChild(img); }
+      if (m.kind === 'audio' && u) { var au = h('audio', 'w-full'); au.controls = true; au.src = u; card.appendChild(au); }
+      var row = h('div', 'flex flex-wrap gap-2');
+      if (u) {
+        var isFile = u.indexOf('/storage/v1/object/public/') !== -1;
+        var a = h('a', 'btn bg-emerald-600 hover:bg-emerald-500 text-white', isFile ? '⬇ İndir' : 'Aç');
+        a.href = isFile ? u + (u.indexOf('?') === -1 ? '?' : '&') + 'download=' : u;
+        a.target = '_blank'; a.rel = 'noopener noreferrer';
+        row.appendChild(a);
+      }
+      if (m.kind === 'text' && m.body) {
+        row.appendChild(actBtn('Kopyala', 'bg-zinc-800 hover:bg-zinc-700 text-white', function () { try { navigator.clipboard.writeText(m.body); } catch (e) {} }));
+      }
+      var wa = h('a', 'btn bg-emerald-800 hover:bg-emerald-700 text-white', '💬 Paylaş');
+      wa.href = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(m.title + '\n' + (m.kind === 'text' ? m.body : (u || '')));
+      wa.target = '_blank'; wa.rel = 'noopener noreferrer';
+      row.appendChild(wa);
+      card.appendChild(row);
+      box.appendChild(card);
+    });
+  } catch (e) { box.textContent = 'Materyaller yüklenemedi.'; }
+}
 // ---------- acilis ----------
 (async function init() {
   AREAS.forEach(function (a) { var o = document.createElement('option'); o.value = a; o.textContent = a; $('adm-t-area').appendChild(o); });
