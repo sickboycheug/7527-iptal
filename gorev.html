@@ -268,7 +268,7 @@ rows = showAll ? all.slice().reverse() : all;
       if (vm) vm[1].replace(/(\d+):"([KRYC])"/g, function (_, id, v) { votes[id] = v; return ''; });
       all = (res[0] || []).map(function (r) {
         var m = mps[r.mp_id] || { city: '', name: 'Vekil #' + r.mp_id, party: '' };
-        return { name: m.name, party: m.party, city: m.city, total: Number(r.total) };
+        return { name: m.name, party: m.party, city: m.city, total: Number(r.total), vote: votes[r.mp_id] || '' };
       }).filter(function (r) { return r.total > 0; })
        .sort(function (a, b) { return b.total - a.total; });
       var seen = {};
