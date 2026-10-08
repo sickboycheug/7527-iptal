@@ -1354,6 +1354,7 @@ function renderTeams() {
 
 function renderAdmin(s) {
   $('adm-announce').value = s.announcement || '';
+  loadAdminMaterials();
   admTasks = s.tasks || [];
   var tl = $('adm-tasks'); tl.textContent = '';
   if (!admTasks.length) tl.appendChild(h('p', 'text-xs text-zinc-500', 'Henüz görev yok.'));
