@@ -333,6 +333,23 @@ rows = showAll ? all.slice().reverse() : all;
       </div>
 
       <div class="space-y-2">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400">Materyal Ekle</h3>
+        <select id="adm-m-kind" class="inp">
+          <option value="print">Afiş / broşür (baskı)</option>
+          <option value="image">Görsel</option>
+          <option value="video">Video</option>
+          <option value="audio">Müzik</option>
+          <option value="text">Metin (paylaşım yazısı)</option>
+          <option value="link">Link duyurusu</option>
+        </select>
+        <input type="text" id="adm-m-title" maxlength="140" placeholder="Başlık" class="inp">
+        <textarea id="adm-m-desc" rows="2" maxlength="1000" placeholder="Açıklama (isteğe bağlı)" class="inp"></textarea>
+        <textarea id="adm-m-body" rows="3" maxlength="4000" placeholder="Paylaşılacak metin / hashtag (yalnızca Metin türünde)" class="inp"></textarea>
+        <input type="text" id="adm-m-url" placeholder="Dosya veya link adresi (https:// ile başlamalı)" class="inp">
+        <button type="button" onclick="adminAddMaterial()" class="btn bg-emerald-600 hover:bg-emerald-500 text-white">Materyali Ekle</button>
+        <div id="adm-materials" class="space-y-2 pt-2"></div>
+      </div>
+      <div class="space-y-2">
         <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400">İl / İlçe Dağılımı</h3>
         <div id="adm-teams" class="space-y-1"></div>
       </div>
