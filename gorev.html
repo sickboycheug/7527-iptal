@@ -250,6 +250,8 @@ rows = showAll ? all.slice().reverse() : all;
       n.className = 'text-white shrink-0';
       n.textContent = r.total;
       d.appendChild(l);
+      var vt = { K: ['Kabul etti', 'text-red-300 bg-red-950/60 border-red-800'], R: ['Ret etti', 'text-emerald-300 bg-emerald-950/60 border-emerald-800'], Y: ['Oylamada yoktu', 'text-amber-300 bg-amber-950/60 border-amber-800'], C: ['Çekimser', 'text-zinc-300 bg-zinc-800 border-zinc-600'] }[r.vote];
+      if (vt) d.appendChild(h('span', 'text-[10px] px-2 py-0.5 rounded-full border shrink-0 ' + vt[1], '7527: ' + vt[0]));
       d.appendChild(n);
       box.appendChild(d);
     });
