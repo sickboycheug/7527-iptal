@@ -293,6 +293,12 @@ rows = showAll ? all.slice().reverse() : all;
 })();
 </script>
 <div id="task-list" class="space-y-3"></div>
+   <div id="map-box" style="order:2" class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-3">
+      <h3 class="font-impact text-lg text-white uppercase tracking-wide">🗺️ Gönüllü Haritası</h3>
+      <p class="text-[11px] text-zinc-500 leading-relaxed">Nerede kaç gönüllü var. Bir noktaya dokun, o ildeki takma adları gör.</p>
+      <div id="map-svg" class="w-full rounded-xl bg-zinc-950 overflow-hidden min-h-[220px] flex items-center justify-center text-xs text-zinc-500">Harita yükleniyor...</div>
+      <div id="map-info" class="text-xs text-zinc-300 min-h-[32px]"></div>
+    </div>
   <div id="mat-box" class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-3">
       <h3 class="font-impact text-lg text-white uppercase tracking-wide">📦 Materyal Kütüphanesi</h3>
       <p class="text-[11px] text-zinc-500 leading-relaxed">Afiş, görsel, video ve paylaşım metinleri. İndir, yazdır, paylaş.</p>
