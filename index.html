@@ -3431,7 +3431,7 @@ async function sendPetitionViaEmail() {
   var name = (document.getElementById('citizen-name').value || '').trim();
   var consent = document.getElementById('petition-consent');
 
-  if (name.length < 3) {
+ if (name.split(/\s+/).filter(function (p) { return p.length >= 2; }).length < 2) {
     alert('Lütfen adınızı ve soyadınızı girin.');
     document.getElementById('citizen-name').focus();
     return;
