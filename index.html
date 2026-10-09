@@ -1068,7 +1068,23 @@
     </div>
   </div>
 </div>
-
+<!-- ADIM ADIM DİLEKÇE SLAYT MODALI -->
+<div id="adim-modal" class="fixed inset-0 z-[100000] bg-black/85 backdrop-blur-sm flex items-center justify-center p-3" style="display: none;" role="dialog" aria-modal="true" aria-label="Dilekçe nasıl gönderilir">
+  <div class="bg-zinc-900 border border-zinc-700 rounded-3xl w-full max-w-md shadow-2xl flex flex-col max-h-[94vh]">
+    <div class="flex justify-between items-center gap-3 border-b border-zinc-800 px-4 py-3">
+      <h3 class="font-impact text-base text-white uppercase tracking-wide">Dilekçe nasıl gönderilir?</h3>
+      <button type="button" onclick="closeAdimModal()" aria-label="Kapat" class="text-zinc-500 hover:text-white text-2xl leading-none shrink-0 cursor-pointer">&times;</button>
+    </div>
+    <div class="p-3 overflow-y-auto flex-1 flex items-center justify-center">
+      <img id="adim-img" src="" alt="Dilekçe gönderme adımı" class="w-full h-auto rounded-xl border border-zinc-800">
+    </div>
+    <div class="flex items-center justify-between gap-3 border-t border-zinc-800 px-4 py-3">
+      <button type="button" id="adim-prev" onclick="adimGoster(adimIdx - 1)" class="px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white text-sm font-bold cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed">← Geri</button>
+      <span id="adim-sayac" class="text-xs text-zinc-400 font-mono">1 / 12</span>
+      <button type="button" id="adim-next" onclick="adimGoster(adimIdx + 1)" class="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white text-sm font-bold cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed">İleri →</button>
+    </div>
+  </div>
+</div>
 <!-- KVKK AYDINLATMA METNI MODALI -->
 <div id="kvkk-modal" class="fixed inset-0 z-[100000] bg-black/85 backdrop-blur-sm flex items-center justify-center p-4" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="kvkk-title">
   <div class="bg-zinc-900 border border-zinc-700 rounded-3xl max-w-2xl w-full shadow-2xl flex flex-col max-h-[88vh]">
