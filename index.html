@@ -3344,7 +3344,33 @@ function closeKvkkModal() {
   var m = document.getElementById('kvkk-modal');
   if (m) m.style.display = 'none';
 }
-
+// ADIM ADIM DİLEKÇE SLAYTLARI
+var ADIM_SLAYT = 12;
+var adimIdx = 1;
+function adimUrl(i) {
+  return 'https://mednnlpprdgupdajmrin.supabase.co/storage/v1/object/public/AdimAdimDilekce/slayt-' + (i < 10 ? '0' : '') + i + '.png';
+}
+function adimGoster(i) {
+  if (i < 1) i = 1;
+  if (i > ADIM_SLAYT) i = ADIM_SLAYT;
+  adimIdx = i;
+  var im = document.getElementById('adim-img');
+  if (im) im.src = adimUrl(i);
+  var c = document.getElementById('adim-sayac');
+  if (c) c.textContent = i + ' / ' + ADIM_SLAYT;
+  var p = document.getElementById('adim-prev');
+  var n = document.getElementById('adim-next');
+  if (p) p.disabled = (i === 1);
+  if (n) n.disabled = (i === ADIM_SLAYT);
+}
+function openAdimModal() {
+  var m = document.getElementById('adim-modal');
+  if (m) { m.style.display = 'flex'; adimGoster(1); }
+}
+function closeAdimModal() {
+  var m = document.getElementById('adim-modal');
+  if (m) m.style.display = 'none';
+}
 var lastPetitionNumber = '';
 var lastPdfBlob = null;
 var lastPdfName = '';
