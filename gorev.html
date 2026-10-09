@@ -1635,7 +1635,7 @@ async function loadMaterials() {
       if (m.kind === 'audio' && u) { var au = h('audio', 'w-full'); au.controls = true; au.src = u; card.appendChild(au); }
       var row = h('div', 'flex flex-wrap gap-2');
       if (u) {
-        var isFile = u.indexOf('/storage/v1/object/public/') !== -1;
+       var isFile = m.kind === 'print' && u.indexOf('/storage/v1/object/public/') !== -1;
         var a = h('a', 'btn bg-emerald-600 hover:bg-emerald-500 text-white', isFile ? '⬇ İndir' : 'Aç');
         a.href = isFile ? u + (u.indexOf('?') === -1 ? '?' : '&') + 'download=' : u;
         a.target = '_blank'; a.rel = 'noopener noreferrer';
