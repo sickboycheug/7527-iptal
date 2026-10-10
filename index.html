@@ -2888,13 +2888,15 @@ setTimeout(loadMpCounts, 800);
   if (!x) return '';
   return '<span class="text-[10px] px-2 py-0.5 rounded-full border shrink-0 ml-2 ' + x[1] + '">' + x[0] + '</span>';
 }
-function renderMpList(mps) {
+function renderMpList(mps, fallback) {
   var container = document.getElementById('mp-list-container');
   var countBadge = document.getElementById('mp-match-count');
   if (!container) return;
 
   if (countBadge) countBadge.textContent = mps.length + ' vekil';
-  container.innerHTML = '';
+  container.innerHTML = fallback
+    ? '<p class="text-amber-300 text-center py-2 text-[11px] leading-relaxed">Bu filtreye uyan vekillere gönderim yaptınız. Gönderim yapmadığınız diğer vekiller listeleniyor.</p>'
+    : '';
 
   if (mps.length === 0) {
     var toplamGonderilen = getSentMpIds().length;
