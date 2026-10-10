@@ -606,7 +606,7 @@
             <select id="mp-party-filter" onchange="filterMps()" class="bg-zinc-900 border border-zinc-700 rounded-lg px-2.5 py-1.5 text-xs text-zinc-200">
               <option value="TÜMÜ">Tüm Partiler</option>
             </select>
-            <select id="mp-city-filter" onchange="filterMps()" class="bg-zinc-900 border border-zinc-700 rounded-lg px-2.5 py-1.5 text-xs text-zinc-200">
+            <select id="mp-city-filter" onchange="document.getElementById('mp-search-input').value='';filterMps()" class="bg-zinc-900 border border-zinc-700 rounded-lg px-2.5 py-1.5 text-xs text-zinc-200">
               <option value="ALL">Tüm Türkiye (81 İl)</option>
             </select>
           </div>
