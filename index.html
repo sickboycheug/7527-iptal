@@ -2952,6 +2952,10 @@ function filterMps() {
     return matchSearch && matchParty && matchCity;
   });
 
+  if (filtered.length === 0 && (tokens.length || party !== 'TÜMÜ' || city !== 'ALL')) {
+    var rest = MP_DATABASE.filter(function (m) { return sent.indexOf(m.id) === -1; });
+    if (rest.length) { renderMpList(rest, true); return; }
+  }
   renderMpList(filtered);
 }
 
