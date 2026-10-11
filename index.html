@@ -566,57 +566,6 @@
     <!-- SOL KOLON: Form, Seçim ve Önizleme -->
     <section class="lg:col-span-6 space-y-6">
 
-      <!-- Canlı Sayaçlar Kartı -->
-      <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 space-y-4 shadow-xl">
-        <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
-          <h2 class="text-xs font-bold text-zinc-300 uppercase tracking-wider flex items-center gap-2">
-            <span>📊</span> CANLI KAMPANYA SAYAÇLARI
-          </h2>
-          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-red-950 text-red-400 border border-red-800/80 animate-pulse">
-            <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> CANLI
-          </span>
-        </div>
-
-        <div class="space-y-1.5">
-          <div class="flex justify-between items-baseline text-xs">
-            <span class="font-bold text-white">🐾 VATANDAŞ İMZA HEDEFİ</span>
-            <span id="citizen-counter" class="font-bold text-red-500 font-mono text-base">
-              0 / 3.000.000
-            </span>
-          </div>
-          <div class="w-full bg-zinc-950 rounded-full h-3 overflow-hidden border border-zinc-800">
-            <div id="citizen-progress" class="bg-gradient-to-r from-red-700 to-red-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
-          </div>
-        </div>
-
-        <div class="space-y-1.5 pt-2 border-t border-zinc-800/60">
-          <div class="flex justify-between items-baseline text-xs">
-            <span class="font-bold text-white">🏛️ MECLİS İPTAL İMZASI</span>
-            <span id="mp-counter" class="font-bold text-emerald-400 font-mono text-base">
-              0 / 592
-            </span>
-          </div>
-          <div class="w-full bg-zinc-950 rounded-full h-3 overflow-hidden border border-zinc-800">
-            <div id="mp-progress" class="bg-gradient-to-r from-emerald-600 to-emerald-400 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-3 gap-2 pt-2 border-t border-zinc-800/60 text-center text-xs">
-          <div class="bg-zinc-950 rounded-xl p-2.5 border border-amber-900/30">
-            <div class="text-[10px] text-amber-400 font-bold">🏛️ CB'ye Giden</div>
-            <div id="cb-counter" class="text-amber-400 font-mono font-bold text-sm mt-0.5">0</div>
-          </div>
-          <div class="bg-zinc-950 rounded-xl p-2.5 border border-amber-900/30">
-            <div class="text-[10px] text-amber-400 font-bold">🏛️ TBMM'ye Giden</div>
-            <div id="mb-counter" class="text-amber-400 font-mono font-bold text-sm mt-0.5">0</div>
-          </div>
-          <div class="bg-zinc-950 rounded-xl p-2.5 border border-sky-900/30">
-            <div class="text-[10px] text-sky-400 font-bold">✉️ Vekillere Giden</div>
-            <div id="mp-sent-counter" class="text-sky-400 font-mono font-bold text-sm mt-0.5">0</div>
-          </div>
-        </div>
-      </div>
-
 <!-- BİLDİRİ VE 15 GÜNLÜK RAPOR GÖRSELLERİ -->
 <div class="grid grid-cols-1 gap-3">
   <a href="hakikat.html" class="block rounded-2xl overflow-hidden border-2 border-zinc-700 hover:border-emerald-600 transition">
