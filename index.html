@@ -1559,7 +1559,28 @@
     </button>
   </div>
 </section>
-
+<!-- PAYLAŞ MODÜLÜ (QR) - sayfa sonu -->
+<section class="px-4 py-10 bg-zinc-950 border-t border-zinc-800">
+  <div class="mx-auto max-w-lg border border-red-900/50 bg-zinc-950/80 p-4 rounded-2xl shadow-xl">
+    <div class="flex flex-col sm:flex-row items-center gap-4">
+      <div id="qrcode-box" class="bg-white p-2 rounded-xl shrink-0 flex items-center justify-center"></div>
+      <div class="text-left space-y-2 min-w-0 flex-1">
+        <p class="font-impact text-lg text-red-400 tracking-wide uppercase">
+          KAMPANYAYI HER YERDE PAYLAŞ
+        </p>
+        <input type="text" readonly value="https://www.7527iptal.org" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-2.5 py-1.5 text-xs text-zinc-200 font-mono">
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="generateAndDownloadShareCard()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-1.5 px-3 rounded-lg text-xs flex items-center gap-1.5 transition shadow">
+            🎨 1080x1080 Afiş İndir
+          </button>
+          <button type="button" onclick="downloadQRCode()" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-semibold py-1.5 px-3 rounded-lg text-xs transition border border-zinc-700">
+            QR İndir
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 <!-- 11. FOOTER -->
 <footer class="border-t border-zinc-800 py-8 px-4 bg-zinc-950 text-center text-xs text-zinc-500 space-y-3">
   <p class="font-bold text-zinc-400">7527 İPTAL! İMZACISI OL! © 2026</p>
