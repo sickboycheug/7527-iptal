@@ -113,11 +113,12 @@ footer a.mail{font-size:clamp(20px,3.4vw,28px);font-weight:700;text-decoration:n
 <h1><span class="l1">Bir halk iradesidir:</span><span class="l2"><span class="strike">7527</span><span class="em">iptal</span></span></h1>
 <p class="lead">7527 sayılı yasa, toplumsal bir uzlaşı ya da çözüm değil; topluma, sokaklara ve bu ülkenin en savunmasız canlılarına ağır bir yıkım getiren ölümcül bir hatadır.</p>
 </header>
-<!-- DUYURULAR: yeni duyuru için üstteki <article> bloklarından birini kopyalayıp en başa ekle -->
+<!-- DUYURULAR: yeni duyuru için üstteki <article> bloklarından birini kopyalayıp en başa ekle, aşağıdaki SETS listesine de aynı adla ekle -->
 <style>
-.dy-news{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(min(100%,19rem),1fr));margin-top:10px}
-.dy-card{background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column}
-.dy-card img{width:100%;height:auto;display:block;background:#0b0f0d}
+.dy-news{display:flex;gap:18px;margin-top:10px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding-bottom:12px;scrollbar-color:var(--em) transparent}
+.dy-card{flex:0 0 min(86%,21rem);scroll-snap-align:start;background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column}
+.dy-cov{display:block;width:100%;aspect-ratio:4/5;overflow:hidden;background:#0b0f0d;border:0;padding:0;cursor:pointer}
+.dy-cov img{width:100%;height:100%;object-fit:cover;object-position:center;display:block}
 .dy-in{padding:18px 20px 20px;display:flex;flex-direction:column;gap:8px;flex:1}
 .dy-meta{display:flex;justify-content:space-between;gap:10px;font-size:14px;color:var(--mut)}
 .dy-tag{font-family:'Oswald',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--em2)}
@@ -128,52 +129,102 @@ footer a.mail{font-size:clamp(20px,3.4vw,28px);font-weight:700;text-decoration:n
 .dy-ghost:hover{background:var(--em);color:#052e1f}
 button.btn{border:0;cursor:pointer}
 button.btn.dy-ghost{border:1px solid var(--em)}
-.say{display:grid;grid-template-columns:9rem 1fr;gap:20px;align-items:start;padding:20px 0;border-top:1px solid var(--line)}
-.when{font-family:'Oswald',sans-serif;font-size:28px;line-height:1.1;text-transform:uppercase;color:var(--em2)}
-.when small{display:block;font-family:'Source Sans 3',sans-serif;font-size:15px;text-transform:none;color:var(--mut);margin-top:4px}
-.say blockquote{margin:0;border-left:4px solid var(--red);padding-left:18px;font-size:clamp(20px,3vw,26px);line-height:1.4;font-weight:600}
-.say p{margin:0}
-@media(max-width:560px){.say{grid-template-columns:1fr;gap:8px}}
-.big-q{font-family:'Oswald',sans-serif;text-transform:uppercase;font-size:clamp(30px,6vw,56px);line-height:1.1;margin:0 0 18px}
-.big-q span{color:var(--amb)}
-.fig{max-width:26rem;margin:0 auto}
-.fig img{width:100%;height:auto;display:block;border-radius:18px;border:1px solid var(--line)}
-audio{width:100%;margin-top:12px}
-.acts{display:flex;flex-wrap:wrap;gap:10px}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 16px}
-.chip{font:600 16px 'Source Sans 3',sans-serif;color:var(--em2);background:#0d1914;border:1px solid var(--line);border-radius:999px;padding:7px 14px;cursor:pointer}
-.chip:hover{border-color:var(--em2)}
-.deck{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:clamp(20px,4vw,34px)}
-.deck h3{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:0 0 16px;color:var(--amb)}
-.deck p{margin:0 0 14px}
-.sign{font-family:'Oswald',sans-serif;text-transform:uppercase;font-size:clamp(24px,4.5vw,40px);line-height:1.15}
-.dy-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--em);color:#052e1f;font-weight:700;padding:10px 20px;border-radius:999px;opacity:0;pointer-events:none;transition:.25s;z-index:9}
+.vw{position:fixed;inset:0;z-index:50;background:rgba(5,8,7,.96);display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:12px}
+.vw.on{display:flex}
+.vw-x{position:absolute;top:10px;right:14px;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:#0d1914;color:#f4f4f5;font-size:26px;cursor:pointer;line-height:1}
+.vw-t{font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.08em;font-size:18px;color:var(--em2);text-align:center;padding:0 52px}
+.vw-box{width:min(94vw,calc((100dvh - 260px)*.5625))}
+.vw-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;border-radius:16px;scrollbar-width:none}
+.vw-track::-webkit-scrollbar{display:none}
+.vw-track img{flex:0 0 100%;width:100%;aspect-ratio:9/16;object-fit:contain;scroll-snap-align:center;background:#0b0f0d}
+.vw-ctl{display:flex;align-items:center;gap:18px;color:#d4e0d9;font-size:16px}
+.vw-ctl button{width:44px;height:44px;border-radius:50%;border:1px solid var(--em);background:transparent;color:var(--em2);font-size:26px;cursor:pointer;line-height:1}
+.vw-ctl button:disabled{opacity:.3;cursor:default}
+.vw-acts{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.vw-acts .btn{padding:9px 16px;font-size:14px}
+.dy-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--em);color:#052e1f;font-weight:700;padding:10px 20px;border-radius:999px;opacity:0;pointer-events:none;transition:.25s;z-index:99}
 .dy-toast.on{opacity:1;transform:translateX(-50%)}
 </style>
 <section id="duyurular">
 <p class="eyebrow">Haberler ve çağrılar</p>
 <h2>Duyurular</h2>
 <div class="dy-news">
-<article class="dy-card">
-<a href="#nimet"><img src="paylasim-nimet.png" alt="Nimet vekilim, sözünüzü tutun" loading="lazy"></a>
+<article class="dy-card" data-set="nimet">
+<button type="button" class="dy-cov" data-open="nimet" aria-label="Slaytları aç"><img src="slaytlar/nimet/nimet-01.png" alt="Nimet vekilim, sözünüzü tutun" loading="lazy"></button>
 <div class="dy-in"><div class="dy-meta"><span class="dy-tag">Açık çağrı</span><span>11 Ekim 2026</span></div>
 <h3>Nimet vekilim, sözünüzü tutun</h3><p>Meclis kürsüsünde ve Gebze, Ümraniye kapılarında verdiğiniz sözlerin arkasında durun. 7527’nin iptal dilekçesine imza verin.</p>
-<div class="dy-acts"><a class="btn" href="#nimet">Oku</a><button type="button" class="btn dy-ghost" data-u="#nimet" data-t="Nimet vekilim, sözünüzü tutun" data-x="Meclis kürsüsünde ve Gebze, Ümraniye kapılarında verdiğiniz sözlerin arkasında durun. 7527’nin iptal dilekçesine imza verin.">Paylaş</button></div></div>
+<div class="dy-acts"><button type="button" class="btn" data-open="nimet">Slaytları aç</button><button type="button" class="btn dy-ghost" data-share="nimet">Paylaş</button></div></div>
 </article>
-<article class="dy-card">
-<a href="#paylas"><img src="paylasim-paylas.png" alt="Hakikat ortada, kaçamazsınız" loading="lazy"></a>
-<div class="dy-in"><div class="dy-meta"><span class="dy-tag">Paylaşım merkezi</span><span>11 Ekim 2026</span></div>
-<h3>Hakikat ortada, kaçamazsınız</h3><p>Hazır deklarasyon ve hashtag grupları. Kopyala, paylaş, vekillerin önüne düşür.</p>
-<div class="dy-acts"><a class="btn" href="#paylas">Oku</a><button type="button" class="btn dy-ghost" data-u="#paylas" data-t="Hakikat ortada, kaçamazsınız" data-x="Hazır deklarasyon ve hashtag grupları. Kopyala, paylaş, vekillerin önüne düşür.">Paylaş</button></div></div>
+<article class="dy-card" data-set="bildiri">
+<button type="button" class="dy-cov" data-open="bildiri" aria-label="Slaytları aç"><img src="slaytlar/bildiri/bildiri-01.png" alt="Bir halk iradesidir: 7527 iptal" loading="lazy"></button>
+<div class="dy-in"><div class="dy-meta"><span class="dy-tag">Bildiri</span><span>10 Ekim 2026</span></div>
+<h3>Bir halk iradesidir: 7527 iptal</h3><p>Bildirinin tamamı 13 slaytta. Kaydır, oku, paylaş.</p>
+<div class="dy-acts"><button type="button" class="btn" data-open="bildiri">Slaytları aç</button><button type="button" class="btn dy-ghost" data-share="bildiri">Paylaş</button></div></div>
 </article>
-<article class="dy-card">
-<a href="#rapor"><img src="15gun.png" alt="İlk 15 gün: şeffaf bilgilendirme" loading="lazy"></a>
+<article class="dy-card" data-set="15gun">
+<button type="button" class="dy-cov" data-open="15gun" aria-label="Slaytları aç"><img src="slaytlar/15gun/15gun-01.png" alt="İlk 15 gün: şeffaf bilgilendirme" loading="lazy"></button>
 <div class="dy-in"><div class="dy-meta"><span class="dy-tag">Rapor</span><span>10 Ekim 2026</span></div>
 <h3>İlk 15 gün: şeffaf bilgilendirme</h3><p>2.000 dilekçe, 813 kişi, 514 vekile ulaştık. Rakamlar olduğu gibi, nerede eksik kaldığımızla birlikte.</p>
-<div class="dy-acts"><a class="btn" href="#rapor">Oku</a><button type="button" class="btn dy-ghost" data-u="#rapor" data-t="İlk 15 gün: şeffaf bilgilendirme" data-x="2.000 dilekçe, 813 kişi, 514 vekile ulaştık. Rakamlar olduğu gibi, nerede eksik kaldığımızla birlikte.">Paylaş</button></div></div>
+<div class="dy-acts"><button type="button" class="btn" data-open="15gun">Slaytları aç</button><button type="button" class="btn dy-ghost" data-share="15gun">Paylaş</button></div></div>
 </article>
 </div>
 </section>
+<div class="vw" id="vw" role="dialog" aria-modal="true" aria-label="Slayt gösterisi">
+<button type="button" class="vw-x" id="vw-x" aria-label="Kapat">&times;</button>
+<div class="vw-t" id="vw-t"></div>
+<div class="vw-box"><div class="vw-track" id="vw-track"></div></div>
+<div class="vw-ctl"><button type="button" id="vw-prev" aria-label="Önceki">&#8249;</button><span id="vw-cnt">1 / 1</span><button type="button" id="vw-next" aria-label="Sonraki">&#8250;</button></div>
+<div class="vw-acts"><button type="button" class="btn" id="vw-cp">Metni kopyala</button><button type="button" class="btn dy-ghost" id="vw-sh">Paylaş</button><a class="btn dy-ghost" id="vw-dl" download>Bu slaytı indir</a><a class="btn dy-ghost" id="vw-x2" target="_blank" rel="noopener">X’te paylaş</a></div>
+</div>
+<div class="dy-toast" id="dy-toast">Kopyalandı</div>
+<script>
+(function(){
+  var BASE='https://7527iptal.org/hakikat.html';
+  var SETS={
+    'nimet':{t:'Nimet vekilim, sözünüzü tutun',n:6,d:'slaytlar/nimet/nimet-',
+      x:'Sayın @Nimet_Oz_Demir, Meclis kürsüsünde “Bu bir katliam teklifidir” dediniz. “Aynı Nimet’im” diyorsanız sözünüzün arkasında durun: 7527’nin iptal dilekçesine imza. #7527İptalİmzacısıOl #7527İptal @AKparti @TBMMResmi',
+      c:"Sayın Nimet Özdemir,\n\n16 Temmuz’da Meclis kürsüsüne çıkıp “Bu bir katliam teklifidir, ötenazi diyerek vahşeti örtbas edemezsiniz, kabul etmeyeceğiz, direneceğiz” dediniz.\n\n11 Ekim’de Gebze barınağının önünde, o katliamın tam ortasında dururken “Tüm şiddet birbiriyle bağlantılı. Kötülüğe alan açarsanız her yere yayılır” dediniz.\n\n13 Ekim’de Ümraniye’de, barınak denilen o ölüm merkezlerinin kapısında o vahşetin her anına bizimle birlikte şahitlik ettiniz.\n\nBugün geldiğimiz noktada, yasaklı ırk uygulamasıyla önü açılan öldürme pratiği sokaktaki bütün canlara uygulanıyor. Toplumun içine pompalanan bu şiddet, güvensizlik ve korku iklimi insanları kendi mahallesinde, kendi sokağında birbirine ve hayvanlara karşı düşmanlaştırdı. Barınak denilen yerlerin çözüm değil, birer ölüm kampı olduğunu alanda gözlerimizle gördük. Biz bu barınak sistemini de, bu cezasızlık düzenini de kesinlikle reddediyoruz.\n\nSiz iktidar partisine geçerken “Aynı Nimet’im” dediniz.\n\nEğer gerçekten aynı Nimet’seniz; Meclis kürsüsünde söylediklerinizin, Gebze ve Ümraniye kapılarında verdiğiniz sözlerin, kendi ağzınızdan çıkan cümlelerin ve vicdanınızın ağırlığını taşıyorsunuzdur.\n\nBiz halk olarak, 7527 sayılı kanunun derhal iptal edilmesi için başlattığımız dilekçe kampanyasında vekilleri imzacı olmaya çağırıyoruz.\n\nKendi sözünün arkasında durup durmayacağın, Gebze ve Ümraniye'deki o masumların yüzüne bakıp bakamayacağın senin vicdanına kalmış:\n\n7527’nin iptal dilekçesinde imzanızın olması gerektiğine inanıyoruz. @Nimet_Oz_Demir\n#7527İptalİmzacısıOl #7527İptal #GebzeKatliamıUnutulmadı #ÜmraniyeKatliamıUnutulmadı @AKparti @TBMMResmi #nimetozdemir"},
+    'bildiri':{t:'Bir halk iradesidir: 7527 iptal',n:13,d:'slaytlar/bildiri/bildiri-',
+      x:'Bir halk iradesidir: 7527 iptal edilsin. Yaşam hakkı pazarlık konusu edilemez. #7527İptal #7527İptalEdilsin',
+      c:'Bir halk iradesidir: 7527 iptal edilsin.\nYaşam hakkı pazarlık konusu edilemez.\n\nDilekçeni gönder, bir arkadaşını davet et: https://7527iptal.org\n\n#7527İptal #7527İptalEdilsin #3Milyonİrade #YaşamHakkıPazarlıksızdır'},
+    '15gun':{t:'İlk 15 gün: şeffaf bilgilendirme',n:10,d:'slaytlar/15gun/15gun-',
+      x:'İlk 15 günde 2.000 dilekçe, 813 kişi, 514 vekile ulaştık. Rakamlar olduğu gibi. #7527İptal #3Milyonİrade',
+      c:'İlk 15 günde 2.000 dilekçe, 813 kişi, 514 vekile ulaştık. Rakamlar olduğu gibi, nerede eksik kaldığımızla birlikte.\n\nSen de dilekçeni gönder: https://7527iptal.org\n\n#7527İptal #3Milyonİrade #7527İptalEdilsin'}
+  };
+  function $(i){return document.getElementById(i)}
+  function q(s){return encodeURIComponent(s)}
+  function p2(n){return n<10?'0'+n:''+n}
+  var T=$('dy-toast'),tm;
+  function say(m){T.textContent=m;T.classList.add('on');clearTimeout(tm);tm=setTimeout(function(){T.classList.remove('on')},1600)}
+  function copy(s){function fb(){var a=document.createElement('textarea');a.value=s;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();try{document.execCommand('copy');say('Kopyalandı')}catch(e){say('Kopyalanamadı')}document.body.removeChild(a)}
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(s).then(function(){say('Kopyalandı')},fb)}else fb()}
+  function share(k){var S=SETS[k],u=BASE+'#'+k;if(navigator.share){navigator.share({title:S.t,text:S.x,url:u}).catch(function(){})}else{copy(u)}}
+  var V=$('vw'),tr=$('vw-track'),cnt=$('vw-cnt'),pv=$('vw-prev'),nx=$('vw-next'),cur=null,open=false;
+  function w(){return tr.clientWidth||1}
+  function idx(){return Math.max(0,Math.min(SETS[cur].n-1,Math.round(tr.scrollLeft/w())))}
+  function upd(){if(!cur)return;var i=idx();cnt.textContent=(i+1)+' / '+SETS[cur].n;pv.disabled=i<=0;nx.disabled=i>=SETS[cur].n-1;$('vw-dl').href=SETS[cur].d+p2(i+1)+'.png';$('vw-dl').setAttribute('download',cur+'-'+p2(i+1)+'.png')}
+  function openSet(k,push){
+    cur=k;var S=SETS[k],h='';
+    for(var i=1;i<=S.n;i++)h+='<img src="'+S.d+p2(i)+'.png" alt="'+S.t+': slayt '+i+'" '+(i>2?'loading="lazy"':'')+'>';
+    tr.innerHTML=h;$('vw-t').textContent=S.t;
+    $('vw-x2').href='https://twitter.com/intent/tweet?text='+q(S.x)+'&url='+q(BASE+'#'+k);
+    V.classList.add('on');document.body.style.overflow='hidden';open=true;tr.scrollLeft=0;upd();
+    if(push!==false){try{history.replaceState(null,'','#'+k)}catch(e){}}
+  }
+  function closeSet(){V.classList.remove('on');document.body.style.overflow='';open=false;cur=null;try{history.replaceState(null,'',location.pathname+location.search+'#duyurular')}catch(e){}}
+  Array.prototype.forEach.call(document.querySelectorAll('[data-open]'),function(b){b.addEventListener('click',function(){openSet(b.getAttribute('data-open'))})});
+  Array.prototype.forEach.call(document.querySelectorAll('[data-share]'),function(b){b.addEventListener('click',function(){share(b.getAttribute('data-share'))})});
+  $('vw-x').addEventListener('click',closeSet);
+  V.addEventListener('click',function(e){if(e.target===V)closeSet()});
+  document.addEventListener('keydown',function(e){if(!open)return;if(e.key==='Escape')closeSet();if(e.key==='ArrowRight')tr.scrollBy({left:w(),behavior:'smooth'});if(e.key==='ArrowLeft')tr.scrollBy({left:-w(),behavior:'smooth'})});
+  pv.addEventListener('click',function(){tr.scrollBy({left:-w(),behavior:'smooth'})});
+  nx.addEventListener('click',function(){tr.scrollBy({left:w(),behavior:'smooth'})});
+  tr.addEventListener('scroll',upd,{passive:true});window.addEventListener('resize',upd);
+  $('vw-cp').addEventListener('click',function(){if(cur)copy(SETS[cur].c)});
+  $('vw-sh').addEventListener('click',function(){if(cur)share(cur)});
+  var hs=(location.hash||'').slice(1);if(SETS[hs])openSet(hs,false);
+})();
+</script>
 <section>
 <div class="cols">
 <div>
