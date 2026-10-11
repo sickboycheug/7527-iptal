@@ -134,13 +134,15 @@ button.btn.dy-ghost{border:1px solid var(--em)}
 .vw.on{display:flex}
 .vw-x{position:absolute;top:10px;right:14px;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:#0d1914;color:#f4f4f5;font-size:26px;cursor:pointer;line-height:1}
 .vw-t{font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.08em;font-size:18px;color:var(--em2);text-align:center;padding:0 52px}
-.vw-box{width:min(94vw,calc((100dvh - 260px)*.5625))}
+.vw-box{width:min(94vw,calc((100dvh - 310px)*.5625))}
 .vw-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;border-radius:16px;scrollbar-width:none}
 .vw-track::-webkit-scrollbar{display:none}
 .vw-track img{flex:0 0 100%;width:100%;aspect-ratio:9/16;object-fit:contain;scroll-snap-align:center;background:#0b0f0d}
 .vw-ctl{display:flex;align-items:center;gap:18px;color:#d4e0d9;font-size:16px}
 .vw-ctl button{width:44px;height:44px;border-radius:50%;border:1px solid var(--em);background:transparent;color:var(--em2);font-size:26px;cursor:pointer;line-height:1}
 .vw-ctl button:disabled{opacity:.3;cursor:default}
+.vw-share{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.vw-share .btn{padding:9px 16px;font-size:14px}
 .vw-acts{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 .vw-acts .btn{padding:9px 16px;font-size:14px}
 .dy-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--em);color:#052e1f;font-weight:700;padding:10px 20px;border-radius:999px;opacity:0;pointer-events:none;transition:.25s;z-index:99}
@@ -154,25 +156,25 @@ button.btn.dy-ghost{border:1px solid var(--em)}
 <button type="button" class="dy-cov" data-open="nimet" aria-label="Slaytları aç"><img src="slaytlar/nimet/nimet-01.png" alt="Nimet vekilim, sözünüzü tutun" loading="lazy"></button>
 <div class="dy-in"><div class="dy-meta"><span class="dy-tag">Açık çağrı</span><span>11 Ekim 2026</span></div>
 <h3>Nimet vekilim, sözünüzü tutun</h3><p>Meclis kürsüsünde ve Gebze, Ümraniye kapılarında verdiğiniz sözlerin arkasında durun. 7527’nin iptal dilekçesine imza verin.</p>
-<div class="dy-acts"><button type="button" class="btn" data-open="nimet">Slaytları aç</button><button type="button" class="btn dy-ghost" data-share="nimet">Paylaş</button></div></div>
+<div class="dy-acts"><button type="button" class="btn" data-open="nimet">Slaytları aç</button><button type="button" class="btn dy-ghost" data-open="nimet">Paylaş</button></div></div>
 </article>
 <article class="dy-card" data-set="bildiri">
 <button type="button" class="dy-cov" data-open="bildiri" aria-label="Slaytları aç"><img src="slaytlar/bildiri/bildiri-01.png" alt="Bir halk iradesidir: 7527 iptal" loading="lazy"></button>
 <div class="dy-in"><div class="dy-meta"><span class="dy-tag">Bildiri</span><span>10 Ekim 2026</span></div>
 <h3>Bir halk iradesidir: 7527 iptal</h3><p>Bildirinin tamamı 13 slaytta. Kaydır, oku, paylaş.</p>
-<div class="dy-acts"><button type="button" class="btn" data-open="bildiri">Slaytları aç</button><button type="button" class="btn dy-ghost" data-share="bildiri">Paylaş</button></div></div>
+<div class="dy-acts"><button type="button" class="btn" data-open="bildiri">Slaytları aç</button><button type="button" class="btn dy-ghost" data-open="bildiri">Paylaş</button></div></div>
 </article>
 <article class="dy-card" data-set="15gun">
 <button type="button" class="dy-cov" data-open="15gun" aria-label="Slaytları aç"><img src="slaytlar/15gun/15gun-01.png" alt="İlk 15 gün: şeffaf bilgilendirme" loading="lazy"></button>
 <div class="dy-in"><div class="dy-meta"><span class="dy-tag">Rapor</span><span>10 Ekim 2026</span></div>
 <h3>İlk 15 gün: şeffaf bilgilendirme</h3><p>2.000 dilekçe, 813 kişi, 514 vekile ulaştık. Rakamlar olduğu gibi, nerede eksik kaldığımızla birlikte.</p>
-<div class="dy-acts"><button type="button" class="btn" data-open="15gun">Slaytları aç</button><button type="button" class="btn dy-ghost" data-share="15gun">Paylaş</button></div></div>
+<div class="dy-acts"><button type="button" class="btn" data-open="15gun">Slaytları aç</button><button type="button" class="btn dy-ghost" data-open="15gun">Paylaş</button></div></div>
 </article>
-  <article class="dy-card" data-set="dilekce">
+<article class="dy-card" data-set="dilekce">
 <button type="button" class="dy-cov" data-open="dilekce" aria-label="Slaytları aç"><img src="slaytlar/dilekce/dilekce-01.png" alt="Dilekçeni adım adım gönder" loading="lazy"></button>
 <div class="dy-in"><div class="dy-meta"><span class="dy-tag">Rehber</span><span>11 Ekim 2026</span></div>
 <h3>Dilekçeni adım adım gönder</h3><p>Ekranda göreceğin her pencere bu sunumda. Sırayla ilerle, hiçbir adımı atlama.</p>
-<div class="dy-acts"><button type="button" class="btn" data-open="dilekce">Slaytları aç</button><button type="button" class="btn dy-ghost" data-share="dilekce">Paylaş</button></div></div>
+<div class="dy-acts"><button type="button" class="btn" data-open="dilekce">Slaytları aç</button><button type="button" class="btn dy-ghost" data-open="dilekce">Paylaş</button></div></div>
 </article>
 </div>
 </section>
@@ -181,13 +183,15 @@ button.btn.dy-ghost{border:1px solid var(--em)}
 <div class="vw-t" id="vw-t"></div>
 <div class="vw-box"><div class="vw-track" id="vw-track"></div></div>
 <div class="vw-ctl"><button type="button" id="vw-prev" aria-label="Önceki">&#8249;</button><span id="vw-cnt">1 / 1</span><button type="button" id="vw-next" aria-label="Sonraki">&#8250;</button></div>
-<div class="vw-acts"><button type="button" class="btn" id="vw-cp">Metni kopyala</button><button type="button" class="btn dy-ghost" id="vw-sh">Paylaş</button><a class="btn dy-ghost" id="vw-dl" download>Bu slaytı indir</a><a class="btn dy-ghost" id="vw-x2" target="_blank" rel="noopener">X’te paylaş</a></div>
+<div class="vw-share"><a class="btn dy-ghost" id="s-wa" target="_blank" rel="noopener">WhatsApp</a><a class="btn dy-ghost" id="s-x" target="_blank" rel="noopener">X</a><a class="btn dy-ghost" id="s-fb" target="_blank" rel="noopener">Facebook</a><a class="btn dy-ghost" id="s-tg" target="_blank" rel="noopener">Telegram</a></div>
+<div class="vw-acts"><button type="button" class="btn" id="vw-cp">Metni kopyala</button><button type="button" class="btn dy-ghost" id="vw-lk">Linki kopyala</button><a class="btn dy-ghost" id="vw-dl" download>Bu slaytı indir</a></div>
 </div>
 <div class="dy-toast" id="dy-toast">Kopyalandı</div>
 <script>
 (function(){
   var BASE='https://7527iptal.org/hakikat.html';
-  var SETS={'dilekce':{t:'Dilekçeni adım adım gönder',n:12,d:'slaytlar/dilekce/dilekce-',x:'Dilekçeni adım adım gönder: 7527’nin iptali için her dilekçe bir vekile ulaşıyor. https://7527iptal.org #7527İptal #3Milyonİrade',c:'Dilekçeni adım adım gönder.\n\n7527 sayılı yasanın iptali için dilekçeni oluştur, PDF’i e-postayla gönder, siteye dönüp “Gönderdim” de.\n\nhttps://7527iptal.org\n\n#7527İptal #7527İptalEdilsin #3Milyonİrade'},
+  var SETS={
+    'dilekce':{t:'Dilekçeni adım adım gönder',n:12,d:'slaytlar/dilekce/dilekce-',x:'Dilekçeni adım adım gönder: 7527’nin iptali için her dilekçe bir vekile ulaşıyor. #7527İptal #3Milyonİrade',c:'Dilekçeni adım adım gönder.\n\n7527 sayılı yasanın iptali için dilekçeni oluştur, PDF’i e-postayla gönder, siteye dönüp “Gönderdim” de.\n\nhttps://7527iptal.org\n\n#7527İptal #7527İptalEdilsin #3Milyonİrade'},
     'nimet':{t:'Nimet vekilim, sözünüzü tutun',n:6,d:'slaytlar/nimet/nimet-',
       x:'Sayın @Nimet_Oz_Demir, Meclis kürsüsünde “Bu bir katliam teklifidir” dediniz. “Aynı Nimet’im” diyorsanız sözünüzün arkasında durun: 7527’nin iptal dilekçesine imza. #7527İptalİmzacısıOl #7527İptal @AKparti @TBMMResmi',
       c:"Sayın Nimet Özdemir,\n\n16 Temmuz’da Meclis kürsüsüne çıkıp “Bu bir katliam teklifidir, ötenazi diyerek vahşeti örtbas edemezsiniz, kabul etmeyeceğiz, direneceğiz” dediniz.\n\n11 Ekim’de Gebze barınağının önünde, o katliamın tam ortasında dururken “Tüm şiddet birbiriyle bağlantılı. Kötülüğe alan açarsanız her yere yayılır” dediniz.\n\n13 Ekim’de Ümraniye’de, barınak denilen o ölüm merkezlerinin kapısında o vahşetin her anına bizimle birlikte şahitlik ettiniz.\n\nBugün geldiğimiz noktada, yasaklı ırk uygulamasıyla önü açılan öldürme pratiği sokaktaki bütün canlara uygulanıyor. Toplumun içine pompalanan bu şiddet, güvensizlik ve korku iklimi insanları kendi mahallesinde, kendi sokağında birbirine ve hayvanlara karşı düşmanlaştırdı. Barınak denilen yerlerin çözüm değil, birer ölüm kampı olduğunu alanda gözlerimizle gördük. Biz bu barınak sistemini de, bu cezasızlık düzenini de kesinlikle reddediyoruz.\n\nSiz iktidar partisine geçerken “Aynı Nimet’im” dediniz.\n\nEğer gerçekten aynı Nimet’seniz; Meclis kürsüsünde söylediklerinizin, Gebze ve Ümraniye kapılarında verdiğiniz sözlerin, kendi ağzınızdan çıkan cümlelerin ve vicdanınızın ağırlığını taşıyorsunuzdur.\n\nBiz halk olarak, 7527 sayılı kanunun derhal iptal edilmesi için başlattığımız dilekçe kampanyasında vekilleri imzacı olmaya çağırıyoruz.\n\nKendi sözünün arkasında durup durmayacağın, Gebze ve Ümraniye'deki o masumların yüzüne bakıp bakamayacağın senin vicdanına kalmış:\n\n7527’nin iptal dilekçesinde imzanızın olması gerektiğine inanıyoruz. @Nimet_Oz_Demir\n#7527İptalİmzacısıOl #7527İptal #GebzeKatliamıUnutulmadı #ÜmraniyeKatliamıUnutulmadı @AKparti @TBMMResmi #nimetozdemir"},
@@ -205,7 +209,6 @@ button.btn.dy-ghost{border:1px solid var(--em)}
   function say(m){T.textContent=m;T.classList.add('on');clearTimeout(tm);tm=setTimeout(function(){T.classList.remove('on')},1600)}
   function copy(s){function fb(){var a=document.createElement('textarea');a.value=s;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();try{document.execCommand('copy');say('Kopyalandı')}catch(e){say('Kopyalanamadı')}document.body.removeChild(a)}
     if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(s).then(function(){say('Kopyalandı')},fb)}else fb()}
-  function share(k){var S=SETS[k],u=BASE+'#'+k;if(navigator.share){navigator.share({title:S.t,text:S.x,url:u}).catch(function(){})}else{copy(u)}}
   var V=$('vw'),tr=$('vw-track'),cnt=$('vw-cnt'),pv=$('vw-prev'),nx=$('vw-next'),cur=null,open=false;
   function w(){return tr.clientWidth||1}
   function idx(){return Math.max(0,Math.min(SETS[cur].n-1,Math.round(tr.scrollLeft/w())))}
@@ -214,13 +217,16 @@ button.btn.dy-ghost{border:1px solid var(--em)}
     cur=k;var S=SETS[k],h='';
     for(var i=1;i<=S.n;i++)h+='<img src="'+S.d+p2(i)+'.png" alt="'+S.t+': slayt '+i+'" '+(i>2?'loading="lazy"':'')+'>';
     tr.innerHTML=h;$('vw-t').textContent=S.t;
-    $('vw-x2').href='https://twitter.com/intent/tweet?text='+q(S.x)+'&url='+q(BASE+'#'+k);
+    var U=BASE+'#'+k;
+    $('s-x').href='https://twitter.com/intent/tweet?text='+q(S.x)+'&url='+q(U);
+    $('s-wa').href='https://api.whatsapp.com/send?text='+q(S.c.length<900?S.c+'\n\n'+U:S.x+'\n\n'+U);
+    $('s-fb').href='https://www.facebook.com/sharer/sharer.php?u='+q(U);
+    $('s-tg').href='https://t.me/share/url?url='+q(U)+'&text='+q(S.x);
     V.classList.add('on');document.body.style.overflow='hidden';open=true;tr.scrollLeft=0;upd();
     if(push!==false){try{history.replaceState(null,'','#'+k)}catch(e){}}
   }
   function closeSet(){V.classList.remove('on');document.body.style.overflow='';open=false;cur=null;try{history.replaceState(null,'',location.pathname+location.search+'#duyurular')}catch(e){}}
   Array.prototype.forEach.call(document.querySelectorAll('[data-open]'),function(b){b.addEventListener('click',function(){openSet(b.getAttribute('data-open'))})});
-  Array.prototype.forEach.call(document.querySelectorAll('[data-share]'),function(b){b.addEventListener('click',function(){share(b.getAttribute('data-share'))})});
   $('vw-x').addEventListener('click',closeSet);
   V.addEventListener('click',function(e){if(e.target===V)closeSet()});
   document.addEventListener('keydown',function(e){if(!open)return;if(e.key==='Escape')closeSet();if(e.key==='ArrowRight')tr.scrollBy({left:w(),behavior:'smooth'});if(e.key==='ArrowLeft')tr.scrollBy({left:-w(),behavior:'smooth'})});
@@ -228,7 +234,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
   nx.addEventListener('click',function(){tr.scrollBy({left:w(),behavior:'smooth'})});
   tr.addEventListener('scroll',upd,{passive:true});window.addEventListener('resize',upd);
   $('vw-cp').addEventListener('click',function(){if(cur)copy(SETS[cur].c)});
-  $('vw-sh').addEventListener('click',function(){if(cur)share(cur)});
+  $('vw-lk').addEventListener('click',function(){if(cur)copy(BASE+'#'+cur)});
   var hs=(location.hash||'').slice(1);if(SETS[hs])openSet(hs,false);
 })();
 </script>
