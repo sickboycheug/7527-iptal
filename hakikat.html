@@ -113,7 +113,67 @@ footer a.mail{font-size:clamp(20px,3.4vw,28px);font-weight:700;text-decoration:n
 <h1><span class="l1">Bir halk iradesidir:</span><span class="l2"><span class="strike">7527</span><span class="em">iptal</span></span></h1>
 <p class="lead">7527 sayılı yasa, toplumsal bir uzlaşı ya da çözüm değil; topluma, sokaklara ve bu ülkenin en savunmasız canlılarına ağır bir yıkım getiren ölümcül bir hatadır.</p>
 </header>
-
+<!-- DUYURULAR: yeni duyuru için üstteki <article> bloklarından birini kopyalayıp en başa ekle -->
+<style>
+.dy-news{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(min(100%,19rem),1fr));margin-top:10px}
+.dy-card{background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column}
+.dy-card img{width:100%;height:auto;display:block;background:#0b0f0d}
+.dy-in{padding:18px 20px 20px;display:flex;flex-direction:column;gap:8px;flex:1}
+.dy-meta{display:flex;justify-content:space-between;gap:10px;font-size:14px;color:var(--mut)}
+.dy-tag{font-family:'Oswald',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--em2)}
+.dy-card h3{font-size:24px;line-height:1.15;margin:0}
+.dy-card p{margin:0;font-size:16px;color:#d4e0d9;flex:1}
+.dy-acts{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+.dy-ghost{background:transparent;color:var(--em2);border:1px solid var(--em);cursor:pointer;font-size:14px}
+.dy-ghost:hover{background:var(--em);color:#052e1f}
+button.btn{border:0;cursor:pointer}
+button.btn.dy-ghost{border:1px solid var(--em)}
+.say{display:grid;grid-template-columns:9rem 1fr;gap:20px;align-items:start;padding:20px 0;border-top:1px solid var(--line)}
+.when{font-family:'Oswald',sans-serif;font-size:28px;line-height:1.1;text-transform:uppercase;color:var(--em2)}
+.when small{display:block;font-family:'Source Sans 3',sans-serif;font-size:15px;text-transform:none;color:var(--mut);margin-top:4px}
+.say blockquote{margin:0;border-left:4px solid var(--red);padding-left:18px;font-size:clamp(20px,3vw,26px);line-height:1.4;font-weight:600}
+.say p{margin:0}
+@media(max-width:560px){.say{grid-template-columns:1fr;gap:8px}}
+.big-q{font-family:'Oswald',sans-serif;text-transform:uppercase;font-size:clamp(30px,6vw,56px);line-height:1.1;margin:0 0 18px}
+.big-q span{color:var(--amb)}
+.fig{max-width:26rem;margin:0 auto}
+.fig img{width:100%;height:auto;display:block;border-radius:18px;border:1px solid var(--line)}
+audio{width:100%;margin-top:12px}
+.acts{display:flex;flex-wrap:wrap;gap:10px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 16px}
+.chip{font:600 16px 'Source Sans 3',sans-serif;color:var(--em2);background:#0d1914;border:1px solid var(--line);border-radius:999px;padding:7px 14px;cursor:pointer}
+.chip:hover{border-color:var(--em2)}
+.deck{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:clamp(20px,4vw,34px)}
+.deck h3{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:0 0 16px;color:var(--amb)}
+.deck p{margin:0 0 14px}
+.sign{font-family:'Oswald',sans-serif;text-transform:uppercase;font-size:clamp(24px,4.5vw,40px);line-height:1.15}
+.dy-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--em);color:#052e1f;font-weight:700;padding:10px 20px;border-radius:999px;opacity:0;pointer-events:none;transition:.25s;z-index:9}
+.dy-toast.on{opacity:1;transform:translateX(-50%)}
+</style>
+<section id="duyurular">
+<p class="eyebrow">Haberler ve çağrılar</p>
+<h2>Duyurular</h2>
+<div class="dy-news">
+<article class="dy-card">
+<a href="#nimet"><img src="paylasim-nimet.png" alt="Nimet vekilim, sözünüzü tutun" loading="lazy"></a>
+<div class="dy-in"><div class="dy-meta"><span class="dy-tag">Açık çağrı</span><span>11 Ekim 2026</span></div>
+<h3>Nimet vekilim, sözünüzü tutun</h3><p>Meclis kürsüsünde ve Gebze, Ümraniye kapılarında verdiğiniz sözlerin arkasında durun. 7527’nin iptal dilekçesine imza verin.</p>
+<div class="dy-acts"><a class="btn" href="#nimet">Oku</a><button type="button" class="btn dy-ghost" data-u="#nimet" data-t="Nimet vekilim, sözünüzü tutun" data-x="Meclis kürsüsünde ve Gebze, Ümraniye kapılarında verdiğiniz sözlerin arkasında durun. 7527’nin iptal dilekçesine imza verin.">Paylaş</button></div></div>
+</article>
+<article class="dy-card">
+<a href="#paylas"><img src="paylasim-paylas.png" alt="Hakikat ortada, kaçamazsınız" loading="lazy"></a>
+<div class="dy-in"><div class="dy-meta"><span class="dy-tag">Paylaşım merkezi</span><span>11 Ekim 2026</span></div>
+<h3>Hakikat ortada, kaçamazsınız</h3><p>Hazır deklarasyon ve hashtag grupları. Kopyala, paylaş, vekillerin önüne düşür.</p>
+<div class="dy-acts"><a class="btn" href="#paylas">Oku</a><button type="button" class="btn dy-ghost" data-u="#paylas" data-t="Hakikat ortada, kaçamazsınız" data-x="Hazır deklarasyon ve hashtag grupları. Kopyala, paylaş, vekillerin önüne düşür.">Paylaş</button></div></div>
+</article>
+<article class="dy-card">
+<a href="#rapor"><img src="15gun.png" alt="İlk 15 gün: şeffaf bilgilendirme" loading="lazy"></a>
+<div class="dy-in"><div class="dy-meta"><span class="dy-tag">Rapor</span><span>10 Ekim 2026</span></div>
+<h3>İlk 15 gün: şeffaf bilgilendirme</h3><p>2.000 dilekçe, 813 kişi, 514 vekile ulaştık. Rakamlar olduğu gibi, nerede eksik kaldığımızla birlikte.</p>
+<div class="dy-acts"><a class="btn" href="#rapor">Oku</a><button type="button" class="btn dy-ghost" data-u="#rapor" data-t="İlk 15 gün: şeffaf bilgilendirme" data-x="2.000 dilekçe, 813 kişi, 514 vekile ulaştık. Rakamlar olduğu gibi, nerede eksik kaldığımızla birlikte.">Paylaş</button></div></div>
+</article>
+</div>
+</section>
 <section>
 <div class="cols">
 <div>
