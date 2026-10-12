@@ -1278,10 +1278,13 @@ function sendButtons(a, code) {
   var text = inviteText(a, code);
   var ck = contactKind(a.contact);
   if (ck.type === 'phone') {
+      var waNum = ck.type === 'phone' ? ck.value : (ck.phone || '');
+  if (waNum) {
     var wa = h('a', 'btn bg-emerald-700 hover:bg-emerald-600 text-white', '💬 WhatsApp ile gönder');
-    wa.href = 'https://wa.me/' + ck.value + '?text=' + encodeURIComponent(text); wa.target = '_blank'; wa.rel = 'noopener noreferrer';
+    wa.href = 'https://wa.me/' + waNum + '?text=' + encodeURIComponent(text); wa.target = '_blank'; wa.rel = 'noopener noreferrer';
     wrap.appendChild(wa);
-  } else if (ck.type === 'email') {
+  }
+  if (ck.type === 'email') {
         var ml = actBtn('✉ E-posta ile gönder', 'bg-sky-700 hover:bg-sky-600 text-white', async function () {
       ml.disabled = true;
       $('admin-msg').textContent = 'E-posta gönderiliyor…';
