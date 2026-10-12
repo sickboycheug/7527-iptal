@@ -1278,7 +1278,6 @@ function sendButtons(a, code) {
   var wrap = h('div', 'flex flex-wrap gap-2');
   var text = inviteText(a, code);
   var ck = contactKind(a.contact);
-  if (ck.type === 'phone') {
       var waNum = ck.type === 'phone' ? ck.value : (ck.phone || '');
   if (waNum) {
     var wa = h('a', 'btn bg-emerald-700 hover:bg-emerald-600 text-white', '💬 WhatsApp ile gönder');
