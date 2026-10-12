@@ -3701,8 +3701,9 @@ async function sendPetitionViaEmail() {
 
     document.getElementById('confirm-modal').style.display = 'flex';
   } catch (e) {
-    if (e && e.message === 'pdf_lib') {
-      alert('PDF kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edip tekrar deneyin.');
+        if (e && (e.message === 'pdf_lib' || e.message === 'pdf_timeout' || e.message === 'pdf_font')) {
+      try { localStorage.removeItem(tekrarAnahtar); } catch (x) {}
+      alert('PDF hazırlanamadı. Büyük ihtimalle uygulamanın içindeki tarayıcı sorun çıkarıyor.\n\nÇözüm: Bu sayfanın adresini kopyalayıp Safari veya Chrome\'da açın ve dilekçeyi oradan tekrar oluşturun.');
     } else {
       alert(dataErrorText(e));
     }
