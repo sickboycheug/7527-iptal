@@ -221,7 +221,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
     tr.innerHTML=h;$('vw-t').textContent=S.t;
     var U=BASE+'#'+k;
     $('s-x').href='https://twitter.com/intent/tweet?text='+q(S.x)+'&url='+q(U);
-    $('s-wa').href='https://api.whatsapp.com/send?text='+q(S.c.length<900?S.c+'\n\n'+U:S.x+'\n\n'+U);
+    $('s-wa').href='https://api.whatsapp.com/send?text='+q((S.c.length<900?S.c:S.x).replace(/https:\/\/7527iptal\.org/g,'').replace(/\n{3,}/g,'\n\n')+'\n\n'+U);
     $('s-fb').href='https://www.facebook.com/sharer/sharer.php?u='+q(U);
     $('s-tg').href='https://t.me/share/url?url='+q(U)+'&text='+q(S.x);
     V.classList.add('on');document.body.style.overflow='hidden';open=true;tr.scrollLeft=0;upd();
