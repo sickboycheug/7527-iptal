@@ -1253,6 +1253,14 @@ function renderApps() {
       line.appendChild(inp); line.appendChild(btn);
       row.appendChild(line);
     }
+    row.appendChild(actBtn('🗑 Sil', 'bg-red-800 hover:bg-red-700 text-white', async function () {
+      if (!confirm('"' + (a.name || 'Bu kayıt') + '" kalıcı olarak silinsin mi? Geri alınamaz.')) return;
+      try {
+        await callRpc('admin_delete_volunteer', { p_pin: adminPin, p_id: a.id });
+        $('admin-msg').textContent = '';
+      } catch (e) { $('admin-msg').textContent = errText(e); return; }
+      adminReload();
+    }));
     box.appendChild(row);
   });
 }
