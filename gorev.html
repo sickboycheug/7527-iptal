@@ -1267,6 +1267,7 @@ function renderApps() {
         await callRpc('admin_delete_volunteer', { p_pin: adminPin, p_id: a.id });
         $('admin-msg').textContent = '';
       } catch (e) { $('admin-msg').textContent = errText(e); return; }
+      adminApps = adminApps.filter(function (x) { return x.id !== a.id; });
       adminReload();
     }));
     box.appendChild(row);
