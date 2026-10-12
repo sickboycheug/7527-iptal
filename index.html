@@ -3486,7 +3486,106 @@ function fillPrintPetition(number) {
 }
 
 // Yalnizca #print-petition bolumunu A4 PDF'e cevirir
+function bufToB64(buf) {
+  var bytes = new Uint8Array(buf), bin = '', chunk = 0x8000;
+  for (var i = 0; i < bytes.length; i += chunk) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+  return btoa(bin);
+}
+var pdfFontCache = null;
+async function loadPdfFonts() {
+  if (pdfFontCache) return pdfFontCache;
+  async function get(name) {
+    var yollar = ['fonts/' + name, name];
+    for (var i = 0; i < yollar.length; i++) {
+      try {
+        var r = await fetch(yollar[i]);
+        if (r.ok) return bufToB64(await r.arrayBuffer());
+      } catch (e) {}
+    }
+    throw new Error('pdf_font');
+  }
+  var res = await Promise.all([get('serif-regular.ttf'), get('serif-bold.ttf')]);
+  pdfFontCache = { regular: res[0], bold: res[1] };
+  return pdfFontCache;
+}
+function pdfWithTimeout(promise, ms) {
+  return new Promise(function(resolve, reject) {
+    var t = setTimeout(function() { reject(new Error('pdf_timeout')); }, ms);
+    promise.then(function(v) { clearTimeout(t); resolve(v); }, function(e) { clearTimeout(t); reject(e); });
+  });
+}
 async function generatePetitionPdf() {
+  await pdfWithTimeout(Promise.all([
+    loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
+                   function() { return !!(window.jspdf && window.jspdf.jsPDF); }),
+    loadPdfFonts()
+  ]), 20000);
+  var fonts = await loadPdfFonts();
+  function txt(id) { var el = document.getElementById(id); return el ? (el.textContent || '').trim() : ''; }
+
+  var pdf = new window.jspdf.jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+  pdf.addFileToVFS('serif-regular.ttf', fonts.regular);
+  pdf.addFont('serif-regular.ttf', 'SerifTR', 'normal');
+  pdf.addFileToVFS('serif-bold.ttf', fonts.bold);
+  pdf.addFont('serif-bold.ttf', 'SerifTR', 'bold');
+
+  var W = 210, H = 297, M = 20, maxW = W - 2 * M, y = M;
+  function ensure(h) { if (y + h > H - M) { pdf.addPage(); y = M; } }
+  function lineH(size) { return size * 0.3528 * 1.55; }
+
+  function para(text, size, style, center, gap) {
+    pdf.setFont('SerifTR', style); pdf.setFontSize(size);
+    var lh = lineH(size);
+    pdf.splitTextToSize(text, maxW).forEach(function(ln) {
+      ensure(lh);
+      if (center) pdf.text(ln, W / 2, y, { align: 'center', baseline: 'top' });
+      else pdf.text(ln, M, y, { baseline: 'top' });
+      y += lh;
+    });
+    y += gap;
+  }
+  function field(label, value, gap, width) {
+    var size = 11, lh = lineH(size);
+    pdf.setFont('SerifTR', 'bold'); pdf.setFontSize(size);
+    var lw = pdf.getTextWidth(label + ' ');
+    pdf.setFont('SerifTR', 'normal');
+    var lines = pdf.splitTextToSize(value || '-', (width || maxW) - lw);
+    ensure(lh * lines.length);
+    pdf.setFont('SerifTR', 'bold'); pdf.text(label, M, y, { baseline: 'top' });
+    pdf.setFont('SerifTR', 'normal');
+    lines.forEach(function(ln) { pdf.text(ln, M + lw, y, { baseline: 'top' }); y += lh; });
+    y += gap;
+  }
+
+  para(txt('print-header').toLocaleUpperCase('tr-TR'), 13, 'bold', true, 8);
+  field('KONU:', txt('print-konu'), 5);
+  para(txt('print-body'), 11, 'normal', false, 5);
+
+  ensure(60);
+  y += 12;
+  var sigTop = y;
+  field('Dilekçe Sahibi:', txt('print-name'), 2, 115);
+  field('T.C. Kimlik No:', txt('print-tc'), 2, 115);
+  field('Adres:', txt('print-address'), 2, 115);
+  field('İletişim:', txt('print-contact'), 2, 115);
+  field('Tarih:', txt('print-date'), 0, 115);
+  var sigBottom = y;
+  pdf.setDrawColor(0); pdf.setLineWidth(0.25);
+  pdf.line(W - M - 45, sigBottom - 6, W - M, sigBottom - 6);
+  pdf.setFont('SerifTR', 'bold'); pdf.setFontSize(11);
+  pdf.text('İmza', W - M - 22.5, sigBottom - 4.5, { align: 'center', baseline: 'top' });
+
+  y += 14; ensure(10);
+  pdf.setDrawColor(150); pdf.line(M, y, W - M, y);
+  y += 3;
+  pdf.setFont('SerifTR', 'normal'); pdf.setFontSize(8.5); pdf.setTextColor(68);
+  pdf.text('Dilekçe No: ' + txt('print-number'), M, y, { baseline: 'top' });
+  pdf.text('7527iptal.org', W - M, y, { align: 'right', baseline: 'top' });
+
+  return pdf.output('blob');
+}
+
+async function generatePetitionPdfCanvas() {
   await loadPdfLibs();
   var node = document.getElementById('print-petition');
   var canvas = await html2canvas(node, {
