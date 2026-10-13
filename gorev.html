@@ -445,6 +445,12 @@ Panele giriş: [LİNK]</textarea>
         <div id="adm-tasks" class="space-y-2"></div>
       </div>
 
+      <div class="space-y-2" data-tab="gorev">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400">Görev Geçmişi</h3>
+        <p class="text-[11px] text-zinc-500">Kim hangi görevi üstlendi, bıraktı, tamamladı. Yönetici "Aç" dese bile kayıt silinmez. Kayıt, geçmiş kaydı kurulduktan sonraki işlemlerden başlar.</p>
+        <div id="adm-tasklog" class="space-y-1"></div>
+      </div>
+
       <div class="space-y-2" data-tab="ekip">
         <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400">Başvurusuz Gönüllü Kodu Üret</h3>
         <div class="flex flex-col sm:flex-row gap-3 max-w-md">
@@ -1226,9 +1232,29 @@ async function adminLogin() {
   } catch (e) { $('admin-msg').textContent = errText(e); }
 }
 
+var taskLogRows = [];
 async function adminReload() {
   try { renderAdmin(await callRpc('gv_admin_state', { p_pin: adminPin })); $('admin-msg').textContent = ''; }
   catch (e) { $('admin-msg').textContent = errText(e); }
+  try { taskLogRows = (await callRpc('gv_admin_task_log', { p_pin: adminPin })) || []; } catch (e) { taskLogRows = []; }
+  renderTaskLog();
+}
+function fmtLogTime(v) {
+  try { return new Date(v).toLocaleString('tr-TR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; }
+}
+function renderTaskLog() {
+  var box = $('adm-tasklog'); if (!box) return;
+  box.textContent = '';
+  if (!taskLogRows.length) { box.appendChild(h('p', 'text-xs text-zinc-500', 'Henüz geçmiş kaydı yok. Bundan sonraki işlemler burada görünecek.')); return; }
+  taskLogRows.forEach(function (l) {
+    var row = h('div', 'flex flex-wrap items-center gap-2 bg-zinc-950/60 border border-zinc-800 rounded-lg p-2');
+    row.appendChild(h('span', 'text-[11px] text-zinc-500', fmtLogTime(l.at)));
+    row.appendChild(h('span', 'text-xs text-white font-semibold', l.nickname || '(bilinmiyor)'));
+    row.appendChild(h('span', 'text-[11px] text-zinc-300', l.action));
+    row.appendChild(h('span', 'text-[11px] text-zinc-400 flex-1 min-w-[8rem]', '· ' + (l.task_title || ('görev ' + l.task_id))));
+    if (l.nickname) { var cb = claimerBtn({ claimed_nick: l.nickname, title: l.task_title || '' }); if (cb) row.appendChild(cb); }
+    box.appendChild(row);
+  });
 }
 
 var admTasks = [], admMembers = [], adminKey = null, adminApps = [];
