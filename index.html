@@ -956,25 +956,47 @@
       </div>
 
       <div class="space-y-2">
-        <p class="text-[11px] text-zinc-400"><strong class="text-zinc-200">1.</strong> E-postayı aç (hangisini kullanıyorsan):</p>
+        <p class="text-[11px] text-zinc-400"><strong class="text-zinc-200">1.</strong> E-postayı aç. Kime, konu ve metin kendiliğinden dolar:</p>
         <button type="button" onclick="window.location.href = generateMailtoUrl()" class="w-full py-3 bg-sky-600 hover:bg-sky-500 text-white rounded-xl font-bold text-xs transition shadow">
           ✉️ E-posta Uygulamasını Aç
         </button>
+      </div>
+
+      <details class="bg-zinc-950 border border-zinc-800 rounded-xl p-3">
+        <summary class="cursor-pointer text-[11px] font-bold text-amber-400">E-posta açılmadı mı? Başka yolla gönder ▾</summary>
+        <div class="space-y-2 mt-3">
         <div class="grid grid-cols-2 gap-2">
           <button type="button" onclick="gmaildeAc()" class="py-2.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-zinc-100 rounded-xl font-bold text-xs transition">Gmail ile aç</button>
           <button type="button" onclick="outlookdaAc()" class="py-2.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-zinc-100 rounded-xl font-bold text-xs transition">Outlook / Hotmail</button>
         </div>
-        <button type="button" onclick="epostaMetniKopyala(this)" class="w-full py-2.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-zinc-100 rounded-xl font-bold text-xs transition">
-          📋 Adresi ve metni kopyala (başka e-posta için)
-        </button>
-        <p class="text-[10px] text-zinc-500">Hiçbiri açılmazsa: kopyala, kendi e-posta sayfana yapıştır.</p>
-      </div>
+        <p class="text-[11px] text-zinc-300">Ya da kendi e-postanda yeni mesaj aç, sırayla kopyalayıp yapıştır:</p>
+        <div>
+          <p class="text-[10px] text-zinc-500 mb-1">Kime</p>
+          <div class="flex gap-2 items-stretch">
+            <div id="cp-kime" class="flex-1 min-w-0 bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-2 text-[11px] text-zinc-100 break-all font-mono">-</div>
+            <button type="button" onclick="alanKopyala('cp-kime', this)" class="shrink-0 px-3 bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg font-bold text-[11px] transition">Kopyala</button>
+          </div>
+        </div>
+        <div>
+          <p class="text-[10px] text-zinc-500 mb-1">Konu</p>
+          <div class="flex gap-2 items-stretch">
+            <div id="cp-konu" class="flex-1 min-w-0 bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-2 text-[11px] text-zinc-100 break-words">-</div>
+            <button type="button" onclick="alanKopyala('cp-konu', this)" class="shrink-0 px-3 bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg font-bold text-[11px] transition">Kopyala</button>
+          </div>
+        </div>
+        <div>
+          <p class="text-[10px] text-zinc-500 mb-1">Mesaj (dilekçe metni)</p>
+          <div id="cp-mesaj" class="max-h-28 overflow-y-auto bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-2 text-[11px] text-zinc-300 whitespace-pre-wrap break-words">-</div>
+          <button type="button" onclick="alanKopyala('cp-mesaj', this)" class="mt-2 w-full py-2 bg-emerald-700 hover:bg-emerald-600 text-white rounded-lg font-bold text-[11px] transition">Mesajı Kopyala</button>
+        </div>
+        </div>
+      </details>
 
       <p class="text-[11px] text-zinc-400"><strong class="text-zinc-200">2.</strong> İndirdiğin <span class="text-emerald-400 font-bold">PDF dosyasını e-postaya ekle</span> (ataç veya + simgesi).</p>
       <button type="button" onclick="pdfiTekrarVer()" class="w-full py-2.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-zinc-100 rounded-xl font-bold text-xs transition">
         📄 PDF inmediyse veya iPhone'daysan: PDF'i kaydet / paylaş
       </button>
-      <p class="text-[10px] text-zinc-500">iPhone'da PDF ekranda açılırsa sağ üstteki <strong class="text-zinc-300">Paylaş</strong> simgesine bas, <strong class="text-zinc-300">Mail</strong>'i seç, PDF e-postaya kendiliğinden eklenir.</p>
+      <p class="text-[10px] text-zinc-500">iPhone'da PDF açılırsa <strong class="text-zinc-300">Paylaş → Mail</strong> de, PDF kendiliğinden eklenir.</p>
 
       <p class="text-[11px] text-zinc-400"><strong class="text-zinc-200">3.</strong> <span class="text-emerald-400 font-bold">Gönder</span>'e bas, sonra buraya dönüp aşağıdaki yeşil düğmeye bas.</p>
     </div>
@@ -985,7 +1007,6 @@
       <button type="button" onclick="gonderimiSonraya()" class="w-full py-2 text-zinc-400 hover:text-zinc-200 text-[11px] underline transition">
         Henüz göndermedim, sonra göndereceğim
       </button>
-      <p class="text-[10px] text-zinc-600">Göndermediysen pencereyi kapatabilirsin. Dilekçe kayıtlı, aynı hedefi seçip düğmeye tekrar basınca yeni dilekçe oluşmadan bu pencere yeniden açılır.</p>
     </div>
   </div>
 </div>
@@ -3437,6 +3458,23 @@ function epostaMetniKopyala(btn) {
   }
   if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok, fb); else fb();
 }
+function alanDoldur() {
+  var p = mailParcala();
+  var set = function (id, v) { var e = document.getElementById(id); if (e) e.textContent = v; };
+  set('cp-kime', p.to); set('cp-konu', p.subject); set('cp-mesaj', p.body);
+}
+function alanKopyala(id, btn) {
+  var e = document.getElementById(id); if (!e) return;
+  var t = e.textContent;
+  function ok() { var old = btn.getAttribute('data-old') || btn.textContent; btn.setAttribute('data-old', old); btn.textContent = '✓ Kopyalandı'; setTimeout(function () { btn.textContent = old; }, 2000); }
+  function fb() {
+    var a = document.createElement('textarea'); a.value = t; a.style.position = 'fixed'; a.style.opacity = '0';
+    document.body.appendChild(a); a.select();
+    try { document.execCommand('copy'); ok(); } catch (x) { alert('Kopyalanamadı. Metne basılı tutup kopyala.'); }
+    document.body.removeChild(a);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok, fb); else fb();
+}
 function gonderimiSonraya() {
   document.getElementById('confirm-modal').style.display = 'none';
 }
@@ -3759,6 +3797,7 @@ async function sendPetitionViaEmail() {
     step('E-posta açılıyor...');
     // E-posta, onay penceresindeki düğmeyle açılır (mobilde talimatın arkada kalmaması için)
 
+    try { alanDoldur(); } catch (x) {}
     document.getElementById('confirm-modal').style.display = 'flex';
   } catch (e) {
         if (e && (e.message === 'pdf_lib' || e.message === 'pdf_timeout' || e.message === 'pdf_font')) {
