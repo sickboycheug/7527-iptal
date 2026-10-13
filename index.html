@@ -1365,6 +1365,9 @@
           <button id="exp-mps" onclick="exportEncrypted('mps')" class="py-2 bg-sky-800 hover:bg-sky-700 rounded font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed">
             <span>🏛️</span> Vekil İmzaları (Excel)
           </button>
+          <button id="exp-backfill" onclick="backfillPetitionPlaces()" class="py-2 bg-amber-700 hover:bg-amber-600 rounded font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-50">
+            <span>🗺️</span> Eski dilekçeleri haritaya işle
+          </button>
           <button id="exp-volunteers" onclick="exportEncrypted('volunteers')" class="py-2 bg-emerald-800 hover:bg-emerald-700 rounded font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed">
             <span>🤝</span> Gönüllüler (Excel)
           </button>
@@ -5833,6 +5836,49 @@ async function exportEncrypted(kind) {
     alert(dataErrorText(e));
   } finally {
     exportBusy = false;
+    if (btn) { btn.disabled = false; btn.innerHTML = oldHtml; }
+  }
+}
+
+// Eski dilekceleri haritaya isler: sifre bu tarayicida cozulur, sunucuya yalnizca ulke ve sehir gider.
+var backfillBusy = false;
+async function backfillPetitionPlaces() {
+  if (backfillBusy) return;
+  if (!adminPinCache) { alert('Oturum düşmüş. Lütfen yönetici PIN’ini tekrar girin.'); return; }
+  if (!cryptoAvailable()) { alert(dataErrorText(new Error('crypto_unavailable'))); return; }
+  var btn = document.getElementById('exp-backfill');
+  var oldHtml = btn ? btn.innerHTML : '';
+  backfillBusy = true;
+  if (btn) { btn.disabled = true; btn.textContent = 'Anahtar açılıyor...'; }
+  try {
+    var privateKey = await loadAdminPrivateKey();
+    if (!privateKey) return;
+    var rows = [];
+    for (var off = 0; ; off += 100) {
+      var part = await callRpc('export_petitions_range', { p_pin: adminPinCache, p_from: null, p_to: null, p_offset: off, p_limit: 100 }) || [];
+      rows = rows.concat(part);
+      if (btn) btn.textContent = 'Kayıtlar alınıyor (' + rows.length + ')...';
+      if (part.length < 100) break;
+    }
+    if (!rows.length) { alert('Henüz kayıt yok.'); return; }
+    var items = [], hatali = 0;
+    for (var i = 0; i < rows.length; i++) {
+      try {
+        var c = await decryptPayload(privateKey, rows[i].payload_enc);
+        if (c && c.city) items.push({ no: rows[i].petition_number, country: c.country || '', city: c.city });
+      } catch (e) { hatali++; }
+      if (btn && i % 25 === 0) btn.textContent = 'Çözülüyor (' + i + '/' + rows.length + ')...';
+    }
+    var guncel = 0;
+    for (var j = 0; j < items.length; j += 200) {
+      if (btn) btn.textContent = 'Haritaya işleniyor (' + j + '/' + items.length + ')...';
+      guncel += Number(await callRpc('admin_backfill_petition_places', { p_pin: adminPinCache, p_items: items.slice(j, j + 200) }) || 0);
+    }
+    alert('Tamam. ' + guncel + ' dilekçe haritaya işlendi.' + (hatali ? '\n' + hatali + ' kayıt çözülemedi.' : ''));
+  } catch (e) {
+    alert(dataErrorText(e));
+  } finally {
+    backfillBusy = false;
     if (btn) { btn.disabled = false; btn.innerHTML = oldHtml; }
   }
 }
