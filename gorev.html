@@ -31,13 +31,13 @@
   #r-top > p:not(#board-msg) { order: 7; }
   #r-top > #board-msg { order: 8; }
   #view-board > #task-list { order: 8; }
-  #col-l > #mp-rank-card { order: 10; }
+  #col-l > #mp-rank-card { order: 12; }
   #view-board > #mat-box { order: 11; }
   div:has(> #adm-teams) { display: none; }
   @media (min-width: 1024px) {
     #view-board:not(.hidden) { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; }
     #col-l > div:has(#chat-list) { grid-column: 1; order: 4; }
-    #col-l > #mp-rank-card { grid-column: 1 / -1; order: 6; }
+    #col-l > #mp-rank-card { grid-column: 1 / -1; order: 12; }
     #r-top { display: flex; flex-direction: column; gap: 1.5rem; grid-column: 2; order: 4; min-width: 0; }
     #r-top > #board-msg:empty { display: none; }
     #r-top > div:has(#prog-label) { flex: 1; display: flex; flex-direction: column; justify-content: center; }
