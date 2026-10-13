@@ -1134,13 +1134,43 @@ function taskCard(t, me) {
     row.appendChild(h('span', 'text-[11px] text-emerald-400 font-semibold', 'Sende · kalan: ' + fmtLeft(t.due_at)));
   } else if (t.status === 'claimed') {
     row.appendChild(h('span', 'text-[11px] text-amber-400 font-semibold', '⏳ ' + (t.claimed_nick || 'Bir gönüllü') + ' üstlendi'));
+    var cb = claimerBtn(t); if (cb) row.appendChild(cb);
   } else {
     row.appendChild(h('span', 'text-[11px] text-emerald-400 font-semibold', '✓ ' + (t.claimed_nick || 'Bir gönüllü') + ' tamamladı'));
+    var cb3 = claimerBtn(t); if (cb3) row.appendChild(cb3);
   }
   card.appendChild(row);
   return card;
 }
 
+// Yonetici: gorevi ustlenen gonulluye ulasma (iletisim bilgisi yalnizca yonetici oturumunda, basvurular yuklenmisse gorunur)
+function claimerApp(nick) {
+  var m = null;
+  admMembers.forEach(function (x) { if (x.nickname === nick) m = x; });
+  if (!m) return null;
+  var a = null;
+  adminApps.forEach(function (x) { if (x.id === m.application_id || (m.ref && x.ref === m.ref)) a = x; });
+  return a;
+}
+function claimerBtn(t) {
+  if (!adminPin || !t.claimed_nick) return null;
+  var wrap = h('span', 'inline-flex flex-wrap items-center gap-2');
+  var out = h('span', 'inline-flex flex-wrap items-center gap-2 text-[11px] text-zinc-300');
+  wrap.appendChild(actBtn('📞 İletişim', 'bg-sky-800 hover:bg-sky-700 text-white', function () {
+    out.textContent = '';
+    if (!adminApps.length) { out.textContent = 'Önce Yönetici → Başvurular → "Başvuruları Yükle" yap.'; return; }
+    var a = claimerApp(t.claimed_nick);
+    if (!a) { out.textContent = 'Bu gönüllünün başvurusu bulunamadı.'; return; }
+    out.appendChild(h('span', 'font-semibold text-white', (a.name || t.claimed_nick) + ' · ' + (a.contact || '')));
+    var ck = contactKind(a.contact);
+    var waNum = ck.type === 'phone' ? ck.value : (ck.phone || '');
+    var msg = 'Merhaba' + (firstName(a.name) ? ' ' + firstName(a.name) : '') + ', 7527 iptal panosunda "' + t.title + '" görevini üstlenmiştin. Durumu nedir, yardım lazım mı?';
+    if (waNum) { var wa = h('a', 'btn bg-emerald-700 text-white', '💬 WhatsApp'); wa.href = 'https://wa.me/' + waNum + '?text=' + encodeURIComponent(msg); wa.target = '_blank'; wa.rel = 'noopener noreferrer'; out.appendChild(wa); }
+    if (ck.type === 'email') { var ml = h('a', 'btn bg-sky-700 text-white', '✉ E-posta'); ml.href = 'mailto:' + ck.value + '?subject=' + encodeURIComponent('7527 İptal görev: ' + t.title) + '&body=' + encodeURIComponent(msg); out.appendChild(ml); }
+  }));
+  wrap.appendChild(out);
+  return wrap;
+}
 function actBtn(label, cls, fn) {
   var b = h('button', 'btn ' + cls, label);
   b.type = 'button';
@@ -1557,7 +1587,11 @@ function renderAdmin(s) {
       (t.area ? ' · ' + t.area : '') + (t.status === 'claimed' ? ' · kalan: ' + fmtLeft(t.due_at) : '') +
       (t.status === 'open' ? ' · süre: ' + fmtHours(t.due_hours) : '');
     row.appendChild(h('span', 'text-[11px] text-zinc-400', info));
-    if (t.status !== 'open') row.appendChild(actBtn('Aç', 'bg-zinc-800 hover:bg-zinc-700 text-zinc-100', function () { adminSetStatus(t, 'open'); }));
+    var cb2 = claimerBtn(t); if (cb2) row.appendChild(cb2);
+    if (t.status !== 'open') row.appendChild(actBtn('Aç', 'bg-zinc-800 hover:bg-zinc-700 text-zinc-100', function () {
+      if (t.status === 'claimed' && !confirm('Bu görevi ' + (t.claimed_nick || 'bir gönüllü') + ' üstlenmiş.\n\n"Aç" dersen görev serbest kalır ve üstlenen kişi silinir. Emin misin?')) return;
+      adminSetStatus(t, 'open');
+    }));
     if (t.status !== 'closed') row.appendChild(actBtn('Kapat', 'bg-zinc-800 hover:bg-zinc-700 text-zinc-100', function () { adminSetStatus(t, 'closed'); }));
     row.appendChild(actBtn('Sil', 'bg-red-900 hover:bg-red-800 text-white', function () { adminDeleteTask(t); }));
     tl.appendChild(row);
