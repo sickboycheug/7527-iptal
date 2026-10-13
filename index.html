@@ -814,6 +814,10 @@
       <div class="text-center pt-1">
         <a id="hm-cta-vol" href="/gorev.html" class="inline-block px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs uppercase tracking-wide shadow">🤝 İl Gönüllüsü Ol</a>
         <button type="button" id="hm-cta-pet" onclick="window.scrollTo({top:0,behavior:'smooth'})" class="hidden px-6 py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold text-xs uppercase tracking-wide shadow">📨 Sen de Dilekçeni Gönder</button>
+        <div class="grid grid-cols-2 gap-2 max-w-sm mx-auto mt-3">
+          <button type="button" onclick="hmDavet('wa')" class="py-2.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded-xl font-bold text-[11px]">📣 WhatsApp'ta paylaş</button>
+          <button type="button" id="hm-davet-kopya" onclick="hmDavet('copy')" class="py-2.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-zinc-200 rounded-xl font-bold text-[11px]">📋 Metni kopyala</button>
+        </div>
         <p class="text-[10px] text-zinc-500 mt-2">Haritada isim gösterilmez, sadece il bazında sayı gösterilir.</p>
       </div>
     </div>
@@ -3936,6 +3940,31 @@ async function hmLoad() {
   } catch (e) { box.textContent = 'Harita şu an yüklenemedi.'; }
 }
 function hmTab(v) { _hmView = v; hmRender(); }
+function hmDavetMetni() {
+  var map = {};
+  var src = _hmLayer === 'pet' ? (_hmPet || []) : (_hmRows || []);
+  src.forEach(function (r) { if (!r.country && r.city) map[r.city] = (map[r.city] || 0) + Number(r.n); });
+  var iller = Object.keys(TR_XY).map(function (c) { return { c: c, n: map[c] || 0 }; });
+  iller.sort(function (a, b) { return a.n - b.n || a.c.localeCompare(b.c, 'tr'); });
+  var dolu = iller.filter(function (x) { return x.n > 0; }).length;
+  var az = iller.slice(0, 12).map(function (x) { return x.c; }).join(', ');
+  if (_hmLayer === 'pet') {
+    return '7527 sayılı kanunun iptali için dilekçe kampanyası sürüyor. Şimdiye kadar ' + dolu + ' ilden dilekçe geldi.\n\n' +
+      'En az dilekçe gelen iller: ' + az + '.\n\n' +
+      'Bu illerdensen ya da tanıdığın varsa 2 dakikanı ayır, dilekçeni gönder 👉 https://7527iptal.org';
+  }
+  return '7527 sayılı kanunun iptali için il il örgütleniyoruz. ' + dolu + ' ilde gönüllümüz var.\n\n' +
+    'En az gönüllü olan iller: ' + az + '.\n\n' +
+    'İlinde gönüllü olmak ister misin? İl gönüllüsü ol 👉 https://7527iptal.org/gorev.html';
+}
+function hmDavet(how) {
+  var t = hmDavetMetni();
+  if (how === 'wa') { window.open('https://wa.me/?text=' + encodeURIComponent(t), '_blank'); return; }
+  var b = document.getElementById('hm-davet-kopya');
+  function ok() { if (b) { var o = b.getAttribute('data-o') || b.textContent; b.setAttribute('data-o', o); b.textContent = '✓ Kopyalandı'; setTimeout(function () { b.textContent = o; }, 2000); } }
+  function fb() { var a = document.createElement('textarea'); a.value = t; a.style.position = 'fixed'; a.style.opacity = '0'; document.body.appendChild(a); a.select(); try { document.execCommand('copy'); ok(); } catch (e) {} document.body.removeChild(a); }
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok, fb); else fb();
+}
 function hmLayer(v) { _hmLayer = v; hmRender(); }
 function hmRender() {
   var box = document.getElementById('hm-svg'), list = document.getElementById('hm-list'),
