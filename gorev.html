@@ -22,19 +22,21 @@
   #view-board:not(.hidden) { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.5rem; align-items: start; }
   #view-board > * { grid-column: 1 / -1; margin-top: 0 !important; }
   #view-board > div:first-child { order: 1; }
-  #view-board > #announce-box { order: 4; }
+  #view-board > #announce-box { order: 2; }
+  #view-board > #map-box { order: 3 !important; }
   #view-board > div:has(#prog-label) { order: 5; }
   #view-board > #me-box { order: 6; }
   #view-board > p:not(#board-msg) { order: 7; }
   #view-board > #board-msg { order: 8; }
   #view-board > #task-list { order: 8; }
-  #view-board > div:has(#chat-list) { order: 9; }
+  #view-board > div:has(#chat-list) { order: 4; }
   #view-board > #mp-rank-card { order: 10; }
   #view-board > #mat-box { order: 11; }
   div:has(> #adm-teams) { display: none; }
   @media (min-width: 1024px) {
     #view-board:not(.hidden) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     #view-board > div:has(#chat-list), #view-board > #mp-rank-card { grid-column: auto; }
+    #view-board > #mp-rank-card { order: 5; }
   }
 </style>
 </head>
@@ -295,7 +297,7 @@ rows = showAll ? all.slice().reverse() : all;
 })();
 </script>
 <div id="task-list" class="space-y-3"></div>
-   <div id="map-box" style="order:2" class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-3">
+   <div id="map-box" class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-3">
       <h3 class="font-impact text-lg text-white uppercase tracking-wide">🗺️ Gönüllü Haritası</h3>
       <p class="text-[11px] text-zinc-500 leading-relaxed">Nerede kaç gönüllü var. Bir noktaya dokun, o ildeki takma adları gör.</p>
       <div id="map-svg" class="w-full rounded-xl bg-zinc-950 overflow-hidden min-h-[220px] flex items-center justify-center text-xs text-zinc-500">Harita yükleniyor...</div>
@@ -303,7 +305,7 @@ rows = showAll ? all.slice().reverse() : all;
     </div>
   <div id="mat-box" class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-3">
       <h3 class="font-impact text-lg text-white uppercase tracking-wide">📦 Materyal Kütüphanesi</h3>
-      <p class="text-[11px] text-zinc-500 leading-relaxed">Afiş, görsel, video ve paylaşım metinleri. İndir, yazdır, paylaş.</p>
+      <p class="text-[11px] text-zinc-500 leading-relaxed">Bütün afiş, görsel, video, slayt ve paylaşım metinleri alanlara göre burada. Senin alanların üstte açık durur.</p>
       <div id="mat-list" class="space-y-2 text-xs text-zinc-300">Yükleniyor...</div>
     </div>
   </div>
@@ -330,7 +332,14 @@ rows = showAll ? all.slice().reverse() : all;
         </div>
       </div>
 
-      <div class="space-y-2">
+      <div id="adm-tabs" class="flex flex-wrap gap-2 border-b border-zinc-800 pb-3">
+        <button type="button" data-t="apps" onclick="showAdminTab('apps')" class="btn bg-zinc-800 text-zinc-300">👥 Başvurular</button>
+        <button type="button" data-t="gorev" onclick="showAdminTab('gorev')" class="btn bg-zinc-800 text-zinc-300">📢 Duyuru ve Görev</button>
+        <button type="button" data-t="mat" onclick="showAdminTab('mat')" class="btn bg-zinc-800 text-zinc-300">📦 Materyal</button>
+        <button type="button" data-t="ekip" onclick="showAdminTab('ekip')" class="btn bg-zinc-800 text-zinc-300">🔑 Kod Üret</button>
+      </div>
+
+      <div class="space-y-2" data-tab="apps">
         <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400">Gönüllü Başvuruları</h3>
         <p class="text-[11px] text-zinc-400">Başvurular şifrelidir. Özel anahtar dosyanı ve parolanı seç; çözme yalnızca bu tarayıcıda yapılır, anahtarın hiçbir yere gönderilmez.</p>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -346,13 +355,13 @@ rows = showAll ? all.slice().reverse() : all;
         <div id="adm-apps" class="space-y-2"></div>
       </div>
 
-      <div class="space-y-2">
+      <div class="space-y-2" data-tab="gorev">
         <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400">Duyuru</h3>
         <textarea id="adm-announce" rows="3" maxlength="3000" class="inp" placeholder="Gönüllülerin panoda göreceği duyuru (boş bırakırsan görünmez)"></textarea>
         <button type="button" onclick="adminSaveAnnounce()" class="btn bg-zinc-800 hover:bg-zinc-700 text-white">Duyuruyu Kaydet</button>
       </div>
 
-      <div class="space-y-2">
+      <div class="space-y-2" data-tab="gorev">
         <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400">Yeni Görev</h3>
         <input type="text" id="adm-t-title" maxlength="140" placeholder="Görev başlığı (örn. Bu vekile dilekçe gönder)" class="inp">
         <textarea id="adm-t-desc" rows="2" maxlength="1000" placeholder="Açıklama (isteğe bağlı)" class="inp"></textarea>
@@ -364,16 +373,17 @@ rows = showAll ? all.slice().reverse() : all;
         <button type="button" onclick="adminAddTask()" class="btn bg-emerald-600 hover:bg-emerald-500 text-white">Görevi Ekle</button>
       </div>
 
-      <div class="space-y-2">
+      <div class="space-y-2" data-tab="mat">
         <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400">Materyal Ekle</h3>
-        <select id="adm-m-kind" class="inp">
+        <select id="adm-m-kind" class="inp" onchange="admMatKind()">
           <option value="print">Afiş / broşür (baskı)</option>
           <option value="image">Görsel</option>
           <option value="video">Video</option>
           <option value="audio">Müzik</option>
-          <option value="text">Metin (paylaşım yazısı)</option>
+          <option value="text">Metin (kopyalanıp paylaşılacak yazı)</option>
           <option value="link">Link duyurusu</option>
         </select>
+        <select id="adm-m-area" class="inp"><option value="">Alan: Genel (herkes)</option></select>
         <input type="text" id="adm-m-title" maxlength="140" placeholder="Başlık" class="inp">
         <textarea id="adm-m-desc" rows="2" maxlength="1000" placeholder="Açıklama (isteğe bağlı)" class="inp"></textarea>
         <textarea id="adm-m-body" rows="3" maxlength="4000" placeholder="Paylaşılacak metin / hashtag (yalnızca Metin türünde)" class="inp"></textarea>
@@ -381,17 +391,17 @@ rows = showAll ? all.slice().reverse() : all;
         <button type="button" onclick="adminAddMaterial()" class="btn bg-emerald-600 hover:bg-emerald-500 text-white">Materyali Ekle</button>
         <div id="adm-materials" class="space-y-2 pt-2"></div>
       </div>
-      <div class="space-y-2">
+      <div class="space-y-2" data-tab="ekip">
         <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400">İl / İlçe Dağılımı</h3>
         <div id="adm-teams" class="space-y-1"></div>
       </div>
 
-      <div class="space-y-2">
+      <div class="space-y-2" data-tab="gorev">
         <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400">Görevler</h3>
         <div id="adm-tasks" class="space-y-2"></div>
       </div>
 
-      <div class="space-y-2">
+      <div class="space-y-2" data-tab="ekip">
         <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400">Başvurusuz Gönüllü Kodu Üret</h3>
         <div class="flex flex-col sm:flex-row gap-3 max-w-md">
           <input type="text" id="adm-m-nick" maxlength="30" placeholder="Takma ad (panoda görünür)" class="inp">
@@ -996,6 +1006,7 @@ function fmtHours(h) { h = Number(h) || 72; return (h % 24 === 0) ? (h / 24) + '
 function renderBoard(b) {
   var me = b.me || {};
   var myAreas = (me.areas || '').split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+  myAreasG = myAreas; var _ak = myAreas.join('|'); if (_ak !== myAreasKey) { myAreasKey = _ak; renderMaterials(); }
   var st = b.stats || {};
   var open = Number(st.open || 0), claimed = Number(st.claimed || 0), done = Number(st.done_total || 0);
   var total = open + claimed + done;
@@ -1110,6 +1121,19 @@ async function act(fn, id) {
 
 // ---------- yonetici ----------
 var adminPin = '';
+function showAdminTab(t) {
+  Array.prototype.forEach.call(document.querySelectorAll('#admin-main [data-tab]'), function (el) { el.classList.toggle('hidden', el.getAttribute('data-tab') !== t); });
+  Array.prototype.forEach.call(document.querySelectorAll('#adm-tabs button'), function (b) {
+    var on = b.getAttribute('data-t') === t;
+    b.classList.toggle('bg-emerald-600', on); b.classList.toggle('text-white', on);
+    b.classList.toggle('bg-zinc-800', !on); b.classList.toggle('text-zinc-300', !on);
+  });
+}
+function admMatKind() {
+  var t = $('adm-m-kind').value === 'text';
+  $('adm-m-body').classList.toggle('hidden', !t);
+  $('adm-m-url').classList.toggle('hidden', t);
+}
 function openAdmin() { $('admin-box').classList.remove('hidden'); $('admin-box').scrollIntoView({ behavior: 'smooth' }); setTimeout(function () { var p = $('admin-pin'); if (p && !adminPin) p.focus(); }, 300); }
 function closeAdmin() { adminPin = ''; adminKey = null; adminApps = []; codesByApp = {}; $('adm-apps').textContent = ''; $('adm-key-pass').value = ''; $('admin-pin').value = ''; $('admin-main').classList.add('hidden'); $('admin-login').classList.remove('hidden'); $('admin-box').classList.add('hidden'); $('adm-newcode').classList.add('hidden'); }
 
@@ -1123,6 +1147,7 @@ async function adminLogin() {
     $('admin-pin').value = '';
     $('admin-login').classList.add('hidden');
     $('admin-main').classList.remove('hidden');
+    showAdminTab('apps');
     renderAdmin(s);
   } catch (e) { $('admin-msg').textContent = errText(e); }
 }
@@ -1445,6 +1470,7 @@ async function loadAdminMaterials() {
       var row = h('div', 'flex flex-wrap items-center gap-2 bg-zinc-950/60 border border-zinc-800 rounded-lg p-2');
       row.appendChild(h('span', 'text-xs text-white font-semibold flex-1 min-w-[10rem]', m.title));
       row.appendChild(h('span', 'text-[11px] text-zinc-400', ({ print: 'Afiş / broşür', image: 'Görsel', video: 'Video', audio: 'Müzik', text: 'Metin', link: 'Link' })[m.kind] || m.kind));
+      row.appendChild(h('span', 'text-[11px] text-emerald-400', m.area || 'Genel'));
       row.appendChild(actBtn('Sil', 'bg-red-900 hover:bg-red-800 text-white', function () { adminDeleteMaterial(m); }));
       box.appendChild(row);
     });
@@ -1499,7 +1525,7 @@ async function adminDeleteMaterial(m) {
   if (url && !/^https:\/\//i.test(url)) { $('admin-msg').textContent = 'Adres https:// ile başlamalı.'; return; }
   try {
     await callRpc('gv_admin_save_material', { p_pin: adminPin, p_id: null, p_kind: kind, p_title: title,
-      p_description: $('adm-m-desc').value || '', p_body: body, p_url: url, p_active: true });
+      p_description: $('adm-m-desc').value || '', p_body: body, p_url: url, p_active: true, p_area: $('adm-m-area').value || '' });
     $('adm-m-title').value = ''; $('adm-m-desc').value = ''; $('adm-m-body').value = ''; $('adm-m-url').value = '';
     $('admin-msg').textContent = '';
     alert('Materyal eklendi.');
@@ -1635,46 +1661,79 @@ async function loadMap() {
     }).join(', ');
   } catch (e) {}
 }
+var matRows = null, myAreasG = [], myAreasKey = null;
 async function loadMaterials() {
   var box = $('mat-list');
   if (!box || !memberCode) return;
   try {
-    var rows = await callRpc('gv_materials_list', { p_code: memberCode });
-    box.textContent = '';
-    if (!rows || !rows.length) { box.appendChild(h('p', 'text-zinc-500', 'Henüz materyal eklenmedi.')); return; }
-    var labels = { print: '🖨️ Afiş / broşür', image: '🖼️ Görsel', video: '🎬 Video', audio: '🎵 Müzik', text: '📝 Metin', link: '🔗 Link' };
-    rows.forEach(function (m) {
-      var card = h('div', 'bg-zinc-950/60 border border-zinc-800 rounded-xl p-3 space-y-2');
-      card.appendChild(h('div', 'text-[10px] text-emerald-400 font-bold uppercase', labels[m.kind] || m.kind));
-      card.appendChild(h('div', 'text-sm font-bold text-white', m.title));
-      if (m.description) card.appendChild(h('p', 'text-[11px] text-zinc-400 whitespace-pre-line', m.description));
-      if (m.kind === 'text' && m.body) card.appendChild(h('p', 'text-xs text-zinc-300 whitespace-pre-line bg-zinc-900 rounded-lg p-2', m.body));
-      var u = safeUrl(m.url);
-      if (m.kind === 'image' && u) { var img = h('img', 'w-full rounded-lg'); img.src = u; img.alt = m.title; img.loading = 'lazy'; card.appendChild(img); }
-      if (m.kind === 'audio' && u) { var au = h('audio', 'w-full'); au.controls = true; au.src = u; card.appendChild(au); }
-      var row = h('div', 'flex flex-wrap gap-2');
-      if (u) {
-       var isFile = m.kind === 'print' && u.indexOf('/storage/v1/object/public/') !== -1;
-        var a = h('a', 'btn bg-emerald-600 hover:bg-emerald-500 text-white', isFile ? '⬇ İndir' : 'Aç');
-        a.href = isFile ? u + (u.indexOf('?') === -1 ? '?' : '&') + 'download=' : u;
-        a.target = '_blank'; a.rel = 'noopener noreferrer';
-        row.appendChild(a);
-      }
-      if (m.kind === 'text' && m.body) {
-        row.appendChild(actBtn('Kopyala', 'bg-zinc-800 hover:bg-zinc-700 text-white', function () { try { navigator.clipboard.writeText(m.body); } catch (e) {} }));
-      }
-      var wa = h('a', 'btn bg-emerald-800 hover:bg-emerald-700 text-white', '💬 Paylaş');
-      wa.href = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(m.title + '\n' + (m.kind === 'text' ? m.body : (u || '')));
-      wa.target = '_blank'; wa.rel = 'noopener noreferrer';
-      row.appendChild(wa);
-      card.appendChild(row);
-      box.appendChild(card);
-    });
+    matRows = (await callRpc('gv_materials_list', { p_code: memberCode })) || [];
+    renderMaterials();
   } catch (e) { box.textContent = 'Materyaller yüklenemedi.'; }
+}
+function matCard(m) {
+  var labels = { print: '🖨️ Afiş / broşür', image: '🖼️ Görsel', video: '🎬 Video', audio: '🎵 Müzik', text: '📝 Metin', link: '🔗 Link' };
+  var card = h('div', 'bg-zinc-950/60 border border-zinc-800 rounded-xl p-3 space-y-2');
+  card.appendChild(h('div', 'text-[10px] text-emerald-400 font-bold uppercase', labels[m.kind] || m.kind));
+  card.appendChild(h('div', 'text-sm font-bold text-white', m.title));
+  if (m.description) card.appendChild(h('p', 'text-[11px] text-zinc-400 whitespace-pre-line', m.description));
+  if (m.kind === 'text' && m.body) {
+    var det = h('details', 'bg-zinc-900 rounded-lg');
+    det.appendChild(h('summary', 'cursor-pointer select-none text-[11px] text-emerald-400 px-2 py-1.5', 'Metni göster'));
+    det.appendChild(h('p', 'text-xs text-zinc-300 whitespace-pre-line px-2 pb-2', m.body));
+    card.appendChild(det);
+  }
+  var u = safeUrl(m.url);
+  if (m.kind === 'image' && u) { var img = h('img', 'w-full rounded-lg'); img.src = u; img.alt = m.title; img.loading = 'lazy'; card.appendChild(img); }
+  if (m.kind === 'audio' && u) { var au = h('audio', 'w-full'); au.controls = true; au.src = u; card.appendChild(au); }
+  var row = h('div', 'flex flex-wrap gap-2');
+  if (u) {
+    var isFile = m.kind === 'print' && u.indexOf('/storage/v1/object/public/') !== -1;
+    var a = h('a', 'btn bg-emerald-600 hover:bg-emerald-500 text-white', isFile ? '⬇ İndir' : 'Aç');
+    a.href = isFile ? u + (u.indexOf('?') === -1 ? '?' : '&') + 'download=' : u;
+    a.target = '_blank'; a.rel = 'noopener noreferrer';
+    row.appendChild(a);
+  }
+  if (m.kind === 'text' && m.body) {
+    row.appendChild(actBtn('Kopyala', 'bg-zinc-800 hover:bg-zinc-700 text-white', function () { try { navigator.clipboard.writeText(m.body); } catch (e) {} }));
+  }
+  var shareText = m.kind === 'text' ? m.body : (u || '');
+  if (shareText) {
+    var wa = h('a', 'btn bg-emerald-800 hover:bg-emerald-700 text-white', '💬 Paylaş');
+    wa.href = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(shareText);
+    wa.target = '_blank'; wa.rel = 'noopener noreferrer';
+    row.appendChild(wa);
+  }
+  card.appendChild(row);
+  return card;
+}
+function renderMaterials() {
+  var box = $('mat-list');
+  if (!box || matRows === null) return;
+  box.textContent = '';
+  if (!matRows.length) { box.appendChild(h('p', 'text-zinc-500', 'Henüz materyal eklenmedi.')); return; }
+  var groups = {}, order = [];
+  matRows.forEach(function (m) {
+    var k = m.area || 'Genel';
+    if (!groups[k]) { groups[k] = []; order.push(k); }
+    groups[k].push(m);
+  });
+  function rank(k) { return myAreasG.indexOf(k) !== -1 ? 0 : (k === 'Genel' ? 1 : 2); }
+  order.sort(function (a, b) { return (rank(a) - rank(b)) || (AREAS.indexOf(a) - AREAS.indexOf(b)); });
+  order.forEach(function (k) {
+    var mine = myAreasG.indexOf(k) !== -1;
+    var g = h('details', 'bg-zinc-950/40 border ' + (mine ? 'border-emerald-700' : 'border-zinc-800') + ' rounded-xl');
+    if (rank(k) <= 1) g.open = true;
+    g.appendChild(h('summary', 'cursor-pointer select-none px-3 py-2 text-sm font-bold text-white', (mine ? '⭐ ' : '') + k + ' (' + groups[k].length + ')'));
+    var inner = h('div', 'p-2 space-y-2');
+    groups[k].forEach(function (m) { inner.appendChild(matCard(m)); });
+    g.appendChild(inner);
+    box.appendChild(g);
+  });
 }
 // ---------- acilis ----------
 (async function init() {
-  AREAS.forEach(function (a) { var o = document.createElement('option'); o.value = a; o.textContent = a; $('adm-t-area').appendChild(o); });
+  AREAS.forEach(function (a) { var o = document.createElement('option'); o.value = a; o.textContent = a; $('adm-t-area').appendChild(o); var o2 = document.createElement('option'); o2.value = a; o2.textContent = 'Alan: ' + a; $('adm-m-area').appendChild(o2); });
+  admMatKind();
   $('vol-name').addEventListener('blur', function () { if (!$('vol-nick').value) $('vol-nick').value = suggestNick($('vol-name').value); });
   loadCounters();
   var saved = load('gv_code');
