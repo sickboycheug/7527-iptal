@@ -149,6 +149,14 @@ button.btn.dy-ghost{border:1px solid var(--em)}
 .vw-acts .btn{padding:9px 16px;font-size:14px}
 .dy-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--em);color:#052e1f;font-weight:700;padding:10px 20px;border-radius:999px;opacity:0;pointer-events:none;transition:.25s;z-index:99}
 .dy-toast.on{opacity:1;transform:translateX(-50%)}
+@media(min-width:900px) and (min-height:560px){
+.vw.on{display:grid;grid-template-columns:auto 21rem;grid-template-rows:1fr auto auto auto auto 1fr;grid-template-areas:"box ." "box t" "box ctl" "box share" "box acts" "box .";column-gap:40px;row-gap:16px;justify-content:center;align-items:start}
+.vw-box{grid-area:box;width:min(calc((100dvh - 40px)*.5625),calc(100vw - 30rem))}
+.vw-t{grid-area:t;text-align:left;padding:0;font-size:26px;line-height:1.2}
+.vw-ctl{grid-area:ctl;justify-content:flex-start}
+.vw-share{grid-area:share;justify-content:flex-start}
+.vw-acts{grid-area:acts;justify-content:flex-start}
+}
 </style>
 <section id="duyurular">
 <p class="eyebrow">Haberler ve çağrılar</p>
@@ -199,11 +207,12 @@ button.btn.dy-ghost{border:1px solid var(--em)}
       c:"Sayın Nimet Özdemir,\n\n16 Temmuz’da Meclis kürsüsüne çıkıp “Bu bir katliam teklifidir, ötenazi diyerek vahşeti örtbas edemezsiniz, kabul etmeyeceğiz, direneceğiz” dediniz.\n\n11 Ekim’de Gebze barınağının önünde, o katliamın tam ortasında dururken “Tüm şiddet birbiriyle bağlantılı. Kötülüğe alan açarsanız her yere yayılır” dediniz.\n\n13 Ekim’de Ümraniye’de, barınak denilen o ölüm merkezlerinin kapısında o vahşetin her anına bizimle birlikte şahitlik ettiniz.\n\nBugün geldiğimiz noktada, yasaklı ırk uygulamasıyla önü açılan öldürme pratiği sokaktaki bütün canlara uygulanıyor. Toplumun içine pompalanan bu şiddet, güvensizlik ve korku iklimi insanları kendi mahallesinde, kendi sokağında birbirine ve hayvanlara karşı düşmanlaştırdı. Barınak denilen yerlerin çözüm değil, birer ölüm kampı olduğunu alanda gözlerimizle gördük. Biz bu barınak sistemini de, bu cezasızlık düzenini de kesinlikle reddediyoruz.\n\nSiz iktidar partisine geçerken “Aynı Nimet’im” dediniz.\n\nEğer gerçekten aynı Nimet’seniz; Meclis kürsüsünde söylediklerinizin, Gebze ve Ümraniye kapılarında verdiğiniz sözlerin, kendi ağzınızdan çıkan cümlelerin ve vicdanınızın ağırlığını taşıyorsunuzdur.\n\nBiz halk olarak, 7527 sayılı kanunun derhal iptal edilmesi için başlattığımız dilekçe kampanyasında vekilleri imzacı olmaya çağırıyoruz.\n\nKendi sözünün arkasında durup durmayacağın, Gebze ve Ümraniye'deki o masumların yüzüne bakıp bakamayacağın senin vicdanına kalmış:\n\n7527’nin iptal dilekçesinde imzanızın olması gerektiğine inanıyoruz. @Nimet_Oz_Demir\n#7527İptalİmzacısıOl #7527İptal #GebzeKatliamıUnutulmadı #ÜmraniyeKatliamıUnutulmadı @AKparti @TBMMResmi #nimetozdemir"},
     'bildiri':{t:'Bir halk iradesidir: 7527 iptal',n:13,d:'slaytlar/bildiri/bildiri-',
       x:'Bir halk iradesidir: 7527 iptal edilsin. Yaşam hakkı pazarlık konusu edilemez. #7527İptal #7527İptalEdilsin',
-      c:'Bir halk iradesidir: 7527 iptal edilsin.\nYaşam hakkı pazarlık konusu edilemez.\n\nDilekçeni gönder, bir arkadaşını davet et: https://7527iptal.org\n\n#7527İptal #7527İptalEdilsin #3Milyonİrade #YaşamHakkıPazarlıksızdır'},
+      c:'Bir halk iradesidir: 7527 iptal edilsin.\nYaşam hakkı pazarlık konusu edilemez.\n\nDilekçeni gönder, bir arkadaşını davet et.\n\n#7527İptal #7527İptalEdilsin #3Milyonİrade #YaşamHakkıPazarlıksızdır'},
     '15gun':{t:'İlk 15 gün: şeffaf bilgilendirme',n:10,d:'slaytlar/15gun/15gun-',
       x:'İlk 15 günde 2.000 dilekçe, 813 kişi, 514 vekile ulaştık. Rakamlar olduğu gibi. #7527İptal #3Milyonİrade',
-      c:'İlk 15 günde 2.000 dilekçe, 813 kişi, 514 vekile ulaştık. Rakamlar olduğu gibi, nerede eksik kaldığımızla birlikte.\n\nSen de dilekçeni gönder: https://7527iptal.org\n\n#7527İptal #3Milyonİrade #7527İptalEdilsin'}
+      c:'İlk 15 günde 2.000 dilekçe, 813 kişi, 514 vekile ulaştık. Rakamlar olduğu gibi, nerede eksik kaldığımızla birlikte.\n\nSen de dilekçeni gönder.\n\n#7527İptal #3Milyonİrade #7527İptalEdilsin'}
   };
+  function clean(t){return t.replace(/https:\/\/7527iptal\.org/g,'').replace(/[ \t]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').trim()}
   function $(i){return document.getElementById(i)}
   function q(s){return encodeURIComponent(s)}
   function p2(n){return n<10?'0'+n:''+n}
@@ -221,7 +230,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
     tr.innerHTML=h;$('vw-t').textContent=S.t;
     var U=BASE+'#'+k;
     $('s-x').href='https://twitter.com/intent/tweet?text='+q(S.x)+'&url='+q(U);
-    $('s-wa').href='https://api.whatsapp.com/send?text='+q((S.c.length<900?S.c:S.x).replace(/https:\/\/7527iptal\.org/g,'').replace(/\n{3,}/g,'\n\n')+'\n\n'+U);
+    $('s-wa').href='https://api.whatsapp.com/send?text='+q(clean(S.c.length<900?S.c:S.x)+'\n\n'+U);
     $('s-fb').href='https://www.facebook.com/sharer/sharer.php?u='+q(U);
     $('s-tg').href='https://t.me/share/url?url='+q(U)+'&text='+q(S.x);
     V.classList.add('on');document.body.style.overflow='hidden';open=true;tr.scrollLeft=0;upd();
@@ -235,7 +244,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
   pv.addEventListener('click',function(){tr.scrollBy({left:-w(),behavior:'smooth'})});
   nx.addEventListener('click',function(){tr.scrollBy({left:w(),behavior:'smooth'})});
   tr.addEventListener('scroll',upd,{passive:true});window.addEventListener('resize',upd);
-  $('vw-cp').addEventListener('click',function(){if(cur)copy(SETS[cur].c)});
+  $('vw-cp').addEventListener('click',function(){if(cur)copy(clean(SETS[cur].c)+'\n\n'+BASE+'#'+cur)});
   $('vw-lk').addEventListener('click',function(){if(cur)copy(BASE+'#'+cur)});
   var hs=(location.hash||'').slice(1);if(SETS[hs])openSet(hs,false);
 })();
