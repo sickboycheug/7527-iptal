@@ -189,13 +189,20 @@
       <h3 class="font-impact text-lg text-white uppercase tracking-wide">🗺️ Gönüllü Haritası</h3>
       <div class="flex gap-2">
         <button type="button" id="map-tab-tr" onclick="mapTab('tr')" class="btn bg-emerald-600 text-white">🇹🇷 Türkiye</button>
-        <button type="button" id="map-tab-world" onclick="mapTab('world')" class="btn bg-zinc-800 text-zinc-300">🌍 Dünya </button>
+        <button type="button" id="map-tab-world" onclick="mapTab('world')" class="btn bg-zinc-800 text-zinc-300">🌍 Dünya ve yurtdışı</button>
       </div>
       <p id="map-summary" class="text-[11px] text-emerald-400 font-semibold"></p>
       <p class="text-[11px] text-zinc-500 leading-relaxed">Bir noktaya dokun, oradaki gönüllülerin takma adlarını gör. Gri noktalar: henüz gönüllümüz olmayan iller.</p>
       <div id="map-svg" class="w-full rounded-xl bg-zinc-950 overflow-hidden min-h-[220px] flex items-center justify-center text-xs text-zinc-500">Harita yükleniyor...</div>
       <div id="map-info" class="text-xs text-zinc-300 min-h-[32px]"></div>
       <div id="map-list" class="space-y-2"></div>
+      <div class="border-t border-zinc-800 pt-3 space-y-2">
+        <p class="text-[11px] text-zinc-400">Gönüllümüz olmayan illerden gönüllü arıyoruz. Davet metnini paylaş:</p>
+        <div class="grid grid-cols-2 gap-2">
+          <button type="button" onclick="ilDavet('wa')" class="btn bg-emerald-700 hover:bg-emerald-600 text-white">📣 WhatsApp'ta paylaş</button>
+          <button type="button" id="il-davet-kopya" onclick="ilDavet('copy')" class="btn bg-zinc-800 text-zinc-200">📋 Metni kopyala</button>
+        </div>
+      </div>
     </div>
     <div id="col-l">
     <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-3">
@@ -1635,6 +1642,23 @@ async function loadMap() {
     _mapRows = (await callRpc('gv_map', { p_code: memberCode })) || [];
     renderMap();
   } catch (e) { box.textContent = 'Harita yüklenemedi.'; }
+}
+function ilDavetMetni() {
+  var has = {};
+  (_mapRows || []).forEach(function (r) { if (!r.country && Number(r.n) > 0) has[r.city] = 1; });
+  var eksik = Object.keys(TR_XY).filter(function (c) { return !has[c]; });
+  var gor = eksik.slice(0, 12).join(', ') + (eksik.length > 12 ? ' ve ' + (eksik.length - 12) + ' il daha' : '');
+  return '7527 sayılı kanunun iptali için il il örgütleniyoruz. ' +
+    (eksik.length ? 'Henüz gönüllümüz olmayan iller: ' + gor + '.\n\n' : '\n') +
+    'İlinde gönüllü olmak ister misin? Ya da tanıdığın biri var mı?\nİl gönüllüsü ol 👉 https://7527iptal.org/gorev.html';
+}
+function ilDavet(how) {
+  var t = ilDavetMetni();
+  if (how === 'wa') { window.open('https://wa.me/?text=' + encodeURIComponent(t), '_blank'); return; }
+  var b = $('il-davet-kopya');
+  function ok() { if (b) { var o = b.getAttribute('data-o') || b.textContent; b.setAttribute('data-o', o); b.textContent = '✓ Kopyalandı'; setTimeout(function () { b.textContent = o; }, 2000); } }
+  function fb() { var a = document.createElement('textarea'); a.value = t; a.style.position = 'fixed'; a.style.opacity = '0'; document.body.appendChild(a); a.select(); try { document.execCommand('copy'); ok(); } catch (e) {} document.body.removeChild(a); }
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok, fb); else fb();
 }
 function mapTab(v) { _mapView = v; renderMap(); }
 function renderMap() {
