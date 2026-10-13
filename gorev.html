@@ -189,7 +189,7 @@
       <h3 class="font-impact text-lg text-white uppercase tracking-wide">🗺️ Gönüllü Haritası</h3>
       <div class="flex gap-2">
         <button type="button" id="map-tab-tr" onclick="mapTab('tr')" class="btn bg-emerald-600 text-white">🇹🇷 Türkiye</button>
-        <button type="button" id="map-tab-world" onclick="mapTab('world')" class="btn bg-zinc-800 text-zinc-300">🌍 Dünya </button>
+        <button type="button" id="map-tab-world" onclick="mapTab('world')" class="btn bg-zinc-800 text-zinc-300">🌍 Dünya</button>
       </div>
       <p id="map-summary" class="text-[11px] text-emerald-400 font-semibold"></p>
       <p class="text-[11px] text-zinc-500 leading-relaxed">Bir noktaya dokun, oradaki gönüllülerin takma adlarını gör. Gri noktalar: henüz gönüllümüz olmayan iller.</p>
@@ -377,6 +377,26 @@ rows = showAll ? all.slice().reverse() : all;
         </div>
         <p id="adm-apps-status" class="text-[11px] text-zinc-500 min-h-[16px]"></p>
         <div id="adm-apps" class="space-y-2"></div>
+      </div>
+
+      <div class="space-y-2 border-t border-zinc-800 pt-3" data-tab="apps">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400">Toplu Duyuru</h3>
+        <p class="text-[11px] text-zinc-400">Önce yukarıdan "Başvuruları Yükle" yap. Mesajda <strong>[AD]</strong>, <strong>[İL]</strong> ve <strong>[LİNK]</strong> kullanılabilir. Kodu bu oturumda üretilen gönüllüye kişisel giriş linki gider, diğerlerine genel panel linki gider.</p>
+        <input type="text" id="adm-bc-subj" class="inp" value="7527 İptal kampanyası: panoda seni bekliyoruz">
+        <textarea id="adm-bc-text" rows="6" maxlength="3000" class="inp">Merhaba [AD],
+
+7527 iptal kampanyasında gönüllü olduğun için teşekkürler. Görev panosunda açık görevler var, yapabildiğin kadarıyla katkı verebilirsin.
+
+Panele giriş: [LİNK]</textarea>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <select id="adm-bc-city" class="inp" onchange="bcRender()"><option value="">Tüm iller</option></select>
+          <button type="button" onclick="bcRender()" class="btn bg-zinc-800 hover:bg-zinc-700 text-white">Alıcıları listele</button>
+        </div>
+        <p id="adm-bc-info" class="text-[11px] text-zinc-400 min-h-[16px]"></p>
+        <div class="flex flex-wrap gap-2">
+          <button type="button" id="adm-bc-mailall" onclick="bcMailAll()" class="btn hidden bg-sky-700 hover:bg-sky-600 text-white">✉ E-postası olanların hepsine gönder</button>
+        </div>
+        <div id="adm-bc-list" class="space-y-2"></div>
       </div>
 
       <div class="space-y-2" data-tab="gorev">
@@ -1393,6 +1413,94 @@ async function adminBulkCodes() {
   if (fail) { st.className = 'text-[11px] text-amber-400 min-h-[16px]'; st.textContent += ' · ' + fail + ' başvuruda hata oluştu, tekrar deneyin.'; }
 }
 
+
+// --- TOPLU DUYURU ---
+var bcBusy = false;
+function bcRecipients() {
+  var byApp = {}, byRef = {};
+  admMembers.forEach(function (m) { if (m.application_id != null) byApp[m.application_id] = m; if (m.ref) byRef[m.ref] = m; });
+  var city = $('adm-bc-city').value;
+  return adminApps.filter(function (a) {
+    if (!a.ok) return false;
+    var m = byApp[a.id] || (a.ref ? byRef[a.ref] : null);
+    if (!m || m.active === false) return false;
+    if (city && a.city !== city) return false;
+    return contactKind(a.contact).type !== 'none';
+  });
+}
+function bcMessage(a) {
+  var code = codesByApp[a.id];
+  var link = code ? 'https://7527iptal.org/gorev.html?kod=' + encodeURIComponent(code) : 'https://7527iptal.org/gorev.html';
+  return ($('adm-bc-text').value || '')
+    .replace(/\[AD\]/g, firstName(a.name) || '')
+    .replace(/\[İL\]/g, a.city || '')
+    .replace(/\[LİNK\]/g, link);
+}
+function bcRender() {
+  var sel = $('adm-bc-city');
+  if (sel.options.length <= 1) {
+    var cities = {};
+    adminApps.forEach(function (a) { if (a.ok && a.city) cities[a.city] = 1; });
+    Object.keys(cities).sort(function (x, y) { return x.localeCompare(y, 'tr'); }).forEach(function (c) {
+      var o = document.createElement('option'); o.value = c; o.textContent = c; sel.appendChild(o);
+    });
+  }
+  var list = $('adm-bc-list'); list.textContent = '';
+  if (!adminApps.length) { $('adm-bc-info').textContent = 'Önce yukarıdan "Başvuruları Yükle" yap.'; return; }
+  var rec = bcRecipients();
+  var nMail = rec.filter(function (a) { return contactKind(a.contact).type === 'email'; }).length;
+  $('adm-bc-info').textContent = rec.length + ' alıcı · ' + nMail + ' e-postalı';
+  $('adm-bc-mailall').classList.toggle('hidden', !nMail);
+  rec.forEach(function (a) {
+    var ck = contactKind(a.contact);
+    var row = h('div', 'bg-zinc-950/60 border border-zinc-800 rounded-lg p-2 space-y-1');
+    row.appendChild(h('div', 'text-xs text-white font-semibold', (a.name || '(ad yok)') + (a.city ? ' · ' + a.city : '')));
+    row.appendChild(h('div', 'text-[11px] text-zinc-500', a.contact));
+    var btns = h('div', 'flex flex-wrap gap-2');
+    var waNum = ck.type === 'phone' ? ck.value : (ck.phone || '');
+    if (waNum) {
+      var wa = h('a', 'btn bg-emerald-700 hover:bg-emerald-600 text-white', '💬 WhatsApp');
+      wa.href = 'https://wa.me/' + waNum + '?text=' + encodeURIComponent(bcMessage(a));
+      wa.target = '_blank'; wa.rel = 'noopener noreferrer';
+      wa.onclick = function () { wa.textContent = '✓ WhatsApp açıldı'; };
+      btns.appendChild(wa);
+    }
+    if (ck.type === 'email') {
+      var mb = actBtn('✉ E-posta', 'bg-sky-700 hover:bg-sky-600 text-white', async function () {
+        mb.disabled = true;
+        var ok = await bcSendMail(a, ck.value);
+        mb.textContent = ok ? '✓ Gönderildi' : '⚠ Tekrar dene'; mb.disabled = ok;
+      });
+      row._mailBtn = mb; row._app = a; row._to = ck.value;
+      btns.appendChild(mb);
+    }
+    row.appendChild(btns); list.appendChild(row);
+  });
+}
+async function bcSendMail(a, to) {
+  try {
+    var res = await supabaseClient.functions.invoke('send-invite', { body: { pin: adminPin, to: to, subject: ($('adm-bc-subj').value || '7527 İptal').trim(), text: bcMessage(a) } });
+    if (res.error) throw res.error;
+    return true;
+  } catch (e) { return false; }
+}
+async function bcMailAll() {
+  if (bcBusy) return;
+  var rows = Array.prototype.filter.call($('adm-bc-list').children, function (r) { return r._mailBtn && !r._mailBtn.disabled; });
+  if (!rows.length) return;
+  if (!confirm(rows.length + ' kişiye e-posta gönderilecek. Devam edilsin mi?')) return;
+  bcBusy = true;
+  var ok = 0, fail = 0, info = $('adm-bc-info');
+  for (var i = 0; i < rows.length; i++) {
+    info.textContent = 'Gönderiliyor: ' + (i + 1) + ' / ' + rows.length;
+    var good = await bcSendMail(rows[i]._app, rows[i]._to);
+    if (good) { ok++; rows[i]._mailBtn.textContent = '✓ Gönderildi'; rows[i]._mailBtn.disabled = true; }
+    else { fail++; rows[i]._mailBtn.textContent = '⚠ Tekrar dene'; }
+    await new Promise(function (r) { setTimeout(r, 700); });
+  }
+  bcBusy = false;
+  info.textContent = ok + ' gönderildi' + (fail ? ' · ' + fail + ' başarısız (satırdaki düğmeden tekrar dene)' : '');
+}
 function csvCell(v) { v = String(v == null ? '' : v); return /[",\n;]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
 function buildCodesCsv() {
   var byApp = {};
