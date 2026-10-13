@@ -21,27 +21,27 @@
     /* Gönüllü panosu düzeni: mobilde tek sütun, geniş ekranda iki sütun */
   #view-board:not(.hidden) { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.5rem; align-items: start; }
   #view-board > * { grid-column: 1 / -1; margin-top: 0 !important; }
-  #col-l, #col-r { display: contents; }
+  #col-l, #r-top { display: contents; }
   #view-board > div:first-child { order: 1; }
   #view-board > #announce-box { order: 2; }
   #view-board > #map-box { order: 3 !important; }
   #col-l > div:has(#chat-list) { order: 4; }
-  #col-r > div:has(#prog-label) { order: 5; }
-  #col-r > #me-box { order: 6; }
-  #col-r > p:not(#board-msg) { order: 7; }
-  #col-r > #board-msg { order: 8; }
-  #col-r > #task-list { order: 8; }
+  #r-top > div:has(#prog-label) { order: 5; }
+  #r-top > #me-box { order: 6; }
+  #r-top > p:not(#board-msg) { order: 7; }
+  #r-top > #board-msg { order: 8; }
+  #view-board > #task-list { order: 8; }
   #col-l > #mp-rank-card { order: 10; }
   #view-board > #mat-box { order: 11; }
   div:has(> #adm-teams) { display: none; }
   @media (min-width: 1024px) {
-    #view-board:not(.hidden) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    #col-l, #col-r { display: flex; flex-direction: column; gap: 1.5rem; order: 4; align-self: stretch; min-width: 0; }
-    #view-board > #col-l { grid-column: 1; }
-    #view-board > #col-r { grid-column: 2; }
-    #col-l > #mp-rank-card { flex: 1; }
-    #col-r > #task-list { flex: 1; display: flex; flex-direction: column; gap: .75rem; }
-    #col-r > #task-list { border: 1px solid #27272a; background: rgba(24,24,27,.6); border-radius: 1rem; padding: 1rem; }
+    #view-board:not(.hidden) { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; }
+    #col-l > div:has(#chat-list) { grid-column: 1; order: 4; }
+    #col-l > #mp-rank-card { grid-column: 1; order: 5; }
+    #r-top { display: flex; flex-direction: column; gap: 1.5rem; grid-column: 2; order: 4; min-width: 0; }
+    #r-top > #board-msg:empty { display: none; }
+    #r-top > div:has(#prog-label) { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+    #view-board > #task-list { grid-column: 2; order: 5; border: 1px solid #27272a; background: rgba(24,24,27,.6); border-radius: 1rem; padding: 1rem; }
   }
 </style>
 </head>
@@ -288,7 +288,7 @@ rows = showAll ? all.slice().reverse() : all;
 })();
 </script>
     </div>
-    <div id="col-r">
+    <div id="r-top">
     <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-3">
       <div class="flex items-center justify-between text-xs text-zinc-300">
         <span id="prog-label" class="font-semibold"></span>
@@ -300,18 +300,18 @@ rows = showAll ? all.slice().reverse() : all;
         <div><div id="st-claimed" class="text-lg font-extrabold text-white">0</div>üstlenilen</div>
         <div><div id="st-vol" class="text-lg font-extrabold text-white">0</div>gönüllü</div>
       </div>
+      <p class="text-[11px] text-zinc-500 leading-relaxed pt-1">
+      Görev almak gönüllüdür. Aldığın görev bir sözdür: yapamayacaksan <strong class="text-zinc-300">Bırak</strong> de, bunun cezası yok.
+      Süresi dolup yapılmayan görev serbest kalır; üç kez böyle olursa izleyici moduna geçilir (iletişim listesinde kalırsın, yeni görev alamazsın).
+    </p>
     </div>
 
     <div id="me-box" class="hidden rounded-2xl p-4 text-xs leading-relaxed"></div>
 
-    <p class="text-[11px] text-zinc-500 leading-relaxed">
-      Görev almak gönüllüdür. Aldığın görev bir sözdür: yapamayacaksan <strong class="text-zinc-300">Bırak</strong> de, bunun cezası yok.
-      Süresi dolup yapılmayan görev serbest kalır; üç kez böyle olursa izleyici moduna geçilir (iletişim listesinde kalırsın, yeni görev alamazsın).
-    </p>
 
     <p id="board-msg" class="text-xs text-red-400 min-h-[16px]"></p>
-<div id="task-list" class="space-y-3"></div>
     </div>
+<div id="task-list" class="space-y-3"></div>
   <div id="mat-box" class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-3">
       <h3 class="font-impact text-lg text-white uppercase tracking-wide">📦 Materyal Kütüphanesi</h3>
       <p class="text-[11px] text-zinc-500 leading-relaxed">Bütün afiş, görsel, video, slayt ve paylaşım metinleri alanlara göre burada. Senin alanların üstte açık durur.</p>
