@@ -37,11 +37,13 @@
   @media (min-width: 1024px) {
     #view-board:not(.hidden) { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; }
     #col-l > div:has(#chat-list) { grid-column: 1; order: 4; }
-    #col-l > #mp-rank-card { grid-column: 1; order: 5; }
+    #col-l > #mp-rank-card { grid-column: 1 / -1; order: 6; }
     #r-top { display: flex; flex-direction: column; gap: 1.5rem; grid-column: 2; order: 4; min-width: 0; }
     #r-top > #board-msg:empty { display: none; }
     #r-top > div:has(#prog-label) { flex: 1; display: flex; flex-direction: column; justify-content: center; }
-    #view-board > #task-list { grid-column: 2; order: 5; border: 1px solid #27272a; background: rgba(24,24,27,.6); border-radius: 1rem; padding: 1rem; }
+    #col-l > #mp-rank-card { align-self: start; }
+    #view-board > #task-list { grid-column: 1 / -1; order: 5; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem 1.5rem; align-items: start; }
+    #view-board > #task-list > h3, #view-board > #task-list > p { grid-column: 1 / -1; }
   }
 </style>
 </head>
