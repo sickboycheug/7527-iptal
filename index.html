@@ -943,33 +943,49 @@
 
 <!-- 7. ONAY MODALI (E-POSTA AÇILDIKTAN SONRA) -->
 <div id="confirm-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-  <div class="bg-zinc-900 border-2 border-emerald-600 rounded-3xl max-w-md w-full p-6 text-center space-y-4 shadow-2xl animate-in zoom-in-95 duration-200">
+  <div class="bg-zinc-900 border-2 border-emerald-600 rounded-3xl max-w-md w-full max-h-[92vh] overflow-y-auto p-6 text-center space-y-4 shadow-2xl animate-in zoom-in-95 duration-200">
     <div class="w-16 h-16 bg-emerald-950 border border-emerald-600 rounded-full flex items-center justify-center mx-auto text-2xl">
       ✉️
     </div>
     <h3 class="font-impact text-2xl text-white uppercase">DİLEKÇENİZİ GÖNDERDİNİZ Mİ?</h3>
-    <div class="text-xs text-zinc-300 leading-relaxed space-y-2 text-left">
+    <div class="text-xs text-zinc-300 leading-relaxed space-y-3 text-left">
       <p class="text-center">Dilekçeniz hazırlandı ve PDF olarak cihazınıza kaydedildi.</p>
-      <button type="button" onclick="window.location.href = generateMailtoUrl()" class="w-full py-3 bg-sky-600 hover:bg-sky-500 text-white rounded-xl font-bold text-xs transition shadow">
-        ✉️ E-posta Uygulamasını Aç
-      </button>
       <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-3 space-y-1.5">
-        <p class="text-[11px] text-zinc-400">İndirilenler klasöründeki dosya:</p>
+        <p class="text-[11px] text-zinc-400">PDF dosyanız:</p>
         <p id="confirm-file-name" class="font-mono text-[11px] text-emerald-400 break-all">-</p>
       </div>
-      <p class="text-[11px] text-zinc-400">
-        <strong class="text-zinc-200">1.</strong> Bu dosyayı e-postaya ekleyin &nbsp;
-        <strong class="text-zinc-200">2.</strong> <span class="text-emerald-400 font-bold">Gönder</span>’e basın
-      </p>
-      <p class="text-[11px] text-zinc-500">E-postayı gönderdikten sonra aşağıdaki düğmeye basarak yeni bir dilekçeye geçebilirsiniz.</p>
+
+      <div class="space-y-2">
+        <p class="text-[11px] text-zinc-400"><strong class="text-zinc-200">1.</strong> E-postayı aç (hangisini kullanıyorsan):</p>
+        <button type="button" onclick="window.location.href = generateMailtoUrl()" class="w-full py-3 bg-sky-600 hover:bg-sky-500 text-white rounded-xl font-bold text-xs transition shadow">
+          ✉️ E-posta Uygulamasını Aç
+        </button>
+        <div class="grid grid-cols-2 gap-2">
+          <button type="button" onclick="gmaildeAc()" class="py-2.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-zinc-100 rounded-xl font-bold text-xs transition">Gmail ile aç</button>
+          <button type="button" onclick="outlookdaAc()" class="py-2.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-zinc-100 rounded-xl font-bold text-xs transition">Outlook / Hotmail</button>
+        </div>
+        <button type="button" onclick="epostaMetniKopyala(this)" class="w-full py-2.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-zinc-100 rounded-xl font-bold text-xs transition">
+          📋 Adresi ve metni kopyala (başka e-posta için)
+        </button>
+        <p class="text-[10px] text-zinc-500">Hiçbiri açılmazsa: kopyala, kendi e-posta sayfana yapıştır.</p>
+      </div>
+
+      <p class="text-[11px] text-zinc-400"><strong class="text-zinc-200">2.</strong> İndirdiğin <span class="text-emerald-400 font-bold">PDF dosyasını e-postaya ekle</span> (ataç veya + simgesi).</p>
       <button type="button" onclick="pdfiTekrarVer()" class="w-full py-2.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-zinc-100 rounded-xl font-bold text-xs transition">
-        📄 PDF inmediyse: PDF'i kaydet / paylaş
+        📄 PDF inmediyse veya iPhone'daysan: PDF'i kaydet / paylaş
       </button>
+      <p class="text-[10px] text-zinc-500">iPhone'da PDF ekranda açılırsa sağ üstteki <strong class="text-zinc-300">Paylaş</strong> simgesine bas, <strong class="text-zinc-300">Mail</strong>'i seç, PDF e-postaya kendiliğinden eklenir.</p>
+
+      <p class="text-[11px] text-zinc-400"><strong class="text-zinc-200">3.</strong> <span class="text-emerald-400 font-bold">Gönder</span>'e bas, sonra buraya dönüp aşağıdaki yeşil düğmeye bas.</p>
     </div>
-    <div class="pt-2">
+    <div class="pt-2 space-y-2">
       <button onclick="confirmPetitionSent(true)" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs uppercase transition shadow">
         ✓ Gönderdim, Sıradaki Dilekçeye Geç
       </button>
+      <button type="button" onclick="gonderimiSonraya()" class="w-full py-2 text-zinc-400 hover:text-zinc-200 text-[11px] underline transition">
+        Henüz göndermedim, sonra göndereceğim
+      </button>
+      <p class="text-[10px] text-zinc-600">Göndermediysen pencereyi kapatabilirsin. Dilekçe kayıtlı, aynı hedefi seçip düğmeye tekrar basınca yeni dilekçe oluşmadan bu pencere yeniden açılır.</p>
     </div>
   </div>
 </div>
@@ -3390,6 +3406,40 @@ function generateMailtoUrl() {
          '&body=' + encodeURIComponent(body);
 }
 
+function mailParcala() {
+  var m = generateMailtoUrl();
+  var i = m.indexOf('?');
+  var to = decodeURIComponent(m.slice(7, i));
+  var q = {};
+  m.slice(i + 1).split('&').forEach(function (kv) {
+    var j = kv.indexOf('=');
+    q[kv.slice(0, j)] = decodeURIComponent(kv.slice(j + 1));
+  });
+  return { to: to, subject: q.subject || '', body: q.body || '' };
+}
+function gmaildeAc() {
+  var p = mailParcala();
+  window.open('https://mail.google.com/mail/?view=cm&fs=1&to=' + encodeURIComponent(p.to) + '&su=' + encodeURIComponent(p.subject) + '&body=' + encodeURIComponent(p.body), '_blank');
+}
+function outlookdaAc() {
+  var p = mailParcala();
+  window.open('https://outlook.live.com/mail/0/deeplink/compose?to=' + encodeURIComponent(p.to) + '&subject=' + encodeURIComponent(p.subject) + '&body=' + encodeURIComponent(p.body), '_blank');
+}
+function epostaMetniKopyala(btn) {
+  var p = mailParcala();
+  var t = 'Kime: ' + p.to + '\nKonu: ' + p.subject + '\n\n' + p.body;
+  function ok() { if (btn) { var old = btn.getAttribute('data-old') || btn.textContent; btn.setAttribute('data-old', old); btn.textContent = '✓ Kopyalandı'; setTimeout(function () { btn.textContent = old; }, 2000); } }
+  function fb() {
+    var a = document.createElement('textarea'); a.value = t; a.style.position = 'fixed'; a.style.opacity = '0';
+    document.body.appendChild(a); a.select();
+    try { document.execCommand('copy'); ok(); } catch (e) { alert('Kopyalanamadı.'); }
+    document.body.removeChild(a);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok, fb); else fb();
+}
+function gonderimiSonraya() {
+  document.getElementById('confirm-modal').style.display = 'none';
+}
 function openKvkkModal() {
   var m = document.getElementById('kvkk-modal');
   if (m) m.style.display = 'flex';
@@ -3603,6 +3653,7 @@ async function generatePetitionPdfCanvas() {
 
 // --- GONDERIM AKISI --------------------------------------------------
 var petitionBusy = false;
+var currentTekrarKey = '';
 
 async function sendPetitionViaEmail() {
   if (petitionBusy) return;
@@ -3651,18 +3702,26 @@ async function sendPetitionViaEmail() {
   }
     var tekrarAnahtar = '7527_gonderim_' + selectedTarget +
     (selectedTarget === 'mp' && selectedMP ? '_' + selectedMP.id : '');
+  var oncekiNo = '', onayli = false;
   try {
-  if (localStorage.getItem(tekrarAnahtar)) {
-      alert('Bu hedefe dilekçeniz zaten oluşturuldu.\n\nLütfen indirilenler klasörünüzdeki PDF dosyasını ve e-posta programınızı kontrol edin. Aynı dilekçe tekrar oluşturulmaz.');
-      return;
-    }
+    oncekiNo = localStorage.getItem(tekrarAnahtar) || '';
+    onayli = !!localStorage.getItem(tekrarAnahtar + '_onay');
   } catch (e) {}
+  if (oncekiNo && onayli) {
+    alert('Bu hedefe dilekçenizi zaten gönderdiniz. Aynı hedefe ikinci dilekçe oluşturulmaz.\n\nBaşka bir hedef (başka bir milletvekili gibi) seçerek devam edebilirsiniz.');
+    return;
+  }
+  currentTekrarKey = tekrarAnahtar;
   petitionBusy = true;
   var oldHtml = btn ? btn.innerHTML : '';
   function step(msg) { if (btn) btn.textContent = msg; }
   if (btn) btn.disabled = true;
 
   try {
+    if (oncekiNo) {
+      // Daha once kaydedilmis ama gonderilmemis dilekce: yenisi olusturulmaz, ayni no ile PDF yeniden hazirlanir
+      lastPetitionNumber = oncekiNo;
+    } else {
     step('Şifreleniyor...');
     var envelope = await encryptPayload({
       name: name,
@@ -3685,6 +3744,7 @@ async function sendPetitionViaEmail() {
     // Dilekceyi olusturan herkes imzaci sayilir; sayac burada guncellenir.
     // Onay adimi ('Evet, gonderdim') yalnizca bilgi amacli kaydedilir.
     refreshCounters();
+    }
 
     step('PDF hazırlanıyor...');
     fillPrintPetition(lastPetitionNumber);
@@ -3702,7 +3762,6 @@ async function sendPetitionViaEmail() {
     document.getElementById('confirm-modal').style.display = 'flex';
   } catch (e) {
         if (e && (e.message === 'pdf_lib' || e.message === 'pdf_timeout' || e.message === 'pdf_font')) {
-      try { localStorage.removeItem(tekrarAnahtar); } catch (x) {}
       alert('PDF hazırlanamadı. Büyük ihtimalle uygulamanın içindeki tarayıcı sorun çıkarıyor.\n\nÇözüm: Bu sayfanın adresini kopyalayıp Safari veya Chrome\'da açın ve dilekçeyi oradan tekrar oluşturun.');
     } else {
       alert(dataErrorText(e));
@@ -3716,6 +3775,7 @@ async function sendPetitionViaEmail() {
 async function confirmPetitionSent(didSend) {
   document.getElementById('confirm-modal').style.display = 'none';
   if (!didSend) return;
+  try { if (currentTekrarKey) localStorage.setItem(currentTekrarKey + '_onay', '1'); } catch (e) {}
 
   if (!lastPetitionNumber) {
     openThanksModal();
