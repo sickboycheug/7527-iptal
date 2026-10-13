@@ -1382,11 +1382,11 @@ function csvCell(v) { v = String(v == null ? '' : v); return /[",\n;]/.test(v) ?
 function buildCodesCsv() {
   var byApp = {};
   admMembers.forEach(function (m) { if (m.application_id != null) byApp[m.application_id] = m; });
-  var lines = [['Ad Soyad', 'İletişim', 'Şehir', 'Takma ad', 'Kod'].join(';')];
+  var lines = [['Ad Soyad', 'İletişim', 'Şehir', 'Takma ad', 'Kod', 'Giriş linki'].join(';')];
   adminApps.forEach(function (a) {
     var code = codesByApp[a.id]; if (!code) return;
     var m = byApp[a.id];
-    lines.push([a.name, a.contact, a.city, m ? m.nickname : '', code].map(csvCell).join(';'));
+    lines.push([a.name, a.contact, a.city, m ? m.nickname : '', code, 'https://7527iptal.org/gorev.html?kod=' + encodeURIComponent(code)].map(csvCell).join(';'));
   });
   return '﻿' + lines.join('\r\n');
 }
@@ -1746,15 +1746,27 @@ function renderMaterials() {
   $('vol-name').addEventListener('blur', function () { if (!$('vol-nick').value) $('vol-nick').value = suggestNick($('vol-name').value); });
   loadCounters();
   var saved = load('gv_code');
-  if (saved) {
+  var fromLink = '';
+  try { fromLink = (new URLSearchParams(location.search).get('kod') || '').trim(); } catch (e) {}
+  if (fromLink) { try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) {} }
+  async function tryLogin(c, remember) {
     try {
-      var nick = await callRpc('gv_login', { p_code: saved });
-      memberCode = saved;
+      var nick = await callRpc('gv_login', { p_code: c });
+      memberCode = c;
+      if (remember) store('gv_code', c);
       enterBoard(nick);
+      return true;
     } catch (e) {
-      if ((e.message || '').indexOf('unauthorized') !== -1) store('gv_code', null);
+      if (!remember && (e.message || '').indexOf('unauthorized') !== -1) store('gv_code', null);
+      return false;
     }
   }
+  if (fromLink && fromLink.replace(/[^0-9a-zA-Z]/g, '').length >= 8) {
+    if (await tryLogin(fromLink, true)) return;
+    $('login-code').value = fromLink;
+    $('login-msg').textContent = 'Bağlantıdaki kod geçerli değil. Kodunu elle girebilirsin.';
+  }
+  if (saved && saved !== fromLink) await tryLogin(saved, false);
 })();
 </script>
 </body>
