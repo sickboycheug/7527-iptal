@@ -973,6 +973,15 @@
 </div>
 
 <!-- 7. ONAY MODALI (E-POSTA AÇILDIKTAN SONRA) -->
+<div id="link-modal" style="display:none;position:fixed;inset:0;z-index:2147483600;background:rgba(0,0,0,.85);align-items:center;justify-content:center;padding:1rem;">
+  <div class="bg-zinc-900 border-2 border-emerald-600 rounded-3xl max-w-md w-full max-h-[92vh] overflow-y-auto p-6 text-center space-y-4 shadow-2xl">
+    <h3 id="lk-baslik" class="font-impact text-2xl text-white uppercase">DİLEKÇEN</h3>
+    <div id="lk-bilgi" class="text-xs text-zinc-300 space-y-2 text-left"></div>
+    <div id="lk-eylem" class="space-y-2"></div>
+    <button type="button" onclick="document.getElementById('link-modal').style.display='none'" class="w-full py-2 text-zinc-400 hover:text-zinc-200 text-[11px] underline">Kapat</button>
+  </div>
+</div>
+
 <div id="bekleyen-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" style="display:none;">
   <div class="bg-zinc-900 border-2 border-amber-500 rounded-3xl max-w-md w-full p-6 text-center space-y-4 shadow-2xl">
     <h3 class="font-impact text-2xl text-white uppercase">GÖNDERİLMEMİŞ DİLEKÇEN VAR</h3>
@@ -3805,6 +3814,15 @@ async function sendPetitionViaEmail() {
 
   try {
     if (oncekiNo) {
+      try {
+        var stt = await callRpc('petition_status', { p_petition_number: oncekiNo });
+        if (stt && stt.found === false) {
+          try { localStorage.removeItem(tekrarAnahtar); localStorage.removeItem(tekrarAnahtar + '_onay'); } catch (e) {}
+          bekleyenSil(oncekiNo); oncekiNo = '';
+        }
+      } catch (e) {}
+    }
+    if (oncekiNo) {
       // Daha once kaydedilmis ama gonderilmemis dilekce: yenisi olusturulmaz, ayni no ile PDF yeniden hazirlanir
       lastPetitionNumber = oncekiNo;
       bekleyenEkle(lastPetitionNumber);
@@ -3902,6 +3920,74 @@ async function confirmPetitionSent(didSend) {
 }
 
 // Sayfa yenilenir / pencere kaybolursa: gonderilmemis (onaysiz) dilekce icin soru sorulur
+
+// --- ?dilekce=NUMARA baglantisi: onaysiz dilekceyi e-postayla tamamlat ---
+function lkEl(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+function lkTemizle(no) {
+  try {
+    var sil = [];
+    for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k && k.indexOf('7527_gonderim_') === 0 && localStorage.getItem(k) === no) sil.push(k); }
+    sil.forEach(function (k) { localStorage.removeItem(k); localStorage.removeItem(k + '_onay'); });
+  } catch (e) {}
+  bekleyenSil(no);
+}
+async function linkKontrol() {
+  var m = /[?&]dilekce=([^&#]+)/.exec(window.location.search);
+  if (!m) return;
+  var no = decodeURIComponent(m[1]).trim();
+  var box = document.getElementById('link-modal'); if (!box) return;
+  var bas = document.getElementById('lk-baslik'), bilgi = document.getElementById('lk-bilgi'), eylem = document.getElementById('lk-eylem');
+  bilgi.textContent = ''; eylem.textContent = '';
+  var st = null;
+  try { st = await callRpc('petition_status', { p_petition_number: no }); } catch (e) { st = null; }
+  box.style.display = 'flex';
+  if (!st) { bas.textContent = 'BAĞLANTI HATASI'; bilgi.appendChild(lkEl('p', '', 'Dilekçe bilgisi alınamadı. İnternetini kontrol edip sayfayı yenile.')); return; }
+  if (!st.found) {
+    lkTemizle(no);
+    bas.textContent = 'DİLEKÇE İPTAL EDİLMİŞ';
+    bilgi.appendChild(lkEl('p', '', 'Bu numaralı dilekçe sistemde yok; tekrar eden kayıt olarak iptal edilmiş olabilir. Sorun değil: yeni bir dilekçe oluşturabilirsin. Kapat düğmesine bas, sayfadaki adımları izle.'));
+    return;
+  }
+  if (st.confirmed) {
+    bas.textContent = 'DİLEKÇEN SAYILDI';
+    bilgi.appendChild(lkEl('p', '', 'Bu dilekçe zaten onaylanmış ve sayılıyor. Teşekkürler! Şimdi bir arkadaşına da paylaşırsan sesimiz daha çok duyulur.'));
+    return;
+  }
+  var hedef = '', email = '';
+  if (st.type === 'cb') { hedef = 'Cumhurbaşkanlığı'; email = 'iletisim@tccb.gov.tr'; }
+  else if (st.type === 'mb') { hedef = 'TBMM Başkanlığı'; email = 'numan.kurtulmus@tbmm.gov.tr'; }
+  else if (st.type === 'mp') {
+    var mp = null; MP_DATABASE.forEach(function (x) { if (String(x.id) === String(st.mp_id)) mp = x; });
+    hedef = mp ? mp.name + ' (milletvekili)' : 'milletvekili'; email = mp ? mp.email : '';
+  }
+  bas.textContent = 'DİLEKÇENİ TAMAMLA';
+  bilgi.appendChild(lkEl('p', '', 'Dilekçe no: ' + no));
+  bilgi.appendChild(lkEl('p', '', 'Gideceği yer: ' + hedef));
+  if (email) bilgi.appendChild(lkEl('p', '', 'E-posta adresi: ' + email));
+  bilgi.appendChild(lkEl('p', 'text-amber-300', '1. Aşağıdaki düğmeyle e-postayı aç. 2. Telefonuna/bilgisayarına inen dilekce-' + no + '.pdf dosyasını e-postaya ekle. 3. Gönder, sonra buraya dönüp yeşil düğmeye bas.'));
+  var subject = "7527 Sayılı Kanun'un İptali ve 5199'a Dönülmesi Talebimdir - Dilekçe No: " + no;
+  var body = 'Sayın Yetkili,\n\n7527 sayılı Kanun\'un iptali ve 5199 sayılı Kanun\'a dönülmesi talebimi içeren dilekçem ektedir.\n\nDilekçe No: ' + no + '\n\nSaygılarımla.';
+  if (email) {
+    var a = lkEl('a', 'block w-full py-3 bg-sky-600 hover:bg-sky-500 text-white rounded-xl font-bold text-xs text-center', '✉️ E-posta Uygulamasını Aç');
+    a.href = 'mailto:' + encodeURIComponent(email) + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    eylem.appendChild(a);
+  }
+  var ok = lkEl('button', 'w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs uppercase', '✓ Gönderdim');
+  ok.type = 'button';
+  ok.onclick = async function () {
+    ok.disabled = true; ok.textContent = 'Kaydediliyor...';
+    try { await callRpc('confirm_petition', { p_petition_number: no }); }
+    catch (e) { ok.disabled = false; ok.textContent = '✓ Gönderdim'; alert('Bağlantı hatası, tekrar dene.'); return; }
+    lkTemizle(no);
+    try { await refreshCounters(); } catch (e) {}
+    box.style.display = 'none';
+    lastPetitionNumber = no;
+    openThanksModal();
+  };
+  eylem.appendChild(ok);
+}
+setTimeout(function () { try { linkKontrol(); } catch (e) {} }, 1200);
+
 var bekleyenAtla = {}, bekleyenAnahtar = '';
 function bekleyenListe() { try { var l = JSON.parse(localStorage.getItem('7527_bekleyen') || '[]'); return Array.isArray(l) ? l : []; } catch (e) { return []; } }
 function bekleyenEkle(no) { try { var l = bekleyenListe(); if (l.indexOf(no) < 0) l.push(no); localStorage.setItem('7527_bekleyen', JSON.stringify(l.slice(-20))); } catch (e) {} }
@@ -6022,13 +6108,15 @@ function tekrarCiz(toplam, grupSayisi, silSayi, onayliTekrar, onaysiz, hatali) {
       r.appendChild(tkEl('span', 'text-[11px] text-white font-semibold flex-1 min-w-[7rem]', x.name || '(adsız)'));
       r.appendChild(tkEl('span', 'text-[10px] text-zinc-400', hedefAdi(x.type) + (x.target ? ' · ' + x.target : '') + ' · ' + (x.contact || '—')));
       var ad = (x.name || '').trim().split(/\s+/)[0] || '';
-      var msg = 'Merhaba' + (ad ? ' ' + ad : '') + ', 7527iptal.org\'da hazırladığın dilekçe kaydedildi ama e-postayı gönderdiğini onaylamadığın için sayılmadı. Dilekçeyi tekrar oluşturup e-postayı gönder ve sayfadaki yeşil "Gönderdim" düğmesine bas; böylece sayılır. Desteğin için teşekkürler.';
+      var hd = x.type === 'mp' ? (x.target ? x.target + ' Milletvekili\'ne' : 'milletvekiline') : (x.type === 'cb' ? 'Cumhurbaşkanlığı\'na' : 'TBMM Başkanlığı\'na');
+      var link = 'https://7527iptal.org/?dilekce=' + x.no;
+      var msg = 'Merhaba' + (ad ? ' ' + ad : '') + ' 🐾 7527iptal.org\'da hazırladığın dilekçe için çok teşekkür ederiz. ' + hd + ' hazırladığın ' + x.no + ' numaralı dilekçenin henüz ulaşmadığını görüyoruz; e-postayı gönderdiğin onaylanmadığı için sayıma girmedi. Bu bağlantıdan 1 dakikada e-postayı gönderip onaylayabilirsin: ' + link + ' Bu bağlantıyı bir arkadaşınla da paylaşırsan her dilekçe canlara güç olur. Desteğin için sonsuz teşekkürler 🙏';
       function lnk(label, cls, href) { var a = tkEl('a', 'px-2 py-1 rounded text-[10px] font-bold text-white ' + cls, label); a.href = href; a.target = '_blank'; a.rel = 'noopener noreferrer'; r.appendChild(a); }
       if (x.n.kind === 'phone') {
         lnk('💬 WhatsApp', 'bg-emerald-700', 'https://wa.me/' + x.n.value + '?text=' + encodeURIComponent(msg));
         lnk('📱 SMS', 'bg-sky-700', 'sms:+' + x.n.value + '?body=' + encodeURIComponent(msg));
       } else if (x.n.kind === 'email') {
-        lnk('✉ E-posta', 'bg-sky-700', 'mailto:' + x.n.value + '?subject=' + encodeURIComponent('7527 İptal: dilekçen sayılmadı') + '&body=' + encodeURIComponent(msg));
+        lnk('✉ E-posta', 'bg-sky-700', 'mailto:' + x.n.value + '?subject=' + encodeURIComponent('7527 İptal: dilekçeni birlikte tamamlayalım') + '&body=' + encodeURIComponent(msg));
       }
       list.appendChild(r);
     });
@@ -6037,9 +6125,9 @@ function tekrarCiz(toplam, grupSayisi, silSayi, onayliTekrar, onaysiz, hatali) {
 }
 function tekrarListeIndir(list) {
   function q(v) { return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"'; }
-  var lines = [['Ad Soyad', 'İletişim', 'Hedef', 'Hedef Vekil', 'Dilekçe No', 'Tarih'].map(q).join(';')];
+  var lines = [['Ad Soyad', 'İletişim', 'Hedef', 'Hedef Vekil', 'Dilekçe No', 'Tarih', 'Bağlantı'].map(q).join(';')];
   list.forEach(function (x) {
-    lines.push([x.name, x.contact, hedefAdi(x.type), x.target, x.no, x.at ? new Date(x.at).toLocaleString('tr-TR') : ''].map(q).join(';'));
+    lines.push([x.name, x.contact, hedefAdi(x.type), x.target, x.no, x.at ? new Date(x.at).toLocaleString('tr-TR') : '', 'https://7527iptal.org/?dilekce=' + x.no].map(q).join(';'));
   });
   var blob = new Blob(['\ufeff' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
   var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = '7527-onaysiz-dilekceler.csv';
