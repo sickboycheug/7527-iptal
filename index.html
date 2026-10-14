@@ -2968,8 +2968,12 @@ async function refreshMpEmails() {
     var map = {};
     rows.forEach(function(r) { if (r.name && r.email) map[norm(r.name)] = r.email; });
 
+    var adSay = {};
+    MP_DATABASE.forEach(function(m) { var k = norm(m.name); adSay[k] = (adSay[k] || 0) + 1; });
+
     var degisen = 0;
     MP_DATABASE.forEach(function(m) {
+      if (adSay[norm(m.name)] > 1) return; // ayni adli vekillerde ad ile eslestirme yanlis adres yazar
       var yeni = map[norm(m.name)];
       if (yeni && yeni !== m.email) { m.email = yeni; m.verifiedEmail = true; degisen++; }
     });
@@ -6133,6 +6137,7 @@ async function tekrarAnaliz() {
     var groups = {};
     items.forEach(function (it) {
       if (!it.n.key) return;
+      if (it.type === 'mp' && mpAdAyni(it.target)) return;
       var k = it.n.key + '|' + it.type + '|' + it.target;
       (groups[k] = groups[k] || []).push(it);
     });
@@ -6164,6 +6169,13 @@ async function tekrarAnaliz() {
     tekrarBusy = false;
     if (btn) { btn.disabled = false; btn.innerHTML = oldHtml; }
   }
+}
+function mpAdAyni(ad) {
+  var n = function (t) { return String(t || '').toLocaleUpperCase('tr').replace(/İ/g, 'I').replace(/\s+/g, ' ').trim(); };
+  var a = n(ad), say = 0;
+  if (!a) return false;
+  MP_DATABASE.forEach(function (m) { if (n(m.name) === a) say++; });
+  return say > 1;
 }
 function tkDurum(x) {
   if (x.confirmed) return ['✓ onaylı', 'text-emerald-400 font-bold'];
