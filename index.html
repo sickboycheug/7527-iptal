@@ -1382,6 +1382,10 @@
           <button id="exp-backfill" onclick="backfillPetitionPlaces()" class="py-2 bg-amber-700 hover:bg-amber-600 rounded font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-50">
             <span>🗺️</span> Eski dilekçeleri haritaya işle
           </button>
+          <button id="exp-tekrar" onclick="tekrarAnaliz()" class="py-2 bg-fuchsia-800 hover:bg-fuchsia-700 rounded font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-50">
+            <span>🧹</span> Tekrarları bul / onaysızları gör
+          </button>
+          <div id="tekrar-sonuc" class="space-y-2"></div>
           <button id="exp-volunteers" onclick="exportEncrypted('volunteers')" class="py-2 bg-emerald-800 hover:bg-emerald-700 rounded font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed">
             <span>🤝</span> Gönüllüler (Excel)
           </button>
@@ -3803,6 +3807,7 @@ async function sendPetitionViaEmail() {
     if (oncekiNo) {
       // Daha once kaydedilmis ama gonderilmemis dilekce: yenisi olusturulmaz, ayni no ile PDF yeniden hazirlanir
       lastPetitionNumber = oncekiNo;
+      bekleyenEkle(lastPetitionNumber);
     } else {
     step('Şifreleniyor...');
     var envelope = await encryptPayload({
@@ -3825,6 +3830,7 @@ async function sendPetitionViaEmail() {
       p_city: getPlace().city || ''
     });
     try { localStorage.setItem(tekrarAnahtar, lastPetitionNumber); } catch (e) {}
+    bekleyenEkle(lastPetitionNumber);
     // Dilekceyi olusturan herkes imzaci sayilir; sayac burada guncellenir.
     // Onay adimi ('Evet, gonderdim') yalnizca bilgi amacli kaydedilir.
     refreshCounters();
@@ -3877,6 +3883,7 @@ async function confirmPetitionSent(didSend) {
   }
   if (okBtn) { okBtn.disabled = false; okBtn.innerHTML = okHtml; }
   document.getElementById('confirm-modal').style.display = 'none';
+  bekleyenSil(lastPetitionNumber);
   try { if (currentTekrarKey) localStorage.setItem(currentTekrarKey + '_onay', '1'); } catch (e) {}
   try { await refreshCounters(); } catch (e) {}
   // Bu vekile gönderim yapıldı: listeden çıkar
@@ -3896,16 +3903,12 @@ async function confirmPetitionSent(didSend) {
 
 // Sayfa yenilenir / pencere kaybolursa: gonderilmemis (onaysiz) dilekce icin soru sorulur
 var bekleyenAtla = {}, bekleyenAnahtar = '';
+function bekleyenListe() { try { var l = JSON.parse(localStorage.getItem('7527_bekleyen') || '[]'); return Array.isArray(l) ? l : []; } catch (e) { return []; } }
+function bekleyenEkle(no) { try { var l = bekleyenListe(); if (l.indexOf(no) < 0) l.push(no); localStorage.setItem('7527_bekleyen', JSON.stringify(l.slice(-20))); } catch (e) {} }
+function bekleyenSil(no) { try { localStorage.setItem('7527_bekleyen', JSON.stringify(bekleyenListe().filter(function (x) { return x !== no; }))); } catch (e) {} }
 function bekleyenBul() {
-  try {
-    for (var i = 0; i < localStorage.length; i++) {
-      var k = localStorage.key(i);
-      if (k && k.indexOf('7527_gonderim_') === 0 && !/_onay$/.test(k) && !bekleyenAtla[k]) {
-        var no = localStorage.getItem(k);
-        if (no && !localStorage.getItem(k + '_onay')) return { k: k, no: no };
-      }
-    }
-  } catch (e) {}
+  var l = bekleyenListe();
+  for (var i = 0; i < l.length; i++) { if (!bekleyenAtla[l[i]]) return { k: l[i], no: l[i] }; }
   return null;
 }
 function bekleyenKontrol() {
@@ -3922,7 +3925,7 @@ async function bekleyenEvet() {
   var b = document.getElementById('bekleyen-evet'); b.disabled = true;
   try {
     await callRpc('confirm_petition', { p_petition_number: p.no });
-    localStorage.setItem(p.k + '_onay', '1');
+    bekleyenSil(p.no);
     try { await refreshCounters(); } catch (e) {}
   } catch (e) {
     alert('Bağlantı hatası, onay kaydedilemedi. Tekrar dene.');
@@ -5750,11 +5753,8 @@ var EXPORT_KINDS = {
       });
       satirlar.push(['TOPLAM', t, o, t - o]);
       satirlar.push([]);
-      satirlar.push(['Sitedeki sayaç TOPLAM satırını gösterir: ' + t]);
-      satirlar.push(['Dilekçeyi oluşturup PDF’ini indiren herkes imzacı sayılır.']);
-      satirlar.push([]);
-      satirlar.push(['“Onayladı” sütunu, ek olarak “Evet, gönderdim” adımını']);
-      satirlar.push(['işaretleyenleri gösterir. Sayacı etkilemez, yalnızca bilgi amaçlıdır.']);
+      satirlar.push(['Sitedeki sayaç yalnızca “Onayladı” (Evet, gönderdim) satırlarını sayar: ' + o]);
+      satirlar.push(['Onaylamayanlar sayaca işlenmez.']);
       return { ad: 'Özet', satirlar: satirlar, genislik: [30, 20, 14, 14] };
     }
   },
@@ -5929,6 +5929,126 @@ async function exportEncrypted(kind) {
 }
 
 // Eski dilekceleri haritaya isler: sifre bu tarayicida cozulur, sunucuya yalnizca ulke ve sehir gider.
+
+// --- TEKRAR DILEKCELER + ONAYSIZLAR (yalnizca yonetici, tarayicida cozulur) ---
+var tekrarBusy = false, tekrarSil = [];
+function tkNorm(contact) {
+  var c = String(contact || '');
+  var em = c.match(/[^\s\/,;]+@[^\s\/,;]+\.[^\s\/,;]+/);
+  if (em) return { kind: 'email', key: em[0].toLowerCase(), value: em[0] };
+  var d = c.replace(/\D/g, '');
+  if (d.length === 12 && d.indexOf('90') === 0) d = d.slice(2);
+  if (d.length === 11 && d.charAt(0) === '0') d = d.slice(1);
+  if (d.length === 10) return { kind: 'phone', key: d, value: '90' + d };
+  return { kind: '', key: '', value: '' };
+}
+async function tekrarAnaliz() {
+  if (tekrarBusy) return;
+  if (!adminPinCache) { alert('Oturum düşmüş. Lütfen yönetici PIN’ini tekrar girin.'); return; }
+  if (!cryptoAvailable()) { alert(dataErrorText(new Error('crypto_unavailable'))); return; }
+  var btn = document.getElementById('exp-tekrar'), box = document.getElementById('tekrar-sonuc');
+  var oldHtml = btn ? btn.innerHTML : '';
+  tekrarBusy = true;
+  if (btn) { btn.disabled = true; btn.textContent = 'Anahtar açılıyor...'; }
+  try {
+    var privateKey = await loadAdminPrivateKey();
+    if (!privateKey) return;
+    var rows = [];
+    for (var off = 0; ; off += 100) {
+      var part = await callRpc('export_petitions_range', { p_pin: adminPinCache, p_from: null, p_to: null, p_offset: off, p_limit: 100 }) || [];
+      rows = rows.concat(part);
+      if (btn) btn.textContent = 'Kayıtlar alınıyor (' + rows.length + ')...';
+      if (part.length < 100) break;
+    }
+    if (!rows.length) { alert('Henüz kayıt yok.'); return; }
+    var items = [], hatali = 0;
+    for (var i = 0; i < rows.length; i++) {
+      var c = {};
+      try { c = await decryptPayload(privateKey, rows[i].payload_enc) || {}; } catch (e) { hatali++; }
+      var n = tkNorm(c.contact);
+      items.push({ no: rows[i].petition_number, confirmed: !!rows[i].confirmed, type: rows[i].recipient_type, at: rows[i].created_at || '',
+        name: c.name || '', contact: c.contact || '', target: c.targetName || '', n: n });
+      if (btn && i % 25 === 0) btn.textContent = 'Çözülüyor (' + i + '/' + rows.length + ')...';
+    }
+    var groups = {};
+    items.forEach(function (it) {
+      if (!it.n.key) return;
+      var k = it.n.key + '|' + it.type + '|' + it.target;
+      (groups[k] = groups[k] || []).push(it);
+    });
+    var silinecek = [], onayliTekrar = 0, grupSayisi = 0, kalan = {};
+    Object.keys(groups).forEach(function (k) {
+      var g = groups[k]; if (g.length < 2) return;
+      grupSayisi++;
+      g.sort(function (a, b) { return String(a.at) < String(b.at) ? -1 : 1; });
+      var conf = g.filter(function (x) { return x.confirmed; });
+      var keep = conf.length ? conf[0] : g[0];
+      onayliTekrar += Math.max(conf.length - 1, 0);
+      g.forEach(function (x) { if (x !== keep && !x.confirmed) silinecek.push(x.no); });
+    });
+    var silSet = {}; silinecek.forEach(function (no) { silSet[no] = 1; });
+    var onaysiz = items.filter(function (x) { return !x.confirmed && !silSet[x.no]; });
+    tekrarSil = silinecek;
+    tekrarCiz(items.length, grupSayisi, silinecek.length, onayliTekrar, onaysiz, hatali);
+  } catch (e) {
+    alert(dataErrorText(e));
+  } finally {
+    tekrarBusy = false;
+    if (btn) { btn.disabled = false; btn.innerHTML = oldHtml; }
+  }
+}
+function tkEl(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+function tekrarCiz(toplam, grupSayisi, silSayi, onayliTekrar, onaysiz, hatali) {
+  var box = document.getElementById('tekrar-sonuc'); box.textContent = '';
+  var ozet = tkEl('div', 'bg-zinc-900 border border-zinc-700 rounded-lg p-3 text-[11px] text-zinc-300 space-y-1');
+  ozet.appendChild(tkEl('p', '', 'Toplam kayıt: ' + toplam));
+  ozet.appendChild(tkEl('p', '', 'Tekrar eden kişi/hedef: ' + grupSayisi + ' → silinecek fazla kayıt: ' + silSayi));
+  if (onayliTekrar) ozet.appendChild(tkEl('p', 'text-amber-400', 'Aynı kişi + aynı hedef için birden fazla ONAYLI kayıt: ' + onayliTekrar + ' (güvenlik için silinmez, sayaçta fazladan sayılır)'));
+  ozet.appendChild(tkEl('p', '', 'Onaysız kalan (silinmeyecek): ' + onaysiz.length));
+  if (hatali) ozet.appendChild(tkEl('p', 'text-red-400', hatali + ' kayıt çözülemedi (anahtar uyuşmadı).'));
+  box.appendChild(ozet);
+  if (silSayi) {
+    var sb = tkEl('button', 'w-full py-2 bg-red-800 hover:bg-red-700 rounded font-semibold text-white', '🗑 ' + silSayi + ' fazla (onaysız tekrar) kaydı sil');
+    sb.type = 'button'; sb.onclick = tekrarSilOnayla; box.appendChild(sb);
+    box.appendChild(tkEl('p', 'text-[10px] text-zinc-500', 'Önce "Dilekçeler (Excel)" ile yedek indir. Onaylı kayıt asla silinmez.'));
+  }
+  if (onaysiz.length) {
+    box.appendChild(tkEl('p', 'text-[11px] font-bold text-amber-400 pt-1', 'Onaysız kalanlar — bilgilendir:'));
+    var list = tkEl('div', 'space-y-1 max-h-72 overflow-y-auto');
+    onaysiz.forEach(function (x) {
+      var r = tkEl('div', 'flex flex-wrap items-center gap-1.5 bg-zinc-950/60 border border-zinc-800 rounded p-1.5');
+      r.appendChild(tkEl('span', 'text-[11px] text-white font-semibold flex-1 min-w-[7rem]', x.name || '(adsız)'));
+      r.appendChild(tkEl('span', 'text-[10px] text-zinc-400', hedefAdi(x.type) + (x.target ? ' · ' + x.target : '') + ' · ' + (x.contact || '—')));
+      var ad = (x.name || '').trim().split(/\s+/)[0] || '';
+      var msg = 'Merhaba' + (ad ? ' ' + ad : '') + ', 7527iptal.org\'da hazırladığın dilekçe kaydedildi ama e-postayı gönderdiğini onaylamadığın için sayılmadı. Dilekçeyi tekrar oluşturup e-postayı gönder ve sayfadaki yeşil "Gönderdim" düğmesine bas; böylece sayılır. Desteğin için teşekkürler.';
+      function lnk(label, cls, href) { var a = tkEl('a', 'px-2 py-1 rounded text-[10px] font-bold text-white ' + cls, label); a.href = href; a.target = '_blank'; a.rel = 'noopener noreferrer'; r.appendChild(a); }
+      if (x.n.kind === 'phone') {
+        lnk('💬 WhatsApp', 'bg-emerald-700', 'https://wa.me/' + x.n.value + '?text=' + encodeURIComponent(msg));
+        lnk('📱 SMS', 'bg-sky-700', 'sms:+' + x.n.value + '?body=' + encodeURIComponent(msg));
+      } else if (x.n.kind === 'email') {
+        lnk('✉ E-posta', 'bg-sky-700', 'mailto:' + x.n.value + '?subject=' + encodeURIComponent('7527 İptal: dilekçen sayılmadı') + '&body=' + encodeURIComponent(msg));
+      }
+      list.appendChild(r);
+    });
+    box.appendChild(list);
+  }
+}
+async function tekrarSilOnayla() {
+  if (!tekrarSil.length) return;
+  if (!confirm(tekrarSil.length + ' fazla (onaysız tekrar) dilekçe SİLİNECEK. Geri alınamaz.\n\nDevam edilsin mi?')) return;
+  var t = prompt('Onaylamak için SİL yaz:');
+  if (!t || t.trim().toUpperCase() !== 'SİL' && t.trim().toUpperCase() !== 'SIL') { alert('İşlem iptal edildi.'); return; }
+  var silinen = 0;
+  try {
+    for (var j = 0; j < tekrarSil.length; j += 200) {
+      silinen += Number(await callRpc('admin_delete_petitions_by_number', { p_pin: adminPinCache, p_numbers: tekrarSil.slice(j, j + 200) }) || 0);
+    }
+    alert('Tamam. ' + silinen + ' kayıt silindi.');
+    try { await refreshCounters(); } catch (e) {}
+    tekrarAnaliz();
+  } catch (e) { alert(dataErrorText(e) + '\n\nSilinen: ' + silinen); }
+}
+
 var backfillBusy = false;
 async function backfillPetitionPlaces() {
   if (backfillBusy) return;
