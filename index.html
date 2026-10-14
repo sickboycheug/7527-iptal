@@ -983,6 +983,17 @@
   </div>
 </div>
 
+<div id="onceki-modal" style="display:none;position:fixed;inset:0;z-index:2147483500;background:rgba(0,0,0,.85);align-items:center;justify-content:center;padding:1rem;">
+  <div class="bg-zinc-900 border-2 border-amber-500 rounded-3xl max-w-md w-full p-6 text-center space-y-4 shadow-2xl">
+    <h3 class="font-impact text-2xl text-white uppercase">BU HEDEFE DAHA ÖNCE DİLEKÇE OLUŞTURDUN</h3>
+    <p class="text-xs text-zinc-300">Dilekçe no: <span id="onceki-no" class="font-mono text-emerald-400 break-all">-</span></p>
+    <p class="text-xs text-zinc-300">Bu dilekçenin e-postasını gönderdin mi? Onaylamadığın için henüz sayılmadı.</p>
+    <button type="button" onclick="oncekiEvet()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs uppercase transition shadow">✓ Evet, gönderdim (onaylamayı unutmuşum)</button>
+    <button type="button" onclick="oncekiHayir()" class="w-full py-3 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-zinc-100 rounded-xl font-bold text-xs transition">Hayır, göndermedim / kayboldu. Tekrar hazırla</button>
+    <button type="button" onclick="document.getElementById('onceki-modal').style.display='none'" class="w-full py-2 text-zinc-400 hover:text-zinc-200 text-[11px] underline">Vazgeç</button>
+  </div>
+</div>
+
 <div id="bekleyen-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" style="display:none;">
   <div class="bg-zinc-900 border-2 border-amber-500 rounded-3xl max-w-md w-full p-6 text-center space-y-4 shadow-2xl">
     <h3 class="font-impact text-2xl text-white uppercase">GÖNDERİLMEMİŞ DİLEKÇEN VAR</h3>
@@ -3808,6 +3819,23 @@ async function sendPetitionViaEmail() {
     alert('Bu hedefe dilekçenizi zaten gönderdiniz. Aynı hedefe ikinci dilekçe oluşturulmaz.\n\nBaşka bir hedef (başka bir milletvekili gibi) seçerek devam edebilirsiniz.');
     return;
   }
+  window.__oncekiGec = window.__oncekiGec || {};
+  if (oncekiNo && !onayli && !window.__oncekiGec[tekrarAnahtar]) {
+    // Bu hedefe daha once dilekce olusturulmus ama onaylanmamis: once kullaniciya sor
+    var stx = null;
+    try { stx = await callRpc('petition_status', { p_petition_number: oncekiNo }); } catch (e) { stx = null; }
+    if (stx && stx.found === false) {
+      try { localStorage.removeItem(tekrarAnahtar); localStorage.removeItem(tekrarAnahtar + '_onay'); } catch (e) {}
+      bekleyenSil(oncekiNo); oncekiNo = '';
+    } else if (stx && stx.found && stx.confirmed) {
+      try { localStorage.setItem(tekrarAnahtar + '_onay', '1'); } catch (e) {}
+      alert('Bu hedefe dilekçen zaten onaylanmış ve sayılıyor. Başka bir hedef seçerek devam edebilirsin.');
+      return;
+    } else {
+      oncekiSor(tekrarAnahtar, oncekiNo);
+      return;
+    }
+  }
   currentTekrarKey = tekrarAnahtar;
   petitionBusy = true;
   var oldHtml = btn ? btn.innerHTML : '';
@@ -3991,6 +4019,23 @@ async function linkKontrol() {
 setTimeout(function () { try { linkKontrol(); } catch (e) {} }, 1200);
 
 var bekleyenAtla = {}, bekleyenAnahtar = '';
+var oncekiKey = '', oncekiNum = '';
+function oncekiSor(key, no) {
+  oncekiKey = key; oncekiNum = no;
+  document.getElementById('onceki-no').textContent = no;
+  document.getElementById('onceki-modal').style.display = 'flex';
+}
+async function oncekiEvet() {
+  document.getElementById('onceki-modal').style.display = 'none';
+  lastPetitionNumber = oncekiNum; currentTekrarKey = oncekiKey;
+  await confirmPetitionSent(true);
+}
+function oncekiHayir() {
+  document.getElementById('onceki-modal').style.display = 'none';
+  window.__oncekiGec = window.__oncekiGec || {};
+  window.__oncekiGec[oncekiKey] = true;
+  sendPetitionViaEmail();
+}
 function bekleyenListe() { try { var l = JSON.parse(localStorage.getItem('7527_bekleyen') || '[]'); return Array.isArray(l) ? l : []; } catch (e) { return []; } }
 function bekleyenEkle(no) { try { var l = bekleyenListe(); if (l.indexOf(no) < 0) l.push(no); localStorage.setItem('7527_bekleyen', JSON.stringify(l.slice(-20))); } catch (e) {} }
 function bekleyenSil(no) { try { localStorage.setItem('7527_bekleyen', JSON.stringify(bekleyenListe().filter(function (x) { return x !== no; }))); } catch (e) {} }
