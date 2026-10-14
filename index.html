@@ -6014,6 +6014,8 @@ function tekrarCiz(toplam, grupSayisi, silSayi, onayliTekrar, onaysiz, hatali) {
   }
   if (onaysiz.length) {
     box.appendChild(tkEl('p', 'text-[11px] font-bold text-amber-400 pt-1', 'Onaysız kalanlar — bilgilendir:'));
+    var db = tkEl('button', 'w-full py-2 bg-emerald-800 hover:bg-emerald-700 rounded font-semibold text-white', '⬇ Bu listeyi indir (Excel\'de açılır, ' + onaysiz.length + ' kişi)');
+    db.type = 'button'; db.onclick = function () { tekrarListeIndir(onaysiz); }; box.appendChild(db);
     var list = tkEl('div', 'space-y-1 max-h-72 overflow-y-auto');
     onaysiz.forEach(function (x) {
       var r = tkEl('div', 'flex flex-wrap items-center gap-1.5 bg-zinc-950/60 border border-zinc-800 rounded p-1.5');
@@ -6032,6 +6034,17 @@ function tekrarCiz(toplam, grupSayisi, silSayi, onayliTekrar, onaysiz, hatali) {
     });
     box.appendChild(list);
   }
+}
+function tekrarListeIndir(list) {
+  function q(v) { return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"'; }
+  var lines = [['Ad Soyad', 'İletişim', 'Hedef', 'Hedef Vekil', 'Dilekçe No', 'Tarih'].map(q).join(';')];
+  list.forEach(function (x) {
+    lines.push([x.name, x.contact, hedefAdi(x.type), x.target, x.no, x.at ? new Date(x.at).toLocaleString('tr-TR') : ''].map(q).join(';'));
+  });
+  var blob = new Blob(['\ufeff' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
+  var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = '7527-onaysiz-dilekceler.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
 }
 async function tekrarSilOnayla() {
   if (!tekrarSil.length) return;
