@@ -6134,23 +6134,18 @@ async function tekrarAnaliz() {
       var k = it.n.key + '|' + it.type + '|' + it.target;
       (groups[k] = groups[k] || []).push(it);
     });
-    var sayim = { sil: 0, isaretle: 0, isaretli: 0, birak: 0 }, grupSayisi = 0, grupListe = [], onayliGrup = {};
+    var sayim = { sil: 0 }, grupSayisi = 0, grupListe = [], onayliGrup = {};
     Object.keys(groups).forEach(function (k) {
       var g = groups[k]; if (g.length < 2) return;
       grupSayisi++;
       g.sort(function (a, b) { return new Date(a.at) - new Date(b.at); });
-      var aktif = g.filter(function (x) { return !x.tekrar; });
+      var aktif = g;
       var conf = aktif.filter(function (x) { return x.confirmed; });
       var pool = conf.length ? conf : (aktif.length ? aktif : g);
       var keep = pool[pool.length - 1];
-      var kt = new Date(keep.at).getTime();
-      g.forEach(function (x) {
+            g.forEach(function (x) {
         if (x === keep) { x.act = 'keep'; return; }
-        if (x.tekrar) { x.act = 'isaretli'; sayim.isaretli++; return; }
-        var uzak = Math.abs(kt - new Date(x.at).getTime()) > 3600000;
-        if (!uzak) { x.act = 'sil'; sayim.sil++; }
-        else if (x.confirmed) { x.act = 'isaretle'; sayim.isaretle++; }
-        else { x.act = 'birak'; sayim.birak++; }
+        x.act = 'sil'; sayim.sil++;
       });
       if (g.some(function (x) { return x.confirmed; })) onayliGrup[k] = 1;
       grupListe.push({ keep: keep.no, rows: g });
@@ -6174,42 +6169,27 @@ function tekrarCiz(toplam, grupSayisi, sayim, onaysiz, hatali, grupListe) {
   var ozet = tkEl('div', 'bg-zinc-900 border border-zinc-700 rounded-lg p-3 text-[11px] text-zinc-300 space-y-1');
   ozet.appendChild(tkEl('p', '', 'Toplam kayıt: ' + toplam));
   ozet.appendChild(tkEl('p', '', 'Tekrar eden kişi/hedef: ' + grupSayisi));
-  ozet.appendChild(tkEl('p', 'text-red-300', 'Peş peşe deneme, silinebilir: ' + sayim.sil));
-  ozet.appendChild(tkEl('p', 'text-amber-300', 'Farklı zamanda onaylı tekrar, işaretlenebilir (sayılmaz, silinmez): ' + sayim.isaretle));
-  ozet.appendChild(tkEl('p', 'text-amber-300', 'Zaten "tekrar" işaretli: ' + sayim.isaretli));
-  ozet.appendChild(tkEl('p', '', 'Onaysız deneme, kişinin onaylı kaydı var (istersen sil): ' + sayim.birak));
+  ozet.appendChild(tkEl('p', 'text-red-300', 'Fazla kayıt (her birinde Sil var): ' + sayim.sil));
   ozet.appendChild(tkEl('p', '', 'Onay bekleyen kişi (bilgilendirilecek): ' + onaysiz.length));
   if (hatali) ozet.appendChild(tkEl('p', 'text-red-400', hatali + ' kayıt çözülemedi (anahtar uyuşmadı).'));
   box.appendChild(ozet);
   if (grupListe && grupListe.length) {
     box.appendChild(tkEl('p', 'text-[11px] font-bold text-fuchsia-300 pt-1', 'Tekrar edenler — tek tek kontrol et:'));
-    box.appendChild(tkEl('p', 'text-[10px] text-zinc-500', 'Önce "Dilekçeler (Excel)" ile yedek indir. KALACAK: en yeni onaylı kayıt. Kalacağa 1 saatten yakın olanlar silinebilir, uzak olanlar işaretlenir.'));
+    box.appendChild(tkEl('p', 'text-[10px] text-zinc-500', 'Önce "Dilekçeler (Excel)" ile yedek indir. Her kişi/hedef için KALACAK bir kayıt var (en yeni onaylı, yoksa en yeni). Diğerlerinin hepsinde Sil var.'));
     var gl = tkEl('div', 'space-y-2 max-h-96 overflow-y-auto');
     grupListe.forEach(function (g) {
       var k = g.rows[0];
       var card = tkEl('div', 'bg-zinc-950/60 border border-zinc-800 rounded-lg p-2 space-y-1');
       card.appendChild(tkEl('p', 'text-[11px] text-white font-semibold', (k.name || '(adsız)') + ' · ' + (k.contact || '—') + ' · ' + hedefAdi(k.type) + (k.target ? ' · ' + k.target : '')));
       g.rows.forEach(function (x) {
-        var tint = (x.act === 'isaretli' || x.act === 'isaretle') ? ' bg-amber-950/40 rounded px-1' : ((x.act === 'sil' || x.act === 'birak') ? ' bg-red-950/30 rounded px-1' : '');
-        var r = tkEl('div', 'flex flex-wrap items-center gap-2 text-[10px] text-zinc-300' + tint);
+        var r = tkEl('div', 'flex flex-wrap items-center gap-2 text-[10px] text-zinc-300' + (x.act === 'sil' ? ' bg-red-950/30 rounded px-1' : ''));
         r.appendChild(tkEl('span', x.confirmed ? 'text-emerald-400 font-bold' : 'text-amber-400 font-bold', x.confirmed ? '✓ onaylı' : '⏳ onaysız'));
         r.appendChild(tkEl('span', 'text-zinc-400', x.at ? new Date(x.at).toLocaleString('tr-TR') : ''));
         r.appendChild(tkEl('span', 'font-mono text-zinc-500 break-all flex-1', x.no));
         if (x.act === 'keep') r.appendChild(tkEl('span', 'text-sky-400 font-bold', 'KALACAK'));
-        else if (x.act === 'sil') {
+        else {
           var sb = tkEl('button', 'px-2 py-1 bg-red-800 hover:bg-red-700 rounded text-white font-bold', '🗑 Sil');
           sb.type = 'button'; sb.onclick = function () { tekrarTekSil(x, r, sb); }; r.appendChild(sb);
-        } else if (x.act === 'isaretle') {
-          var mb = tkEl('button', 'px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-white font-bold', '🏷 Tekrar işaretle');
-          mb.type = 'button'; mb.onclick = function () { tekrarIsaret(x, true, r, mb); }; r.appendChild(mb);
-        } else if (x.act === 'isaretli') {
-          r.appendChild(tkEl('span', 'text-amber-300 font-bold', 'TEKRAR (sayılmıyor)'));
-          var ub = tkEl('button', 'px-2 py-1 bg-zinc-700 hover:bg-zinc-600 rounded text-white font-bold', '↺ Geri al');
-          ub.type = 'button'; ub.onclick = function () { tekrarIsaret(x, false, r, ub); }; r.appendChild(ub);
-        } else {
-          r.appendChild(tkEl('span', 'text-zinc-500', 'onaysız deneme (kişinin onaylı kaydı var)'));
-          var db2 = tkEl('button', 'px-2 py-1 bg-red-800 hover:bg-red-700 rounded text-white font-bold', '🗑 Sil');
-          db2.type = 'button'; db2.onclick = function () { tekrarTekSil(x, r, db2); }; r.appendChild(db2);
         }
         card.appendChild(r);
       });
