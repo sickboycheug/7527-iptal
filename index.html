@@ -6209,7 +6209,7 @@ function tekrarCiz(toplam, grupSayisi, sayim, onaysiz, hatali, grupListe) {
       var ad = (x.name || '').trim().split(/\s+/)[0] || '';
       var hd = x.type === 'mp' ? (x.target ? x.target + ' Milletvekili\'ne' : 'milletvekiline') : (x.type === 'cb' ? 'Cumhurbaşkanlığı\'na' : 'TBMM Başkanlığı\'na');
       var link = 'https://7527iptal.org/?dilekce=' + x.no;
-      var msg = 'Merhaba' + (ad ? ' ' + ad : '') + ' 🐾 7527iptal.org\'da hazırladığın dilekçe için çok teşekkür ederiz. ' + hd + ' hazırladığın ' + x.no + ' numaralı dilekçenin henüz ulaşmadığını görüyoruz; e-postayı gönderdiğin onaylanmadığı için sayıma girmedi. Bu bağlantıdan 1 dakikada e-postayı gönderip onaylayabilirsin: ' + link + ' Bu bağlantıyı bir arkadaşınla da paylaşırsan her dilekçe canlara güç olur. Desteğin için sonsuz teşekkürler 🙏';
+      var msg = 'Merhaba' + (ad ? ' ' + ad : '') + ' 🐾 7527iptal.org\'da hazırladığın dilekçe için çok teşekkür ederiz. ' + hd + ' hazırladığın ' + x.no + ' numaralı dilekçenin henüz ulaşmadığını görüyoruz; e-postayı gönderdiğin onaylanmadığı için sayıma girmedi.\n\n📄 Dilekçem elimde: bu bağlantıdan e-postayı gönderip onaylayabilirsin: ' + link + '\n\n🆕 Dilekçemi kaybettim: 7527iptal.org\'a girip yeni bir dilekçe oluşturabilirsin, 1 dakika sürer. Eskisi sayılmaz, sorun olmaz.\n\nDesteğin için sonsuz teşekkürler 🙏';
       function lnk(label, cls, href) { var a = tkEl('a', 'px-2 py-1 rounded text-[10px] font-bold text-white ' + cls, label); a.href = href; a.target = '_blank'; a.rel = 'noopener noreferrer'; r.appendChild(a); }
       if (x.n.kind === 'phone') {
         lnk('💬 WhatsApp', 'bg-emerald-700', 'https://wa.me/' + x.n.value + '?text=' + encodeURIComponent(msg));
