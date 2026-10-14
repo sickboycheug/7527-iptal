@@ -6119,12 +6119,14 @@ async function tekrarAnaliz() {
     if (!rows.length) { alert('Henüz kayıt yok.'); return; }
     var marked = {};
     try { (await callRpc('admin_tekrar_numbers', { p_pin: adminPinCache }) || []).forEach(function (no) { marked[no] = 1; }); } catch (e) {}
+    var gec = {};
+    try { (await callRpc('admin_gecici_numbers', { p_pin: adminPinCache }) || []).forEach(function (no) { gec[no] = 1; }); } catch (e) {}
     var items = [], hatali = 0;
     for (var i = 0; i < rows.length; i++) {
       var c = {};
       try { c = await decryptPayload(privateKey, rows[i].payload_enc) || {}; } catch (e) { hatali++; }
       var n = tkNorm(c.contact);
-      items.push({ tekrar: !!marked[rows[i].petition_number], no: rows[i].petition_number, confirmed: !!rows[i].confirmed, type: rows[i].recipient_type, at: rows[i].created_at || '',
+      items.push({ gecici: !!gec[rows[i].petition_number], tekrar: !!marked[rows[i].petition_number], no: rows[i].petition_number, confirmed: !!rows[i].confirmed, type: rows[i].recipient_type, at: rows[i].created_at || '',
         name: c.name || '', contact: c.contact || '', target: c.targetName || '', n: n });
       if (btn && i % 25 === 0) btn.textContent = 'Çözülüyor (' + i + '/' + rows.length + ')...';
     }
@@ -6163,6 +6165,11 @@ async function tekrarAnaliz() {
     if (btn) { btn.disabled = false; btn.innerHTML = oldHtml; }
   }
 }
+function tkDurum(x) {
+  if (x.confirmed) return ['✓ onaylı', 'text-emerald-400 font-bold'];
+  if (x.gecici) return ['⏳ sayılıyor, onay bekliyor', 'text-sky-400 font-bold'];
+  return ['⏳ onaysız, sayılmıyor', 'text-amber-400 font-bold'];
+}
 function tkEl(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
 function tekrarCiz(toplam, grupSayisi, sayim, onaysiz, hatali, grupListe, tum) {
   var box = document.getElementById('tekrar-sonuc'); box.textContent = '';
@@ -6171,6 +6178,7 @@ function tekrarCiz(toplam, grupSayisi, sayim, onaysiz, hatali, grupListe, tum) {
   ozet.appendChild(tkEl('p', '', 'Tekrar eden kişi/hedef: ' + grupSayisi));
   ozet.appendChild(tkEl('p', 'text-red-300', 'Fazla kayıt (her birinde Sil var): ' + sayim.sil));
   ozet.appendChild(tkEl('p', '', 'Onay bekleyen kişi (bilgilendirilecek): ' + onaysiz.length));
+  if (tum) ozet.appendChild(tkEl('p', 'text-sky-300', 'Onaysız ama sayaçta sayılan: ' + tum.filter(function (x) { return !x.confirmed && x.gecici; }).length));
   if (hatali) ozet.appendChild(tkEl('p', 'text-red-400', hatali + ' kayıt çözülemedi (anahtar uyuşmadı).'));
   box.appendChild(ozet);
   if (tum && tum.length) {
@@ -6186,12 +6194,12 @@ function tekrarCiz(toplam, grupSayisi, sayim, onaysiz, hatali, grupListe, tum) {
       qres.appendChild(tkEl('p', 'text-[10px] text-zinc-400', bulunan.length + ' kayıt bulundu' + (bulunan.length > 40 ? ' (ilk 40 gösteriliyor)' : '')));
       bulunan.slice(0, 40).forEach(function (x) {
         var r = tkEl('div', 'flex flex-wrap items-center gap-2 text-[10px] text-zinc-300 bg-zinc-950/60 border border-zinc-800 rounded p-1.5');
-        r.appendChild(tkEl('span', x.confirmed ? 'text-emerald-400 font-bold' : 'text-amber-400 font-bold', x.confirmed ? '✓ onaylı' : '⏳ onaysız'));
+        var du = tkDurum(x); r.appendChild(tkEl('span', du[1], du[0]));
         r.appendChild(tkEl('span', 'text-white font-semibold', x.name || '(adsız)'));
         r.appendChild(tkEl('span', 'text-zinc-400', hedefAdi(x.type) + (x.target ? ' · ' + x.target : '') + ' · ' + (x.contact || '—') + ' · ' + (x.at ? new Date(x.at).toLocaleString('tr-TR') : '')));
         r.appendChild(tkEl('span', 'font-mono text-zinc-500 break-all flex-1', x.no));
         if (!x.confirmed) {
-          var ob = tkEl('button', 'px-2 py-1 bg-emerald-700 hover:bg-emerald-600 rounded text-white font-bold', '✓ Onayla');
+          var ob = tkEl('button', 'px-2 py-1 bg-emerald-700 hover:bg-emerald-600 rounded text-white font-bold', '✓ Onaylandı');
           ob.type = 'button'; ob.onclick = function () { tekrarOnayla(x, r, ob); }; r.appendChild(ob);
         }
         var b = tkEl('button', 'px-2 py-1 bg-red-800 hover:bg-red-700 rounded text-white font-bold', '🗑 Sil');
@@ -6211,7 +6219,7 @@ function tekrarCiz(toplam, grupSayisi, sayim, onaysiz, hatali, grupListe, tum) {
       card.appendChild(tkEl('p', 'text-[11px] text-white font-semibold', (k.name || '(adsız)') + ' · ' + (k.contact || '—') + ' · ' + hedefAdi(k.type) + (k.target ? ' · ' + k.target : '')));
       g.rows.forEach(function (x) {
         var r = tkEl('div', 'flex flex-wrap items-center gap-2 text-[10px] text-zinc-300' + (x.act === 'sil' ? ' bg-red-950/30 rounded px-1' : ''));
-        r.appendChild(tkEl('span', x.confirmed ? 'text-emerald-400 font-bold' : 'text-amber-400 font-bold', x.confirmed ? '✓ onaylı' : '⏳ onaysız'));
+        var du = tkDurum(x); r.appendChild(tkEl('span', du[1], du[0]));
         r.appendChild(tkEl('span', 'text-zinc-400', x.at ? new Date(x.at).toLocaleString('tr-TR') : ''));
         r.appendChild(tkEl('span', 'font-mono text-zinc-500 break-all flex-1', x.no));
         if (x.act === 'keep') {
@@ -6220,7 +6228,7 @@ function tekrarCiz(toplam, grupSayisi, sayim, onaysiz, hatali, grupListe, tum) {
           kb.type = 'button'; kb.onclick = function () { tekrarTekSil(x, r, kb); }; r.appendChild(kb);
         } else {
           if (!x.confirmed) {
-            var gob = tkEl('button', 'px-2 py-1 bg-emerald-700 hover:bg-emerald-600 rounded text-white font-bold', '✓ Onayla');
+            var gob = tkEl('button', 'px-2 py-1 bg-emerald-700 hover:bg-emerald-600 rounded text-white font-bold', '✓ Onaylandı');
             gob.type = 'button'; gob.onclick = function () { tekrarOnayla(x, r, gob); }; r.appendChild(gob);
           }
           var sb = tkEl('button', 'px-2 py-1 bg-red-800 hover:bg-red-700 rounded text-white font-bold', '🗑 Sil');
@@ -6236,17 +6244,26 @@ function tekrarCiz(toplam, grupSayisi, sayim, onaysiz, hatali, grupListe, tum) {
     box.appendChild(tkEl('p', 'text-[11px] font-bold text-amber-400 pt-1', 'Onaysız kalanlar — bilgilendir:'));
     var db = tkEl('button', 'w-full py-2 bg-emerald-800 hover:bg-emerald-700 rounded font-semibold text-white', '⬇ Bu listeyi indir (Excel\'de açılır, ' + onaysiz.length + ' kişi)');
     db.type = 'button'; db.onclick = function () { tekrarListeIndir(onaysiz); }; box.appendChild(db);
-    var hb = tkEl('button', 'w-full py-2 mt-1 bg-amber-700 hover:bg-amber-600 rounded font-semibold text-white', '✓ Hepsini sayaca ekle (' + onaysiz.length + ' kişi)');
+    var hbN = onaysiz.filter(function (x) { return !x.gecici; }).length;
+    var hb = tkEl('button', 'w-full py-2 mt-1 bg-amber-700 hover:bg-amber-600 rounded font-semibold text-white', '➕ Hepsini sayaca ekle (' + hbN + ' kişi)');
     hb.type = 'button';
     hb.onclick = async function () {
-      if (!confirm(onaysiz.length + ' kişinin onaysız dilekçesi ONAYLI sayılıp sayaca eklenecek.\nÖnce yukarıdaki listeyi indirdiysen devam et. Devam edilsin mi?')) return;
+      var hedef = onaysiz.filter(function (x) { return !x.gecici; });
+      if (!hedef.length) { alert('Hepsi zaten sayaçta.'); return; }
+      if (!confirm(hedef.length + ' kişinin dilekçesi sayaca eklenecek. Onay beklemeye devam eder; onay aldıkça satırdaki "✓ Onaylandı"ya basarsın.\nDevam edilsin mi?')) return;
       hb.disabled = true; var ok = 0, hata = 0;
-      for (var i = 0; i < onaysiz.length; i++) {
-        hb.textContent = 'Ekleniyor (' + (i + 1) + '/' + onaysiz.length + ')...';
-        try { await callRpc('confirm_petition', { p_petition_number: onaysiz[i].no }); onaysiz[i].confirmed = true; ok++; } catch (e) { hata++; }
+      for (var k = 0; k < hedef.length; k += 200) {
+        var parca = hedef.slice(k, k + 200);
+        hb.textContent = 'Ekleniyor (' + Math.min(k + 200, hedef.length) + '/' + hedef.length + ')...';
+        try {
+          await callRpc('admin_set_gecici', { p_pin: adminPinCache, p_numbers: parca.map(function (x) { return x.no; }), p_value: true });
+          parca.forEach(function (x) { x.gecici = true; if (x._lbl) { x._lbl.textContent = tkDurum(x)[0]; x._lbl.className = tkDurum(x)[1]; } if (x._sb) x._sb.style.display = 'none'; });
+          ok += parca.length;
+        } catch (e) { hata += parca.length; }
       }
       try { await refreshCounters(); } catch (e) {}
       hb.textContent = '✓ ' + ok + ' dilekçe sayaca eklendi' + (hata ? ', ' + hata + ' hata (tekrar dene)' : '');
+      hb.disabled = false;
     };
     box.appendChild(hb);
     var list = tkEl('div', 'space-y-1 max-h-72 overflow-y-auto');
@@ -6265,7 +6282,19 @@ function tekrarCiz(toplam, grupSayisi, sayim, onaysiz, hatali, grupListe, tum) {
       } else if (x.n.kind === 'email') {
         lnk('✉ E-posta', 'bg-sky-700', 'mailto:' + x.n.value + '?subject=' + encodeURIComponent('7527 İptal: dilekçeni birlikte tamamlayalım') + '&body=' + encodeURIComponent(msg));
       }
-      var xob = tkEl('button', 'px-2 py-1 bg-emerald-700 hover:bg-emerald-600 rounded text-[10px] text-white font-bold', '✓ Onayla');
+      var du2 = tkDurum(x); x._lbl = tkEl('span', 'text-[10px] ' + du2[1], du2[0]); r.appendChild(x._lbl);
+      var xsc = tkEl('button', 'px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-[10px] text-white font-bold', '➕ Sayaca ekle');
+      xsc.type = 'button'; x._sb = xsc; if (x.gecici) xsc.style.display = 'none';
+      xsc.onclick = async function () {
+        xsc.disabled = true; xsc.textContent = '...';
+        try {
+          await callRpc('admin_set_gecici', { p_pin: adminPinCache, p_numbers: [x.no], p_value: true });
+          x.gecici = true; x._lbl.textContent = tkDurum(x)[0]; x._lbl.className = 'text-[10px] ' + tkDurum(x)[1]; xsc.style.display = 'none';
+          try { await refreshCounters(); } catch (e) {}
+        } catch (e) { xsc.disabled = false; xsc.textContent = '➕ Sayaca ekle'; alert(dataErrorText(e)); }
+      };
+      r.appendChild(xsc);
+      var xob = tkEl('button', 'px-2 py-1 bg-emerald-700 hover:bg-emerald-600 rounded text-[10px] text-white font-bold', '✓ Onaylandı');
       xob.type = 'button'; xob.onclick = function () { tekrarOnayla(x, r, xob); }; r.appendChild(xob);
       var xsb = tkEl('button', 'px-2 py-1 bg-red-800 hover:bg-red-700 rounded text-[10px] text-white font-bold', '🗑 Sil');
       xsb.type = 'button'; xsb.onclick = function () { tekrarTekSil(x, r, xsb); }; r.appendChild(xsb);
@@ -6296,15 +6325,15 @@ async function tekrarIsaret(x, deger, rowEl, btn) {
   } catch (e) { btn.disabled = false; btn.textContent = deger ? '🏷 Tekrar işaretle' : '↺ Geri al'; alert(dataErrorText(e)); }
 }
 async function tekrarOnayla(x, rowEl, btn) {
-  if (!confirm((x.name || 'Bu kişi') + ' — ' + x.no + '\nBu dilekçe ONAYLI sayılacak ve sayaca girecek. Devam edilsin mi?')) return;
+  if (!confirm((x.name || 'Bu kişi') + ' — ' + x.no + '\nKişi onay verdi olarak işaretlenecek (kalıcı onaylı). Devam edilsin mi?')) return;
   btn.disabled = true; btn.textContent = '...';
   try {
     await callRpc('confirm_petition', { p_petition_number: x.no });
     x.confirmed = true;
     rowEl.textContent = '';
-    rowEl.appendChild(tkEl('span', 'text-emerald-400 font-bold', '✓ onaylandı, sayıldı: ' + x.no));
+    rowEl.appendChild(tkEl('span', 'text-emerald-400 font-bold', '✓ onaylandı: ' + x.no));
     try { await refreshCounters(); } catch (e) {}
-  } catch (e) { btn.disabled = false; btn.textContent = '✓ Onayla'; alert(dataErrorText(e)); }
+  } catch (e) { btn.disabled = false; btn.textContent = '✓ Onaylandı'; alert(dataErrorText(e)); }
 }
 async function tekrarTekSil(x, rowEl, btn) {
   if (!confirm((x.name || 'Bu kişi') + ' — ' + x.no + '\nBu tek dilekçe SİLİNECEK. Geri alınamaz. Devam edilsin mi?')) return;
