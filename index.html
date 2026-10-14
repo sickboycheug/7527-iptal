@@ -802,6 +802,7 @@
       <div class="flex gap-2 justify-center">
         <button type="button" id="hm-layer-vol" onclick="hmLayer('vol')" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 text-white">🤝 Gönüllüler</button>
         <button type="button" id="hm-layer-pet" onclick="hmLayer('pet')" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-zinc-800 text-zinc-300">📨 Dilekçeler</button>
+        <button type="button" id="hm-layer-mp" onclick="hmLayer('mp')" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-zinc-800 text-zinc-300">🏛 Vekiller</button>
       </div>
       <div class="flex gap-2 justify-center">
         <button type="button" id="hm-tab-tr" onclick="hmTab('tr')" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 text-white">Türkiye</button>
@@ -2994,6 +2995,7 @@ async function loadMpCounts(tries) {
     MP_COUNTS = {};
     (rows || []).forEach(function(r) { MP_COUNTS[r.mp_id] = r.total; });
     if (document.getElementById('mp-search-input') && document.getElementById('mp-list-container')) filterMps();
+    try { if (_hmLayer === 'mp') hmRender(); } catch (e2) {}
   } catch (e) {
     console.error('[mp-sayac]', e);
   }
@@ -4096,6 +4098,14 @@ function hmDavetMetni() {
   iller.sort(function (a, b) { return a.n - b.n || a.c.localeCompare(b.c, 'tr'); });
   var dolu = iller.filter(function (x) { return x.n > 0; }).length;
   var az = iller.slice(0, 12).map(function (x) { return x.c; }).join(', ');
+  if (_hmLayer === 'mp') {
+    var st = hmMpStats();
+    var bos = Object.keys(st).filter(function (c) { return st[c].n === 0; }).sort(function (a, b) { return st[b].vekil - st[a].vekil; });
+    var alan = Object.keys(st).filter(function (c) { return st[c].n > 0; }).length;
+    return '7527 sayılı kanunun iptali için milletvekillerine dilekçe gönderiyoruz. ' + alan + ' ilin vekillerine dilekçe ulaştı.\n\n' +
+      'Vekillerine henüz dilekçe gitmeyen iller: ' + bos.slice(0, 12).join(', ') + '.\n\n' +
+      'Kendi ilinin vekiline 2 dakikada dilekçe gönder 👉 https://7527iptal.org';
+  }
   if (_hmLayer === 'pet') {
     return '7527 sayılı kanunun iptali için dilekçe kampanyası sürüyor. Şimdiye kadar ' + dolu + ' ilden dilekçe geldi.\n\n' +
       'En az dilekçe gelen iller: ' + az + '.\n\n' +
@@ -4114,20 +4124,35 @@ function hmDavet(how) {
   if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok, fb); else fb();
 }
 function hmLayer(v) { _hmLayer = v; hmRender(); }
+// Vekil katmani: her ilin vekillerine giden (onayli) dilekce sayisi
+function hmMpStats() {
+  var st = {};
+  (typeof MP_DATABASE !== 'undefined' ? MP_DATABASE : []).forEach(function (m) {
+    var c = st[m.city] || (st[m.city] = { n: 0, vekil: 0, alan: 0 });
+    var k = Number(MP_COUNTS[m.id] || 0);
+    c.vekil++; c.n += k; if (k > 0) c.alan++;
+  });
+  return st;
+}
+function hmMpRows() {
+  var st = hmMpStats();
+  return Object.keys(st).map(function (c) { return { country: '', city: c, n: st[c].n }; });
+}
 function hmRender() {
   var box = document.getElementById('hm-svg'), list = document.getElementById('hm-list'),
       info = document.getElementById('hm-info'), sum = document.getElementById('hm-summary');
   if (!box || _hmRows === null) return;
-  var PET = _hmLayer === 'pet', W = PET ? 'dilekçe' : 'gönüllü';
-  var SRC = PET ? (_hmPet || []) : _hmRows;
-  ['vol', 'pet'].forEach(function (v) {
+  var MPL = _hmLayer === 'mp', PET = _hmLayer === 'pet' || MPL, W = PET ? 'dilekçe' : 'gönüllü';
+  var SRC = MPL ? hmMpRows() : (PET ? (_hmPet || []) : _hmRows);
+  var MPST = MPL ? hmMpStats() : null;
+  ['vol', 'pet', 'mp'].forEach(function (v) {
     var b = document.getElementById('hm-layer-' + v); if (!b) return;
     var on = v === _hmLayer;
     b.classList.toggle('bg-emerald-600', on); b.classList.toggle('text-white', on);
     b.classList.toggle('bg-zinc-800', !on); b.classList.toggle('text-zinc-300', !on);
   });
   var subEl = document.getElementById('hm-sub');
-  if (subEl) subEl.innerHTML = PET ? 'Yeşil iller: dilekçe gelen iller. Gri iller: <strong class="text-amber-300">henüz dilekçe gelmedi.</strong>' : 'Yeşil iller: gönüllümüz var. Gri iller: <strong class="text-amber-300">il gönüllüsü arıyoruz.</strong>';
+  if (subEl) subEl.innerHTML = MPL ? 'Yeşil iller: o ilin vekillerine dilekçe gitti. Gri iller: <strong class="text-amber-300">vekillerine henüz dilekçe gitmedi.</strong>' : PET ? 'Yeşil iller: dilekçe gelen iller. Gri iller: <strong class="text-amber-300">henüz dilekçe gelmedi.</strong>' : 'Yeşil iller: gönüllümüz var. Gri iller: <strong class="text-amber-300">il gönüllüsü arıyoruz.</strong>';
   var cv = document.getElementById('hm-cta-vol'), cp = document.getElementById('hm-cta-pet');
   if (cv) cv.classList.toggle('hidden', PET); if (cp) cp.classList.toggle('hidden', !PET);
   var NS = 'http://www.w3.org/2000/svg';
@@ -4182,14 +4207,14 @@ function hmRender() {
         var c = circle(cx, cy, 7 + Math.min(n, 20) * 0.7, '#10b981');
         c.setAttribute('fill-opacity', '0.85'); c.setAttribute('stroke', '#ecfdf5'); c.setAttribute('stroke-width', '1');
         c.style.cursor = 'pointer';
-        c.addEventListener('click', function () { say(city, n); });
+        c.addEventListener('click', function () { var s2 = MPST && MPST[city]; say(city, n, s2 ? (s2.vekil + ' vekilden ' + s2.alan + ' tanesine dilekçe gitti, ' + (s2.vekil - s2.alan) + ' vekile henüz gitmedi') : ''); });
         svg.appendChild(c); svg.appendChild(label(cx, cy, String(n), 9));
       } else {
         var d = circle(cx, cy, 3.6, '#52525b'); d.setAttribute('stroke', '#a1a1aa'); d.setAttribute('stroke-width', '0.6');
         d.style.cursor = 'pointer';
         d.addEventListener('click', function () {
           info.textContent = '';
-          info.appendChild(hmEl('div', 'font-bold text-amber-300', city + (PET ? ': henüz dilekçe gelmedi.' : ': henüz gönüllümüz yok. İl gönüllüsü arıyoruz.')));
+          info.appendChild(hmEl('div', 'font-bold text-amber-300', city + (MPL ? ': bu ilin vekillerine henüz dilekçe gitmedi.' : PET ? ': henüz dilekçe gelmedi.' : ': henüz gönüllümüz yok. İl gönüllüsü arıyoruz.')));
           if (!PET) { var a = hmEl('a', 'inline-block mt-1 text-emerald-400 underline font-bold', 'İl gönüllüsü ol →'); a.href = '/gorev.html'; info.appendChild(a); }
         });
         svg.appendChild(d);
@@ -4197,7 +4222,7 @@ function hmRender() {
     });
     if (without.length) {
       var det = hmEl('details', 'text-xs');
-      det.appendChild(hmEl('summary', 'cursor-pointer select-none text-amber-300 font-semibold', (PET ? 'Dilekçe gelmeyen iller (' : 'İl gönüllüsü aranan iller (') + without.length + ')'));
+      det.appendChild(hmEl('summary', 'cursor-pointer select-none text-amber-300 font-semibold', (MPL ? 'Vekillerine dilekçe gitmeyen iller (' : PET ? 'Dilekçe gelmeyen iller (' : 'İl gönüllüsü aranan iller (') + without.length + ')'));
       var wrap = hmEl('div', 'flex flex-wrap gap-1 pt-2');
       without.forEach(function (c) { wrap.appendChild(hmEl('span', 'text-[10px] px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300', c)); });
       det.appendChild(wrap); list.appendChild(det);
@@ -6062,7 +6087,7 @@ async function tekrarAnaliz() {
       var k = it.n.key + '|' + it.type + '|' + it.target;
       (groups[k] = groups[k] || []).push(it);
     });
-    var silinecek = [], onayliTekrar = 0, grupSayisi = 0, kalan = {};
+    var silinecek = [], onayliTekrar = 0, grupSayisi = 0, kalan = {}, grupListe = [];
     Object.keys(groups).forEach(function (k) {
       var g = groups[k]; if (g.length < 2) return;
       grupSayisi++;
@@ -6071,11 +6096,12 @@ async function tekrarAnaliz() {
       var keep = conf.length ? conf[0] : g[0];
       onayliTekrar += Math.max(conf.length - 1, 0);
       g.forEach(function (x) { if (x !== keep && !x.confirmed) silinecek.push(x.no); });
+      grupListe.push({ keep: keep.no, rows: g });
     });
     var silSet = {}; silinecek.forEach(function (no) { silSet[no] = 1; });
     var onaysiz = items.filter(function (x) { return !x.confirmed && !silSet[x.no]; });
     tekrarSil = silinecek;
-    tekrarCiz(items.length, grupSayisi, silinecek.length, onayliTekrar, onaysiz, hatali);
+    tekrarCiz(items.length, grupSayisi, silinecek.length, onayliTekrar, onaysiz, hatali, grupListe);
   } catch (e) {
     alert(dataErrorText(e));
   } finally {
@@ -6084,19 +6110,40 @@ async function tekrarAnaliz() {
   }
 }
 function tkEl(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
-function tekrarCiz(toplam, grupSayisi, silSayi, onayliTekrar, onaysiz, hatali) {
+function tekrarCiz(toplam, grupSayisi, silSayi, onayliTekrar, onaysiz, hatali, grupListe) {
   var box = document.getElementById('tekrar-sonuc'); box.textContent = '';
   var ozet = tkEl('div', 'bg-zinc-900 border border-zinc-700 rounded-lg p-3 text-[11px] text-zinc-300 space-y-1');
   ozet.appendChild(tkEl('p', '', 'Toplam kayıt: ' + toplam));
-  ozet.appendChild(tkEl('p', '', 'Tekrar eden kişi/hedef: ' + grupSayisi + ' → silinecek fazla kayıt: ' + silSayi));
+  ozet.appendChild(tkEl('p', '', 'Tekrar eden kişi/hedef: ' + grupSayisi + ' · fazla (silinebilir) kayıt: ' + silSayi));
   if (onayliTekrar) ozet.appendChild(tkEl('p', 'text-amber-400', 'Aynı kişi + aynı hedef için birden fazla ONAYLI kayıt: ' + onayliTekrar + ' (güvenlik için silinmez, sayaçta fazladan sayılır)'));
   ozet.appendChild(tkEl('p', '', 'Onaysız kalan (silinmeyecek): ' + onaysiz.length));
   if (hatali) ozet.appendChild(tkEl('p', 'text-red-400', hatali + ' kayıt çözülemedi (anahtar uyuşmadı).'));
   box.appendChild(ozet);
-  if (silSayi) {
-    var sb = tkEl('button', 'w-full py-2 bg-red-800 hover:bg-red-700 rounded font-semibold text-white', '🗑 ' + silSayi + ' fazla (onaysız tekrar) kaydı sil');
-    sb.type = 'button'; sb.onclick = tekrarSilOnayla; box.appendChild(sb);
-    box.appendChild(tkEl('p', 'text-[10px] text-zinc-500', 'Önce "Dilekçeler (Excel)" ile yedek indir. Onaylı kayıt asla silinmez.'));
+  if (grupListe && grupListe.length) {
+    box.appendChild(tkEl('p', 'text-[11px] font-bold text-fuchsia-300 pt-1', 'Tekrar edenler — tek tek kontrol et, istediğini sil:'));
+    box.appendChild(tkEl('p', 'text-[10px] text-zinc-500', 'Önce "Dilekçeler (Excel)" ile yedek indir. Onaylı kayıt asla silinmez. "KALACAK" yazanı sistem korur.'));
+    var gl = tkEl('div', 'space-y-2 max-h-96 overflow-y-auto');
+    grupListe.forEach(function (g) {
+      var k = g.rows[0];
+      var card = tkEl('div', 'bg-zinc-950/60 border border-zinc-800 rounded-lg p-2 space-y-1');
+      card.appendChild(tkEl('p', 'text-[11px] text-white font-semibold', (k.name || '(adsız)') + ' · ' + (k.contact || '—') + ' · ' + hedefAdi(k.type) + (k.target ? ' · ' + k.target : '')));
+      g.rows.forEach(function (x) {
+        var r = tkEl('div', 'flex flex-wrap items-center gap-2 text-[10px] text-zinc-300');
+        r.appendChild(tkEl('span', x.confirmed ? 'text-emerald-400 font-bold' : 'text-amber-400 font-bold', x.confirmed ? '✓ onaylı' : '⏳ onaysız'));
+        r.appendChild(tkEl('span', 'text-zinc-400', x.at ? new Date(x.at).toLocaleString('tr-TR') : ''));
+        r.appendChild(tkEl('span', 'font-mono text-zinc-500 break-all flex-1', x.no));
+        if (x.no === g.keep) r.appendChild(tkEl('span', 'text-sky-400 font-bold', 'KALACAK'));
+        else if (!x.confirmed) {
+          var sb = tkEl('button', 'px-2 py-1 bg-red-800 hover:bg-red-700 rounded text-white font-bold', '🗑 Sil');
+          sb.type = 'button';
+          sb.onclick = function () { tekrarTekSil(x, r, sb); };
+          r.appendChild(sb);
+        }
+        card.appendChild(r);
+      });
+      gl.appendChild(card);
+    });
+    box.appendChild(gl);
   }
   if (onaysiz.length) {
     box.appendChild(tkEl('p', 'text-[11px] font-bold text-amber-400 pt-1', 'Onaysız kalanlar — bilgilendir:'));
@@ -6134,20 +6181,16 @@ function tekrarListeIndir(list) {
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
 }
-async function tekrarSilOnayla() {
-  if (!tekrarSil.length) return;
-  if (!confirm(tekrarSil.length + ' fazla (onaysız tekrar) dilekçe SİLİNECEK. Geri alınamaz.\n\nDevam edilsin mi?')) return;
-  var t = prompt('Onaylamak için SİL yaz:');
-  if (!t || t.trim().toUpperCase() !== 'SİL' && t.trim().toUpperCase() !== 'SIL') { alert('İşlem iptal edildi.'); return; }
-  var silinen = 0;
+async function tekrarTekSil(x, rowEl, btn) {
+  if (!confirm((x.name || 'Bu kişi') + ' — ' + x.no + '\nBu tek dilekçe SİLİNECEK. Geri alınamaz. Devam edilsin mi?')) return;
+  btn.disabled = true; btn.textContent = '...';
   try {
-    for (var j = 0; j < tekrarSil.length; j += 200) {
-      silinen += Number(await callRpc('admin_delete_petitions_by_number', { p_pin: adminPinCache, p_numbers: tekrarSil.slice(j, j + 200) }) || 0);
-    }
-    alert('Tamam. ' + silinen + ' kayıt silindi.');
+    var n = Number(await callRpc('admin_delete_petitions_by_number', { p_pin: adminPinCache, p_numbers: [x.no] }) || 0);
+    if (n < 1) { btn.disabled = false; btn.textContent = '🗑 Sil'; alert('Silinemedi (kayıt onaylı olabilir ya da zaten yok).'); return; }
+    rowEl.textContent = '';
+    rowEl.appendChild(tkEl('span', 'text-zinc-500', '✔ silindi: ' + x.no));
     try { await refreshCounters(); } catch (e) {}
-    tekrarAnaliz();
-  } catch (e) { alert(dataErrorText(e) + '\n\nSilinen: ' + silinen); }
+  } catch (e) { btn.disabled = false; btn.textContent = '🗑 Sil'; alert(dataErrorText(e)); }
 }
 
 var backfillBusy = false;
