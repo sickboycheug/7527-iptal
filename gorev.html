@@ -1252,8 +1252,9 @@ async function adminIdbSet(v) { try { var db = await adminIdb(); await new Promi
 async function adminIdbGet() { try { var db = await adminIdb(); return await new Promise(function (r, j) { var q = db.transaction('k').objectStore('k').get('key'); q.onsuccess = function () { r(q.result); }; q.onerror = j; }); } catch (e) { return null; } }
 function adminSessionSave(pin) { try { sessionStorage.setItem('gv_admin_pin', JSON.stringify({ p: pin, t: Date.now() })); } catch (e) {} }
 function adminSessionClear() { try { sessionStorage.removeItem('gv_admin_pin'); } catch (e) {} adminIdbSet(null); }
-var taskLogRows = [];
+var taskLogRows = [], admClaims = [];
 async function adminReload() {
+  try { admClaims = (await callRpc('gv_admin_task_claims', { p_pin: adminPin })) || []; } catch (e) { admClaims = []; }
   try { renderAdmin(await callRpc('gv_admin_state', { p_pin: adminPin })); $('admin-msg').textContent = ''; }
   catch (e) { $('admin-msg').textContent = errText(e); }
   try { taskLogRows = (await callRpc('gv_admin_task_log', { p_pin: adminPin })) || []; } catch (e) { taskLogRows = []; }
@@ -1631,17 +1632,44 @@ function renderAdmin(s) {
   admTasks.forEach(function (t) {
     var row = h('div', 'flex flex-wrap items-center gap-2 bg-zinc-950/60 border border-zinc-800 rounded-lg p-2');
     row.appendChild(h('span', 'text-xs text-white font-semibold flex-1 min-w-[10rem]', t.title));
-    var info = (label[t.status] || t.status) + (t.claimed_nick ? ' · ' + t.claimed_nick : '') +
-      (t.area ? ' · ' + t.area : '') + (t.status === 'claimed' ? ' · kalan: ' + fmtLeft(t.due_at) : '') +
-      (t.status === 'open' ? ' · süre: ' + fmtHours(t.due_hours) : '');
+    var info = (label[t.status] || t.status) +
+      (t.area ? ' · ' + t.area : '') + (t.status === 'open' ? ' · süre: ' + fmtHours(t.due_hours) : '');
     row.appendChild(h('span', 'text-[11px] text-zinc-400', info));
-    var cb2 = claimerBtn(t); if (cb2) row.appendChild(cb2);
-    if (t.status !== 'open') row.appendChild(actBtn('Aç', 'bg-zinc-800 hover:bg-zinc-700 text-zinc-100', function () {
-      if (t.status === 'claimed' && !confirm('Bu görevi ' + (t.claimed_nick || 'bir gönüllü') + ' üstlenmiş.\n\n"Aç" dersen görev serbest kalır ve üstlenen kişi silinir. Emin misin?')) return;
-      adminSetStatus(t, 'open');
-    }));
-    if (t.status !== 'closed') row.appendChild(actBtn('Kapat', 'bg-zinc-800 hover:bg-zinc-700 text-zinc-100', function () { adminSetStatus(t, 'closed'); }));
-    row.appendChild(actBtn('Sil', 'bg-red-900 hover:bg-red-800 text-white', function () { adminDeleteTask(t); }));
+    row.appendChild(h('div', 'basis-full h-0'));
+    var cl = admClaims.filter(function (c) { return c.task_id === t.id; });
+    cl.forEach(function (c) {
+      var line = h('div', 'basis-full flex flex-wrap items-center gap-2 pl-2 border-l-2 border-sky-700');
+      line.appendChild(h('span', 'text-xs text-white font-semibold', c.nickname));
+      line.appendChild(h('span', 'text-[11px] text-zinc-400', c.status === 'done' ? 'tamamladı' : 'üstünde · kalan: ' + fmtLeft(c.due_at)));
+      var cb2 = claimerBtn({ claimed_nick: c.nickname, title: t.title }); if (cb2) line.appendChild(cb2);
+      if (c.status === 'claimed') line.appendChild(actBtn('✔ Tamamlandı', 'bg-emerald-800 hover:bg-emerald-700 text-white', function () {
+        adminAct('gv_admin_complete_task', { p_pin: adminPin, p_task_id: t.id, p_member_id: c.member_id });
+      }));
+      line.appendChild(actBtn('Bırak', 'bg-zinc-800 hover:bg-zinc-700 text-zinc-100', function () {
+        if (!confirm(c.nickname + ' bu görevden alınsın mı?')) return;
+        adminAct('gv_admin_unassign_task', { p_pin: adminPin, p_task_id: t.id, p_member_id: c.member_id });
+      }));
+      row.appendChild(line);
+    });
+    if (t.status !== 'closed') {
+      var line2 = h('div', 'basis-full flex flex-wrap items-center gap-2');
+      var sel = h('select', 'inp'); sel.style.width = 'auto';
+      sel.appendChild(h('option', '', 'Gönüllü seç…')).value = '';
+      (s.members || []).filter(function (m) { return m.active && !m.observer; }).forEach(function (m) {
+        var o = h('option', '', m.nickname + ' (' + m.claimed + ' görevi var)'); o.value = m.id; sel.appendChild(o);
+      });
+      line2.appendChild(sel);
+      line2.appendChild(actBtn('➕ Ata', 'bg-sky-700 hover:bg-sky-600 text-white', function () {
+        if (!sel.value) { $('admin-msg').textContent = 'Önce gönüllü seç.'; return; }
+        adminAct('gv_admin_assign_task', { p_pin: adminPin, p_task_id: t.id, p_member_id: parseInt(sel.value, 10) });
+      }));
+      row.appendChild(line2);
+    }
+    var line3 = h('div', 'basis-full flex flex-wrap items-center gap-2');
+    if (t.status === 'closed') line3.appendChild(actBtn('Yeniden aç', 'bg-zinc-800 hover:bg-zinc-700 text-zinc-100', function () { adminSetStatus(t, 'open'); }));
+    else line3.appendChild(actBtn('Kapat', 'bg-zinc-800 hover:bg-zinc-700 text-zinc-100', function () { adminSetStatus(t, 'closed'); }));
+    line3.appendChild(actBtn('Sil', 'bg-red-900 hover:bg-red-800 text-white', function () { adminDeleteTask(t); }));
+    row.appendChild(line3);
     tl.appendChild(row);
   });
 
