@@ -338,7 +338,10 @@ rows = showAll ? all.slice().reverse() : all;
   <section id="admin-box" class="hidden bg-zinc-900 border border-zinc-700 rounded-2xl p-5 space-y-5">
     <div class="flex items-center justify-between">
       <h2 class="font-impact text-xl text-white uppercase tracking-wide">🔒 Yönetici</h2>
-      <button type="button" onclick="closeAdmin()" class="text-xs text-zinc-400 hover:text-white underline cursor-pointer">Kapat</button>
+      <div class="flex gap-4">
+        <button type="button" onclick="closeAdmin()" class="text-xs text-zinc-400 hover:text-white underline cursor-pointer">Kapat</button>
+        <button type="button" onclick="adminLogout()" class="text-xs text-red-400 hover:text-red-300 underline cursor-pointer">Çıkış yap</button>
+      </div>
     </div>
 
     <div id="admin-login" class="flex flex-col sm:flex-row gap-3 max-w-md">
@@ -1215,7 +1218,8 @@ function admMatKind() {
   $('adm-m-url').classList.toggle('hidden', t);
 }
 function openAdmin() { $('admin-box').classList.remove('hidden'); $('admin-box').scrollIntoView({ behavior: 'smooth' }); setTimeout(function () { var p = $('admin-pin'); if (p && !adminPin) p.focus(); }, 300); }
-function closeAdmin() { adminPin = ''; adminKey = null; adminApps = []; codesByApp = {}; $('adm-apps').textContent = ''; $('adm-key-pass').value = ''; $('admin-pin').value = ''; $('admin-main').classList.add('hidden'); $('admin-login').classList.remove('hidden'); $('admin-box').classList.add('hidden'); $('adm-newcode').classList.add('hidden'); }
+function closeAdmin() { if (adminPin) { $('admin-box').classList.add('hidden'); return; } adminLogout(); }
+function adminLogout() { adminSessionClear(); adminPin = ''; adminKey = null; adminApps = []; codesByApp = {}; $('adm-apps').textContent = ''; $('adm-key-pass').value = ''; $('admin-pin').value = ''; $('admin-main').classList.add('hidden'); $('admin-login').classList.remove('hidden'); $('admin-box').classList.add('hidden'); $('adm-newcode').classList.add('hidden'); }
 
 async function adminLogin() {
   var pin = ($('admin-pin').value || '').trim();
@@ -1223,7 +1227,7 @@ async function adminLogin() {
   if (!pin) return;
   try {
     var s = await callRpc('gv_admin_state', { p_pin: pin });
-    adminPin = pin;
+    adminPin = pin; adminSessionSave(pin);
     $('admin-pin').value = '';
     $('admin-login').classList.add('hidden');
     $('admin-main').classList.remove('hidden');
@@ -1232,6 +1236,22 @@ async function adminLogin() {
   } catch (e) { $('admin-msg').textContent = errText(e); }
 }
 
+// Yonetici oturumu: PIN sekme oturumunda, acilmis (disari alinamaz) ozel anahtar IndexedDB'de 8 saat hatirlanir.
+var ADMIN_TTL = 8 * 3600 * 1000;
+function adminIdb() {
+  return new Promise(function (res, rej) {
+    try {
+      var q = indexedDB.open('7527-gv-admin', 1);
+      q.onupgradeneeded = function () { q.result.createObjectStore('k'); };
+      q.onsuccess = function () { res(q.result); };
+      q.onerror = function () { rej(q.error); };
+    } catch (e) { rej(e); }
+  });
+}
+async function adminIdbSet(v) { try { var db = await adminIdb(); await new Promise(function (r, j) { var t = db.transaction('k', 'readwrite'); if (v == null) t.objectStore('k').delete('key'); else t.objectStore('k').put(v, 'key'); t.oncomplete = r; t.onerror = j; }); } catch (e) {} }
+async function adminIdbGet() { try { var db = await adminIdb(); return await new Promise(function (r, j) { var q = db.transaction('k').objectStore('k').get('key'); q.onsuccess = function () { r(q.result); }; q.onerror = j; }); } catch (e) { return null; } }
+function adminSessionSave(pin) { try { sessionStorage.setItem('gv_admin_pin', JSON.stringify({ p: pin, t: Date.now() })); } catch (e) {} }
+function adminSessionClear() { try { sessionStorage.removeItem('gv_admin_pin'); } catch (e) {} adminIdbSet(null); }
 var taskLogRows = [];
 async function adminReload() {
   try { renderAdmin(await callRpc('gv_admin_state', { p_pin: adminPin })); $('admin-msg').textContent = ''; }
@@ -1272,6 +1292,7 @@ function placeOf(m) { return (m.country ? m.country + ' · ' : '') + (m.city || 
 
 async function adminLoadKey() {
   var f = $('adm-key-file'), pass = $('adm-key-pass').value;
+  if (adminKey && (!f.files || !f.files[0])) return adminKey;
   if (!f.files || !f.files[0]) throw new Error('key_file');
   if (!pass) throw new Error('key_pass');
   var keyFile;
@@ -1297,6 +1318,7 @@ async function adminLoadApps() {
         ref: c ? (c.ref || '') : '', district: c ? (c.district || '') : '', country: c ? (c.country || '') : '' });
     }
     $('adm-key-pass').value = '';
+    adminIdbSet({ key: adminKey, t: Date.now() });
     renderApps();
   } catch (e) {
     adminKey = null;
@@ -2051,6 +2073,24 @@ function renderMaterials() {
     $('login-msg').textContent = 'Bağlantıdaki kod geçerli değil. Kodunu elle girebilirsin.';
   }
   if (saved && saved !== fromLink) await tryLogin(saved, false);
+})();
+
+(async function adminRestore() {
+  var raw = null;
+  try { raw = JSON.parse(sessionStorage.getItem('gv_admin_pin') || 'null'); } catch (e) {}
+  if (!raw || !raw.p || Date.now() - raw.t > ADMIN_TTL) { adminSessionClear(); return; }
+  try {
+    var st = await callRpc('gv_admin_state', { p_pin: raw.p });
+    adminPin = raw.p;
+    $('admin-box').classList.remove('hidden');
+    $('admin-login').classList.add('hidden');
+    $('admin-main').classList.remove('hidden');
+    showAdminTab('apps');
+    renderAdmin(st);
+    adminReload();
+    var k = await adminIdbGet();
+    if (k && k.key && Date.now() - k.t <= ADMIN_TTL) { adminKey = k.key; adminLoadApps(); }
+  } catch (e) { adminSessionClear(); }
 })();
 </script>
 </body>
