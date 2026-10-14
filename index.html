@@ -6155,7 +6155,7 @@ async function tekrarAnaliz() {
       var kk = x.n.key ? x.n.key + '|' + x.type + '|' + x.target : '';
       return !(kk && onayliGrup[kk]);
     });
-    tekrarCiz(items.length, grupSayisi, sayim, onaysiz, hatali, grupListe);
+    tekrarCiz(items.length, grupSayisi, sayim, onaysiz, hatali, grupListe, items);
   } catch (e) {
     alert(dataErrorText(e));
   } finally {
@@ -6164,7 +6164,7 @@ async function tekrarAnaliz() {
   }
 }
 function tkEl(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
-function tekrarCiz(toplam, grupSayisi, sayim, onaysiz, hatali, grupListe) {
+function tekrarCiz(toplam, grupSayisi, sayim, onaysiz, hatali, grupListe, tum) {
   var box = document.getElementById('tekrar-sonuc'); box.textContent = '';
   var ozet = tkEl('div', 'bg-zinc-900 border border-zinc-700 rounded-lg p-3 text-[11px] text-zinc-300 space-y-1');
   ozet.appendChild(tkEl('p', '', 'Toplam kayıt: ' + toplam));
@@ -6173,6 +6173,30 @@ function tekrarCiz(toplam, grupSayisi, sayim, onaysiz, hatali, grupListe) {
   ozet.appendChild(tkEl('p', '', 'Onay bekleyen kişi (bilgilendirilecek): ' + onaysiz.length));
   if (hatali) ozet.appendChild(tkEl('p', 'text-red-400', hatali + ' kayıt çözülemedi (anahtar uyuşmadı).'));
   box.appendChild(ozet);
+  if (tum && tum.length) {
+    box.appendChild(tkEl('p', 'text-[11px] font-bold text-white pt-1', 'Tüm dilekçelerde ara (onaylı, onaysız, hepsi):'));
+    var qi = tkEl('input', 'w-full bg-zinc-950 border border-zinc-700 rounded px-2 py-2 text-[12px] text-white');
+    qi.type = 'text'; qi.placeholder = 'Ad, telefon, e-posta, vekil adı veya dilekçe no yaz...';
+    var qres = tkEl('div', 'space-y-1 max-h-80 overflow-y-auto');
+    qres.appendChild(tkEl('p', 'text-[10px] text-zinc-500', 'En az 2 harf yaz. Her kayıtta 🗑 Sil var.'));
+    qi.oninput = function () {
+      var q = qi.value.trim().toLowerCase(); qres.textContent = '';
+      if (q.length < 2) { qres.appendChild(tkEl('p', 'text-[10px] text-zinc-500', 'En az 2 harf yaz. Her kayıtta 🗑 Sil var.')); return; }
+      var bulunan = tum.filter(function (x) { return ((x.name || '') + ' ' + (x.contact || '') + ' ' + (x.target || '') + ' ' + x.no).toLowerCase().indexOf(q) > -1; });
+      qres.appendChild(tkEl('p', 'text-[10px] text-zinc-400', bulunan.length + ' kayıt bulundu' + (bulunan.length > 40 ? ' (ilk 40 gösteriliyor)' : '')));
+      bulunan.slice(0, 40).forEach(function (x) {
+        var r = tkEl('div', 'flex flex-wrap items-center gap-2 text-[10px] text-zinc-300 bg-zinc-950/60 border border-zinc-800 rounded p-1.5');
+        r.appendChild(tkEl('span', x.confirmed ? 'text-emerald-400 font-bold' : 'text-amber-400 font-bold', x.confirmed ? '✓ onaylı' : '⏳ onaysız'));
+        r.appendChild(tkEl('span', 'text-white font-semibold', x.name || '(adsız)'));
+        r.appendChild(tkEl('span', 'text-zinc-400', hedefAdi(x.type) + (x.target ? ' · ' + x.target : '') + ' · ' + (x.contact || '—') + ' · ' + (x.at ? new Date(x.at).toLocaleString('tr-TR') : '')));
+        r.appendChild(tkEl('span', 'font-mono text-zinc-500 break-all flex-1', x.no));
+        var b = tkEl('button', 'px-2 py-1 bg-red-800 hover:bg-red-700 rounded text-white font-bold', '🗑 Sil');
+        b.type = 'button'; b.onclick = function () { tekrarTekSil(x, r, b); }; r.appendChild(b);
+        qres.appendChild(r);
+      });
+    };
+    box.appendChild(qi); box.appendChild(qres);
+  }
   if (grupListe && grupListe.length) {
     box.appendChild(tkEl('p', 'text-[11px] font-bold text-fuchsia-300 pt-1', 'Tekrar edenler — tek tek kontrol et:'));
     box.appendChild(tkEl('p', 'text-[10px] text-zinc-500', 'Önce "Dilekçeler (Excel)" ile yedek indir. Her kişi/hedef için KALACAK bir kayıt var (en yeni onaylı, yoksa en yeni). Diğerlerinin hepsinde Sil var.'));
@@ -6186,8 +6210,11 @@ function tekrarCiz(toplam, grupSayisi, sayim, onaysiz, hatali, grupListe) {
         r.appendChild(tkEl('span', x.confirmed ? 'text-emerald-400 font-bold' : 'text-amber-400 font-bold', x.confirmed ? '✓ onaylı' : '⏳ onaysız'));
         r.appendChild(tkEl('span', 'text-zinc-400', x.at ? new Date(x.at).toLocaleString('tr-TR') : ''));
         r.appendChild(tkEl('span', 'font-mono text-zinc-500 break-all flex-1', x.no));
-        if (x.act === 'keep') r.appendChild(tkEl('span', 'text-sky-400 font-bold', 'KALACAK'));
-        else {
+        if (x.act === 'keep') {
+          r.appendChild(tkEl('span', 'text-sky-400 font-bold', 'KALACAK'));
+          var kb = tkEl('button', 'px-2 py-1 bg-red-800 hover:bg-red-700 rounded text-white font-bold', '🗑 Sil');
+          kb.type = 'button'; kb.onclick = function () { tekrarTekSil(x, r, kb); }; r.appendChild(kb);
+        } else {
           var sb = tkEl('button', 'px-2 py-1 bg-red-800 hover:bg-red-700 rounded text-white font-bold', '🗑 Sil');
           sb.type = 'button'; sb.onclick = function () { tekrarTekSil(x, r, sb); }; r.appendChild(sb);
         }
@@ -6217,6 +6244,8 @@ function tekrarCiz(toplam, grupSayisi, sayim, onaysiz, hatali, grupListe) {
       } else if (x.n.kind === 'email') {
         lnk('✉ E-posta', 'bg-sky-700', 'mailto:' + x.n.value + '?subject=' + encodeURIComponent('7527 İptal: dilekçeni birlikte tamamlayalım') + '&body=' + encodeURIComponent(msg));
       }
+      var xsb = tkEl('button', 'px-2 py-1 bg-red-800 hover:bg-red-700 rounded text-[10px] text-white font-bold', '🗑 Sil');
+      xsb.type = 'button'; xsb.onclick = function () { tekrarTekSil(x, r, xsb); }; r.appendChild(xsb);
       list.appendChild(r);
     });
     box.appendChild(list);
