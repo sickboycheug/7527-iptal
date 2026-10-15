@@ -6099,6 +6099,8 @@ function tkNorm(contact) {
   if (d.length === 12 && d.indexOf('90') === 0) d = d.slice(2);
   if (d.length === 11 && d.charAt(0) === '0') d = d.slice(1);
   if (d.length === 10) return { kind: 'phone', key: d, value: '90' + d };
+  var yd = d.indexOf('00') === 0 ? d.slice(2) : d;
+  if (yd.length >= 8 && yd.length <= 15 && (/^\s*\+/.test(c) || d.indexOf('00') === 0 || yd.length >= 11)) return { kind: 'phone', key: yd, value: yd };
   return { kind: '', key: '', value: '' };
 }
 async function tekrarAnaliz() {
@@ -6200,10 +6202,11 @@ function tkDuzenleEkle(x, r) {
     var f = tkEl('div', 'w-full basis-full bg-zinc-900 border border-zinc-600 rounded p-2 space-y-1');
     var alanlar = [['name', 'Ad Soyad', x.name], ['contact', 'Telefon / e-posta', x.contact], ['country', 'Ülke', raw.country || ''], ['city', 'Şehir', raw.city || ''], ['district', 'İlçe', raw.district || '']];
     var inp = {};
+    var gr = tkEl('div', 'grid grid-cols-2 gap-2'); f.appendChild(gr);
     alanlar.forEach(function (a) {
       var l = tkEl('label', 'block text-[10px] text-zinc-400', a[1]);
       var i = tkEl('input', 'w-full bg-zinc-950 border border-zinc-700 rounded px-2 py-1 text-[11px] text-white');
-      i.type = 'text'; i.value = a[2] || ''; inp[a[0]] = i; l.appendChild(i); f.appendChild(l);
+      i.type = 'text'; i.value = a[2] || ''; inp[a[0]] = i; l.appendChild(i); if (a[0] === 'name' || a[0] === 'contact') l.className += ' col-span-2'; gr.appendChild(l);
     });
     var msg = tkEl('p', 'text-[10px] text-zinc-400', 'Telefon ve e-posta ikisi birden yazılabilir (aralarına boşluk koy).');
     var kb = tkEl('button', 'px-3 py-1 bg-emerald-700 hover:bg-emerald-600 rounded text-[11px] text-white font-bold', 'Kaydet');
@@ -6268,7 +6271,7 @@ function tekrarCiz(toplam, grupSayisi, sayim, onaysiz, hatali, grupListe, tum) {
     box.appendChild(tkEl('p', 'text-[11px] font-bold text-white pt-1', 'Tüm dilekçelerde ara (onaylı, onaysız, hepsi):'));
     var qi = tkEl('input', 'w-full bg-zinc-950 border border-zinc-700 rounded px-2 py-2 text-[12px] text-white');
     qi.type = 'text'; qi.placeholder = 'Ad, telefon, e-posta, vekil adı veya dilekçe no yaz...';
-    var qres = tkEl('div', 'space-y-1 max-h-80 overflow-y-auto');
+    var qres = tkEl('div', 'space-y-1 max-h-[32rem] overflow-y-auto');
     qres.appendChild(tkEl('p', 'text-[10px] text-zinc-500', 'En az 2 harf yaz. Her kayıtta 🗑 Sil var.'));
     qi.oninput = function () {
       var q = qi.value.trim().toLowerCase(); qres.textContent = '';
@@ -6281,7 +6284,7 @@ function tekrarCiz(toplam, grupSayisi, sayim, onaysiz, hatali, grupListe, tum) {
         var du = tkDurum(x); r.appendChild(tkEl('span', du[1], du[0]));
         r.appendChild(tkEl('span', 'text-white font-semibold', x.name || '(adsız)'));
         r.appendChild(tkEl('span', 'text-zinc-400', hedefAdi(x.type) + (x.target ? ' · ' + x.target : '') + ' · ' + (x.contact || '—') + ' · ' + (x.at ? new Date(x.at).toLocaleString('tr-TR') : '')));
-        r.appendChild(tkEl('span', 'font-mono text-zinc-500 break-all flex-1', x.no));
+        r.appendChild(tkEl('span', 'font-mono text-zinc-500 break-all flex-1 min-w-[16rem]', x.no));
         tkIletisimEkle(x, r);
         tkDuzenleEkle(x, r);
         if (!x.confirmed) {
@@ -6303,7 +6306,7 @@ function tekrarCiz(toplam, grupSayisi, sayim, onaysiz, hatali, grupListe, tum) {
         var du = tkDurum(x); r.appendChild(tkEl('span', du[1], du[0]));
         r.appendChild(tkEl('span', 'text-white font-semibold', x.name || '(ad yok)'));
         r.appendChild(tkEl('span', 'text-zinc-400', hedefAdi(x.type) + (x.target ? ' · ' + x.target : '') + ' · ' + (x.contact || '(iletişim yok)')));
-        r.appendChild(tkEl('span', 'font-mono text-zinc-500 break-all flex-1', x.no));
+        r.appendChild(tkEl('span', 'font-mono text-zinc-500 break-all flex-1 min-w-[16rem]', x.no));
         tkDuzenleEkle(x, r);
         var bs = tkEl('button', 'px-2 py-1 bg-red-800 hover:bg-red-700 rounded text-white font-bold', '🗑 Sil');
         bs.type = 'button'; bs.onclick = function () { tekrarTekSil(x, r, bs); }; r.appendChild(bs);
@@ -6324,7 +6327,7 @@ function tekrarCiz(toplam, grupSayisi, sayim, onaysiz, hatali, grupListe, tum) {
         var r = tkEl('div', 'flex flex-wrap items-center gap-2 text-[10px] text-zinc-300' + (x.act === 'sil' ? ' bg-red-950/30 rounded px-1' : ''));
         var du = tkDurum(x); r.appendChild(tkEl('span', du[1], du[0]));
         r.appendChild(tkEl('span', 'text-zinc-400', x.at ? new Date(x.at).toLocaleString('tr-TR') : ''));
-        r.appendChild(tkEl('span', 'font-mono text-zinc-500 break-all flex-1', x.no));
+        r.appendChild(tkEl('span', 'font-mono text-zinc-500 break-all flex-1 min-w-[16rem]', x.no));
         tkIletisimEkle(x, r);
         tkDuzenleEkle(x, r);
         if (x.act === 'keep') {
