@@ -3818,8 +3818,17 @@ async function sendPetitionViaEmail() {
     onayli = !!localStorage.getItem(tekrarAnahtar + '_onay');
   } catch (e) {}
   if (oncekiNo && onayli) {
-    alert('Bu hedefe dilekçenizi zaten gönderdiniz. Aynı hedefe ikinci dilekçe oluşturulmaz.\n\nBaşka bir hedef (başka bir milletvekili gibi) seçerek devam edebilirsiniz.');
-    return;
+    // Cihazdaki not eski olabilir (kayit yonetim panelinden silinmis olabilir): once sunucuya sor
+    var stv = null;
+    try { stv = await callRpc('petition_status', { p_petition_number: oncekiNo }); } catch (e) { stv = null; }
+    if (stv && stv.found === false) {
+      try { localStorage.removeItem(tekrarAnahtar); localStorage.removeItem(tekrarAnahtar + '_onay'); } catch (e) {}
+      bekleyenSil(oncekiNo); oncekiNo = ''; onayli = false;
+    } else {
+      if (selectedTarget === 'mp' && selectedMP) { try { markMpAsSent(selectedMP.id); filterMps(); updateSentMpNotice(); } catch (e) {} }
+      alert('Bu hedefe dilekçenizi zaten gönderdiniz. Aynı hedefe ikinci dilekçe oluşturulmaz.\n\nBaşka bir hedef (başka bir milletvekili gibi) seçerek devam edebilirsiniz.');
+      return;
+    }
   }
   window.__oncekiGec = window.__oncekiGec || {};
   if (oncekiNo && !onayli && !window.__oncekiGec[tekrarAnahtar]) {
@@ -6632,6 +6641,7 @@ async function tekrarTekSil(x, rowEl, btn) {
     if (n < 1) { btn.disabled = false; btn.textContent = '🗑 Sil'; alert('Silinemedi (kayıt zaten yok olabilir).'); return; }
     rowEl.textContent = '';
     rowEl.appendChild(tkEl('span', 'text-zinc-500', '✔ silindi: ' + x.no));
+    try { lkTemizle(x.no); } catch (e) {}
     if (x.type === 'mp' && x.target) {
       try {
         var tn = function (t) { return String(t || '').toLocaleUpperCase('tr').replace(/İ/g, 'I').replace(/\s+/g, ' ').trim(); };
