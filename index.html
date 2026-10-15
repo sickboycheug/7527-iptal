@@ -6235,6 +6235,195 @@ function tkDuzenleEkle(x, r) {
   };
   r.appendChild(db);
 }
+function tkKisiGrupla(tum) {
+  var map = {}, out = [];
+  tum.forEach(function (x) {
+    var k = (x.n && x.n.key) ? x.n.key : 'no:' + x.no;
+    if (!map[k]) { map[k] = { key: k, recs: [] }; out.push(map[k]); }
+    map[k].recs.push(x);
+  });
+  out.forEach(function (p) {
+    p.recs.sort(function (a, b) { return String(b.at).localeCompare(String(a.at)); });
+    p.rep = p.recs.filter(function (x) { return x.confirmed; })[0] || p.recs[0];
+    var nm = p.recs.filter(function (x) { return (x.name || '').trim(); })[0];
+    p.name = nm ? nm.name : '';
+    p.country = ((p.rep.raw || {}).country || '').trim();
+    p.city = ((p.rep.raw || {}).city || '').trim();
+    p.toplam = p.recs.length;
+    p.onayli = p.recs.filter(function (x) { return x.confirmed; }).length;
+    var h = {}; p.recs.forEach(function (x) { h[hedefAdi(x.type) + (x.target ? ' · ' + x.target : '')] = 1; });
+    p.hedefler = Object.keys(h);
+  });
+  return out;
+}
+function tkKisiIndir(liste) {
+  function q(v) { return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"'; }
+  var lines = [['Ad Soyad', 'İletişim', 'E-posta', 'Telefon', 'Ülke', 'Şehir', 'İlçe', 'Dilekçe sayısı', 'Onaylı sayısı', 'Hedefler', 'Dilekçe no'].map(q).join(';')];
+  liste.forEach(function (p) {
+    var raw = p.rep.raw || {};
+    var n = p.rep.n || {};
+    lines.push([p.name, p.rep.contact, n.kind === 'email' ? n.value : '', n.kind === 'phone' ? '+' + n.value : '', p.country || 'Türkiye', p.city, raw.district || '', p.toplam, p.onayli, p.hedefler.join(' | '), p.recs.map(function (x) { return x.no; }).join(' ')].map(q).join(';'));
+  });
+  var blob = new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
+  var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = '7527-tum-kisiler.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+}
+function tkKisiDuzenle(p, r) {
+  if (p._form) { p._form.remove(); p._form = null; return; }
+  var raw = p.rep.raw || {};
+  var f = tkEl('div', 'w-full basis-full bg-zinc-900 border border-zinc-600 rounded p-2 space-y-1');
+  var gr = tkEl('div', 'grid grid-cols-2 gap-2'); f.appendChild(gr);
+  var alanlar = [['name', 'Ad Soyad', p.name], ['contact', 'Telefon / e-posta', p.rep.contact], ['country', 'Ülke (Türkiye için boş)', p.country], ['city', 'Şehir', p.city], ['district', 'İlçe', raw.district || '']];
+  var inp = {};
+  alanlar.forEach(function (a) {
+    var l = tkEl('label', 'block text-[10px] text-zinc-400', a[1]);
+    var i = tkEl('input', 'w-full bg-zinc-950 border border-zinc-700 rounded px-2 py-1 text-[11px] text-white');
+    i.type = 'text'; i.value = a[2] || ''; inp[a[0]] = i; l.appendChild(i);
+    if (a[0] === 'name' || a[0] === 'contact') l.className += ' col-span-2';
+    gr.appendChild(l);
+  });
+  var msg = tkEl('p', 'text-[10px] text-zinc-400', 'Bu kişinin ' + p.toplam + ' dilekçesinin hepsinde değişir. Telefon ve e-posta ikisi birden yazılabilir.');
+  var kb = tkEl('button', 'px-3 py-1 bg-emerald-700 hover:bg-emerald-600 rounded text-[11px] text-white font-bold', 'Kaydet');
+  kb.type = 'button';
+  var ib = tkEl('button', 'px-3 py-1 bg-zinc-700 hover:bg-zinc-600 rounded text-[11px] text-white font-bold ml-2', 'Vazgeç');
+  ib.type = 'button'; ib.onclick = function () { f.remove(); p._form = null; };
+  kb.onclick = async function () {
+    kb.disabled = true; var hata = 0;
+    try {
+      for (var i = 0; i < p.recs.length; i++) {
+        kb.textContent = 'Kaydediliyor (' + (i + 1) + '/' + p.recs.length + ')...';
+        var x = p.recs[i];
+        var yeni = Object.assign({}, x.raw || {}, { name: inp.name.value.trim(), contact: inp.contact.value.trim(), country: inp.country.value.trim(), city: inp.city.value.trim(), district: inp.district.value.trim() });
+        var env = await encryptPayload(yeni);
+        var n = Number(await callRpc('admin_update_petition', { p_pin: adminPinCache, p_number: x.no, p_payload_enc: env, p_country: yeni.country, p_city: yeni.city }) || 0);
+        if (n < 1) { hata++; continue; }
+        x.raw = yeni; x.name = yeni.name; x.contact = yeni.contact; x.n = tkNorm(yeni.contact);
+      }
+      msg.textContent = hata ? ('⚠ ' + hata + ' kayıt güncellenemedi.') : '✔ Kaydedildi. Listenin yenilenmesi için "Tekrarları bul"a tekrar bas.';
+      msg.className = 'text-[11px] font-bold ' + (hata ? 'text-red-400' : 'text-emerald-400');
+      kb.remove(); ib.textContent = 'Kapat';
+      try { await refreshCounters(); } catch (e) {}
+    } catch (e) {
+      kb.disabled = false; kb.textContent = 'Kaydet';
+      alert(String((e && e.message) || '').indexOf('not_installed') > -1 ? 'Önce adim9_duzenle.sql çalıştırılmalı.' : dataErrorText(e));
+    }
+  };
+  f.appendChild(msg); f.appendChild(kb); f.appendChild(ib);
+  p._form = f; r.parentNode.insertBefore(f, r.nextSibling);
+}
+function tkKisiler(tum) {
+  var kisiler = tkKisiGrupla(tum);
+  var det = tkEl('details', 'bg-zinc-950/60 border border-emerald-800 rounded-lg p-2');
+  det.open = true;
+  det.appendChild(tkEl('summary', 'cursor-pointer text-[12px] font-bold text-emerald-300', '👥 TÜM KİŞİLER (' + kisiler.length + ' kişi · ' + tum.length + ' dilekçe)'));
+  var body = tkEl('div', 'space-y-2 mt-2'); det.appendChild(body);
+  body.appendChild(tkEl('p', 'text-[10px] text-zinc-500', 'Herkes burada, hiçbir kayıt gizlenmez. Süzgeçleri sen seçersin.'));
+  var bar = tkEl('div', 'grid grid-cols-1 sm:grid-cols-3 gap-2'); body.appendChild(bar);
+  var qi = tkEl('input', 'bg-zinc-950 border border-zinc-700 rounded px-2 py-2 text-[11px] text-white'); qi.type = 'text'; qi.placeholder = 'Ara: ad, telefon, e-posta, şehir...';
+  var il = tkEl('select', 'bg-zinc-950 border border-zinc-700 rounded px-2 py-2 text-[11px] text-white');
+  var dr = tkEl('select', 'bg-zinc-950 border border-zinc-700 rounded px-2 py-2 text-[11px] text-white');
+  var ilSay = {}, ulkeSay = {}, yurtdisi = 0;
+  kisiler.forEach(function (p) {
+    if (p.country) { yurtdisi++; ulkeSay[p.country] = (ulkeSay[p.country] || 0) + 1; }
+    else { var c = p.city || '(şehir yok)'; ilSay[c] = (ilSay[c] || 0) + 1; }
+  });
+  function opt(sel, v, t) { var o = document.createElement('option'); o.value = v; o.textContent = t; sel.appendChild(o); }
+  opt(il, '', 'Tüm iller ve ülkeler');
+  opt(il, '@yurtdisi', 'Yurtdışı (hepsi) · ' + yurtdisi);
+  Object.keys(ulkeSay).sort(function (a, b) { return a.localeCompare(b, 'tr'); }).forEach(function (c) { opt(il, 'u:' + c, '   ' + c + ' · ' + ulkeSay[c]); });
+  Object.keys(ilSay).sort(function (a, b) { return a.localeCompare(b, 'tr'); }).forEach(function (c) { opt(il, 'i:' + c, c + ' · ' + ilSay[c]); });
+  opt(dr, '', 'Her durum');
+  opt(dr, 'onayli', 'En az 1 onaylı dilekçesi var');
+  opt(dr, 'onaysiz', 'Hiç onaylı dilekçesi yok');
+  opt(dr, 'tek', 'Tek dilekçe gönderip bırakan');
+  opt(dr, 'eksik', 'Bilgisi eksik / bozuk');
+  bar.appendChild(qi); bar.appendChild(il); bar.appendChild(dr);
+  var ust = tkEl('div', 'flex flex-wrap items-center gap-2'); body.appendChild(ust);
+  var say = tkEl('span', 'text-[11px] text-zinc-300 flex-1', '');
+  var ib = tkEl('button', 'px-3 py-1.5 bg-emerald-800 hover:bg-emerald-700 rounded text-[11px] text-white font-bold', '⬇ Bu listeyi indir (Excel)'); ib.type = 'button';
+  ust.appendChild(say); ust.appendChild(ib);
+  var liste = tkEl('div', 'space-y-1 max-h-[32rem] overflow-y-auto'); body.appendChild(liste);
+  var gor = [], limit = 100;
+  function filtre() {
+    var q = qi.value.trim().toLocaleLowerCase('tr'), i = il.value, d = dr.value;
+    return kisiler.filter(function (p) {
+      if (i === '@yurtdisi' && !p.country) return false;
+      if (i.indexOf('u:') === 0 && p.country !== i.slice(2)) return false;
+      if (i.indexOf('i:') === 0 && (p.country || (p.city || '(şehir yok)') !== i.slice(2))) return false;
+      if (d === 'onayli' && !p.onayli) return false;
+      if (d === 'onaysiz' && p.onayli) return false;
+      if (d === 'tek' && p.toplam !== 1) return false;
+      if (d === 'eksik' && p.rep.n && p.rep.n.kind && (p.name || '').trim()) return false;
+      if (q) {
+        var hay = (p.name + ' ' + p.recs.map(function (x) { return x.contact + ' ' + x.name; }).join(' ') + ' ' + p.city + ' ' + p.country).toLocaleLowerCase('tr');
+        if (hay.indexOf(q) === -1) return false;
+      }
+      return true;
+    });
+  }
+  function ciz() {
+    gor = filtre(); liste.textContent = '';
+    say.textContent = gor.length + ' kişi' + (gor.length > limit ? ' (ilk ' + limit + ' gösteriliyor)' : '');
+    gor.slice(0, limit).forEach(function (p) {
+      var r = tkEl('div', 'flex flex-wrap items-center gap-2 text-[10px] text-zinc-300 bg-zinc-950/60 border border-zinc-800 rounded p-1.5');
+      r.appendChild(tkEl('span', 'text-[11px] text-white font-semibold', p.name || '(ad yok)'));
+      r.appendChild(tkEl('span', 'text-zinc-400', (p.rep.contact || '(iletişim yok)') + ' · ' + (p.country ? p.country + (p.city ? ', ' + p.city : '') : (p.city || 'şehir yok'))));
+      r.appendChild(tkEl('span', p.onayli ? 'text-emerald-400 font-bold' : 'text-amber-400 font-bold', p.toplam + ' dilekçe · ' + p.onayli + ' onaylı'));
+      var bt = tkEl('div', 'basis-full flex flex-wrap items-center gap-1.5'); r.appendChild(bt);
+      tkIletisimEkle(p.rep, bt);
+      tkKisiDuzenle2(p, r, bt);
+      var dl = tkEl('button', 'px-2 py-1 bg-zinc-700 hover:bg-zinc-600 rounded text-[10px] text-white font-bold', '▾ Dilekçeleri (' + p.toplam + ')'); dl.type = 'button';
+      var alt = null;
+      dl.onclick = function () {
+        if (alt) { alt.remove(); alt = null; return; }
+        alt = tkEl('div', 'w-full basis-full space-y-1 pl-2 border-l border-zinc-700');
+        p.recs.forEach(function (x) {
+          var s = tkEl('div', 'flex flex-wrap items-center gap-2 text-[10px] text-zinc-300');
+          var du = tkDurum(x); s.appendChild(tkEl('span', du[1], du[0]));
+          s.appendChild(tkEl('span', 'text-zinc-400', hedefAdi(x.type) + (x.target ? ' · ' + x.target : '') + ' · ' + (x.at ? new Date(x.at).toLocaleString('tr-TR') : '')));
+          s.appendChild(tkEl('span', 'font-mono text-zinc-500 break-all flex-1 min-w-[16rem]', x.no));
+          if (!x.confirmed) {
+            var ob = tkEl('button', 'px-2 py-1 bg-emerald-700 hover:bg-emerald-600 rounded text-white font-bold', '✓ Onaylandı'); ob.type = 'button';
+            ob.onclick = function () { tekrarOnayla(x, s, ob); }; s.appendChild(ob);
+          }
+          var sb = tkEl('button', 'px-2 py-1 bg-red-800 hover:bg-red-700 rounded text-white font-bold', '🗑 Sil'); sb.type = 'button';
+          sb.onclick = function () { tekrarTekSil(x, s, sb); }; s.appendChild(sb);
+          alt.appendChild(s);
+        });
+        r.appendChild(alt);
+      };
+      bt.appendChild(dl);
+      var hs = tkEl('button', 'px-2 py-1 bg-red-900 hover:bg-red-800 rounded text-[10px] text-white font-bold', '🗑 Kişiyi sil (' + p.toplam + ' dilekçe)'); hs.type = 'button';
+      hs.onclick = async function () {
+        if (!confirm((p.name || 'Bu kişi') + ' — ' + p.toplam + ' dilekçenin HEPSİ SİLİNECEK. Geri alınamaz. Devam edilsin mi?')) return;
+        hs.disabled = true; hs.textContent = '...';
+        try {
+          var nums = p.recs.map(function (x) { return x.no; }), sil = 0;
+          for (var j = 0; j < nums.length; j += 200) sil += Number(await callRpc('admin_delete_petitions_by_number', { p_pin: adminPinCache, p_numbers: nums.slice(j, j + 200) }) || 0);
+          r.textContent = ''; r.appendChild(tkEl('span', 'text-zinc-500', '✔ ' + sil + ' dilekçe silindi: ' + (p.name || '')));
+          try { await refreshCounters(); } catch (e) {}
+        } catch (e) { hs.disabled = false; hs.textContent = '🗑 Kişiyi sil (' + p.toplam + ' dilekçe)'; alert(dataErrorText(e)); }
+      };
+      bt.appendChild(hs);
+      liste.appendChild(r);
+    });
+    if (gor.length > limit) {
+      var dm = tkEl('button', 'w-full py-2 bg-zinc-800 hover:bg-zinc-700 rounded text-[11px] text-white font-bold', 'Daha fazla göster (+100)'); dm.type = 'button';
+      dm.onclick = function () { limit += 100; ciz(); }; liste.appendChild(dm);
+    }
+  }
+  function tkKisiDuzenle2(p, r, bt) {
+    var b = tkEl('button', 'px-2 py-1 bg-zinc-700 hover:bg-zinc-600 rounded text-[10px] text-white font-bold', '✏ Düzenle'); b.type = 'button';
+    b.onclick = function () { tkKisiDuzenle(p, r); }; bt.appendChild(b);
+  }
+  qi.oninput = function () { limit = 100; ciz(); };
+  il.onchange = function () { limit = 100; ciz(); };
+  dr.onchange = function () { limit = 100; ciz(); };
+  ib.onclick = function () { tkKisiIndir(gor); };
+  ciz();
+  return det;
+}
 function tkIletisimEkle(x, r) {
   if (!x.n || !x.n.kind) return;
   var msg = tkMesaj(x);
@@ -6267,6 +6456,7 @@ function tekrarCiz(toplam, grupSayisi, sayim, onaysiz, hatali, grupListe, tum) {
   if (tum) ozet.appendChild(tkEl('p', 'text-sky-300', 'Onaysız ama sayaçta sayılan: ' + tum.filter(function (x) { return !x.confirmed && x.gecici; }).length));
   if (hatali) ozet.appendChild(tkEl('p', 'text-red-400', hatali + ' kayıt çözülemedi (anahtar uyuşmadı).'));
   box.appendChild(ozet);
+  if (tum && tum.length) box.appendChild(tkKisiler(tum));
   if (tum && tum.length) {
     box.appendChild(tkEl('p', 'text-[11px] font-bold text-white pt-1', 'Tüm dilekçelerde ara (onaylı, onaysız, hepsi):'));
     var qi = tkEl('input', 'w-full bg-zinc-950 border border-zinc-700 rounded px-2 py-2 text-[12px] text-white');
