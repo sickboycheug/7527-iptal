@@ -6130,7 +6130,7 @@ async function tekrarAnaliz() {
       try { c = await decryptPayload(privateKey, rows[i].payload_enc) || {}; } catch (e) { hatali++; }
       var n = tkNorm(c.contact);
       items.push({ gecici: !!gec[rows[i].petition_number], tekrar: !!marked[rows[i].petition_number], no: rows[i].petition_number, confirmed: !!rows[i].confirmed, type: rows[i].recipient_type, at: rows[i].created_at || '',
-        name: c.name || '', contact: c.contact || '', target: c.targetName || '', n: n });
+        name: c.name || '', contact: c.contact || '', target: c.targetName || '', n: n, raw: c });
       if (btn && i % 25 === 0) btn.textContent = 'Çözülüyor (' + i + '/' + rows.length + ')...';
     }
     var groups = {};
@@ -6182,6 +6182,78 @@ function tkDurum(x) {
   return ['⏳ onaysız, sayılmıyor', 'text-amber-400 font-bold'];
 }
 function tkEl(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+function tkMesaj(x) {
+  var ad = (x.name || '').trim().split(/\s+/)[0] || '';
+  if (x.confirmed) {
+    return 'Merhaba' + (ad ? ' ' + ad : '') + ' 🐾 7527iptal.org\'da hazırladığın ' + x.no + ' numaralı dilekçe için çok teşekkür ederiz. Desteğin için sonsuz teşekkürler 🙏';
+  }
+  var hd = x.type === 'mp' ? (x.target ? x.target + ' Milletvekili\'ne' : 'milletvekiline') : (x.type === 'cb' ? 'Cumhurbaşkanlığı\'na' : 'TBMM Başkanlığı\'na');
+  var link = 'https://7527iptal.org/?dilekce=' + x.no;
+  return 'Merhaba' + (ad ? ' ' + ad : '') + ' 🐾 7527iptal.org\'da hazırladığın dilekçe için çok teşekkür ederiz. ' + hd + ' hazırladığın ' + x.no + ' numaralı dilekçenin henüz ulaşmadığını görüyoruz; e-postayı gönderdiğin onaylanmadığı için sayıma girmedi.\n\n📄 Dilekçem elimde: bu bağlantıdan e-postayı gönderip onaylayabilirsin: ' + link + '\n\n🆕 Dilekçemi kaybettim: 7527iptal.org\'a girip yeni bir dilekçe oluşturabilirsin, 1 dakika sürer. Eskisi sayılmaz, sorun olmaz.\n\nDesteğin için sonsuz teşekkürler 🙏';
+}
+function tkDuzenleEkle(x, r) {
+  var db = tkEl('button', 'px-2 py-1 bg-zinc-700 hover:bg-zinc-600 rounded text-[10px] text-white font-bold', '✏ Düzenle');
+  db.type = 'button';
+  db.onclick = function () {
+    if (x._form) { x._form.remove(); x._form = null; return; }
+    var raw = x.raw || {};
+    var f = tkEl('div', 'w-full basis-full bg-zinc-900 border border-zinc-600 rounded p-2 space-y-1');
+    var alanlar = [['name', 'Ad Soyad', x.name], ['contact', 'Telefon / e-posta', x.contact], ['country', 'Ülke', raw.country || ''], ['city', 'Şehir', raw.city || ''], ['district', 'İlçe', raw.district || '']];
+    var inp = {};
+    alanlar.forEach(function (a) {
+      var l = tkEl('label', 'block text-[10px] text-zinc-400', a[1]);
+      var i = tkEl('input', 'w-full bg-zinc-950 border border-zinc-700 rounded px-2 py-1 text-[11px] text-white');
+      i.type = 'text'; i.value = a[2] || ''; inp[a[0]] = i; l.appendChild(i); f.appendChild(l);
+    });
+    var msg = tkEl('p', 'text-[10px] text-zinc-400', 'Telefon ve e-posta ikisi birden yazılabilir (aralarına boşluk koy).');
+    var kb = tkEl('button', 'px-3 py-1 bg-emerald-700 hover:bg-emerald-600 rounded text-[11px] text-white font-bold', 'Kaydet');
+    kb.type = 'button';
+    var ib = tkEl('button', 'px-3 py-1 bg-zinc-700 hover:bg-zinc-600 rounded text-[11px] text-white font-bold ml-2', 'Vazgeç');
+    ib.type = 'button'; ib.onclick = function () { f.remove(); x._form = null; };
+    kb.onclick = async function () {
+      kb.disabled = true; kb.textContent = 'Kaydediliyor...';
+      try {
+        var yeni = Object.assign({}, raw, { name: inp.name.value.trim(), contact: inp.contact.value.trim(), country: inp.country.value.trim(), city: inp.city.value.trim(), district: inp.district.value.trim() });
+        var env = await encryptPayload(yeni);
+        var n = Number(await callRpc('admin_update_petition', { p_pin: adminPinCache, p_number: x.no, p_payload_enc: env, p_country: yeni.country, p_city: yeni.city }) || 0);
+        if (n < 1) throw new Error('kayit_yok');
+        x.raw = yeni; x.name = yeni.name; x.contact = yeni.contact; x.n = tkNorm(yeni.contact);
+        msg.textContent = '✔ Kaydedildi. Düğmelerin yenilenmesi için "Tekrarları bul"a tekrar bas.';
+        msg.className = 'text-[11px] text-emerald-400 font-bold';
+        kb.remove(); ib.textContent = 'Kapat';
+        try { await refreshCounters(); } catch (e) {}
+      } catch (e) {
+        kb.disabled = false; kb.textContent = 'Kaydet';
+        alert(String((e && e.message) || '').indexOf('not_installed') > -1 ? 'Önce adim9_duzenle.sql çalıştırılmalı.' : dataErrorText(e));
+      }
+    };
+    f.appendChild(msg); f.appendChild(kb); f.appendChild(ib);
+    x._form = f; r.parentNode.insertBefore(f, r.nextSibling);
+  };
+  r.appendChild(db);
+}
+function tkIletisimEkle(x, r) {
+  if (!x.n || !x.n.kind) return;
+  var msg = tkMesaj(x);
+  function lnk(label, cls, href) { var a = tkEl('a', 'px-2 py-1 rounded text-[10px] font-bold text-white ' + cls, label); a.href = href; a.target = '_blank'; a.rel = 'noopener noreferrer'; r.appendChild(a); }
+  if (x.n.kind === 'phone') {
+    lnk('💬 WhatsApp', 'bg-emerald-700', 'https://wa.me/' + x.n.value + '?text=' + encodeURIComponent(msg));
+    lnk('📱 SMS', 'bg-sky-700', 'sms:+' + x.n.value + '?body=' + encodeURIComponent(msg));
+  } else if (x.n.kind === 'email') {
+    var mb = tkEl('button', 'px-2 py-1 rounded text-[10px] font-bold text-white bg-sky-700 hover:bg-sky-600', '✉ E-posta gönder');
+    mb.type = 'button';
+    mb.onclick = async function () {
+      if (!confirm(x.n.value + ' adresine resmi adresten (bilgi@7527iptal.org) e-posta gönderilecek. Devam edilsin mi?')) return;
+      mb.disabled = true; mb.textContent = 'Gönderiliyor…';
+      try {
+        var res = await supabaseClient.functions.invoke('send-invite', { body: { pin: adminPinCache, to: x.n.value, subject: x.confirmed ? '7527 İptal: teşekkürler' : '7527 İptal: dilekçeni birlikte tamamlayalım', text: msg } });
+        if (res.error) throw res.error;
+        mb.textContent = '✓ E-posta gönderildi';
+      } catch (e) { console.error('[send-invite]', e); mb.disabled = false; mb.textContent = '✉ E-posta gönder'; alert('E-posta gönderilemedi. Tekrar dene.'); }
+    };
+    r.appendChild(mb);
+  }
+}
 function tekrarCiz(toplam, grupSayisi, sayim, onaysiz, hatali, grupListe, tum) {
   var box = document.getElementById('tekrar-sonuc'); box.textContent = '';
   var ozet = tkEl('div', 'bg-zinc-900 border border-zinc-700 rounded-lg p-3 text-[11px] text-zinc-300 space-y-1');
@@ -6210,6 +6282,8 @@ function tekrarCiz(toplam, grupSayisi, sayim, onaysiz, hatali, grupListe, tum) {
         r.appendChild(tkEl('span', 'text-white font-semibold', x.name || '(adsız)'));
         r.appendChild(tkEl('span', 'text-zinc-400', hedefAdi(x.type) + (x.target ? ' · ' + x.target : '') + ' · ' + (x.contact || '—') + ' · ' + (x.at ? new Date(x.at).toLocaleString('tr-TR') : '')));
         r.appendChild(tkEl('span', 'font-mono text-zinc-500 break-all flex-1', x.no));
+        tkIletisimEkle(x, r);
+        tkDuzenleEkle(x, r);
         if (!x.confirmed) {
           var ob = tkEl('button', 'px-2 py-1 bg-emerald-700 hover:bg-emerald-600 rounded text-white font-bold', '✓ Onaylandı');
           ob.type = 'button'; ob.onclick = function () { tekrarOnayla(x, r, ob); }; r.appendChild(ob);
@@ -6220,6 +6294,23 @@ function tekrarCiz(toplam, grupSayisi, sayim, onaysiz, hatali, grupListe, tum) {
       });
     };
     box.appendChild(qi); box.appendChild(qres);
+    var bozuk = tum.filter(function (x) { return !x.n || !x.n.kind || !(x.name || '').trim(); });
+    if (bozuk.length) {
+      box.appendChild(tkEl('p', 'text-[11px] font-bold text-red-300 pt-1', 'Bilgisi eksik / bozuk kayıtlar (' + bozuk.length + ') — düzenle ya da sil:'));
+      var bl = tkEl('div', 'space-y-1 max-h-72 overflow-y-auto');
+      bozuk.forEach(function (x) {
+        var r = tkEl('div', 'flex flex-wrap items-center gap-2 text-[10px] text-zinc-300 bg-zinc-950/60 border border-red-900 rounded p-1.5');
+        var du = tkDurum(x); r.appendChild(tkEl('span', du[1], du[0]));
+        r.appendChild(tkEl('span', 'text-white font-semibold', x.name || '(ad yok)'));
+        r.appendChild(tkEl('span', 'text-zinc-400', hedefAdi(x.type) + (x.target ? ' · ' + x.target : '') + ' · ' + (x.contact || '(iletişim yok)')));
+        r.appendChild(tkEl('span', 'font-mono text-zinc-500 break-all flex-1', x.no));
+        tkDuzenleEkle(x, r);
+        var bs = tkEl('button', 'px-2 py-1 bg-red-800 hover:bg-red-700 rounded text-white font-bold', '🗑 Sil');
+        bs.type = 'button'; bs.onclick = function () { tekrarTekSil(x, r, bs); }; r.appendChild(bs);
+        bl.appendChild(r);
+      });
+      box.appendChild(bl);
+    }
   }
   if (grupListe && grupListe.length) {
     box.appendChild(tkEl('p', 'text-[11px] font-bold text-fuchsia-300 pt-1', 'Tekrar edenler — tek tek kontrol et:'));
@@ -6234,6 +6325,8 @@ function tekrarCiz(toplam, grupSayisi, sayim, onaysiz, hatali, grupListe, tum) {
         var du = tkDurum(x); r.appendChild(tkEl('span', du[1], du[0]));
         r.appendChild(tkEl('span', 'text-zinc-400', x.at ? new Date(x.at).toLocaleString('tr-TR') : ''));
         r.appendChild(tkEl('span', 'font-mono text-zinc-500 break-all flex-1', x.no));
+        tkIletisimEkle(x, r);
+        tkDuzenleEkle(x, r);
         if (x.act === 'keep') {
           r.appendChild(tkEl('span', 'text-sky-400 font-bold', 'KALACAK'));
           var kb = tkEl('button', 'px-2 py-1 bg-red-800 hover:bg-red-700 rounded text-white font-bold', '🗑 Sil');
@@ -6283,28 +6376,8 @@ function tekrarCiz(toplam, grupSayisi, sayim, onaysiz, hatali, grupListe, tum) {
       var r = tkEl('div', 'flex flex-wrap items-center gap-1.5 bg-zinc-950/60 border border-zinc-800 rounded p-1.5');
       r.appendChild(tkEl('span', 'text-[11px] text-white font-semibold flex-1 min-w-[7rem]', x.name || '(adsız)'));
       r.appendChild(tkEl('span', 'text-[10px] text-zinc-400', hedefAdi(x.type) + (x.target ? ' · ' + x.target : '') + ' · ' + (x.contact || '—')));
-      var ad = (x.name || '').trim().split(/\s+/)[0] || '';
-      var hd = x.type === 'mp' ? (x.target ? x.target + ' Milletvekili\'ne' : 'milletvekiline') : (x.type === 'cb' ? 'Cumhurbaşkanlığı\'na' : 'TBMM Başkanlığı\'na');
-      var link = 'https://7527iptal.org/?dilekce=' + x.no;
-      var msg = 'Merhaba' + (ad ? ' ' + ad : '') + ' 🐾 7527iptal.org\'da hazırladığın dilekçe için çok teşekkür ederiz. ' + hd + ' hazırladığın ' + x.no + ' numaralı dilekçenin henüz ulaşmadığını görüyoruz; e-postayı gönderdiğin onaylanmadığı için sayıma girmedi.\n\n📄 Dilekçem elimde: bu bağlantıdan e-postayı gönderip onaylayabilirsin: ' + link + '\n\n🆕 Dilekçemi kaybettim: 7527iptal.org\'a girip yeni bir dilekçe oluşturabilirsin, 1 dakika sürer. Eskisi sayılmaz, sorun olmaz.\n\nDesteğin için sonsuz teşekkürler 🙏';
-      function lnk(label, cls, href) { var a = tkEl('a', 'px-2 py-1 rounded text-[10px] font-bold text-white ' + cls, label); a.href = href; a.target = '_blank'; a.rel = 'noopener noreferrer'; r.appendChild(a); }
-      if (x.n.kind === 'phone') {
-        lnk('💬 WhatsApp', 'bg-emerald-700', 'https://wa.me/' + x.n.value + '?text=' + encodeURIComponent(msg));
-        lnk('📱 SMS', 'bg-sky-700', 'sms:+' + x.n.value + '?body=' + encodeURIComponent(msg));
-      } else if (x.n.kind === 'email') {
-        var mb = tkEl('button', 'px-2 py-1 rounded text-[10px] font-bold text-white bg-sky-700 hover:bg-sky-600', '✉ E-posta gönder');
-        mb.type = 'button';
-        mb.onclick = async function () {
-          if (!confirm(x.n.value + ' adresine resmi adresten (bilgi@7527iptal.org) e-posta gönderilecek. Devam edilsin mi?')) return;
-          mb.disabled = true; mb.textContent = 'Gönderiliyor…';
-          try {
-            var res = await supabaseClient.functions.invoke('send-invite', { body: { pin: adminPinCache, to: x.n.value, subject: '7527 İptal: dilekçeni birlikte tamamlayalım', text: msg } });
-            if (res.error) throw res.error;
-            mb.textContent = '✓ E-posta gönderildi';
-          } catch (e) { console.error('[send-invite]', e); mb.disabled = false; mb.textContent = '✉ E-posta gönder'; alert('E-posta gönderilemedi. Tekrar dene.'); }
-        };
-        r.appendChild(mb);
-      }
+      tkIletisimEkle(x, r);
+      tkDuzenleEkle(x, r);
       var du2 = tkDurum(x); x._lbl = tkEl('span', 'text-[10px] ' + du2[1], du2[0]); r.appendChild(x._lbl);
       var xsc = tkEl('button', 'px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-[10px] text-white font-bold', '➕ Sayaca ekle');
       xsc.type = 'button'; x._sb = xsc; if (x.gecici) xsc.style.display = 'none';
