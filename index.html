@@ -6292,7 +6292,18 @@ function tekrarCiz(toplam, grupSayisi, sayim, onaysiz, hatali, grupListe, tum) {
         lnk('💬 WhatsApp', 'bg-emerald-700', 'https://wa.me/' + x.n.value + '?text=' + encodeURIComponent(msg));
         lnk('📱 SMS', 'bg-sky-700', 'sms:+' + x.n.value + '?body=' + encodeURIComponent(msg));
       } else if (x.n.kind === 'email') {
-        lnk('✉ E-posta', 'bg-sky-700', 'mailto:' + x.n.value + '?subject=' + encodeURIComponent('7527 İptal: dilekçeni birlikte tamamlayalım') + '&body=' + encodeURIComponent(msg));
+        var mb = tkEl('button', 'px-2 py-1 rounded text-[10px] font-bold text-white bg-sky-700 hover:bg-sky-600', '✉ E-posta gönder');
+        mb.type = 'button';
+        mb.onclick = async function () {
+          if (!confirm(x.n.value + ' adresine resmi adresten (bilgi@7527iptal.org) e-posta gönderilecek. Devam edilsin mi?')) return;
+          mb.disabled = true; mb.textContent = 'Gönderiliyor…';
+          try {
+            var res = await supabaseClient.functions.invoke('send-invite', { body: { pin: adminPinCache, to: x.n.value, subject: '7527 İptal: dilekçeni birlikte tamamlayalım', text: msg } });
+            if (res.error) throw res.error;
+            mb.textContent = '✓ E-posta gönderildi';
+          } catch (e) { console.error('[send-invite]', e); mb.disabled = false; mb.textContent = '✉ E-posta gönder'; alert('E-posta gönderilemedi. Tekrar dene.'); }
+        };
+        r.appendChild(mb);
       }
       var du2 = tkDurum(x); x._lbl = tkEl('span', 'text-[10px] ' + du2[1], du2[0]); r.appendChild(x._lbl);
       var xsc = tkEl('button', 'px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-[10px] text-white font-bold', '➕ Sayaca ekle');
