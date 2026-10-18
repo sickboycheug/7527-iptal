@@ -818,8 +818,12 @@
         <button type="button" id="hm-cta-pet" onclick="window.scrollTo({top:0,behavior:'smooth'})" class="hidden px-6 py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold text-xs uppercase tracking-wide shadow">📨 Sen de Dilekçeni Gönder</button>
         <button type="button" onclick="openReportModal()" class="block mx-auto mt-3 px-6 py-2.5 bg-red-800 hover:bg-red-700 text-white rounded-xl font-bold text-[11px]">🐾 Bulunduğun ildeki bir vakayı bildir</button>
         <div class="grid grid-cols-2 gap-2 max-w-sm mx-auto mt-3">
-          <button type="button" onclick="hmDavet('wa')" class="py-2.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded-xl font-bold text-[11px]">📣 WhatsApp'ta paylaş</button>
-          <button type="button" id="hm-davet-kopya" onclick="hmDavet('copy')" class="py-2.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-zinc-200 rounded-xl font-bold text-[11px]">📋 Metni kopyala</button>
+          <button type="button" onclick="hmDavet('wa')" class="py-2.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded-xl font-bold text-[11px]">📣 WhatsApp</button>
+          <button type="button" onclick="hmDavet('x')" class="py-2.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-white rounded-xl font-bold text-[11px]">𝕏 (Twitter)</button>
+          <button type="button" onclick="hmDavet('fb')" class="py-2.5 bg-blue-800 hover:bg-blue-700 text-white rounded-xl font-bold text-[11px]">Facebook</button>
+          <button type="button" onclick="hmDavet('tg')" class="py-2.5 bg-sky-700 hover:bg-sky-600 text-white rounded-xl font-bold text-[11px]">Telegram</button>
+          <button type="button" id="hm-davet-native" onclick="hmDavet('native')" class="hidden col-span-2 py-2.5 bg-red-800 hover:bg-red-700 text-white rounded-xl font-bold text-[11px]">📲 Diğer uygulamalar (Instagram, e-posta…)</button>
+          <button type="button" id="hm-davet-kopya" onclick="hmDavet('copy')" class="col-span-2 py-2.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-zinc-200 rounded-xl font-bold text-[11px]">📋 Metni kopyala</button>
         </div>
         <p class="text-[10px] text-zinc-500 mt-2">Haritada isim gösterilmez, sadece il bazında sayı gösterilir.</p>
       </div>
@@ -4238,12 +4242,18 @@ function hmDavetMetni() {
 function hmDavet(how) {
   var t = hmDavetMetni();
   if (how === 'wa') { window.open('https://wa.me/?text=' + encodeURIComponent(t), '_blank'); return; }
+  var lnk = SITE_URL + (_hmLayer === 'vol' ? '/gorev.html' : '');
+  if (how === 'x') { window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(t.split('\n\n')[0]) + '&url=' + encodeURIComponent(lnk), '_blank'); return; }
+  if (how === 'fb') { window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(lnk), '_blank'); return; }
+  if (how === 'tg') { window.open('https://t.me/share/url?url=' + encodeURIComponent(lnk) + '&text=' + encodeURIComponent(t), '_blank'); return; }
+  if (how === 'native') { if (navigator.share) { navigator.share({ title: '7527 İptal', text: t, url: lnk }).catch(function () {}); } return; }
   var b = document.getElementById('hm-davet-kopya');
   function ok() { if (b) { var o = b.getAttribute('data-o') || b.textContent; b.setAttribute('data-o', o); b.textContent = '✓ Kopyalandı'; setTimeout(function () { b.textContent = o; }, 2000); } }
   function fb() { var a = document.createElement('textarea'); a.value = t; a.style.position = 'fixed'; a.style.opacity = '0'; document.body.appendChild(a); a.select(); try { document.execCommand('copy'); ok(); } catch (e) {} document.body.removeChild(a); }
   if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok, fb); else fb();
 }
 function hmLayer(v) { _hmLayer = v; hmRender(); }
+(function () { var n = document.getElementById('hm-davet-native'); if (n && navigator.share) n.classList.remove('hidden'); })();
 // Vekil katmani: her ilin vekillerine giden (onayli) dilekce sayisi
 function hmMpStats() {
   var st = {};
