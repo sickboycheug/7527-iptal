@@ -142,6 +142,8 @@ footer a.mail{font-size:clamp(20px,3.4vw,28px);font-weight:700;text-decoration:n
 .up-flow span{font-size:15px;color:#d4e0d9}
 .up-law{padding:12px 16px;border-left:4px solid var(--amb);background:#0d1914;border-radius:0 12px 12px 0;font-size:16px;color:#d4e0d9;margin:0 0 6px}
 .up-law b{color:var(--amb)}
+.up-share{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:14px}
+.up-share>b{font-family:'Oswald',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--em2);margin-right:4px}
 .up-cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
 .dy-news{display:flex;gap:18px;margin-top:10px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding-bottom:12px;scrollbar-color:var(--em) transparent}
 .dy-card{flex:0 0 min(86%,21rem);scroll-snap-align:start;background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column}
@@ -186,7 +188,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
 <section id="duyurular">
 <p class="eyebrow">Haberler ve çağrılar</p>
 <h2>Duyurular</h2>
-<div class="up">
+<div class="up" id="guncelleme">
 <div class="dy-meta"><span class="dy-tag">Güncelleme</span><span>10 – 19 Ekim 2026</span></div>
 <h3>Daha kolay, daha görünür, daha güçlü: 10 Ekim’den bu yana</h3>
 <p class="lead">Bir dilekçe, bir vaka, bir ses. 7527iptal.org’u herkesin dakikalar içinde kullanabileceği, yaşananı sayılarla ortaya koyan ve tamamen yasal sınırlar içinde işleyen bir kampanya aracına dönüştürüyoruz. İşte son günlerin özeti.</p>
@@ -231,6 +233,27 @@ button.btn.dy-ghost{border:1px solid var(--em)}
 <li><b>Gizlimiz saklımız yok.</b> Ne yaptığımızı ve neden yaptığımızı burada açıkça yazıyoruz.</li>
 </ul></div>
 <div class="up-cta"><a class="btn" href="#harita">Haritayı gör</a><a class="btn dy-ghost" href="https://7527iptal.org/">Vaka bildir ve dilekçeni gönder</a></div>
+<div class="up-share"><b>Bu güncellemeyi paylaş:</b>
+<a class="btn dy-ghost" href="https://wa.me/?text=7527iptal.org%20g%C3%BCncellendi%3A%203%20ad%C4%B1mda%20dilek%C3%A7e%2C%20vaka%20haritas%C4%B1%2C%20adli%20takip.%20Sen%20de%20sesini%20ilet%3A%20https%3A//7527iptal.org/hakikat.html%23guncelleme" target="_blank" rel="noopener">WhatsApp</a>
+<a class="btn dy-ghost" href="https://twitter.com/intent/tweet?text=7527iptal.org%20g%C3%BCncellendi%3A%203%20ad%C4%B1mda%20dilek%C3%A7e%2C%20vaka%20haritas%C4%B1%2C%20adli%20takip.%20Sen%20de%20sesini%20ilet%3A&url=https%3A//7527iptal.org/hakikat.html%23guncelleme" target="_blank" rel="noopener">X</a>
+<a class="btn dy-ghost" href="https://www.facebook.com/sharer/sharer.php?u=https%3A//7527iptal.org/hakikat.html%23guncelleme" target="_blank" rel="noopener">Facebook</a>
+<a class="btn dy-ghost" href="https://t.me/share/url?url=https%3A//7527iptal.org/hakikat.html%23guncelleme&text=7527iptal.org%20g%C3%BCncellendi%3A%203%20ad%C4%B1mda%20dilek%C3%A7e%2C%20vaka%20haritas%C4%B1%2C%20adli%20takip.%20Sen%20de%20sesini%20ilet%3A" target="_blank" rel="noopener">Telegram</a>
+<button type="button" class="btn dy-ghost" data-up-native style="display:none">Paylaş…</button>
+<button type="button" class="btn dy-ghost" data-up-copy>Bağlantıyı kopyala</button></div>
+<script>
+(function(){
+  var box=document.getElementById('guncelleme');
+  if(!box)return;
+  var url="https://7527iptal.org/hakikat.html#guncelleme", text="7527iptal.org güncellendi: 3 adımda dilekçe, vaka haritası, adli takip. Sen de sesini ilet:";
+  var cp=box.querySelector('[data-up-copy]'), nv=box.querySelector('[data-up-native]');
+  if(nv&&navigator.share){nv.style.display='';nv.addEventListener('click',function(){navigator.share({title:document.title,text:text,url:url}).catch(function(){});});}
+  if(cp){cp.addEventListener('click',function(){
+    var done=function(){var o=cp.textContent;cp.textContent='✓ Kopyalandı';setTimeout(function(){cp.textContent=o;},1800);};
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(done).catch(function(){prompt('Bağlantıyı kopyala:',url);});}
+    else{prompt('Bağlantıyı kopyala:',url);}
+  });}
+})();
+</script>
 </div>
 <div class="dy-news">
 <article class="dy-card" data-set="nimet">
