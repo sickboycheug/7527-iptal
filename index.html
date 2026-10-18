@@ -803,6 +803,7 @@
         <button type="button" id="hm-layer-vol" onclick="hmLayer('vol')" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 text-white">🤝 Gönüllüler</button>
         <button type="button" id="hm-layer-pet" onclick="hmLayer('pet')" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-zinc-800 text-zinc-300">📨 Dilekçeler</button>
         <button type="button" id="hm-layer-mp" onclick="hmLayer('mp')" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-zinc-800 text-zinc-300">🏛 Vekiller</button>
+        <button type="button" id="hm-layer-case" onclick="hmLayer('case')" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-zinc-800 text-zinc-300">🐾 Vakalar</button>
       </div>
       <div class="flex gap-2 justify-center">
         <button type="button" id="hm-tab-tr" onclick="hmTab('tr')" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 text-white">Türkiye</button>
@@ -4148,6 +4149,10 @@ async function hmLoad() {
 }
 function hmTab(v) { _hmView = v; hmRender(); }
 function hmDavetMetni() {
+  if (_hmLayer === 'case') {
+    var cm = {}; ALMANAC_DATA.forEach(function (x) { if (x.city) cm[x.city] = 1; });
+    return 'Haberlere ve resmi kayıtlara yansıyan ' + ALMANAC_DATA.length + ' vaka, ' + Object.keys(cm).length + ' ilde belgelendi.\n\nİl il vakaları gör, sen de dilekçeni gönder 👉 https://7527iptal.org';
+  }
   var map = {};
   var src = _hmLayer === 'pet' ? (_hmPet || []) : (_hmRows || []);
   src.forEach(function (r) { if (!r.country && r.city) map[r.city] = (map[r.city] || 0) + Number(r.n); });
@@ -4195,23 +4200,53 @@ function hmMpRows() {
   var st = hmMpStats();
   return Object.keys(st).map(function (c) { return { country: '', city: c, n: st[c].n }; });
 }
+// Vaka katmani: ilin vaka sayisi (Vaka Almanagi'ndan)
+function hmCaseRows() {
+  var m = {};
+  (typeof ALMANAC_DATA !== 'undefined' ? ALMANAC_DATA : []).forEach(function (x) { if (x.city) m[x.city] = (m[x.city] || 0) + 1; });
+  return Object.keys(m).map(function (c) { return { country: '', city: c, n: m[c] }; });
+}
+// Ile dokununca: vaka, dilekce, gonullu ve vekil sayisi + o ilin vakalari
+function hmCaseInfo(city, info) {
+  var cases = (typeof ALMANAC_DATA !== 'undefined' ? ALMANAC_DATA : []).filter(function (x) { return x.city === city; });
+  cases.sort(function (a, b) { return new Date(b.date) - new Date(a.date); });
+  var pet = 0, vol = 0, st = null;
+  (_hmPet || []).forEach(function (r) { if (!r.country && r.city === city) pet += Number(r.n); });
+  (_hmRows || []).forEach(function (r) { if (!r.country && r.city === city) vol += Number(r.n); });
+  try { st = hmMpStats()[city]; } catch (e) {}
+  info.textContent = '';
+  info.appendChild(hmEl('div', 'font-bold text-white', city + ' — ' + cases.length + ' vaka'));
+  info.appendChild(hmEl('div', 'text-zinc-400', 'Dilekçe: ' + pet + ' · Gönüllü: ' + vol + (st ? ' · Vekil: ' + st.vekil + ' (dilekçe giden: ' + st.alan + ')' : '')));
+  var box = hmEl('div', 'mt-2 space-y-2 text-left');
+  cases.forEach(function (c) {
+    var row = hmEl('div', 'bg-zinc-900 border border-zinc-800 rounded-lg p-2');
+    row.appendChild(hmEl('div', 'text-[10px] text-red-300 font-bold', (c.category || '') + ' · ' + (c.date || '')));
+    row.appendChild(hmEl('div', 'text-[11px] text-white font-semibold', c.title || ''));
+    var b = hmEl('button', 'mt-1 text-[10px] bg-zinc-800 hover:bg-zinc-700 text-zinc-200 px-2.5 py-1 rounded cursor-pointer', '📤 Paylaş');
+    b.type = 'button';
+    b.onclick = function () { openShareModal(c.id); };
+    row.appendChild(b);
+    box.appendChild(row);
+  });
+  info.appendChild(box);
+}
 function hmRender() {
   var box = document.getElementById('hm-svg'), list = document.getElementById('hm-list'),
       info = document.getElementById('hm-info'), sum = document.getElementById('hm-summary');
   if (!box || _hmRows === null) return;
-  var MPL = _hmLayer === 'mp', PET = _hmLayer === 'pet' || MPL, W = PET ? 'dilekçe' : 'gönüllü';
-  var SRC = MPL ? hmMpRows() : (PET ? (_hmPet || []) : _hmRows);
+  var MPL = _hmLayer === 'mp', CASE = _hmLayer === 'case', PET = _hmLayer === 'pet' || MPL, W = CASE ? 'vaka' : PET ? 'dilekçe' : 'gönüllü';
+  var SRC = CASE ? hmCaseRows() : MPL ? hmMpRows() : (PET ? (_hmPet || []) : _hmRows);
   var MPST = MPL ? hmMpStats() : null;
-  ['vol', 'pet', 'mp'].forEach(function (v) {
+  ['vol', 'pet', 'mp', 'case'].forEach(function (v) {
     var b = document.getElementById('hm-layer-' + v); if (!b) return;
     var on = v === _hmLayer;
     b.classList.toggle('bg-emerald-600', on); b.classList.toggle('text-white', on);
     b.classList.toggle('bg-zinc-800', !on); b.classList.toggle('text-zinc-300', !on);
   });
   var subEl = document.getElementById('hm-sub');
-  if (subEl) subEl.innerHTML = MPL ? 'Yeşil iller: o ilin vekillerine dilekçe gitti. Gri iller: <strong class="text-amber-300">vekillerine henüz dilekçe gitmedi.</strong>' : PET ? 'Yeşil iller: dilekçe gelen iller. Gri iller: <strong class="text-amber-300">henüz dilekçe gelmedi.</strong>' : 'Yeşil iller: gönüllümüz var. Gri iller: <strong class="text-amber-300">il gönüllüsü arıyoruz.</strong>';
+  if (subEl) subEl.innerHTML = CASE ? 'Kırmızı iller: belgelenmiş vaka var. <strong class="text-amber-300">İle dokun;</strong> vakaları, dilekçe ve gönüllü sayısını gör.' : MPL ? 'Yeşil iller: o ilin vekillerine dilekçe gitti. Gri iller: <strong class="text-amber-300">vekillerine henüz dilekçe gitmedi.</strong>' : PET ? 'Yeşil iller: dilekçe gelen iller. Gri iller: <strong class="text-amber-300">henüz dilekçe gelmedi.</strong>' : 'Yeşil iller: gönüllümüz var. Gri iller: <strong class="text-amber-300">il gönüllüsü arıyoruz.</strong>';
   var cv = document.getElementById('hm-cta-vol'), cp = document.getElementById('hm-cta-pet');
-  if (cv) cv.classList.toggle('hidden', PET); if (cp) cp.classList.toggle('hidden', !PET);
+  if (cv) cv.classList.toggle('hidden', PET || CASE); if (cp) cp.classList.toggle('hidden', !(PET || CASE));
   var NS = 'http://www.w3.org/2000/svg';
   ['tr', 'world'].forEach(function (v) {
     var b = document.getElementById('hm-tab-' + v); if (!b) return;
@@ -4261,25 +4296,25 @@ function hmRender() {
       var r = byCity[city];
       if (r && Number(r.n) > 0) {
         var n = Number(r.n);
-        var c = circle(cx, cy, 7 + Math.min(n, 20) * 0.7, '#10b981');
+        var c = circle(cx, cy, 7 + Math.min(n, 20) * 0.7, CASE ? '#ef4444' : '#10b981');
         c.setAttribute('fill-opacity', '0.85'); c.setAttribute('stroke', '#ecfdf5'); c.setAttribute('stroke-width', '1');
         c.style.cursor = 'pointer';
-        c.addEventListener('click', function () { var s2 = MPST && MPST[city]; say(city, n, s2 ? (s2.vekil + ' vekilden ' + s2.alan + ' tanesine dilekçe gitti, ' + (s2.vekil - s2.alan) + ' vekile henüz gitmedi') : ''); });
+        c.addEventListener('click', function () { if (CASE) { hmCaseInfo(city, info); return; } var s2 = MPST && MPST[city]; say(city, n, s2 ? (s2.vekil + ' vekilden ' + s2.alan + ' tanesine dilekçe gitti, ' + (s2.vekil - s2.alan) + ' vekile henüz gitmedi') : ''); });
         svg.appendChild(c); svg.appendChild(label(cx, cy, String(n), 9));
       } else {
         var d = circle(cx, cy, 3.6, '#52525b'); d.setAttribute('stroke', '#a1a1aa'); d.setAttribute('stroke-width', '0.6');
         d.style.cursor = 'pointer';
         d.addEventListener('click', function () {
           info.textContent = '';
-          info.appendChild(hmEl('div', 'font-bold text-amber-300', city + (MPL ? ': bu ilin vekillerine henüz dilekçe gitmedi.' : PET ? ': henüz dilekçe gelmedi.' : ': henüz gönüllümüz yok. İl gönüllüsü arıyoruz.')));
-          if (!PET) { var a = hmEl('a', 'inline-block mt-1 text-emerald-400 underline font-bold', 'İl gönüllüsü ol →'); a.href = '/gorev.html'; info.appendChild(a); }
+          info.appendChild(hmEl('div', 'font-bold text-amber-300', city + (CASE ? ': bu ilde belgelenmiş vaka yok.' : MPL ? ': bu ilin vekillerine henüz dilekçe gitmedi.' : PET ? ': henüz dilekçe gelmedi.' : ': henüz gönüllümüz yok. İl gönüllüsü arıyoruz.')));
+          if (!PET && !CASE) { var a = hmEl('a', 'inline-block mt-1 text-emerald-400 underline font-bold', 'İl gönüllüsü ol →'); a.href = '/gorev.html'; info.appendChild(a); }
         });
         svg.appendChild(d);
       }
     });
     if (without.length) {
       var det = hmEl('details', 'text-xs');
-      det.appendChild(hmEl('summary', 'cursor-pointer select-none text-amber-300 font-semibold', (MPL ? 'Vekillerine dilekçe gitmeyen iller (' : PET ? 'Dilekçe gelmeyen iller (' : 'İl gönüllüsü aranan iller (') + without.length + ')'));
+      det.appendChild(hmEl('summary', 'cursor-pointer select-none text-amber-300 font-semibold', (CASE ? 'Vaka belgelenmeyen iller (' : MPL ? 'Vekillerine dilekçe gitmeyen iller (' : PET ? 'Dilekçe gelmeyen iller (' : 'İl gönüllüsü aranan iller (') + without.length + ')'));
       var wrap = hmEl('div', 'flex flex-wrap gap-1 pt-2');
       without.forEach(function (c) { wrap.appendChild(hmEl('span', 'text-[10px] px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300', c)); });
       det.appendChild(wrap); list.appendChild(det);
@@ -4344,6 +4379,7 @@ async function loadAlmanacFromServer() {
 // Rozet sayisi, sehir ve kategori filtrelerini veriden uretir
 function syncAlmanacUi() {
   var countEl = document.getElementById('almanac-count');
+  try { if (_hmRows !== null && _hmLayer === 'case') hmRender(); } catch (e) {}
   if (countEl) countEl.textContent = ALMANAC_DATA.length;
 
   var catSel = document.getElementById('almanac-cat-filter');
