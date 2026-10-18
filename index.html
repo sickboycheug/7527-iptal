@@ -4274,7 +4274,11 @@ function hmCaseInfo(city, info) {
   try { st = hmMpStats()[city]; } catch (e) {}
   info.textContent = '';
   info.appendChild(hmEl('div', 'font-bold text-white', city + ' — ' + cases.length + ' vaka'));
-  info.appendChild(hmEl('div', 'text-zinc-400', 'Dilekçe: ' + pet + ' · Gönüllü: ' + vol + (st ? ' · Vekil: ' + st.vekil + ' (dilekçe giden: ' + st.alan + ')' : '')));
+  info.appendChild(hmEl('div', 'text-zinc-400', 'Dilekçe: ' + pet + ' · Gönüllü: ' + vol + (st ? ' · Vekil: ' + st.vekil : '')));
+  var vk = st ? ' (ilin ' + st.vekil + ' vekili var)' : '';
+  if (pet === 0) info.appendChild(hmEl('div', 'mt-1 font-bold text-red-400', '🚨 Bu ilden vekillere hiç dilekçe gönderilmedi' + vk));
+  else if (pet === 1) info.appendChild(hmEl('div', 'mt-1 font-bold text-orange-400', '⚠️ Bu ilden vekillere yalnızca 1 dilekçe gönderildi' + vk));
+  else info.appendChild(hmEl('div', 'mt-1 font-bold text-emerald-400', '📨 Bu ilden ' + pet + ' dilekçe gönderildi' + vk));
   var box = hmEl('div', 'mt-2 space-y-2 text-left');
   cases.forEach(function (c) {
     var row = hmEl('div', 'bg-zinc-900 border border-zinc-800 rounded-lg p-2');
