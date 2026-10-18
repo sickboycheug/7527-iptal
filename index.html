@@ -1528,6 +1528,38 @@
             <label class="flex items-center gap-2 text-[10px] text-zinc-300 cursor-pointer">
               <input type="checkbox" id="alm-published" checked class="accent-emerald-600"> Sitede yayında
             </label>
+            <details id="alm-lg-box" class="border border-zinc-800 rounded p-2 bg-zinc-900">
+              <summary class="text-[11px] font-bold text-amber-400 cursor-pointer select-none">⚖️ Adli takip bilgileri</summary>
+              <div class="pt-2 space-y-2">
+                <p class="text-[10px] text-zinc-500">Mahkeme, aşama, karar özeti, duruşma tarihi ve kaynak herkese açık görünür. Dosya no ve notlar yalnızca bu panelde, sadece sana görünür.</p>
+                <div class="grid grid-cols-2 gap-2">
+                  <div><label class="block text-[10px] text-zinc-400 mb-0.5">Mahkeme / makam</label><input type="text" id="alm-lg-court" maxlength="200" placeholder="Örn. Erdemli 1. Asliye Ceza" class="w-full bg-zinc-950 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px] focus:border-amber-500 focus:outline-none"></div>
+                  <div>
+                    <label class="block text-[10px] text-zinc-400 mb-0.5">Aşama</label>
+                    <select id="alm-lg-stage" class="w-full bg-zinc-950 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px] focus:border-amber-500 focus:outline-none">
+                      <option value="">— seçilmedi —</option>
+                      <option value="soruşturma">Soruşturma</option>
+                      <option value="iddianame">İddianame</option>
+                      <option value="dava">Dava sürüyor</option>
+                      <option value="karar">Karar verildi</option>
+                      <option value="kesinleşti">Karar kesinleşti</option>
+                      <option value="takipsizlik">Takipsizlik</option>
+                      <option value="bilinmiyor">Bilinmiyor</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                  <div><label class="block text-[10px] text-zinc-400 mb-0.5">Duruşma / karar tarihi</label><input type="date" id="alm-lg-hearing" class="w-full bg-zinc-950 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px] focus:border-amber-500 focus:outline-none"></div>
+                  <div><label class="block text-[10px] text-zinc-400 mb-0.5">Adli kaynak bağlantısı</label><input type="url" id="alm-lg-source" maxlength="500" placeholder="https://..." class="w-full bg-zinc-950 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px] focus:border-amber-500 focus:outline-none"></div>
+                </div>
+                <div><label class="block text-[10px] text-zinc-400 mb-0.5">Karar / ceza özeti</label><textarea id="alm-lg-outcome" rows="2" maxlength="1500" placeholder="Habere göre verilen karar ya da ceza" class="w-full bg-zinc-950 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px] focus:border-amber-500 focus:outline-none"></textarea></div>
+                <div class="grid grid-cols-2 gap-2">
+                  <div><label class="block text-[10px] text-red-300 mb-0.5">Dosya no (SADECE ADMİN)</label><input type="text" id="alm-lg-file" maxlength="100" placeholder="2024/123 Esas" class="w-full bg-zinc-950 border border-red-900 rounded px-2 py-1.5 text-zinc-100 text-[11px] focus:border-amber-500 focus:outline-none"></div>
+                  <div><label class="block text-[10px] text-red-300 mb-0.5">İç not (SADECE ADMİN)</label><input type="text" id="alm-lg-notes" maxlength="3000" class="w-full bg-zinc-950 border border-red-900 rounded px-2 py-1.5 text-zinc-100 text-[11px] focus:border-amber-500 focus:outline-none"></div>
+                </div>
+                <p class="text-[10px] text-zinc-500">Bu bölümü tamamen boş bırakıp kaydedersen vakanın adli bilgisi silinir.</p>
+              </div>
+            </details>
             <p id="alm-status" class="text-[10px] text-zinc-500"></p>
             <div class="grid grid-cols-2 gap-2 sticky bottom-0 bg-zinc-950 pt-1">
               <button type="button" onclick="clearAlmanacForm()" class="py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded font-semibold text-[11px]">İptal</button>
@@ -4294,6 +4326,8 @@ function hmCaseInfo(city, info) {
     var row = hmEl('div', 'bg-zinc-900 border border-zinc-800 rounded-lg p-2');
     row.appendChild(hmEl('div', 'text-[10px] text-red-300 font-bold', (c.category || '') + ' · ' + (c.date || '')));
     row.appendChild(hmEl('div', 'text-[11px] text-white font-semibold', c.title || ''));
+    var lgm = ALMANAC_LEGAL[c.id];
+    if (lgm && lgm.stage) row.appendChild(hmEl('div', 'text-[10px] text-amber-300', '⚖️ ' + (LG_STAGE[lgm.stage] || lgm.stage) + (lgm.court ? ' · ' + lgm.court : '')));
     var b = hmEl('button', 'mt-1 text-[10px] bg-zinc-800 hover:bg-zinc-700 text-zinc-200 px-2.5 py-1 rounded cursor-pointer', '📤 Paylaş');
     b.type = 'button';
     b.onclick = function () { openShareModal(c.id); };
@@ -4422,6 +4456,36 @@ function hmRender() {
 setTimeout(function () { try { hmLoad(); } catch (e) {} }, 300);
 
 // --- VAKA ALMANAĞI ---
+// Adli takip bilgileri (herkese acik alanlar): vaka id -> kayit
+var ALMANAC_LEGAL = {};
+var LG_STAGE = {
+  'soruşturma': 'Soruşturma aşamasında', 'iddianame': 'İddianame hazırlandı', 'dava': 'Dava sürüyor',
+  'karar': 'Karar verildi', 'kesinleşti': 'Karar kesinleşti', 'takipsizlik': 'Takipsizlik kararı',
+  'bilinmiyor': 'Adli süreç bilinmiyor'
+};
+// Karttaki adli surec kutusu (tum metinler textContent ile yazilir)
+function legalBlock(id) {
+  var l = ALMANAC_LEGAL[id];
+  if (!l) return null;
+  var box = document.createElement('div');
+  box.className = 'mt-2 p-2 rounded-lg border border-amber-900/70 bg-amber-950/30 text-[10px] space-y-0.5';
+  var h = document.createElement('div');
+  h.className = 'font-bold text-amber-300';
+  h.textContent = '⚖️ ' + (LG_STAGE[l.stage] || 'Adli süreç');
+  box.appendChild(h);
+  if (l.court) { var c = document.createElement('div'); c.className = 'text-zinc-300'; c.textContent = l.court; box.appendChild(c); }
+  if (l.outcome) { var o = document.createElement('div'); o.className = 'text-zinc-200'; o.textContent = l.outcome; box.appendChild(o); }
+  if (l.hearing_date) { var t = document.createElement('div'); t.className = 'text-zinc-400'; t.textContent = 'Tarih: ' + l.hearing_date; box.appendChild(t); }
+  if (l.source_url && /^https?:\/\//.test(l.source_url)) {
+    var a = document.createElement('a');
+    a.href = l.source_url; a.target = '_blank'; a.rel = 'noopener';
+    a.className = 'text-amber-400 hover:underline';
+    a.textContent = '📄 Adli kaynak';
+    box.appendChild(a);
+  }
+  return box;
+}
+
 // Vakalar sunucudan (list_almanac_cases) gelir; ulasilamazsa sayfadaki
 // gomulu liste kullanilir.
 async function loadAlmanacFromServer() {
@@ -4441,6 +4505,13 @@ async function loadAlmanacFromServer() {
           source: r.source_url || ''
         };
       });
+      // Adli bilgi yalnizca sunucu listesi geldiginde okunur: gomulu listenin
+      // id'leri sunucudakilerle ayni olmayabilir, yanlis vakaya baglanmasin.
+      ALMANAC_LEGAL = {};
+      try {
+        var lg = await callRpc('list_almanac_legal', {});
+        (lg || []).forEach(function(x) { ALMANAC_LEGAL[x.case_id] = x; });
+      } catch (eLg) { /* adli tablo kurulu degilse sessizce gec */ }
     }
   } catch (e) {
     console.warn('[almanak] sunucudan alınamadı, gömülü liste kullanılıyor:', e.message);
@@ -4535,6 +4606,8 @@ function renderAlmanac() {
     ust.appendChild(meta);
     ust.appendChild(baslik);
     ust.appendChild(aciklama);
+    var lgBox = legalBlock(item.id);
+    if (lgBox) ust.appendChild(lgBox);
 
     var alt = document.createElement('div');
     alt.className = 'pt-2 flex items-center justify-between gap-2 border-t border-zinc-800/80 mt-2';
@@ -5659,6 +5732,37 @@ async function saveTemplate() {
 
 // --- VAKA ALMANAĞI YÖNETİMİ ---------------------------------------
 var almAdminRows = [];
+var almLegalAdmin = {};
+
+// Adli takip alanlarini forma yazar (l bos ise temizler)
+function fillAlmLegal(l) {
+  l = l || {};
+  function set(id, v) { var e = document.getElementById(id); if (e) e.value = v || ''; }
+  set('alm-lg-court', l.court); set('alm-lg-stage', l.stage); set('alm-lg-hearing', l.hearing_date);
+  set('alm-lg-outcome', l.outcome); set('alm-lg-source', l.source_url);
+  set('alm-lg-file', l.file_no); set('alm-lg-notes', l.notes);
+  var box = document.getElementById('alm-lg-box');
+  if (box) box.open = !!l.case_id;
+}
+
+// Formdaki adli takip alanlarini kaydeder; hepsi bossa ve eski kayit yoksa cagri yapmaz
+async function saveAlmanacLegal(caseId) {
+  function val(id) { var e = document.getElementById(id); return e ? e.value.trim() : ''; }
+  var a = {
+    p_pin: adminPinCache,
+    p_case_id: caseId,
+    p_court: val('alm-lg-court'),
+    p_stage: val('alm-lg-stage'),
+    p_outcome: val('alm-lg-outcome'),
+    p_hearing_date: val('alm-lg-hearing') || null,
+    p_source_url: val('alm-lg-source'),
+    p_file_no: val('alm-lg-file'),
+    p_notes: val('alm-lg-notes')
+  };
+  var bos = !a.p_court && !a.p_stage && !a.p_outcome && !a.p_hearing_date && !a.p_source_url && !a.p_file_no && !a.p_notes;
+  if (bos && !almLegalAdmin[caseId]) return;
+  await callRpc('save_almanac_legal', a);
+}
 
 function almStatus(msg, cls) {
   var el = document.getElementById('alm-status');
@@ -5677,6 +5781,7 @@ function clearAlmanacForm() {
   document.getElementById('alm-desc').value = '';
   document.getElementById('alm-source').value = '';
   document.getElementById('alm-published').checked = true;
+  fillAlmLegal(null);
   document.getElementById('alm-form-title').textContent = 'Yeni Vaka';
   almStatus('');
 }
@@ -5761,6 +5866,12 @@ async function loadAlmanacAdmin() {
     return;
   }
 
+  almLegalAdmin = {};
+  try {
+    var lgRows = await callRpc('admin_list_almanac_legal', { p_pin: adminPinCache });
+    (lgRows || []).forEach(function(x) { almLegalAdmin[x.case_id] = x; });
+  } catch (eLg2) { /* adli tablo kurulu degilse sessizce gec */ }
+
   var cnt = document.getElementById('alm-admin-count');
   if (cnt) cnt.textContent = almAdminRows.length;
 
@@ -5780,7 +5891,7 @@ async function loadAlmanacAdmin() {
     t.textContent = r.title;
     var s = document.createElement('p');
     s.className = 'text-zinc-500';
-    s.textContent = r.case_date + ' · ' + r.city + ' · ' + r.category;
+    s.textContent = r.case_date + ' · ' + r.city + ' · ' + r.category + (almLegalAdmin[r.id] ? ' · ⚖️' : '');
     info.appendChild(t); info.appendChild(s);
 
     var edit = document.createElement('button');
@@ -5810,6 +5921,7 @@ function editAlmanacCase(id) {
   document.getElementById('alm-desc').value = r.description;
   document.getElementById('alm-source').value = r.source_url || '';
   document.getElementById('alm-published').checked = !!r.published;
+  fillAlmLegal(almLegalAdmin[r.id]);
   document.getElementById('alm-form-title').textContent = 'Vaka #' + r.id + ' düzenleniyor';
   almStatus('');
 }
@@ -5844,7 +5956,22 @@ async function saveAlmanacCase() {
 
   if (btn) { btn.disabled = true; btn.textContent = 'Kaydediliyor...'; }
   try {
-    await callRpc('save_almanac_case', args);
+    var savedId = parseInt(await callRpc('save_almanac_case', args), 10);
+    try {
+      await saveAlmanacLegal(savedId);
+    } catch (eLg3) {
+      // Vaka kaydedildi ama adli bilgi kaydedilemedi: form dolu kalsin, ayni vakayi guncellesin
+      document.getElementById('alm-id').value = savedId;
+      var mm = (eLg3 && eLg3.message) || '';
+      if (mm.indexOf('invalid_stage') !== -1)        almStatus('Vaka kaydedildi, adli aşama geçersiz.', 'text-red-400');
+      else if (mm.indexOf('invalid_source') !== -1)  almStatus('Vaka kaydedildi, adli kaynak bağlantısı http:// veya https:// ile başlamalı.', 'text-red-400');
+      else if (mm.indexOf('too_long') !== -1)        almStatus('Vaka kaydedildi, adli bilgi metinleri çok uzun.', 'text-red-400');
+      else if (mm.indexOf('not_installed') !== -1)   almStatus('Vaka kaydedildi, adli takip SQL’i Supabase’de kurulu değil.', 'text-red-400');
+      else almStatus('Vaka kaydedildi, adli bilgi kaydedilemedi: ' + dataErrorText(eLg3), 'text-red-400');
+      await loadAlmanacAdmin();
+      await loadAlmanacFromServer();
+      return;
+    }
     almStatus('✓ Kaydedildi.', 'text-emerald-400');
     clearAlmanacForm();
     await loadAlmanacAdmin();
