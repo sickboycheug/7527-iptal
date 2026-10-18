@@ -816,6 +816,7 @@
       <div class="text-center pt-1">
         <a id="hm-cta-vol" href="/gorev.html" class="inline-block px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs uppercase tracking-wide shadow">🤝 İl Gönüllüsü Ol</a>
         <button type="button" id="hm-cta-pet" onclick="window.scrollTo({top:0,behavior:'smooth'})" class="hidden px-6 py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold text-xs uppercase tracking-wide shadow">📨 Sen de Dilekçeni Gönder</button>
+        <button type="button" onclick="openReportModal()" class="block mx-auto mt-3 px-6 py-2.5 bg-red-800 hover:bg-red-700 text-white rounded-xl font-bold text-[11px]">🐾 Bulunduğun ildeki bir vakayı bildir</button>
         <div class="grid grid-cols-2 gap-2 max-w-sm mx-auto mt-3">
           <button type="button" onclick="hmDavet('wa')" class="py-2.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded-xl font-bold text-[11px]">📣 WhatsApp'ta paylaş</button>
           <button type="button" id="hm-davet-kopya" onclick="hmDavet('copy')" class="py-2.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-zinc-200 rounded-xl font-bold text-[11px]">📋 Metni kopyala</button>
@@ -842,6 +843,7 @@
         </div>
 
         <div class="flex items-center gap-2">
+          <button type="button" onclick="openReportModal()" class="px-4 py-2 bg-red-700 hover:bg-red-600 text-white rounded-lg font-bold text-xs shrink-0">🐾 Vaka Bildir</button>
           <input type="text" id="almanac-search" oninput="filterAlmanac()" placeholder="Vaka, il veya detay ara..." class="bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-xs text-zinc-100 focus:border-red-500 focus:outline-none w-48 sm:w-64">
         </div>
       </div>
@@ -1117,6 +1119,49 @@
   </div>
 </div>
 
+<!-- VAKA BİLDİRİM MODALI -->
+<div id="report-modal" class="fixed inset-0 z-[100000] bg-black/85 backdrop-blur-sm flex items-center justify-center p-3" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="report-title">
+  <div class="bg-zinc-900 border border-zinc-700 rounded-3xl max-w-md w-full shadow-2xl flex flex-col max-h-[94vh]">
+    <div class="flex justify-between items-start gap-3 border-b border-zinc-800 p-4">
+      <div class="min-w-0">
+        <h3 id="report-title" class="font-impact text-lg text-white uppercase tracking-wide">Vaka Bildir</h3>
+        <p class="text-[11px] text-zinc-400 mt-0.5">Gördüğün ya da haberini aldığın yaşam hakkı ihlalini bize bildir. Bildirimler incelenip doğrulanınca yayınlanır.</p>
+      </div>
+      <button type="button" onclick="closeReportModal()" aria-label="Kapat" class="text-zinc-500 hover:text-white text-2xl leading-none shrink-0 cursor-pointer">&times;</button>
+    </div>
+    <div class="overflow-y-auto p-4 space-y-2.5">
+      <div id="rep-done" style="display:none" class="text-center space-y-3 py-6">
+        <div class="text-4xl">🙏</div>
+        <p class="text-sm font-bold text-emerald-400">Bildirimin bize ulaştı, teşekkür ederiz.</p>
+        <p class="text-[11px] text-zinc-400">İncelenip doğrulandıktan sonra yayınlanır. Gerekirse seninle iletişime geçeriz.</p>
+        <button type="button" onclick="closeReportModal()" class="px-6 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-lg font-bold text-xs">Kapat</button>
+      </div>
+      <div id="rep-form" class="space-y-2.5">
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="block text-[10px] text-zinc-400 mb-0.5">İl *</label><select id="rep-city" class="w-full bg-zinc-950 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px]"><option value="">Seç...</option></select></div>
+          <div><label class="block text-[10px] text-zinc-400 mb-0.5">Olay tarihi *</label><input type="date" id="rep-date" class="w-full bg-zinc-950 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px]"></div>
+        </div>
+        <div><label class="block text-[10px] text-zinc-400 mb-0.5">İlçe / yer</label><input type="text" id="rep-location" maxlength="200" placeholder="İlçe, mahalle, barınak adı..." class="w-full bg-zinc-950 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px]"></div>
+        <div><label class="block text-[10px] text-zinc-400 mb-0.5">Kısa başlık *</label><input type="text" id="rep-title" maxlength="200" placeholder="Örn. Mahallede 4 köpek zehirlendi" class="w-full bg-zinc-950 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px]"></div>
+        <div><label class="block text-[10px] text-zinc-400 mb-0.5">Ne oldu? *</label><textarea id="rep-desc" rows="4" maxlength="4000" placeholder="Olayı, kimlerin etkilendiğini, bildiklerini yaz." class="w-full bg-zinc-950 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px] leading-relaxed"></textarea></div>
+        <div><label class="block text-[10px] text-zinc-400 mb-0.5">Haber ya da kaynak bağlantısı</label><input type="url" id="rep-source" maxlength="500" placeholder="https://..." class="w-full bg-zinc-950 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px]"></div>
+        <div><label class="block text-[10px] text-zinc-400 mb-0.5">Fotoğraf / video bağlantıları (her satıra bir tane)</label><textarea id="rep-media" rows="2" maxlength="1500" placeholder="https://..." class="w-full bg-zinc-950 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px]"></textarea><p class="text-[10px] text-zinc-500 mt-0.5">Dosya yüklenmez. Drive, YouTube, Instagram, X gibi yerdeki bağlantıyı yapıştır.</p></div>
+        <div class="border-t border-zinc-800 pt-2 space-y-2">
+          <p class="text-[10px] text-amber-300 font-bold">İletişim bilgilerin (sitede yayınlanmaz, yalnızca doğrulama için)</p>
+          <div><label class="block text-[10px] text-zinc-400 mb-0.5">Ad soyad *</label><input type="text" id="rep-name" maxlength="120" autocomplete="name" class="w-full bg-zinc-950 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px]"></div>
+          <div class="grid grid-cols-2 gap-2">
+            <div><label class="block text-[10px] text-zinc-400 mb-0.5">Telefon *</label><input type="tel" id="rep-phone" maxlength="20" autocomplete="tel" placeholder="05xx xxx xx xx" class="w-full bg-zinc-950 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px]"></div>
+            <div><label class="block text-[10px] text-zinc-400 mb-0.5">E-posta *</label><input type="email" id="rep-email" maxlength="200" autocomplete="email" class="w-full bg-zinc-950 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px]"></div>
+          </div>
+        </div>
+        <input type="text" id="rep-website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+        <label class="flex items-start gap-2 text-[10px] text-zinc-300 cursor-pointer"><input type="checkbox" id="rep-consent" class="accent-red-600 mt-0.5"> <span>Doğrulama için benimle iletişime geçilmesini kabul ediyorum. Telefon ve e-postam sitede yayınlanmaz.</span></label>
+        <p id="rep-status" class="text-[11px] text-center min-h-[16px] text-zinc-500"></p>
+        <button type="button" id="rep-send-btn" onclick="submitReport()" class="w-full py-2.5 bg-red-700 hover:bg-red-600 text-white rounded-xl font-bold text-xs disabled:opacity-50">Bildirimi Gönder</button>
+      </div>
+    </div>
+  </div>
+</div>
 <!-- VAKA PAYLAŞIM MODALI -->
 <div id="share-modal" class="fixed inset-0 z-[100000] bg-black/85 backdrop-blur-sm flex items-center justify-center p-4" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="share-title">
   <div class="bg-zinc-900 border border-zinc-700 rounded-3xl max-w-md w-full shadow-2xl flex flex-col max-h-[88vh]">
@@ -1484,6 +1529,19 @@
               <button type="button" onclick="clearAlmanacForm()" class="py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded font-semibold text-[11px]">İptal</button>
               <button type="button" id="alm-save-btn" onclick="saveAlmanacCase()" class="py-2 bg-red-800 hover:bg-red-700 text-white rounded font-bold text-[11px] disabled:opacity-50">Kaydet</button>
             </div>
+          </div>
+        </div>
+      </details>
+
+      <details class="pt-2 border-t border-zinc-800 group" ontoggle="if (this.open) loadAlmanacReports()">
+        <summary class="font-bold text-amber-400 cursor-pointer select-none list-none flex items-center justify-between">
+          <span>📥 VAKA BİLDİRİMLERİ (<span id="alm-rep-count">0</span>)</span>
+          <span class="text-zinc-500 text-[10px] group-open:hidden">aç</span>
+        </summary>
+        <div class="pt-3 space-y-2">
+          <button type="button" onclick="loadAlmanacReports()" class="text-[10px] text-zinc-400 underline">yenile</button>
+          <div id="alm-rep-list" class="max-h-72 overflow-y-auto space-y-2 border border-zinc-800 rounded p-1.5 bg-zinc-950">
+            <p class="text-[10px] text-zinc-500 text-center py-2">Açınca yüklenir.</p>
           </div>
         </div>
       </details>
@@ -4494,6 +4552,133 @@ function renderAlmanac() {
 
 function filterAlmanac() {
   renderAlmanac();
+}
+
+// --- VAKA BILDIRIMI (herkese acik form + yonetici listesi) ----------
+var reportBusy = false;
+function reportStatus(msg, cls) {
+  var el = document.getElementById('rep-status');
+  if (el) { el.textContent = msg || ''; el.className = 'text-[11px] text-center min-h-[16px] ' + (cls || 'text-zinc-500'); }
+}
+function openReportModal() {
+  var sel = document.getElementById('rep-city');
+  if (sel && sel.options.length < 2) {
+    Object.keys(TR_XY).sort(function (a, b) { return a.localeCompare(b, 'tr'); }).forEach(function (c) {
+      var o = document.createElement('option'); o.value = c; o.textContent = c; sel.appendChild(o);
+    });
+  }
+  var d = document.getElementById('rep-date');
+  if (d) d.max = new Date().toISOString().slice(0, 10);
+  reportStatus('', '');
+  document.getElementById('rep-form').style.display = '';
+  document.getElementById('rep-done').style.display = 'none';
+  document.getElementById('report-modal').style.display = 'flex';
+}
+function closeReportModal() {
+  var m = document.getElementById('report-modal');
+  if (m) m.style.display = 'none';
+}
+function reportErrorText(msg) {
+  msg = String(msg || '');
+  if (msg.indexOf('invalid_date') !== -1) return 'Olay tarihi geçersiz.';
+  if (msg.indexOf('invalid_source') !== -1) return 'Haber bağlantısı http:// veya https:// ile başlamalı.';
+  if (msg.indexOf('invalid_media') !== -1) return 'Fotoğraf/video bağlantıları her satırda bir tane olmalı ve http:// ya da https:// ile başlamalı.';
+  if (msg.indexOf('invalid_contact') !== -1) return 'Ad, telefon (en az 10 hane) veya e-posta geçersiz.';
+  if (msg.indexOf('invalid_text') !== -1) return 'Başlık ya da açıklama çok kısa veya çok uzun.';
+  if (msg.indexOf('rate_limit') !== -1) return 'Çok fazla bildirim gönderildi. Lütfen bir saat sonra tekrar deneyin.';
+  if (msg.indexOf('not_installed') !== -1) return 'Bildirim servisi henüz kurulmadı.';
+  return 'Gönderilemedi. Bağlantınızı kontrol edip tekrar deneyin.';
+}
+async function submitReport() {
+  if (reportBusy) return;
+  var g = function (id) { var e = document.getElementById(id); return e ? e.value.trim() : ''; };
+  var city = g('rep-city'), date = g('rep-date'), title = g('rep-title'), desc = g('rep-desc'),
+      name = g('rep-name'), phone = g('rep-phone'), email = g('rep-email');
+  var ok = document.getElementById('rep-consent');
+  if (!city || !date || title.length < 5 || desc.length < 10 || name.length < 3 || !phone || !email) {
+    reportStatus('* ile işaretli alanları doldurun (başlık en az 5, açıklama en az 10 karakter).', 'text-amber-400');
+    return;
+  }
+  if (!ok || !ok.checked) { reportStatus('Devam etmek için onay kutusunu işaretleyin.', 'text-amber-400'); return; }
+  var btn = document.getElementById('rep-send-btn');
+  reportBusy = true;
+  if (btn) { btn.disabled = true; btn.textContent = 'Gönderiliyor...'; }
+  reportStatus('Gönderiliyor...', 'text-zinc-400');
+  try {
+    await callRpc('submit_almanac_report', {
+      p_case_date: date, p_city: city, p_location: g('rep-location'), p_title: title,
+      p_description: desc, p_source_url: g('rep-source'), p_media_urls: g('rep-media'),
+      p_name: name, p_phone: phone, p_email: email, p_website: g('rep-website')
+    });
+    ['rep-city', 'rep-date', 'rep-location', 'rep-title', 'rep-desc', 'rep-source', 'rep-media', 'rep-name', 'rep-phone', 'rep-email'].forEach(function (i) {
+      var e = document.getElementById(i); if (e) e.value = '';
+    });
+    if (ok) ok.checked = false;
+    reportStatus('', '');
+    document.getElementById('rep-form').style.display = 'none';
+    document.getElementById('rep-done').style.display = '';
+  } catch (e) {
+    reportStatus(reportErrorText(e && e.message), 'text-red-400');
+  } finally {
+    reportBusy = false;
+    if (btn) { btn.disabled = false; btn.textContent = 'Bildirimi Gönder'; }
+  }
+}
+
+// Yonetici: bekleyen bildirimler. Linkler tiklanabilir degil, duz metin
+// (kotu amacli bir baglanti yanlislikla acilmasin diye).
+async function loadAlmanacReports() {
+  var list = document.getElementById('alm-rep-list'), cnt = document.getElementById('alm-rep-count');
+  if (!list) return;
+  if (!adminPinCache) { list.textContent = ''; list.appendChild(hmEl('p', 'text-[10px] text-red-400 text-center py-2', 'Oturum düşmüş. PIN’i tekrar girin.')); return; }
+  var rows;
+  try {
+    rows = await callRpc('admin_list_almanac_reports', { p_pin: adminPinCache }) || [];
+  } catch (e) {
+    list.textContent = '';
+    list.appendChild(hmEl('p', 'text-[10px] text-red-400 text-center py-2', 'Bildirimler alınamadı: ' + (e && e.message)));
+    return;
+  }
+  if (cnt) cnt.textContent = rows.length;
+  list.textContent = '';
+  if (!rows.length) { list.appendChild(hmEl('p', 'text-[10px] text-zinc-500 text-center py-2', 'Bekleyen bildirim yok.')); return; }
+  rows.forEach(function (r) {
+    var box = hmEl('div', 'border border-zinc-800 rounded p-2 space-y-1 bg-zinc-900');
+    box.appendChild(hmEl('div', 'text-[10px] text-zinc-400', r.case_date + ' · ' + r.city + (r.location ? ' · ' + r.location : '')));
+    box.appendChild(hmEl('div', 'text-[11px] text-white font-semibold', r.title));
+    box.appendChild(hmEl('div', 'text-[10px] text-zinc-300 whitespace-pre-line', r.description));
+    if (r.source_url) box.appendChild(hmEl('div', 'text-[10px] text-zinc-400 break-all', 'Kaynak: ' + r.source_url));
+    if (r.media_urls) box.appendChild(hmEl('div', 'text-[10px] text-zinc-400 break-all whitespace-pre-line', 'Medya:\n' + r.media_urls));
+    box.appendChild(hmEl('div', 'text-[10px] text-amber-300 break-all', 'Bildiren: ' + r.reporter_name + ' · ' + r.reporter_phone + ' · ' + r.reporter_email));
+    var row = hmEl('div', 'flex gap-2 pt-1');
+    var use = hmEl('button', 'flex-1 py-1.5 bg-emerald-800 hover:bg-emerald-700 text-white rounded text-[10px] font-bold', 'Forma al');
+    use.type = 'button';
+    use.onclick = function () { useAlmanacReport(r); };
+    var del = hmEl('button', 'flex-1 py-1.5 bg-red-900 hover:bg-red-800 text-white rounded text-[10px] font-bold', 'Sil');
+    del.type = 'button';
+    del.onclick = function () { deleteAlmanacReport(r); };
+    row.appendChild(use); row.appendChild(del);
+    box.appendChild(row);
+    list.appendChild(box);
+  });
+}
+function useAlmanacReport(r) {
+  clearAlmanacForm();
+  var set = function (i, v) { var e = document.getElementById(i); if (e) e.value = v || ''; };
+  set('alm-date', r.case_date); set('alm-city', r.city); set('alm-location', r.location);
+  set('alm-title', r.title);
+  set('alm-desc', r.description + (r.media_urls ? '\n\nGörsel/video: ' + r.media_urls : ''));
+  set('alm-source', r.source_url);
+  almStatus('Bildirim forma alındı. Kategoriyi seçip kontrol edin, sonra Kaydet’e basın.', 'text-emerald-400');
+  var t = document.getElementById('alm-title');
+  if (t && t.scrollIntoView) t.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+async function deleteAlmanacReport(r) {
+  if (!confirm('Bu bildirim kalıcı olarak silinecek:\n\n' + r.title + '\n\nDevam edilsin mi?')) return;
+  try {
+    await callRpc('admin_delete_almanac_report', { p_pin: adminPinCache, p_id: r.id });
+    loadAlmanacReports();
+  } catch (e) { alert('Silinemedi: ' + (e && e.message)); }
 }
 
 // --- VAKA PAYLAŞIMI -------------------------------------------------
