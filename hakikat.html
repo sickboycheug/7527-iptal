@@ -118,6 +118,22 @@ footer a.mail{font-size:clamp(20px,3.4vw,28px);font-weight:700;text-decoration:n
 </header>
 <!-- DUYURULAR: yeni duyuru için üstteki <article> bloklarından birini kopyalayıp en başa ekle, aşağıdaki SETS listesine de aynı adla ekle -->
 <style>
+.up{margin:6px 0 34px;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:26px 24px 24px}
+.up .dy-meta{margin-bottom:6px}
+.up h3{font-family:'Oswald',sans-serif;text-transform:uppercase;font-weight:600;font-size:clamp(24px,4.4vw,34px);line-height:1.1;margin:0 0 10px}
+.up .lead{margin:0 0 18px;font-size:18px;color:#d4e0d9}
+.up-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(15.5rem,1fr));gap:14px}
+.up-it{background:#0d1914;border:1px solid var(--line);border-radius:16px;padding:16px 16px 14px}
+.up-it h4{margin:0 0 6px;font-size:18px;line-height:1.25}
+.up-it p{margin:0 0 8px;font-size:16px;color:#d4e0d9}
+.up-it p.why{margin:0;font-size:15px;color:var(--mut)}
+.up-it p.why b{color:var(--amb)}
+.up-pr{margin-top:18px;padding:16px 18px;border-left:4px solid var(--em);background:#0d1914;border-radius:0 14px 14px 0}
+.up-pr>b{font-family:'Oswald',sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--em2)}
+.up-pr li b{color:var(--tx)}
+.up-pr ul{margin:8px 0 0;padding-left:20px}
+.up-pr li{margin:4px 0;font-size:16px;color:#d4e0d9}
+.up-cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
 .dy-news{display:flex;gap:18px;margin-top:10px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding-bottom:12px;scrollbar-color:var(--em) transparent}
 .dy-card{flex:0 0 min(86%,21rem);scroll-snap-align:start;background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column}
 .dy-cov{display:block;width:100%;aspect-ratio:4/5;overflow:hidden;background:#0b0f0d;border:0;padding:0;cursor:pointer}
@@ -161,6 +177,37 @@ button.btn.dy-ghost{border:1px solid var(--em)}
 <section id="duyurular">
 <p class="eyebrow">Haberler ve çağrılar</p>
 <h2>Duyurular</h2>
+<div class="up">
+<div class="dy-meta"><span class="dy-tag">Güncelleme</span><span>19 Ekim 2026</span></div>
+<h3>Platformumuz büyüyor: vakalar, harita, adli takip</h3>
+<p class="lead">Bu platform yalnızca imza toplamak için kurulmadı. Sahada yaşananı belgelemek, bunu görünür kılmak ve sorumluların önüne koymak için kuruldu. Son günlerde yaptığımız yenilikler ve her birinin nedeni:</p>
+<div class="up-grid">
+<div class="up-it"><h4>🗺️ Haritada yeni katman: Vakalar</h4>
+<p>Haritayı artık Gönüllüler, Dilekçeler, Vekiller ve Vakalar olarak dört katmanda görebilirsin. Bir ile dokunduğunda o ilde kaç vaka belgelendiğini, kaç dilekçe ve gönüllü olduğunu görürsün.</p>
+<p class="why"><b>Neden:</b> Yaşananla halkın tepkisini aynı haritada yan yana koymak. Hangi ilde vahşet var ama ses yok, bunu herkes görsün.</p></div>
+<div class="up-it"><h4>🏛️ İl bazında dilekçe uyarısı</h4>
+<p>Bir ilden vekillere hiç ya da yalnızca bir dilekçe gittiyse, harita bunu açıkça yazar.</p>
+<p class="why"><b>Neden:</b> Vekillerin kendi illerinde kamuoyunun sesini ne kadar duyduğunu göstermek ve o illerdeki destekçilere çağrı yapmak.</p></div>
+<div class="up-it"><h4>🐾 Vaka Bildir</h4>
+<p>Bulunduğun ildeki bir vakayı yer, tarih ve haber bağlantısıyla bize gönderebilirsin. Amacımız her ildeki vakayı belgelemek.</p>
+<p class="why"><b>Nasıl koruyoruz:</b> Dosya yüklenmez, yalnızca bağlantı alınır. Telefon ve e-posta zorunludur, yalnızca ekibimiz görür, yayınlanmaz. Her bildirim yayından önce incelenir.</p></div>
+<div class="up-it"><h4>⚖️ Adli takip bilgileri</h4>
+<p>Vaka kartlarında artık mahkeme, dava aşaması, karar ve kaynak bağlantısı da yer alıyor.</p>
+<p class="why"><b>Neden:</b> Cezasızlığı ve denetimsizliği somut veriyle göstermek. Bir vaka yaşandı mı, dava açıldı mı, ne ceza verildi: herkes görebilsin.</p></div>
+<div class="up-it"><h4>📤 Daha kolay paylaşım</h4>
+<p>Harita ve vakalar artık WhatsApp, X, Facebook ve Telegram’da, telefonlarda cihazın kendi paylaşım menüsüyle de paylaşılabiliyor.</p>
+<p class="why"><b>Neden:</b> Sesi büyütmek. Her paylaşım, bir ilde bir yeni destekçi demek.</p></div>
+</div>
+<div class="up-pr"><b>Bunları yaparken neleri gözetiyoruz?</b>
+<ul>
+<li><b>Kaynaksız yayınlamıyoruz.</b> Her vaka bir haber ya da resmî kayda dayanır.</li>
+<li><b>İddia ile kesin bilgiyi ayırıyoruz.</b> Bilmediğimizi “bilinmiyor” diye yazıyoruz.</li>
+<li><b>Kişi değil, sayı gösteriyoruz.</b> Haritada isim yok, yalnızca il bazında rakamlar var.</li>
+<li><b>Herkesin verisini koruyoruz.</b> Bildirenin bilgisi ve dosya numaraları gibi ayrıntılar herkese açık değildir.</li>
+<li><b>Gizlimiz saklımız yok.</b> Ne yaptığımızı ve neden yaptığımızı burada açıkça yazıyoruz.</li>
+</ul></div>
+<div class="up-cta"><a class="btn" href="#harita">Haritayı gör</a><a class="btn dy-ghost" href="https://7527iptal.org/">Vaka bildir ve dilekçeni gönder</a></div>
+</div>
 <div class="dy-news">
 <article class="dy-card" data-set="nimet">
 <button type="button" class="dy-cov" data-open="nimet" aria-label="Slaytları aç"><img src="slaytlar/nimet/nimet-01.png" alt="Nimet vekilim, sözünüzü tutun" loading="lazy"></button>
