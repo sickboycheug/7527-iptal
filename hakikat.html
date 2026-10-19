@@ -136,9 +136,11 @@ footer a.mail{font-size:clamp(20px,3.4vw,28px);font-weight:700;text-decoration:n
 .up-pg{margin:26px 0 10px;font-family:'Oswald',sans-serif;font-size:20px;letter-spacing:.06em;text-transform:uppercase;color:var(--em2)}
 .up-it p.how{margin-top:6px}
 .up-it p.how b{color:var(--em2)}
-.up-hero{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:12px;margin:16px 0}
+.up-hero{display:grid;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));gap:12px;margin:16px 0}
 .up-flow{background:linear-gradient(135deg,#0f2a1f,#0d1914);border:1px solid var(--em);border-radius:16px;padding:14px 16px}
 .up-flow b{display:block;font-size:19px;color:var(--em2);margin-bottom:4px}
+.up-flow ol{margin:6px 0 0;padding-left:20px;font-size:15px;color:#d4e0d9}
+.up-flow li{margin:4px 0}
 .up-flow span{font-size:15px;color:#d4e0d9}
 .up-law{padding:12px 16px;border-left:4px solid var(--amb);background:#0d1914;border-radius:0 12px 12px 0;font-size:16px;color:#d4e0d9;margin:0 0 6px}
 .up-law b{color:var(--amb)}
@@ -193,8 +195,8 @@ button.btn.dy-ghost{border:1px solid var(--em)}
 <h3>Daha kolay, daha görünür, daha güçlü: 10 Ekim’den bu yana</h3>
 <p class="lead">Bir dilekçe, bir vaka, bir ses. 7527iptal.org’u herkesin dakikalar içinde kullanabileceği, yaşananı sayılarla ortaya koyan ve tamamen yasal sınırlar içinde işleyen bir kampanya aracına dönüştürüyoruz. İşte son günlerin özeti.</p>
 <div class="up-hero">
-<div class="up-flow"><b>✍️ 3 adımda oluştur</b><span>Bilgilerini gir, vekilini seç, dilekçen hazır.</span></div>
-<div class="up-flow"><b>📨 3 adımda gönder</b><span>Tek dokunuşla hazır e-posta, gönder, bitti.</span></div>
+<div class="up-flow"><b>✍️ 3 adımda oluştur</b><ol><li>Hedefini seç: Cumhurbaşkanlığı, TBMM Başkanlığı ya da kendi ilinin milletvekili</li><li>Ad-soyad, il-ilçe (ülke-şehir) ve telefon ya da e-postanı yaz</li><li>Sistem resmi metni, konu başlığını ve vekilin e-postasını hazırlar</li></ol></div>
+<div class="up-flow"><b>📨 3 adımda gönder</b><ol><li>E-posta uygulamanı tek tıkla aç, alıcı, konu ve metin kendiliğinden dolar</li><li>İndirilen PDF dilekçeni e-postaya ekle ve gönder</li><li>Siteye dön, “Gönderdim”e bas, sayaca yansır</li></ol></div>
 <div class="up-flow"><b>⏱️ Yaklaşık 45 saniye</b><span>Bir dilekçenin sana maliyeti bu kadar.</span></div>
 <div class="up-flow"><b>🌍 Yurtdışından da</b><span>Hangi ülkede yaşarsan yaşa, ülkeni ve şehrini seç, sesini ilet.</span></div>
 </div>
@@ -452,6 +454,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
       x:'İlk 15 günde 2.000 dilekçe, 813 kişi, 514 vekile ulaştık. Rakamlar olduğu gibi. #7527İptal #3Milyonİrade',
       c:'İlk 15 günde 2.000 dilekçe, 813 kişi, 514 vekile ulaştık. Rakamlar olduğu gibi, nerede eksik kaldığımızla birlikte.\n\nSen de dilekçeni gönder.\n\n#7527İptal #3Milyonİrade #7527İptalEdilsin'}
   };
+  function LINK(k){return 'https://7527iptal.org/paylas-'+k+'.html'}
   function clean(t){return t.replace(/https:\/\/7527iptal\.org/g,'').replace(/[ \t]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').trim()}
   function $(i){return document.getElementById(i)}
   function q(s){return encodeURIComponent(s)}
@@ -468,7 +471,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
     cur=k;var S=SETS[k],h='';
     for(var i=1;i<=S.n;i++)h+='<img src="'+S.d+p2(i)+'.png" alt="'+S.t+': slayt '+i+'" '+(i>2?'loading="lazy"':'')+'>';
     tr.innerHTML=h;$('vw-t').textContent=S.t;
-    var U=BASE+'#'+k;
+    var U=LINK(k);
     $('s-x').href='https://twitter.com/intent/tweet?text='+q(S.x)+'&url='+q(U);
     $('s-wa').href='https://api.whatsapp.com/send?text='+q(clean(S.c.length<900?S.c:S.x)+'\n\n'+U);
     $('s-fb').href='https://www.facebook.com/sharer/sharer.php?u='+q(U);
@@ -484,8 +487,8 @@ button.btn.dy-ghost{border:1px solid var(--em)}
   pv.addEventListener('click',function(){tr.scrollBy({left:-w(),behavior:'smooth'})});
   nx.addEventListener('click',function(){tr.scrollBy({left:w(),behavior:'smooth'})});
   tr.addEventListener('scroll',upd,{passive:true});window.addEventListener('resize',upd);
-  $('vw-cp').addEventListener('click',function(){if(cur)copy(clean(SETS[cur].c)+'\n\n'+BASE+'#'+cur)});
-  $('vw-lk').addEventListener('click',function(){if(cur)copy(BASE+'#'+cur)});
+  $('vw-cp').addEventListener('click',function(){if(cur)copy(clean(SETS[cur].c)+'\n\n'+LINK(cur))});
+  $('vw-lk').addEventListener('click',function(){if(cur)copy(LINK(cur))});
   var hs=(location.hash||'').slice(1);if(SETS[hs])openSet(hs,false);
 })();
 </script>
