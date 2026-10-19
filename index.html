@@ -4269,16 +4269,16 @@ function hmDavetMetni() {
   }
   return '7527 sayılı kanunun iptali için il il örgütleniyoruz. ' + dolu + ' ilde gönüllümüz var.\n\n' +
     'En az gönüllü olan iller: ' + az + '.\n\n' +
-    'İlinde gönüllü olmak ister misin? İl gönüllüsü ol 👉 https://7527iptal.org/gorev.html';
+    'İlinde gönüllü olmak ister misin? İl gönüllüsü ol 👉 https://7527iptal.org/paylas-gonullu.html';
 }
 function hmDavet(how) {
   var t = hmDavetMetni();
   if (how === 'wa') { window.open('https://wa.me/?text=' + encodeURIComponent(t), '_blank'); return; }
-  var lnk = SITE_URL + (_hmLayer === 'vol' ? '/gorev.html' : '');
+  var lnk = SITE_URL + (_hmLayer === 'vol' ? '/paylas-gonullu.html' : '');
   if (how === 'x') { window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(t.split('\n\n')[0]) + '&url=' + encodeURIComponent(lnk), '_blank'); return; }
   if (how === 'fb') { window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(lnk), '_blank'); return; }
-  if (how === 'tg') { window.open('https://t.me/share/url?url=' + encodeURIComponent(lnk) + '&text=' + encodeURIComponent(t), '_blank'); return; }
-  if (how === 'native') { if (navigator.share) { navigator.share({ title: '7527 İptal', text: t, url: lnk }).catch(function () {}); } return; }
+  if (how === 'tg') { window.open('https://t.me/share/url?url=' + encodeURIComponent(lnk) + '&text=' + encodeURIComponent(t.replace(/\s*👉?\s*https?:\/\/\S+/g, '').trim()), '_blank'); return; }
+  if (how === 'native') { if (navigator.share) { navigator.share({ title: '7527 İptal', text: t.replace(/\s*👉?\s*https?:\/\/\S+/g, '').trim(), url: lnk }).catch(function () {}); } return; }
   var b = document.getElementById('hm-davet-kopya');
   function ok() { if (b) { var o = b.getAttribute('data-o') || b.textContent; b.setAttribute('data-o', o); b.textContent = '✓ Kopyalandı'; setTimeout(function () { b.textContent = o; }, 2000); } }
   function fb() { var a = document.createElement('textarea'); a.value = t; a.style.position = 'fixed'; a.style.opacity = '0'; document.body.appendChild(a); a.select(); try { document.execCommand('copy'); ok(); } catch (e) {} document.body.removeChild(a); }
@@ -4770,10 +4770,12 @@ async function deleteAlmanacReport(r) {
 
 // --- VAKA PAYLAŞIMI -------------------------------------------------
 var SITE_URL = 'https://7527iptal.org';
+var VOL_URL = SITE_URL + '/paylas-gonullu.html';
 var shareCase = null;
 
 // Paylasilacak metni kurar. 'short' surumu X'in karakter sinirina gore kisadir.
-function buildShareText(item, short) {
+function caseLink(item) { return SITE_URL + '/vaka/' + encodeURIComponent(item.id); }
+function buildShareText(item, short, withLink) {
   var tarih = item.date ? new Date(item.date).toLocaleDateString('tr-TR') : '';
   var yer = [item.city, item.location].filter(Boolean).join(' · ');
   var satirlar = [item.title];
@@ -4782,19 +4784,19 @@ function buildShareText(item, short) {
   if (!short) {
     satirlar.push('');
     satirlar.push(item.desc);
-    if (item.source) { satirlar.push(''); satirlar.push('Kaynak: ' + item.source); }
   }
 
   satirlar.push('');
-  satirlar.push('7527 sayılı Kanun’un iptali için sen de imzacı ol: ' + SITE_URL);
-  satirlar.push('#7527İptal');
+  satirlar.push('Biz vakaları ve davaları takip ediyoruz. #7527İptal');
+  // Mesajda yalnizca bu vakanin kendi paylasim adresi olur (kendi onizlemesi icin)
+  if (withLink) { satirlar.push(''); satirlar.push(caseLink(item)); }
   return satirlar.join('\n');
 }
 
 // --- GÖNÜLLÜ TEŞEKKÜR / PAYLAŞIM ------------------------------------
-function volunteerShareText() {
+function volunteerShareText(noLink) {
   return '7527 sayılı Kanun\u2019un iptali ve yaşam hakkı için gönüllü oldum!\n' +
-         'Sen de aramıza katıl: ' + SITE_URL + '\n#7527İptal';
+         'Sen de aramıza katıl.' + (noLink ? '' : ' ' + VOL_URL) + '\n#7527İptal';
 }
 
 function volShareStatus(msg, cls) {
@@ -4812,8 +4814,8 @@ function openVolunteerThanks() {
 
   document.getElementById('vol-share-wa').href   = 'https://api.whatsapp.com/send?text=' + e(metin);
   document.getElementById('vol-share-x').href    = 'https://twitter.com/intent/tweet?text=' + e(metin);
-  document.getElementById('vol-share-fb').href   = 'https://www.facebook.com/sharer/sharer.php?u=' + e(SITE_URL);
-  document.getElementById('vol-share-tg').href   = 'https://t.me/share/url?url=' + e(SITE_URL) + '&text=' + e(metin);
+  document.getElementById('vol-share-fb').href   = 'https://www.facebook.com/sharer/sharer.php?u=' + e(VOL_URL);
+  document.getElementById('vol-share-tg').href   = 'https://t.me/share/url?url=' + e(VOL_URL) + '&text=' + e(volunteerShareText(true));
   document.getElementById('vol-share-mail').href = 'mailto:?subject=' + e('7527 iptali için gönüllü ol') + '&body=' + e(metin);
 
   var nat = document.getElementById('vol-share-native');
@@ -4845,7 +4847,7 @@ function closeVolunteerThanks() {
 async function shareVolunteerNative() {
   if (!navigator.share) return;
   try {
-    await navigator.share({ title: '7527 İptal', text: volunteerShareText(), url: SITE_URL });
+    await navigator.share({ title: '7527 İptal', text: volunteerShareText(true), url: VOL_URL });
   } catch (e) {
     if (e && e.name !== 'AbortError') volShareStatus('Paylaşım açılamadı.', 'text-red-400');
   }
@@ -4871,20 +4873,21 @@ function openShareModal(caseId) {
   if (!item) return;
   shareCase = item;
 
-  var uzun = buildShareText(item, false);
-  var kisa = buildShareText(item, true);
-  var link = item.source || SITE_URL;
+  var uzun = buildShareText(item, false, false);
+  var uzunL = buildShareText(item, false, true);
+  var kisa = buildShareText(item, true, false);
+  var link = caseLink(item);
 
   document.getElementById('share-case-title').textContent = item.title;
-  document.getElementById('share-preview').textContent = uzun;
+  document.getElementById('share-preview').textContent = uzunL;
   document.getElementById('share-status').textContent = '';
 
   var e = encodeURIComponent;
-  document.getElementById('share-case-wa').href = 'https://api.whatsapp.com/send?text=' + e(uzun);
+  document.getElementById('share-case-wa').href = 'https://api.whatsapp.com/send?text=' + e(uzunL);
   document.getElementById('share-case-x').href  = 'https://twitter.com/intent/tweet?text=' + e(kisa) + '&url=' + e(link);
   document.getElementById('share-case-fb').href = 'https://www.facebook.com/sharer/sharer.php?u=' + e(link);
   document.getElementById('share-case-tg').href = 'https://t.me/share/url?url=' + e(link) + '&text=' + e(uzun);
-  document.getElementById('share-case-mail').href = 'mailto:?subject=' + e(item.title) + '&body=' + e(uzun);
+  document.getElementById('share-case-mail').href = 'mailto:?subject=' + e(item.title) + '&body=' + e(uzunL);
 
   // Cihazin kendi paylas menusu varsa one cikar (Instagram dahil her uygulama)
   var nat = document.getElementById('share-native');
@@ -4909,8 +4912,8 @@ async function shareNative() {
   try {
     await navigator.share({
       title: shareCase.title,
-      text: buildShareText(shareCase, false),
-      url: shareCase.source || SITE_URL
+      text: buildShareText(shareCase, false, false),
+      url: caseLink(shareCase)
     });
   } catch (e) {
     // Kullanici vazgectiyse sessiz gec
@@ -4920,7 +4923,7 @@ async function shareNative() {
 
 async function copyShareText() {
   if (!shareCase) return;
-  var metin = buildShareText(shareCase, false);
+  var metin = buildShareText(shareCase, false, true);
   try {
     await navigator.clipboard.writeText(metin);
     shareStatus('✓ Metin panoya kopyalandı.', 'text-emerald-400');
@@ -5578,13 +5581,14 @@ function openThanksModal() {
     }
   }
 
-  var text = encodeURIComponent("7527 say\u0131l\u0131 kanunun iptali i\u00e7in ben de imza verdim! Sen de dilek\u00e7eni olu\u015ftur: https://www.7527iptal.org #7527\u0130ptal");
-  var url = encodeURIComponent("https://www.7527iptal.org");
+  var text = encodeURIComponent("7527 say\u0131l\u0131 kanunun iptali i\u00e7in ben de imza verdim! Sen de dilek\u00e7eni olu\u015ftur: https://7527iptal.org #7527\u0130ptal");
+  var url = encodeURIComponent("https://7527iptal.org");
+  var textTg = encodeURIComponent("7527 say\u0131l\u0131 kanunun iptali i\u00e7in ben de imza verdim! Sen de dilek\u00e7eni olu\u015ftur. #7527\u0130ptal");
 
   document.getElementById('share-wa').href = "https://api.whatsapp.com/send?text=" + text;
   document.getElementById('share-x').href = "https://twitter.com/intent/tweet?text=" + text;
   document.getElementById('share-fb').href = "https://www.facebook.com/sharer/sharer.php?u=" + url;
-  document.getElementById('share-tg').href = "https://t.me/share/url?url=" + url + "&text=" + text;
+  document.getElementById('share-tg').href = "https://t.me/share/url?url=" + url + "&text=" + textTg;
   var nb = document.getElementById('share-native-thanks');
   if (nb) nb.classList.toggle('hidden', !navigator.share);
 }
