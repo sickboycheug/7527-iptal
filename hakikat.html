@@ -256,6 +256,12 @@ button.btn.dy-ghost{border:1px solid var(--em)}
 </script>
 </div>
 <div class="dy-news">
+<article class="dy-card" data-set="cabbar" id="cabbar">
+<button type="button" class="dy-cov" data-open="cabbar" aria-label="Görselleri aç"><img src="cabbar-01.png" alt="Cabbar’ın davası yarın başlıyor" loading="lazy"></button>
+<div class="dy-in"><div class="dy-meta"><span class="dy-tag">Dava takibi</span><span>19 Ekim 2026</span></div>
+<h3>Cabbar’ın davası yarın başlıyor</h3><p>Sarıyer’de mahallenin beslediği Cabbar silahla vuruldu. İlk duruşma 20 Ekim, 09:30, Çağlayan Adliyesi. Cezasız kalan her vaka yenisinin davetiyesi: biz takipteyiz. İstanbul vekillerine dilekçeni gönder.</p>
+<div class="dy-acts"><button type="button" class="btn" data-open="cabbar">Görselleri aç</button><button type="button" class="btn dy-ghost" data-open="cabbar">Paylaş</button><a class="btn dy-ghost" href="https://7527iptal.org/">Dilekçeni gönder</a></div></div>
+</article>
 <article class="dy-card" data-set="nimet">
 <button type="button" class="dy-cov" data-open="nimet" aria-label="Slaytları aç"><img src="slaytlar/nimet/nimet-01.png" alt="Nimet vekilim, sözünüzü tutun" loading="lazy"></button>
 <div class="dy-in"><div class="dy-meta"><span class="dy-tag">Açık çağrı</span><span>11 Ekim 2026</span></div>
@@ -432,6 +438,9 @@ button.btn.dy-ghost{border:1px solid var(--em)}
 (function(){
   var BASE='https://7527iptal.org/hakikat.html?v=3';
   var SETS={
+    'cabbar':{t:'Cabbar’ın davası yarın başlıyor',n:2,d:'cabbar-',
+      x:'Mahallenin beslediği Cabbar, 26 Ocak 2025 gecesi Sarıyer’de silahla vuruldu. Kamera kayıtlarında kimseye saldırmadığı görülüyor. Dava 20 Ekim 09:30’da Çağlayan’da başlıyor. Cezasız kalan her vaka yenisinin davetiyesi. Biz takipteyiz. #CabbarİçinAdalet #7527İptal',
+      c:'Cabbar’ın davası yarın başlıyor.\n\nMahallenin beslediği, herkesin tanıdığı Cabbar, 26 Ocak 2025 gecesi Sarıyer’de sokakta yürürken silahla vuruldu ve hayatını kaybetti. Kamera kayıtlarında kimseye saldırmadığı görülüyor.\n\n20 Ekim Salı, 09:30, Çağlayan Adliyesi. Duruşmalar herkese açıktır.\n\nBiz vakaların davalarını takip ediyoruz. Fail kişi de olsa kurum da olsa ceza ya hiç gelmiyor ya da en hafifinden geliyor; cezasız kalan her vaka yenisinin davetiyesi. Davayı mahkeme yürütür, düzeni Meclis değiştirir.\n\nİstanbul vekillerine dilekçeni gönder: 3 adım, yaklaşık 45 saniye.\n\n#CabbarİçinAdalet #7527İptal'},
     'dilekce':{t:'Dilekçeni adım adım gönder',n:12,d:'slaytlar/dilekce/dilekce-',x:'Dilekçeni adım adım gönder: 7527’nin iptali için her dilekçe bir vekile ulaşıyor. #7527İptal #3Milyonİrade',c:'Dilekçeni adım adım gönder.\n\n7527 sayılı yasanın iptali için dilekçeni oluştur, PDF’i e-postayla gönder, siteye dönüp “Gönderdim” de.\n\nhttps://7527iptal.org\n\n#7527İptal #7527İptalEdilsin #3Milyonİrade'},
     'nimet':{t:'Nimet vekilim, sözünüzü tutun',n:6,d:'slaytlar/nimet/nimet-',
       x:'Sayın @Nimet_Oz_Demir, Meclis kürsüsünde “Bu bir katliam teklifidir” dediniz. “Aynı Nimet’im” diyorsanız sözünüzün arkasında durun: 7527’nin iptal dilekçesine imza. #7527İptalİmzacısıOl #7527İptal @AKparti @TBMMResmi',
