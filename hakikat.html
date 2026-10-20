@@ -454,7 +454,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
       x:'İlk 15 günde 2.000 dilekçe, 813 kişi, 514 vekile ulaştık. Rakamlar olduğu gibi. #7527İptal #3Milyonİrade',
       c:'İlk 15 günde 2.000 dilekçe, 813 kişi, 514 vekile ulaştık. Rakamlar olduğu gibi, nerede eksik kaldığımızla birlikte.\n\nSen de dilekçeni gönder.\n\n#7527İptal #3Milyonİrade #7527İptalEdilsin'}
   };
-  function LINK(k){return 'https://7527iptal.org/paylas-'+k+'.html'}
+  function LINK(k){return 'https://7527iptal.org/paylas-'+(k==='cabbar'?'cabbar-12kasim':k)+'.html'}
   function clean(t){return t.replace(/https:\/\/7527iptal\.org/g,'').replace(/[ \t]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').trim()}
   function $(i){return document.getElementById(i)}
   function q(s){return encodeURIComponent(s)}
