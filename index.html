@@ -4273,9 +4273,9 @@ function hmDavetMetni() {
     return {
       uzun: '7527 sonrası Türkiye\'de ' + il + ' ilde ' + ALMANAC_DATA.length + ' vaka belgelendi: zehirlenen, vurulan, barınaklarda ölüme terk edilen canlar. ' +
         eksikV + ' ilde ise henüz kayıt yok; bu, orada yaşanmadığı anlamına gelmiyor.\n\n' +
-        'Senin şehrinde de şiddet, ihmal ya da barınak vakası yaşandıysa, eski ya da yeni, bildir. Belgeleyelim, davasının takipçisi olalım.\n\n' +
+        'Şehrindeki eski-yeni her şiddet, ihmal ve barınak vakasını bildir. Belgeleyelim, davasının takipçisi olalım.\n\n' +
         'Vakayı bildir, dilekçeni gönder, ilinde gönüllü ol. #7527İptal',
-      kisa: il + ' ilde ' + ALMANAC_DATA.length + ' vaka belgelendi, ' + eksikV + ' ilde kayıt yok. Senin şehrinde de yaşandıysa, eski ya da yeni, bildir. Belgeleyelim, takipçisi olalım. #7527İptal'
+      kisa: il + ' ilde ' + ALMANAC_DATA.length + ' vaka belgelendi, ' + eksikV + ' ilde kayıt yok. Şehrindeki eski-yeni vakayı bildir. Belgeleyelim, takipçisi olalım. #7527İptal'
     };
   }
   var map = {};
@@ -4314,7 +4314,7 @@ function hmDavetMetni() {
 function hmDavet(how) {
   var m = hmDavetMetni(), t = m.uzun;
   // Her paylasim yalnizca kendi sayfasinin baglantisini tasir (onizleme gorseli o sayfadan gelir)
-  var lnk = SITE_URL + (_hmLayer === 'vol' ? '/paylas-gonullu.html' : '/paylas-harita.html');
+  var lnk = SITE_URL + (_hmLayer === 'vol' ? '/paylas-gonullu.html' : '/paylas-harita.html?v=2');
   var tam = t + '\n\n' + lnk;
   if (how === 'wa') { window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(tam), '_blank'); return; }
   if (how === 'x') { window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(m.kisa) + '&url=' + encodeURIComponent(lnk), '_blank'); return; }
@@ -4418,7 +4418,7 @@ function hmRender() {
   sum.textContent = 'Türkiye: ' + withVol.length + ' / ' + allCities.length + ' ilde ' + trTotal + ' ' + W + '  ·  Yurtdışı: ' + abArr.length + ' ülkede ' + abTotal + ' ' + W;
   var callEl = document.getElementById('hm-call');
   if (callEl) callEl.textContent = CASE
-    ? without.length + ' ilde henüz kayıtlı vaka yok. Bu, orada yaşanmadığı anlamına gelmiyor. Senin ilindeki vakayı, eski ya da yeni, sen bildir.'
+    ? without.length + ' ilde henüz kayıtlı vaka yok. Bu, orada yaşanmadığı anlamına gelmiyor. Şehrindeki eski-yeni vakayı bildir.'
     : MPL ? without.length + ' ilin vekillerine henüz dilekçe gitmedi. Kendi ilinin vekiline dilekçeni gönder, ilindeki vakayı bildir.'
     : PET ? without.length + ' ilden henüz dilekçe gelmedi. Senin ilinden ses ver: dilekçeni gönder, gördüğün vakayı bildir.'
     : without.length + ' ilde il gönüllüsü arıyoruz. İlinde kampanyanın sesi ol, gördüğün vakayı bildir.';

@@ -395,7 +395,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
     var byCity={};trRows.forEach(function(r){byCity[r.city]=r});
     var all=Object.keys(TR_XY),withV=all.filter(function(c){return byCity[c]&&Number(byCity[c].n)>0}),without=all.filter(function(c){return !(byCity[c]&&Number(byCity[c].n)>0)});
     sum.textContent='Türkiye: '+withV.length+' / '+all.length+' ilde '+trTotal+' '+W+'  ·  Yurtdışı: '+abArr.length+' ülkede '+abTotal+' '+W;
-    $('hm-call').textContent=CASE?without.length+' ilde henüz kayıtlı vaka yok. Bu, orada yaşanmadığı anlamına gelmiyor. Senin ilindeki vakayı, eski ya da yeni, sen bildir.':MPL?without.length+' ilin vekillerine henüz dilekçe gitmedi. Kendi ilinin vekiline dilekçeni gönder, ilindeki vakayı bildir.':PET?without.length+' ilden henüz dilekçe gelmedi. Senin ilinden ses ver: dilekçeni gönder, gördüğün vakayı bildir.':without.length+' ilde il gönüllüsü arıyoruz. İlinde kampanyanın sesi ol, gördüğün vakayı bildir.';
+    $('hm-call').textContent=CASE?without.length+' ilde henüz kayıtlı vaka yok. Bu, orada yaşanmadığı anlamına gelmiyor. Şehrindeki eski-yeni vakayı bildir.':MPL?without.length+' ilin vekillerine henüz dilekçe gitmedi. Kendi ilinin vekiline dilekçeni gönder, ilindeki vakayı bildir.':PET?without.length+' ilden henüz dilekçe gelmedi. Senin ilinden ses ver: dilekçeni gönder, gördüğün vakayı bildir.':without.length+' ilde il gönüllüsü arıyoruz. İlinde kampanyanın sesi ol, gördüğün vakayı bildir.';
     var svg=document.createElementNS(NS,'svg');
     function circle(cx,cy,r,f){var c=document.createElementNS(NS,'circle');c.setAttribute('cx',cx.toFixed(1));c.setAttribute('cy',cy.toFixed(1));c.setAttribute('r',r.toFixed(1));c.setAttribute('fill',f);return c}
     function label(cx,cy,t,s){var x=document.createElementNS(NS,'text');x.setAttribute('x',cx.toFixed(1));x.setAttribute('y',(cy+s*0.35).toFixed(1));x.setAttribute('text-anchor','middle');x.setAttribute('font-size',s);x.setAttribute('font-weight','700');x.setAttribute('fill','#fff');x.setAttribute('pointer-events','none');x.textContent=t;return x}
@@ -429,8 +429,8 @@ button.btn.dy-ghost{border:1px solid var(--em)}
   function hsText(){
     function cnt(src){var m={};(src||[]).forEach(function(r){if(!r.country&&r.city)m[r.city]=(m[r.city]||0)+Number(r.n)});return m}
     if(layer==='case'){var il=Object.keys(cnt(caseRows())).length,n=(cases||[]).length,ek=81-il;
-      return{u:'7527 sonrası Türkiye\'de '+il+' ilde '+n+' vaka belgelendi: zehirlenen, vurulan, barınaklarda ölüme terk edilen canlar. '+ek+' ilde ise henüz kayıt yok; bu, orada yaşanmadığı anlamına gelmiyor.\n\nSenin şehrinde de şiddet, ihmal ya da barınak vakası yaşandıysa, eski ya da yeni, bildir. Belgeleyelim, davasının takipçisi olalım.\n\nVakayı bildir, dilekçeni gönder, ilinde gönüllü ol. #7527İptal',
-        k:il+' ilde '+n+' vaka belgelendi, '+ek+' ilde kayıt yok. Senin şehrinde de yaşandıysa, eski ya da yeni, bildir. Belgeleyelim, takipçisi olalım. #7527İptal'}}
+      return{u:'7527 sonrası Türkiye\'de '+il+' ilde '+n+' vaka belgelendi: zehirlenen, vurulan, barınaklarda ölüme terk edilen canlar. '+ek+' ilde ise henüz kayıt yok; bu, orada yaşanmadığı anlamına gelmiyor.\n\nŞehrindeki eski-yeni her şiddet, ihmal ve barınak vakasını bildir. Belgeleyelim, davasının takipçisi olalım.\n\nVakayı bildir, dilekçeni gönder, ilinde gönüllü ol. #7527İptal',
+        k:il+' ilde '+n+' vaka belgelendi, '+ek+' ilde kayıt yok. Şehrindeki eski-yeni vakayı bildir. Belgeleyelim, takipçisi olalım. #7527İptal'}}
     if(layer==='mp'){var st=mpStats(),bos=Object.keys(st).filter(function(c){return st[c].n===0}).sort(function(a,b){return st[b].vekil-st[a].vekil}),al=Object.keys(st).length-bos.length;
       return{u:'7527 sayılı yasanın iptali için vekillere dilekçe gönderiyoruz: '+al+' ilin vekillerine dilekçe ulaştı, '+bos.length+' ilin vekilleri henüz tek dilekçe almadı.\n\nSessiz kalan iller: '+bos.slice(0,12).join(', ')+'.\n\nKendi ilinin vekiline dilekçeni gönder, ilinde yaşanan vakayı bildir, gönüllü ol. #7527İptal',
         k:bos.length+' ilin vekilleri henüz tek dilekçe almadı. Kendi ilinin vekiline dilekçeni gönder, ilindeki vakayı bildir. #7527İptal'}}
@@ -443,7 +443,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
   }
   function hsShare(how,btn){
     if(rows===null)return;
-    var m=hsText(),lnk='https://7527iptal.org/'+(layer==='vol'?'paylas-gonullu.html':'paylas-harita.html'),tam=m.u+'\n\n'+lnk,q=encodeURIComponent;
+    var m=hsText(),lnk='https://7527iptal.org/'+(layer==='vol'?'paylas-gonullu.html':'paylas-harita.html?v=2'),tam=m.u+'\n\n'+lnk,q=encodeURIComponent;
     if(how==='wa'){window.open('https://api.whatsapp.com/send?text='+q(tam),'_blank');return}
     if(how==='x'){window.open('https://twitter.com/intent/tweet?text='+q(m.k)+'&url='+q(lnk),'_blank');return}
     if(how==='fb'){window.open('https://www.facebook.com/sharer/sharer.php?u='+q(lnk),'_blank');return}
