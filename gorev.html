@@ -286,10 +286,21 @@
       <div id="map-info" class="text-xs text-zinc-300 min-h-[32px]"></div>
       <div id="map-list" class="space-y-2"></div>
       <div class="border-t border-zinc-800 pt-3 space-y-2">
-        <p class="text-[11px] text-zinc-400">Gönüllümüz olmayan illerden gönüllü arıyoruz. Davet metnini paylaş:</p>
+        <p id="map-call" class="text-xs font-bold text-amber-300 leading-relaxed"></p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <a href="/?vaka=bildir" class="btn block text-center bg-red-700 hover:bg-red-600 text-white">🐾 Vakayı bildir</a>
+          <a href="/" class="btn block text-center bg-red-600 hover:bg-red-500 text-white">📨 Dilekçeni gönder</a>
+          <a href="/?harita=case" class="btn block text-center bg-zinc-800 hover:bg-zinc-700 text-white">🗺️ Vaka haritasını gör</a>
+        </div>
+        <a href="https://t.me/Iptal7527_bot" target="_blank" rel="noopener" class="btn block text-center bg-sky-700 hover:bg-sky-600 text-white">📢 Telegram duyurularına katıl</a>
+        <p class="text-[11px] text-zinc-400 pt-1">Gönüllümüz olmayan illerden gönüllü arıyoruz. Davet metnini paylaş:</p>
         <div class="grid grid-cols-2 gap-2">
-          <button type="button" onclick="ilDavet('wa')" class="btn bg-emerald-700 hover:bg-emerald-600 text-white">📣 WhatsApp'ta paylaş</button>
-          <button type="button" id="il-davet-kopya" onclick="ilDavet('copy')" class="btn bg-zinc-800 text-zinc-200">📋 Metni kopyala</button>
+          <button type="button" onclick="ilDavet('wa')" class="btn bg-emerald-700 hover:bg-emerald-600 text-white">💬 WhatsApp</button>
+          <button type="button" onclick="ilDavet('x')" class="btn bg-zinc-800 hover:bg-zinc-700 text-white">𝕏 (Twitter)</button>
+          <button type="button" onclick="ilDavet('fb')" class="btn bg-blue-800 hover:bg-blue-700 text-white">Facebook</button>
+          <button type="button" onclick="ilDavet('tg')" class="btn bg-sky-700 hover:bg-sky-600 text-white">Telegram</button>
+          <button type="button" id="il-davet-native" onclick="ilDavet('native')" class="hidden col-span-2 btn bg-zinc-800 hover:bg-zinc-700 text-white">📲 Diğer uygulamalar (Instagram, e-posta…)</button>
+          <button type="button" id="il-davet-kopya" onclick="ilDavet('copy')" class="col-span-2 btn bg-zinc-800 text-zinc-200">📋 Metni kopyala</button>
         </div>
       </div>
     </div>
@@ -1955,18 +1966,28 @@ function ilDavetMetni() {
   (_mapRows || []).forEach(function (r) { if (!r.country && Number(r.n) > 0) has[r.city] = 1; });
   var eksik = Object.keys(TR_XY).filter(function (c) { return !has[c]; });
   var gor = eksik.slice(0, 12).join(', ') + (eksik.length > 12 ? ' ve ' + (eksik.length - 12) + ' il daha' : '');
-  return '7527 sayılı kanunun iptali için il il örgütleniyoruz. ' +
-    (eksik.length ? 'Henüz gönüllümüz olmayan iller: ' + gor + '.\n\n' : '\n') +
-    'İlinde gönüllü olmak ister misin? Ya da tanıdığın biri var mı?\nİl gönüllüsü ol 👉 https://7527iptal.org/gorev.html';
+  return {
+    uzun: '7527 sayılı yasanın iptali için il il örgütleniyoruz: ' + (81 - eksik.length) + ' ilde gönüllümüz var.' +
+      (eksik.length ? '\n\nHenüz gönüllümüz olmayan iller: ' + gor + '.' : '') +
+      '\n\nİlinde kampanyanın sesi ol: gönüllü ol, şehrinde yaşanan vakaları bildir, vekillerine dilekçeni gönder. #7527İptal',
+    kisa: (81 - eksik.length) + ' ilde gönüllümüz var, diğer illerde seni arıyoruz. İlinde kampanyanın sesi ol. #7527İptal'
+  };
 }
 function ilDavet(how) {
-  var t = ilDavetMetni();
-  if (how === 'wa') { window.open('https://wa.me/?text=' + encodeURIComponent(t), '_blank'); return; }
+  var m = ilDavetMetni(), t = m.uzun;
+  // Yalnizca gonullu paylasim sayfasinin baglantisi (kendi onizleme gorseliyle)
+  var lnk = 'https://7527iptal.org/paylas-gonullu.html', tam = t + '\n\n' + lnk, q = encodeURIComponent;
+  if (how === 'wa') { window.open('https://api.whatsapp.com/send?text=' + q(tam), '_blank'); return; }
+  if (how === 'x') { window.open('https://twitter.com/intent/tweet?text=' + q(m.kisa) + '&url=' + q(lnk), '_blank'); return; }
+  if (how === 'fb') { window.open('https://www.facebook.com/sharer/sharer.php?u=' + q(lnk), '_blank'); return; }
+  if (how === 'tg') { window.open('https://t.me/share/url?url=' + q(lnk) + '&text=' + q(t), '_blank'); return; }
+  if (how === 'native') { if (navigator.share) navigator.share({ title: '7527 İptal', text: t, url: lnk }).catch(function () {}); return; }
   var b = $('il-davet-kopya');
   function ok() { if (b) { var o = b.getAttribute('data-o') || b.textContent; b.setAttribute('data-o', o); b.textContent = '✓ Kopyalandı'; setTimeout(function () { b.textContent = o; }, 2000); } }
-  function fb() { var a = document.createElement('textarea'); a.value = t; a.style.position = 'fixed'; a.style.opacity = '0'; document.body.appendChild(a); a.select(); try { document.execCommand('copy'); ok(); } catch (e) {} document.body.removeChild(a); }
-  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok, fb); else fb();
+  function fb() { var a = document.createElement('textarea'); a.value = tam; a.style.position = 'fixed'; a.style.opacity = '0'; document.body.appendChild(a); a.select(); try { document.execCommand('copy'); ok(); } catch (e) {} document.body.removeChild(a); }
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(tam).then(ok, fb); else fb();
 }
+(function () { var n = document.getElementById('il-davet-native'); if (n && navigator.share) n.classList.remove('hidden'); })();
 function mapTab(v) { _mapView = v; renderMap(); }
 function renderMap() {
   var box = $('map-svg'), list = $('map-list'), info = $('map-info'), sum = $('map-summary');
@@ -1996,6 +2017,8 @@ function renderMap() {
   var withVol = allCities.filter(function (c) { return byCity[c] && Number(byCity[c].n) > 0; });
   var without = allCities.filter(function (c) { return !(byCity[c] && Number(byCity[c].n) > 0); });
   sum.textContent = 'Türkiye: ' + withVol.length + ' / ' + allCities.length + ' ilde ' + trTotal + ' gönüllü  ·  Yurtdışı: ' + abArr.length + ' ülkede ' + abTotal + ' gönüllü';
+  var mc = $('map-call');
+  if (mc) mc.textContent = without.length + ' ilde gönüllü arıyoruz. Görevin yalnızca bu pano değil: şehrinde yaşanan vakaları bildir, vekillerine dilekçeni gönder, çevrene de gönderttir.';
   function show(title, n, nicks, extra) {
     info.textContent = '';
     info.appendChild(h('div', 'font-bold text-white', title + ' — ' + n + ' gönüllü'));
