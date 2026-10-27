@@ -517,7 +517,7 @@
         🤝 GÖNÜLLÜ OL
       </button>
       <a href="hakikat.html" class="px-2 py-2 rounded-lg font-bold text-[11px] uppercase tracking-wide transition border-2 bg-zinc-900 border-emerald-500 text-emerald-300 hover:bg-zinc-800 shadow-lg flex items-center justify-center text-center">
-        📢 DUYURULAR
+        📢 DUYURULAR · VAKALAR
       </a>
     </div>
     <!-- CANLI SAYAÇLAR (üst) -->
@@ -583,15 +583,6 @@
 
 <!-- 3. VATANDAŞ PANELİ -->
 <div id="panel-vatandas" class="flex-1">
-    <!-- BİLDİRİ VE 15 GÜNLÜK RAPOR GÖRSELLERİ (imza adımlarının üstü) -->
-  <div class="max-w-7xl mx-auto px-4 pt-8 w-full grid grid-cols-1 md:grid-cols-2 gap-4">
-    <a href="hakikat.html#bildiri" class="block rounded-2xl overflow-hidden border-2 border-zinc-700 hover:border-emerald-600 transition">
-      <img src="halk-iradesi.png?v=2" alt="Bir halk iradesidir: 7527 iptal. Bildiriyi oku" class="w-full h-auto block" loading="lazy">
-    </a>
-    <a href="hakikat.html#15gun" class="block rounded-2xl overflow-hidden border-2 border-zinc-700 hover:border-emerald-600 transition">
-      <img src="15gun.png?v=2" alt="İlk 15 gün: şeffaf bilgilendirme. Raporu gör" class="w-full h-auto block" loading="lazy">
-    </a>
-  </div>
   <main class="max-w-7xl mx-auto px-4 py-8 w-full grid grid-cols-1 lg:grid-cols-12 gap-8">
     
     <!-- SOL KOLON: Form, Seçim ve Önizleme -->
@@ -854,48 +845,6 @@
     </div>
   </section>
 
-  <!-- 4. VAKA ALMANAĞI (sayı veritabanından gelir) -->
-  <section class="max-w-7xl mx-auto px-4 py-12 border-t border-zinc-800">
-    <div class="bg-zinc-900 p-6 sm:p-8 rounded-3xl border border-zinc-800 shadow-2xl space-y-6">
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-800 pb-4">
-        <div>
-          <div class="inline-flex items-center gap-2 px-3 py-1 bg-red-950 border border-red-800 text-red-400 rounded-full text-xs font-bold uppercase tracking-wider mb-2">
-            <span id="almanac-count">0</span> Belgelenmiş Vaka
-          </div>
-          <h2 class="font-impact text-2xl sm:text-3xl text-white uppercase tracking-wide">
-            YAŞAM HAKKI İHLALLERİ VE VAKA ALMANAĞI
-          </h2>
-          <p class="text-xs sm:text-sm text-zinc-400">
-            Kanun değişikliği ve sonrasında belgelenmiş gerçek olaylar, haber kaynakları ve resmi kayıtlar.
-          </p>
-        </div>
-
-        <div class="flex items-center gap-2">
-          <button type="button" onclick="openReportModal()" class="px-4 py-2 bg-red-700 hover:bg-red-600 text-white rounded-lg font-bold text-xs shrink-0">🐾 Vaka Bildir</button>
-          <input type="text" id="almanac-search" oninput="filterAlmanac()" placeholder="Vaka, il veya detay ara..." class="bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-xs text-zinc-100 focus:border-red-500 focus:outline-none w-48 sm:w-64">
-        </div>
-      </div>
-
-      <!-- Filtreler -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-        <select id="almanac-city-filter" onchange="filterAlmanac()" class="bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200">
-          <option value="TÜMÜ">Tüm Şehirler</option>
-        </select>
-        <select id="almanac-cat-filter" onchange="filterAlmanac()" class="bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200">
-          <option value="TÜMÜ">Tüm Kategoriler</option>
-        </select>
-        <select id="almanac-sort" onchange="filterAlmanac()" class="bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-200">
-          <option value="recent">En Yeni Tarihli Olaylar</option>
-          <option value="old">En Eski Tarihli Olaylar</option>
-        </select>
-      </div>
-
-      <!-- Vaka Kartları Grid -->
-      <div id="almanac-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[600px] overflow-y-auto pr-1">
-        <!-- Dinamik Vakalar -->
-      </div>
-    </div>
-  </section>
 
 </div>
 
@@ -2859,7 +2808,6 @@ function initMpDatabase() {
   var mpCityFilter = document.getElementById('mp-city-filter');
   var citCity = document.getElementById('citizen-city');
   var volCity = document.getElementById('vol-city');
-  var almCity = document.getElementById('almanac-city-filter');
 
   CITIES.forEach(function(c) {
     if (mpCityFilter) {
@@ -2879,12 +2827,6 @@ function initMpDatabase() {
       opt3.value = c;
       opt3.textContent = c;
       volCity.appendChild(opt3);
-    }
-    if (almCity) {
-      var opt4 = document.createElement('option');
-      opt4.value = c;
-      opt4.textContent = c;
-      almCity.appendChild(opt4);
     }
   });
 
@@ -4509,28 +4451,6 @@ var LG_STAGE = {
   'karar': 'Karar verildi', 'kesinleşti': 'Karar kesinleşti', 'takipsizlik': 'Takipsizlik kararı',
   'bilinmiyor': 'Adli süreç bilinmiyor'
 };
-// Karttaki adli surec kutusu (tum metinler textContent ile yazilir)
-function legalBlock(id) {
-  var l = ALMANAC_LEGAL[id];
-  if (!l) return null;
-  var box = document.createElement('div');
-  box.className = 'mt-2 p-2 rounded-lg border border-amber-900/70 bg-amber-950/30 text-[10px] space-y-0.5';
-  var h = document.createElement('div');
-  h.className = 'font-bold text-amber-300';
-  h.textContent = '⚖️ ' + (LG_STAGE[l.stage] || 'Adli süreç');
-  box.appendChild(h);
-  if (l.court) { var c = document.createElement('div'); c.className = 'text-zinc-300'; c.textContent = l.court; box.appendChild(c); }
-  if (l.outcome) { var o = document.createElement('div'); o.className = 'text-zinc-200'; o.textContent = l.outcome; box.appendChild(o); }
-  if (l.hearing_date) { var t = document.createElement('div'); t.className = 'text-zinc-400'; t.textContent = 'Tarih: ' + l.hearing_date; box.appendChild(t); }
-  if (l.source_url && /^https?:\/\//.test(l.source_url)) {
-    var a = document.createElement('a');
-    a.href = l.source_url; a.target = '_blank'; a.rel = 'noopener';
-    a.className = 'text-amber-400 hover:underline';
-    a.textContent = '📄 Adli kaynak';
-    box.appendChild(a);
-  }
-  return box;
-}
 
 // Vakalar sunucudan (list_almanac_cases) gelir; ulasilamazsa sayfadaki
 // gomulu liste kullanilir.
@@ -4565,126 +4485,10 @@ async function loadAlmanacFromServer() {
   syncAlmanacUi();
 }
 
-// Rozet sayisi, sehir ve kategori filtrelerini veriden uretir
+// Vaka verisi gelince haritadaki Vakalar katmanini tazeler
+// (vaka listesi artik Duyurular sayfasinda: hakikat.html#vakalar)
 function syncAlmanacUi() {
-  var countEl = document.getElementById('almanac-count');
   try { if (_hmRows !== null && _hmLayer === 'case') hmRender(); } catch (e) {}
-  if (countEl) countEl.textContent = ALMANAC_DATA.length;
-
-  var catSel = document.getElementById('almanac-cat-filter');
-  if (catSel) {
-    var onceki = catSel.value;
-    var kategoriler = [];
-    ALMANAC_DATA.forEach(function(v) {
-      if (v.category && kategoriler.indexOf(v.category) === -1) kategoriler.push(v.category);
-    });
-    kategoriler.sort(function(a, b) { return a.localeCompare(b, 'tr'); });
-    catSel.innerHTML = '<option value="TÜMÜ">Tüm Kategoriler</option>';
-    kategoriler.forEach(function(k) {
-      var o = document.createElement('option');
-      o.value = k; o.textContent = k;
-      catSel.appendChild(o);
-    });
-    if (onceki) catSel.value = onceki;
-    if (!catSel.value) catSel.value = 'TÜMÜ';
-  }
-
-  renderAlmanac();
-}
-
-function renderAlmanac() {
-  var grid = document.getElementById('almanac-grid');
-  if (!grid) return;
-
-  var search = (document.getElementById('almanac-search').value || '').toLowerCase();
-  var city = document.getElementById('almanac-city-filter').value;
-  var cat = document.getElementById('almanac-cat-filter').value;
-  var sort = document.getElementById('almanac-sort').value;
-
-  var filtered = ALMANAC_DATA.filter(function(item) {
-    var matchSearch = (item.title || '').toLowerCase().indexOf(search) !== -1 ||
-                      (item.city || '').toLowerCase().indexOf(search) !== -1 ||
-                      (item.desc || '').toLowerCase().indexOf(search) !== -1;
-    var matchCity = city === 'TÜMÜ' || item.city === city;
-    var matchCat = cat === 'TÜMÜ' || item.category === cat;
-    return matchSearch && matchCity && matchCat;
-  });
-
-  if (sort === 'recent') {
-    filtered.sort(function(a, b) { return new Date(b.date) - new Date(a.date); });
-  } else {
-    filtered.sort(function(a, b) { return new Date(a.date) - new Date(b.date); });
-  }
-
-  grid.innerHTML = '';
-  if (filtered.length === 0) {
-    grid.innerHTML = '<p class="text-zinc-500 col-span-3 text-center py-6">Kriterlere uygun vaka bulunamadı.</p>';
-    return;
-  }
-
-  filtered.forEach(function(item) {
-    // Icerik panelden duzenlenebildigi icin metinler textContent ile
-    // yaziliyor; boylece basliktaki bir '<' karakteri sayfayi bozamaz.
-    var card = document.createElement('div');
-    card.className = 'bg-zinc-950 p-4 rounded-xl border border-zinc-800 space-y-2 hover:border-red-800/80 transition flex flex-col justify-between';
-
-    var ust = document.createElement('div');
-
-    var meta = document.createElement('div');
-    meta.className = 'flex items-center justify-between gap-2 text-[10px] text-zinc-400 mb-1';
-    var kat = document.createElement('span');
-    kat.className = 'px-2 py-0.5 rounded bg-red-950 border border-red-800 text-red-300 font-bold shrink-0';
-    kat.textContent = item.category;
-    var tarihYer = document.createElement('span');
-    tarihYer.className = 'text-right';
-    tarihYer.textContent = item.date + ' • ' + item.city;
-    meta.appendChild(kat);
-    meta.appendChild(tarihYer);
-
-    var baslik = document.createElement('h4');
-    baslik.className = 'font-bold text-xs text-white';
-    baslik.textContent = item.title;
-
-    var aciklama = document.createElement('p');
-    aciklama.className = 'text-[11px] text-zinc-300 line-clamp-3 mt-1 leading-relaxed';
-    aciklama.textContent = item.desc;
-
-    ust.appendChild(meta);
-    ust.appendChild(baslik);
-    ust.appendChild(aciklama);
-    var lgBox = legalBlock(item.id);
-    if (lgBox) ust.appendChild(lgBox);
-
-    var alt = document.createElement('div');
-    alt.className = 'pt-2 flex items-center justify-between gap-2 border-t border-zinc-800/80 mt-2';
-
-    if (item.source) {
-      var link = document.createElement('a');
-      link.href = item.source;
-      link.target = '_blank';
-      link.rel = 'noopener';
-      link.className = 'text-[10px] text-red-400 hover:underline';
-      link.textContent = '🔗 Haberi Oku';
-      alt.appendChild(link);
-    } else {
-      alt.appendChild(document.createElement('span'));
-    }
-
-    var paylas = document.createElement('button');
-    paylas.type = 'button';
-    paylas.className = 'text-[10px] bg-zinc-800 hover:bg-zinc-700 text-zinc-200 px-2.5 py-1 rounded shrink-0 cursor-pointer';
-    paylas.textContent = '📤 Paylaş';
-    paylas.onclick = function() { openShareModal(item.id); };
-    alt.appendChild(paylas);
-
-    card.appendChild(ust);
-    card.appendChild(alt);
-    grid.appendChild(card);
-  });
-}
-
-function filterAlmanac() {
-  renderAlmanac();
 }
 
 // --- VAKA BILDIRIMI (herkese acik form + yonetici listesi) ----------
