@@ -606,6 +606,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
     }catch(e){box.textContent='Harita şu an yüklenemedi.'}
   }
   var started=false;function go(){if(started)return;started=true;load()}
+  window.__hkMapGo=go;
   if('IntersectionObserver' in window){new IntersectionObserver(function(es,o){if(es[0].isIntersecting){go();o.disconnect()}},{rootMargin:'300px'}).observe($('harita'))}else go();
 })();
 </script>
@@ -681,6 +682,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
   var TABS=['biz','duyurular','vakalar','harita'];
   function which(h){h=(h||'').replace('#','');if(TABS.indexOf(h)!==-1)return h;var el=h&&document.getElementById(h);var sec=el&&el.closest&&el.closest('[data-tab]');return sec?sec.getAttribute('data-tab'):(h?'duyurular':'biz')}
   function show(t,scroll){
+    if(t==='harita'&&window.__hkMapGo)try{window.__hkMapGo()}catch(e){}
     Array.prototype.forEach.call(document.querySelectorAll('[data-tab]'),function(s){s.hidden=s.getAttribute('data-tab')!==t});
     Array.prototype.forEach.call(document.querySelectorAll('.tabs .tab'),function(a){a.classList.toggle('on',a.getAttribute('data-go')===t)});
     if(scroll){var n=document.querySelector('.tabs');if(n)window.scrollTo({top:n.offsetTop,behavior:'smooth'})}
