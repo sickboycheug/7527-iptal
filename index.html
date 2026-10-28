@@ -579,6 +579,26 @@
         📲 Dilekçe nasıl gönderilir? Adım adım gör
       </button>
     </div>
+    <!-- ONUR KÖŞESİ + DİLEKÇE SIRALAMASI (veri: public_petition_ranking) -->
+    <div id="rk-card" class="hidden mx-auto max-w-lg mt-4 text-left">
+      <div class="bg-zinc-900 rounded-2xl border border-amber-700/70 shadow-xl overflow-hidden">
+        <div class="p-5 bg-gradient-to-br from-amber-950/70 via-zinc-900 to-zinc-900 border-b border-amber-900/50 space-y-3">
+          <div class="flex items-center justify-between gap-2">
+            <h2 class="text-xs font-bold text-amber-300 uppercase tracking-wider">🏅 Onur Köşesi · 594 / 594</h2>
+            <span class="text-[10px] font-bold text-amber-400/80">CB + TBMM + 592 vekil</span>
+          </div>
+          <div id="rk-honor" class="flex flex-wrap gap-2"></div>
+          <p id="rk-note" class="text-[13px] text-zinc-200 leading-relaxed"></p>
+        </div>
+        <div class="p-5 space-y-2">
+          <h3 class="text-xs font-bold text-zinc-300 uppercase tracking-wider">📈 Dilekçe sıralaması</h3>
+          <ol id="rk-list" class="space-y-1.5"></ol>
+          <p id="rk-empty" class="hidden text-[12px] text-zinc-400">Sıralama ilk dilekçelerle oluşacak. İlk adımı sen at.</p>
+          <button type="button" id="rk-more" onclick="rkToggle()" class="hidden w-full mt-1 py-2 rounded-xl border border-zinc-700 text-zinc-200 hover:bg-zinc-800 text-xs font-bold">Tüm sıralamayı gör ▼</button>
+          <p class="text-[10px] text-zinc-500 pt-1">Onaylı dilekçeler sayılır, her hedef bir kez. Ad ve soyadın yalnızca baş harfi görünür; listede görünmek istemeyen <a href="mailto:iletisim@7527iptal.org" class="underline">iletisim@7527iptal.org</a> adresine yazabilir.</p>
+        </div>
+      </div>
+    </div>
 </header>
 
 <!-- 3. VATANDAŞ PANELİ -->
@@ -1413,6 +1433,13 @@
           <button id="exp-backfill" onclick="backfillPetitionPlaces()" class="py-2 bg-amber-700 hover:bg-amber-600 rounded font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-50">
             <span>🗺️</span> Eski dilekçeleri haritaya işle
           </button>
+          <button id="exp-rank" onclick="rkBackfill()" class="py-2 bg-amber-600 hover:bg-amber-500 rounded font-semibold text-zinc-950 flex items-center justify-center gap-1.5 disabled:opacity-50">
+            <span>🏅</span> Sıralamayı güncelle (eski dilekçeler)
+          </button>
+          <button id="exp-rank-list" onclick="rkAdminList()" class="py-2 bg-zinc-700 hover:bg-zinc-600 rounded font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-50">
+            <span>👁️</span> Sıralama listesi (gizle / göster)
+          </button>
+          <div id="rk-admin" class="space-y-1"></div>
           <button id="exp-tekrar" onclick="tekrarAnaliz()" class="py-2 bg-fuchsia-800 hover:bg-fuchsia-700 rounded font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-50">
             <span>🧹</span> Tekrarları bul / onaysızları gör
           </button>
@@ -3951,6 +3978,7 @@ async function sendPetitionViaEmail() {
     });
     try { localStorage.setItem(tekrarAnahtar, lastPetitionNumber); } catch (e) {}
     bekleyenEkle(lastPetitionNumber);
+    rkTag(lastPetitionNumber, name, (document.getElementById('citizen-contact').value || '').trim());
     // Dilekceyi olusturan herkes imzaci sayilir; sayac burada guncellenir.
     // Onay adimi ('Evet, gonderdim') yalnizca bilgi amacli kaydedilir.
     refreshCounters();
@@ -4007,6 +4035,7 @@ async function confirmPetitionSent(didSend) {
   bekleyenSil(lastPetitionNumber);
   try { if (currentTekrarKey) localStorage.setItem(currentTekrarKey + '_onay', '1'); } catch (e) {}
   try { await refreshCounters(); } catch (e) {}
+  try { rkLoad(); } catch (e) {}
   // Bu vekile gönderim yapıldı: listeden çıkar
   if (selectedTarget === 'mp' && selectedMP) {
     try {
@@ -6910,6 +6939,150 @@ async function backfillPetitionPlaces() {
     backfillBusy = false;
     if (btn) { btn.disabled = false; btn.innerHTML = oldHtml; }
   }
+}
+
+// --- DİLEKÇE SIRALAMASI VE ONUR KÖŞESİ ---------------------------------
+// Kişi kodu: telefon (son 10 hane) ya da e-postadan üretilen tek yönlü SHA-256.
+// Koddan numara/adres geri çıkarılamaz ve herkese açık listede hiç gösterilmez.
+var RK_TOPLAM = 594, _rkRows = [], _rkOpen = false;
+function rkKey(contact) {
+  contact = String(contact || '').trim();
+  if (contact.indexOf('@') !== -1) return contact.toLowerCase();
+  var d = contact.replace(/\D/g, '');
+  return d.length >= 10 ? d.slice(-10) : '';
+}
+async function rkHash(contact) {
+  var k = rkKey(contact);
+  if (!k || !window.crypto || !crypto.subtle) return '';
+  var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('7527iptal|' + k));
+  return Array.prototype.map.call(new Uint8Array(buf), function (b) { return ('0' + b.toString(16)).slice(-2); }).join('');
+}
+function rkLabel(name) {
+  var w = String(name || '').trim().split(/\s+/).filter(Boolean);
+  if (!w.length) return '';
+  var cap = function (x) { return x.charAt(0).toLocaleUpperCase('tr') + x.slice(1).toLocaleLowerCase('tr'); };
+  return w.length === 1 ? cap(w[0]) : cap(w[0]) + ' ' + w[w.length - 1].charAt(0).toLocaleUpperCase('tr') + '.';
+}
+function rkTag(no, name, contact) {
+  // Dilekçe akışını beklemez; başarısız olursa sessizce geçer (panelden sonradan tamamlanır)
+  rkHash(contact).then(function (h) {
+    if (!h || !no) return;
+    return callRpc('tag_petition', { p_petition_number: no, p_hash: h, p_label: rkLabel(name) });
+  }).catch(function () {});
+}
+function rkYer(r) { return r.ulke && r.ulke !== 'Türkiye' ? (r.il ? r.il + ', ' : '') + r.ulke : (r.il || ''); }
+function rkEl(t, c, x) { var e = document.createElement(t); if (c) e.className = c; if (x != null) e.textContent = x; return e; }
+function rkRender() {
+  var card = document.getElementById('rk-card'); if (!card) return;
+  var honor = _rkRows.filter(function (r) { return Number(r.toplam) >= RK_TOPLAM; });
+  var rest = _rkRows.filter(function (r) { return Number(r.toplam) < RK_TOPLAM; });
+  var hb = document.getElementById('rk-honor'), note = document.getElementById('rk-note');
+  hb.textContent = '';
+  honor.forEach(function (r) {
+    var c = rkEl('span', 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500 text-zinc-950 text-xs font-extrabold shadow');
+    c.appendChild(rkEl('span', null, '🏅 ' + r.etiket));
+    var y = rkYer(r); if (y) c.appendChild(rkEl('span', 'font-semibold opacity-75', '· ' + y));
+    hb.appendChild(c);
+  });
+  note.textContent = honor.length
+    ? 'Cumhurbaşkanlığı’na, TBMM Başkanlığı’na ve 592 milletvekilinin her birine; tek tek yazıldı, tek tek gönderildi. Meclis’te “haberim yoktu” diyebilecek tek bir koltuk bırakılmadı. Teşekkür ederiz. Bu köşe büyümek için var: ilk dilekçeni gönder, adını buraya sen yaz.'
+    : 'Henüz 594 dilekçenin tamamını gönderen yok. Cumhurbaşkanlığı, TBMM Başkanlığı ve 592 vekilin her biri: bu köşeye ilk adını yazan sen ol.';
+  var ol = document.getElementById('rk-list'); ol.textContent = '';
+  var show = _rkOpen ? rest : rest.slice(0, 10);
+  show.forEach(function (r, i) {
+    var li = rkEl('li', 'bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2');
+    var top = rkEl('div', 'flex items-baseline justify-between gap-2 text-xs');
+    var sol = rkEl('span', 'min-w-0 truncate');
+    sol.appendChild(rkEl('b', 'text-zinc-400 font-mono mr-1.5', (i + 1) + '.'));
+    sol.appendChild(rkEl('span', 'font-bold text-white', r.etiket));
+    var y = rkYer(r); if (y) sol.appendChild(rkEl('span', 'text-zinc-400', ' · ' + y));
+    top.appendChild(sol);
+    top.appendChild(rkEl('span', 'font-mono font-bold text-emerald-400 shrink-0', r.toplam + ' / ' + RK_TOPLAM));
+    var bar = rkEl('div', 'mt-1.5 h-1.5 bg-zinc-800 rounded-full overflow-hidden');
+    var fill = rkEl('div', 'h-full bg-gradient-to-r from-emerald-700 to-emerald-400 rounded-full');
+    fill.style.width = Math.max(1.5, Math.min(100, Number(r.toplam) / RK_TOPLAM * 100)) + '%';
+    bar.appendChild(fill); li.appendChild(top); li.appendChild(bar); ol.appendChild(li);
+  });
+  document.getElementById('rk-empty').classList.toggle('hidden', rest.length > 0);
+  var more = document.getElementById('rk-more');
+  more.classList.toggle('hidden', rest.length <= 10);
+  more.textContent = _rkOpen ? 'Daralt ▲' : 'Tüm sıralamayı gör (' + rest.length + ' kişi) ▼';
+  card.classList.remove('hidden');
+}
+function rkToggle() { _rkOpen = !_rkOpen; rkRender(); if (!_rkOpen) { var c = document.getElementById('rk-card'); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }
+async function rkLoad() {
+  if (!supabaseClient) return;
+  try {
+    var rows = await callRpc('public_petition_ranking', {});
+    _rkRows = Array.isArray(rows) ? rows : [];
+    rkRender();
+  } catch (e) { /* servis kurulu degilse kart gizli kalir */ }
+}
+setTimeout(function () { try { rkLoad(); } catch (e) {} }, 600);
+
+// Yönetici: eski dilekçelerin kişi kodunu ve etiketini oluştur (şifre panelde çözülür)
+var rkBusy = false;
+async function rkBackfill() {
+  if (rkBusy) return;
+  if (!adminPinCache) { alert('Oturum düşmüş. Lütfen yönetici PIN’ini tekrar girin.'); return; }
+  if (!cryptoAvailable()) { alert(dataErrorText(new Error('crypto_unavailable'))); return; }
+  var btn = document.getElementById('exp-rank'), oldHtml = btn ? btn.innerHTML : '';
+  rkBusy = true; if (btn) { btn.disabled = true; btn.textContent = 'Anahtar açılıyor...'; }
+  try {
+    var privateKey = await loadAdminPrivateKey();
+    if (!privateKey) return;
+    var rows = [];
+    for (var off = 0; ; off += 100) {
+      var part = await callRpc('export_petitions_range', { p_pin: adminPinCache, p_from: null, p_to: null, p_offset: off, p_limit: 100 }) || [];
+      rows = rows.concat(part);
+      if (btn) btn.textContent = 'Kayıtlar alınıyor (' + rows.length + ')...';
+      if (part.length < 100) break;
+    }
+    if (!rows.length) { alert('Henüz kayıt yok.'); return; }
+    var items = [], hatali = 0, iletisimsiz = 0;
+    for (var i = 0; i < rows.length; i++) {
+      try {
+        var c = await decryptPayload(privateKey, rows[i].payload_enc);
+        var h = await rkHash(c && c.contact);
+        if (h) items.push({ no: rows[i].petition_number, h: h, l: rkLabel(c.name) }); else iletisimsiz++;
+      } catch (e) { hatali++; }
+      if (btn && i % 25 === 0) btn.textContent = 'Çözülüyor (' + i + '/' + rows.length + ')...';
+    }
+    var guncel = 0;
+    for (var j = 0; j < items.length; j += 200) {
+      if (btn) btn.textContent = 'Sıralamaya işleniyor (' + j + '/' + items.length + ')...';
+      guncel += Number(await callRpc('admin_set_petition_people', { p_pin: adminPinCache, p_items: items.slice(j, j + 200) }) || 0);
+    }
+    alert('Tamam. ' + guncel + ' dilekçe sıralamaya işlendi.' + (iletisimsiz ? '\n' + iletisimsiz + ' kayıtta geçerli telefon/e-posta yok.' : '') + (hatali ? '\n' + hatali + ' kayıt çözülemedi.' : ''));
+    rkLoad();
+  } catch (e) {
+    alert(dataErrorText(e));
+  } finally {
+    rkBusy = false; if (btn) { btn.disabled = false; btn.innerHTML = oldHtml; }
+  }
+}
+// Yönetici: sıralamadaki herkes, gizle / göster
+async function rkAdminList() {
+  if (!adminPinCache) { alert('Oturum düşmüş. Lütfen yönetici PIN’ini tekrar girin.'); return; }
+  var box = document.getElementById('rk-admin'); if (!box) return;
+  box.textContent = 'Yükleniyor...';
+  try {
+    var rows = await callRpc('admin_petition_ranking', { p_pin: adminPinCache }) || [];
+    box.textContent = '';
+    if (!rows.length) { box.appendChild(rkEl('p', 'text-[11px] text-zinc-400', 'Sıralamada henüz kimse yok. Önce "Sıralamayı güncelle"ye bas.')); return; }
+    rows.forEach(function (r) {
+      var row = rkEl('div', 'flex items-center justify-between gap-2 text-[11px] bg-zinc-950 border border-zinc-800 rounded-lg px-2 py-1.5' + (r.gizli ? ' opacity-60' : ''));
+      row.appendChild(rkEl('span', 'min-w-0 truncate text-zinc-200', (r.etiket || 'İsimsiz') + (r.il ? ' · ' + r.il : '') + ' — ' + r.toplam + ' / ' + RK_TOPLAM));
+      var b = rkEl('button', 'shrink-0 px-2 py-1 rounded font-bold ' + (r.gizli ? 'bg-emerald-700 text-white' : 'bg-zinc-700 text-zinc-100'), r.gizli ? 'Göster' : 'Gizle');
+      b.type = 'button';
+      b.onclick = async function () {
+        b.disabled = true;
+        try { await callRpc('admin_rank_hide', { p_pin: adminPinCache, p_hash: r.citizen_hash, p_hidden: !r.gizli }); rkAdminList(); rkLoad(); }
+        catch (e) { b.disabled = false; alert(dataErrorText(e)); }
+      };
+      row.appendChild(b); box.appendChild(row);
+    });
+  } catch (e) { box.textContent = ''; alert(dataErrorText(e)); }
 }
 
 // --- VİDEO REHBER SEKME DEĞİŞTİRİCİSİ ---
