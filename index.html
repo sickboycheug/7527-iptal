@@ -179,8 +179,8 @@
 
   // Paylasim baglantisindan gelenler: ?harita=case (haritaya) / ?vaka=bildir (bildirim formuna)
   var qs = window.location.search;
-  var mHarita = /[?&]harita=(vol|pet|mp|case)/.exec(qs), goRep = /[?&]vaka=bildir/.test(qs), goRank = /[?&]siralama=1/.test(qs);
-  if (mHarita || goRep || goRank) {
+  var mHarita = /[?&]harita=(vol|pet|mp|case)/.exec(qs), goRep = /[?&]vaka=bildir/.test(qs);
+  if (mHarita || goRep) {
     el.style.display = 'none';
     document.body.style.overflow = '';
     window.addEventListener('load', function () {
@@ -193,7 +193,6 @@
         }
         if (goRep) { try { openReportModal(); } catch (e) {} }
       }, 400);
-      if (goRank) setTimeout(function () { var rc = document.getElementById('rk-card'); if (rc && !rc.classList.contains('hidden')) rc.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 1500);
     });
   }
 })();
@@ -596,14 +595,6 @@
           <ol id="rk-list" class="space-y-1.5"></ol>
           <p id="rk-empty" class="hidden text-[12px] text-zinc-400">Sıralama ilk dilekçelerle oluşacak. İlk adımı sen at.</p>
           <button type="button" id="rk-more" onclick="rkToggle()" class="hidden w-full mt-1 py-2 rounded-xl border border-zinc-700 text-zinc-200 hover:bg-zinc-800 text-xs font-bold">Tüm sıralamayı gör ▼</button>
-          <button type="button" onclick="rkShareOpen()" class="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-zinc-950 rounded-xl font-extrabold text-xs uppercase tracking-wide">📤 Onur Köşesi'ni paylaş</button>
-          <div id="rk-share-row" class="hidden flex flex-wrap justify-center gap-2 pt-1 text-[11px] font-bold">
-            <button type="button" onclick="rkShare('wa')" class="px-3 py-1.5 rounded-lg bg-emerald-700 text-white">WhatsApp</button>
-            <button type="button" onclick="rkShare('x')" class="px-3 py-1.5 rounded-lg bg-zinc-800 border border-zinc-600 text-white">X</button>
-            <button type="button" onclick="rkShare('fb')" class="px-3 py-1.5 rounded-lg bg-blue-800 text-white">Facebook</button>
-            <button type="button" onclick="rkShare('tg')" class="px-3 py-1.5 rounded-lg bg-sky-700 text-white">Telegram</button>
-            <button type="button" id="rk-share-copy" onclick="rkShare('copy')" class="px-3 py-1.5 rounded-lg bg-zinc-800 border border-zinc-600 text-zinc-200">Kopyala</button>
-          </div>
           <p class="text-[10px] text-zinc-500 pt-1">Onaylı dilekçeler sayılır, her hedef bir kez. Ad ve soyadın yalnızca baş harfi görünür; listede görünmek istemeyen <a href="mailto:iletisim@7527iptal.org" class="underline">iletisim@7527iptal.org</a> adresine yazabilir.</p>
         </div>
       </div>
@@ -7022,37 +7013,6 @@ function rkRender() {
   more.classList.toggle('hidden', rest.length <= 10);
   more.textContent = _rkOpen ? 'Daralt ▲' : 'Tüm sıralamayı gör (' + rest.length + ' kişi) ▼';
   card.classList.remove('hidden');
-}
-// Paylaşım: metin canlı veriden kurulur, bağlantı yalnızca kendi paylaşım sayfası (önizleme görseli oradan gelir)
-function rkShareText() {
-  var honor = _rkRows.filter(function (r) { return Number(r.toplam) >= RK_TOPLAM; });
-  var adlar = honor.map(function (r) { return r.etiket + (rkYer(r) ? ' (' + rkYer(r) + ')' : ''); }).join(', ');
-  var tek = honor.length === 1;
-  var bas = honor.length
-    ? '🏅 Onur Köşesi: ' + adlar + ', 594 dilekçenin tamamını gönderdi. Cumhurbaşkanlığı’na, TBMM Başkanlığı’na ve 592 milletvekilinin her birine; tek tek.\n\nHayattan koparılan canlarımızın sesi ' + (tek ? 'oldu' : 'oldular') + '. Bir daha yaşanmasın; barınaklarda bekleyenler kurtulsun.'
-    : '🏅 594 dilekçe: Cumhurbaşkanlığı, TBMM Başkanlığı ve 592 milletvekilinin her biri.\n\nHayattan koparılan canlarımızın sesi ol. Bir daha yaşanmasın; barınaklarda bekleyenler kurtulsun. Onur Köşesi ilk adını bekliyor.';
-  var uzun = bas + '\n\n' + _rkRows.length + ' kişi dilekçe sıralamasında. Sen de dilekçeni gönder, sesine ses kat. #7527İptal';
-  var kisa = honor.length
-    ? '🏅 ' + adlar + ', 594 dilekçenin tamamını gönderdi: CB, TBMM ve 592 vekilin her biri. Hayattan koparılan canlarımızın sesi ' + (tek ? 'oldu' : 'oldular') + '. Bir daha yaşanmasın. Sıra sende. #7527İptal'
-    : '🏅 594 dilekçe: CB, TBMM ve 592 vekilin her biri. Hayattan koparılan canlarımızın sesi ol. Bir daha yaşanmasın. #7527İptal';
-  return { uzun: uzun, kisa: kisa };
-}
-function rkShare(how) {
-  var m = rkShareText(), lnk = SITE_URL + '/paylas-siralama.html?v=3', tam = m.uzun + '\n\n' + lnk, q = encodeURIComponent;
-  if (how === 'wa') { window.open('https://api.whatsapp.com/send?text=' + q(tam), '_blank'); return; }
-  if (how === 'x') { window.open('https://twitter.com/intent/tweet?text=' + q(m.kisa) + '&url=' + q(lnk), '_blank'); return; }
-  if (how === 'fb') { window.open('https://www.facebook.com/sharer/sharer.php?u=' + q(lnk), '_blank'); return; }
-  if (how === 'tg') { window.open('https://t.me/share/url?url=' + q(lnk) + '&text=' + q(m.uzun), '_blank'); return; }
-  if (how === 'native') { if (navigator.share) navigator.share({ title: '7527 İptal · Onur Köşesi', text: m.uzun, url: lnk }).catch(function () {}); return; }
-  var b = document.getElementById('rk-share-copy');
-  function ok() { if (b) { var o = b.getAttribute('data-o') || b.textContent; b.setAttribute('data-o', o); b.textContent = '✓ Kopyalandı'; setTimeout(function () { b.textContent = o; }, 2000); } }
-  function fb() { var a = document.createElement('textarea'); a.value = tam; a.style.position = 'fixed'; a.style.opacity = '0'; document.body.appendChild(a); a.select(); try { document.execCommand('copy'); ok(); } catch (e) {} document.body.removeChild(a); }
-  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(tam).then(ok, fb); else fb();
-}
-// Tek düğme: telefonda cihazın paylaş menüsü (WhatsApp, Instagram, X… hepsi), bilgisayarda küçük seçenek satırı
-function rkShareOpen() {
-  if (navigator.share && /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)) { rkShare('native'); return; }
-  var r = document.getElementById('rk-share-row'); if (r) r.classList.toggle('hidden');
 }
 function rkToggle() { _rkOpen = !_rkOpen; rkRender(); if (!_rkOpen) { var c = document.getElementById('rk-card'); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }
 async function rkLoad() {
