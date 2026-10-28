@@ -6997,9 +6997,10 @@ function rkRender() {
     var y = rkYer(r); if (y) c.appendChild(rkEl('span', 'font-semibold opacity-75', '· ' + y));
     hb.appendChild(c);
   });
+  var tek = honor.length === 1;
   note.textContent = honor.length
-    ? 'Cumhurbaşkanlığı’na, TBMM Başkanlığı’na ve 592 milletvekilinin her birine; tek tek yazıldı, tek tek gönderildi. Meclis’te “haberim yoktu” diyebilecek tek bir koltuk bırakılmadı. Teşekkür ederiz. Bu köşe büyümek için var: ilk dilekçeni gönder, adını buraya sen yaz.'
-    : 'Henüz 594 dilekçenin tamamını gönderen yok. Cumhurbaşkanlığı, TBMM Başkanlığı ve 592 vekilin her biri: bu köşeye ilk adını yazan sen ol.';
+    ? 'Cumhurbaşkanlığı’na, TBMM Başkanlığı’na ve 592 milletvekilinin her birine: 594 dilekçe, tek tek yazıldı, tek tek gönderildi. Hayattan koparılan canlarımızın sesi ' + (tek ? 'oldun' : 'oldunuz') + '. Bir daha yaşanmasın; barınaklarda bekleyenler kurtulsun. Teşekkür ederiz. Şimdi sıra bizde: dilekçeni gönder, adını bu köşeye sen de yaz.'
+    : 'Cumhurbaşkanlığı, TBMM Başkanlığı ve 592 milletvekili: 594 dilekçe. Hayattan koparılan canlarımızın sesi ol. Bir daha yaşanmasın; barınaklarda bekleyenler kurtulsun. Bu köşeye ilk adını yazan sen ol.';
   var ol = document.getElementById('rk-list'); ol.textContent = '';
   var show = _rkOpen ? rest : rest.slice(0, 10);
   show.forEach(function (r, i) {
@@ -7026,17 +7027,18 @@ function rkRender() {
 function rkShareText() {
   var honor = _rkRows.filter(function (r) { return Number(r.toplam) >= RK_TOPLAM; });
   var adlar = honor.map(function (r) { return r.etiket + (rkYer(r) ? ' (' + rkYer(r) + ')' : ''); }).join(', ');
+  var tek = honor.length === 1;
   var bas = honor.length
-    ? '🏅 Onur Köşesi: ' + adlar + ' 594 dilekçenin tamamını gönderdi. Cumhurbaşkanlığı, TBMM Başkanlığı ve 592 milletvekilinin her biri; tek tek.'
-    : '🏅 594 dilekçe: Cumhurbaşkanlığı, TBMM Başkanlığı ve 592 milletvekilinin her biri. Onur Köşesi ilk adını bekliyor.';
-  var uzun = bas + '\n\n' + _rkRows.length + ' kişi dilekçe sıralamasında. Her dilekçe bir vekilin masasına düşen bir sorumluluk.\n\nSen de dilekçeni gönder, sıralamaya gir; adını onur köşesine yaz. #7527İptal';
+    ? '🏅 Onur Köşesi: ' + adlar + ', 594 dilekçenin tamamını gönderdi. Cumhurbaşkanlığı’na, TBMM Başkanlığı’na ve 592 milletvekilinin her birine; tek tek.\n\nHayattan koparılan canlarımızın sesi ' + (tek ? 'oldu' : 'oldular') + '. Bir daha yaşanmasın; barınaklarda bekleyenler kurtulsun.'
+    : '🏅 594 dilekçe: Cumhurbaşkanlığı, TBMM Başkanlığı ve 592 milletvekilinin her biri.\n\nHayattan koparılan canlarımızın sesi ol. Bir daha yaşanmasın; barınaklarda bekleyenler kurtulsun. Onur Köşesi ilk adını bekliyor.';
+  var uzun = bas + '\n\n' + _rkRows.length + ' kişi dilekçe sıralamasında. Sen de dilekçeni gönder, sesine ses kat. #7527İptal';
   var kisa = honor.length
-    ? '🏅 ' + adlar + ' 594 dilekçenin tamamını gönderdi: CB, TBMM ve 592 vekilin her biri. Sıra sende, adını onur köşesine yaz. #7527İptal'
-    : '🏅 594 dilekçe: CB, TBMM ve 592 vekilin her biri. Onur Köşesi ilk adını bekliyor. #7527İptal';
+    ? '🏅 ' + adlar + ', 594 dilekçenin tamamını gönderdi: CB, TBMM ve 592 vekilin her biri. Hayattan koparılan canlarımızın sesi ' + (tek ? 'oldu' : 'oldular') + '. Bir daha yaşanmasın. Sıra sende. #7527İptal'
+    : '🏅 594 dilekçe: CB, TBMM ve 592 vekilin her biri. Hayattan koparılan canlarımızın sesi ol. Bir daha yaşanmasın. #7527İptal';
   return { uzun: uzun, kisa: kisa };
 }
 function rkShare(how) {
-  var m = rkShareText(), lnk = SITE_URL + '/paylas-siralama.html?v=2', tam = m.uzun + '\n\n' + lnk, q = encodeURIComponent;
+  var m = rkShareText(), lnk = SITE_URL + '/paylas-siralama.html?v=3', tam = m.uzun + '\n\n' + lnk, q = encodeURIComponent;
   if (how === 'wa') { window.open('https://api.whatsapp.com/send?text=' + q(tam), '_blank'); return; }
   if (how === 'x') { window.open('https://twitter.com/intent/tweet?text=' + q(m.kisa) + '&url=' + q(lnk), '_blank'); return; }
   if (how === 'fb') { window.open('https://www.facebook.com/sharer/sharer.php?u=' + q(lnk), '_blank'); return; }
