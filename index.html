@@ -596,14 +596,13 @@
           <ol id="rk-list" class="space-y-1.5"></ol>
           <p id="rk-empty" class="hidden text-[12px] text-zinc-400">Sıralama ilk dilekçelerle oluşacak. İlk adımı sen at.</p>
           <button type="button" id="rk-more" onclick="rkToggle()" class="hidden w-full mt-1 py-2 rounded-xl border border-zinc-700 text-zinc-200 hover:bg-zinc-800 text-xs font-bold">Tüm sıralamayı gör ▼</button>
-          <p class="text-[11px] text-zinc-400 pt-2">Onur Köşesi'ni paylaş, sıralama büyüsün:</p>
-          <div class="grid grid-cols-2 gap-2">
-            <button type="button" onclick="rkShare('wa')" class="py-2.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded-xl font-bold text-[11px]">💬 WhatsApp</button>
-            <button type="button" onclick="rkShare('x')" class="py-2.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-white rounded-xl font-bold text-[11px]">𝕏 (Twitter)</button>
-            <button type="button" onclick="rkShare('fb')" class="py-2.5 bg-blue-800 hover:bg-blue-700 text-white rounded-xl font-bold text-[11px]">Facebook</button>
-            <button type="button" onclick="rkShare('tg')" class="py-2.5 bg-sky-700 hover:bg-sky-600 text-white rounded-xl font-bold text-[11px]">Telegram</button>
-            <button type="button" id="rk-share-native" onclick="rkShare('native')" class="hidden col-span-2 py-2.5 bg-amber-600 hover:bg-amber-500 text-zinc-950 rounded-xl font-bold text-[11px]">📲 Diğer uygulamalar (Instagram, e-posta…)</button>
-            <button type="button" id="rk-share-copy" onclick="rkShare('copy')" class="col-span-2 py-2.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-zinc-200 rounded-xl font-bold text-[11px]">📋 Metni kopyala</button>
+          <button type="button" onclick="rkShareOpen()" class="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-zinc-950 rounded-xl font-extrabold text-xs uppercase tracking-wide">📤 Onur Köşesi'ni paylaş</button>
+          <div id="rk-share-row" class="hidden flex flex-wrap justify-center gap-2 pt-1 text-[11px] font-bold">
+            <button type="button" onclick="rkShare('wa')" class="px-3 py-1.5 rounded-lg bg-emerald-700 text-white">WhatsApp</button>
+            <button type="button" onclick="rkShare('x')" class="px-3 py-1.5 rounded-lg bg-zinc-800 border border-zinc-600 text-white">X</button>
+            <button type="button" onclick="rkShare('fb')" class="px-3 py-1.5 rounded-lg bg-blue-800 text-white">Facebook</button>
+            <button type="button" onclick="rkShare('tg')" class="px-3 py-1.5 rounded-lg bg-sky-700 text-white">Telegram</button>
+            <button type="button" id="rk-share-copy" onclick="rkShare('copy')" class="px-3 py-1.5 rounded-lg bg-zinc-800 border border-zinc-600 text-zinc-200">Kopyala</button>
           </div>
           <p class="text-[10px] text-zinc-500 pt-1">Onaylı dilekçeler sayılır, her hedef bir kez. Ad ve soyadın yalnızca baş harfi görünür; listede görünmek istemeyen <a href="mailto:iletisim@7527iptal.org" class="underline">iletisim@7527iptal.org</a> adresine yazabilir.</p>
         </div>
@@ -7037,7 +7036,7 @@ function rkShareText() {
   return { uzun: uzun, kisa: kisa };
 }
 function rkShare(how) {
-  var m = rkShareText(), lnk = SITE_URL + '/paylas-siralama.html', tam = m.uzun + '\n\n' + lnk, q = encodeURIComponent;
+  var m = rkShareText(), lnk = SITE_URL + '/paylas-siralama.html?v=2', tam = m.uzun + '\n\n' + lnk, q = encodeURIComponent;
   if (how === 'wa') { window.open('https://api.whatsapp.com/send?text=' + q(tam), '_blank'); return; }
   if (how === 'x') { window.open('https://twitter.com/intent/tweet?text=' + q(m.kisa) + '&url=' + q(lnk), '_blank'); return; }
   if (how === 'fb') { window.open('https://www.facebook.com/sharer/sharer.php?u=' + q(lnk), '_blank'); return; }
@@ -7048,7 +7047,11 @@ function rkShare(how) {
   function fb() { var a = document.createElement('textarea'); a.value = tam; a.style.position = 'fixed'; a.style.opacity = '0'; document.body.appendChild(a); a.select(); try { document.execCommand('copy'); ok(); } catch (e) {} document.body.removeChild(a); }
   if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(tam).then(ok, fb); else fb();
 }
-(function () { var n = document.getElementById('rk-share-native'); if (n && navigator.share) n.classList.remove('hidden'); })();
+// Tek düğme: telefonda cihazın paylaş menüsü (WhatsApp, Instagram, X… hepsi), bilgisayarda küçük seçenek satırı
+function rkShareOpen() {
+  if (navigator.share && /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)) { rkShare('native'); return; }
+  var r = document.getElementById('rk-share-row'); if (r) r.classList.toggle('hidden');
+}
 function rkToggle() { _rkOpen = !_rkOpen; rkRender(); if (!_rkOpen) { var c = document.getElementById('rk-card'); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }
 async function rkLoad() {
   if (!supabaseClient) return;
