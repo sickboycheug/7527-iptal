@@ -3978,7 +3978,7 @@ async function sendPetitionViaEmail() {
     });
     try { localStorage.setItem(tekrarAnahtar, lastPetitionNumber); } catch (e) {}
     bekleyenEkle(lastPetitionNumber);
-    rkTag(lastPetitionNumber, name, (document.getElementById('citizen-contact').value || '').trim());
+    rkTag(lastPetitionNumber, name, getPlace().country, getPlace().city);
     // Dilekceyi olusturan herkes imzaci sayilir; sayac burada guncellenir.
     // Onay adimi ('Evet, gonderdim') yalnizca bilgi amacli kaydedilir.
     refreshCounters();
@@ -6942,17 +6942,22 @@ async function backfillPetitionPlaces() {
 }
 
 // --- DİLEKÇE SIRALAMASI VE ONUR KÖŞESİ ---------------------------------
-// Kişi kodu: telefon (son 10 hane) ya da e-postadan üretilen tek yönlü SHA-256.
-// Koddan numara/adres geri çıkarılamaz ve herkese açık listede hiç gösterilmez.
+// Kişi kodu: ad-soyad + ülke + il'den üretilen tek yönlü SHA-256.
+// Aynı kişi bir dilekçede telefon, diğerinde e-posta yazsa da tek kişi sayılır.
+// Kod herkese açık listede hiç gösterilmez.
 var RK_TOPLAM = 594, _rkRows = [], _rkOpen = false;
-function rkKey(contact) {
-  contact = String(contact || '').trim();
-  if (contact.indexOf('@') !== -1) return contact.toLowerCase();
-  var d = contact.replace(/\D/g, '');
-  return d.length >= 10 ? d.slice(-10) : '';
+function rkNorm(x) {
+  var m = { 'ç': 'c', 'ğ': 'g', 'ı': 'i', 'ö': 'o', 'ş': 's', 'ü': 'u', 'â': 'a', 'î': 'i', 'û': 'u' };
+  return String(x || '').toLocaleLowerCase('tr').replace(/[çğıöşüâîû]/g, function (c) { return m[c]; })
+    .replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim();
 }
-async function rkHash(contact) {
-  var k = rkKey(contact);
+function rkKey(name, country, city) {
+  var n = rkNorm(name);
+  if (n.split(' ').length < 2) return '';   // ad ve soyad birlikte olmalı
+  return n + '|' + rkNorm(country || 'Türkiye') + '|' + rkNorm(city);
+}
+async function rkHash(name, country, city) {
+  var k = rkKey(name, country, city);
   if (!k || !window.crypto || !crypto.subtle) return '';
   var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('7527iptal|' + k));
   return Array.prototype.map.call(new Uint8Array(buf), function (b) { return ('0' + b.toString(16)).slice(-2); }).join('');
@@ -6963,9 +6968,9 @@ function rkLabel(name) {
   var cap = function (x) { return x.charAt(0).toLocaleUpperCase('tr') + x.slice(1).toLocaleLowerCase('tr'); };
   return w.length === 1 ? cap(w[0]) : cap(w[0]) + ' ' + w[w.length - 1].charAt(0).toLocaleUpperCase('tr') + '.';
 }
-function rkTag(no, name, contact) {
+function rkTag(no, name, country, city) {
   // Dilekçe akışını beklemez; başarısız olursa sessizce geçer (panelden sonradan tamamlanır)
-  rkHash(contact).then(function (h) {
+  rkHash(name, country, city).then(function (h) {
     if (!h || !no) return;
     return callRpc('tag_petition', { p_petition_number: no, p_hash: h, p_label: rkLabel(name) });
   }).catch(function () {});
@@ -7043,7 +7048,7 @@ async function rkBackfill() {
     for (var i = 0; i < rows.length; i++) {
       try {
         var c = await decryptPayload(privateKey, rows[i].payload_enc);
-        var h = await rkHash(c && c.contact);
+        var h = c ? await rkHash(c.name, c.country, c.city) : '';
         if (h) items.push({ no: rows[i].petition_number, h: h, l: rkLabel(c.name) }); else iletisimsiz++;
       } catch (e) { hatali++; }
       if (btn && i % 25 === 0) btn.textContent = 'Çözülüyor (' + i + '/' + rows.length + ')...';
@@ -7053,7 +7058,7 @@ async function rkBackfill() {
       if (btn) btn.textContent = 'Sıralamaya işleniyor (' + j + '/' + items.length + ')...';
       guncel += Number(await callRpc('admin_set_petition_people', { p_pin: adminPinCache, p_items: items.slice(j, j + 200) }) || 0);
     }
-    alert('Tamam. ' + guncel + ' dilekçe sıralamaya işlendi.' + (iletisimsiz ? '\n' + iletisimsiz + ' kayıtta geçerli telefon/e-posta yok.' : '') + (hatali ? '\n' + hatali + ' kayıt çözülemedi.' : ''));
+    alert('Tamam. ' + guncel + ' dilekçe sıralamaya işlendi.' + (iletisimsiz ? '\n' + iletisimsiz + ' kayıtta ad-soyad ya da il eksik.' : '') + (hatali ? '\n' + hatali + ' kayıt çözülemedi.' : ''));
     rkLoad();
   } catch (e) {
     alert(dataErrorText(e));
