@@ -3935,6 +3935,34 @@ async function sendPetitionViaEmail() {
       return;
     }
   }
+    // Sunucu kontrolü (her cihazda çalışır): aynı ad-soyadla bu hedefe daha önce dilekçe oluşturulmuş mu?
+  // Onaylıysa ikinci dilekçe oluşturulmaz. Onaysızsa yenisi açılmaz, o dilekçe kullanılır.
+  if (!oncekiNo) {
+    var mevcut = null;
+    try {
+      var kh = await rkHash(name);
+      if (kh) mevcut = await callRpc('petition_existing', {
+        p_hash: kh, p_type: selectedTarget,
+        p_id: selectedTarget === 'mp' && selectedMP ? String(selectedMP.id) : null
+      });
+    } catch (e) { mevcut = null; }  // kontrol çalışmazsa dilekçe akışı aynen sürer
+    if (mevcut && mevcut.no) {
+      if (mevcut.onay) {
+        if (selectedTarget === 'mp' && selectedMP) { try { markMpAsSent(selectedMP.id); filterMps(); updateSentMpNotice(); } catch (e) {} }
+        var hedefAd = selectedTarget === 'cb' ? 'Cumhurbaşkanlığı' : selectedTarget === 'mb' ? 'TBMM Başkanlığı' : (selectedMP ? selectedMP.name : 'bu vekil');
+        alert(hedefAd + ' için bu ad-soyadla dilekçe zaten gönderilmiş (' + new Date(mevcut.tarih).toLocaleDateString('tr-TR') + ').\n\nAynı hedefe ikinci dilekçe sayılmaz. Lütfen başka bir hedef seç.');
+        return;
+      }
+      try { localStorage.setItem(tekrarAnahtar, mevcut.no); } catch (e) {}
+      if (window.__oncekiGec && window.__oncekiGec[tekrarAnahtar]) {
+        oncekiNo = mevcut.no;            // "Hayır, göndermedim": aynı numarayla yeniden hazırla
+      } else {
+        bekleyenEkle(mevcut.no);
+        oncekiSor(tekrarAnahtar, mevcut.no);   // "Bu dilekçeyi gönderdin mi?"
+        return;
+      }
+    }
+  }
   currentTekrarKey = tekrarAnahtar;
   petitionBusy = true;
   var oldHtml = btn ? btn.innerHTML : '';
