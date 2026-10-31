@@ -179,8 +179,8 @@
 
   // Paylasim baglantisindan gelenler: ?harita=case (haritaya) / ?vaka=bildir (bildirim formuna)
   var qs = window.location.search;
-  var mHarita = /[?&]harita=(vol|pet|mp|case)/.exec(qs), goRep = /[?&]vaka=bildir/.test(qs);
-  if (mHarita || goRep) {
+  var mHarita = /[?&]harita=(vol|pet|mp|case)/.exec(qs), goRep = /[?&]vaka=bildir/.test(qs), goRank = /[?&]siralama=1/.test(qs);
+  if (mHarita || goRep || goRank) {
     el.style.display = 'none';
     document.body.style.overflow = '';
     window.addEventListener('load', function () {
@@ -193,6 +193,7 @@
         }
         if (goRep) { try { openReportModal(); } catch (e) {} }
       }, 400);
+      if (goRank) setTimeout(function () { var rc = document.getElementById('rk-card'); if (rc && !rc.classList.contains('hidden')) rc.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 1500);
     });
   }
 })();
@@ -7046,51 +7047,50 @@ function rkRender() {
 // Görsel telefonda üretilir (GitHub'a dosya yüklemek gerekmez). Her tamamlayanın rozetinin yanına
 // isim dokunulabilir olur (ayrı düğme yok).
 async function rkOnurGorsel(r) {
-  try { await Promise.all([document.fonts.load("700 80px Oswald"), document.fonts.load("600 26px Inter"), document.fonts.load("700 26px Inter")]); } catch (e) {}
-  var W = 1200, H = 630, K = 2, c = document.createElement('canvas'); c.width = W * K; c.height = H * K;
+  try { await Promise.all([document.fonts.load("700 80px Oswald"), document.fonts.load("600 30px Inter"), document.fonts.load("700 30px Inter")]); } catch (e) {}
+  // Kare (1080x1080): Instagram, WhatsApp, X, Facebook ve Telegram'da kırpılmadan tam görünür
+  var W = 1080, H = 1080, K = 2, c = document.createElement('canvas'); c.width = W * K; c.height = H * K;
   var x = c.getContext('2d'); x.scale(K, K);
+  var O = 'Oswald, "Arial Narrow", sans-serif';
   x.fillStyle = '#0b0f0d'; x.fillRect(0, 0, W, H);
-  var g = x.createRadialGradient(1000, 300, 20, 1000, 300, 520); g.addColorStop(0, 'rgba(120,80,10,.55)'); g.addColorStop(1, 'rgba(11,15,13,0)');
+  var g = x.createRadialGradient(540, 340, 20, 540, 340, 560); g.addColorStop(0, 'rgba(120,80,10,.55)'); g.addColorStop(1, 'rgba(11,15,13,0)');
   x.fillStyle = g; x.fillRect(0, 0, W, H);
-  x.textBaseline = 'top';
-  function t(s, px, py, font, col) { x.font = font; x.fillStyle = col; x.fillText(s, px, py); }
-  t('ONUR KÖŞESİ  ·  7527 İPTAL', 56, 44, '500 24px Oswald, "Arial Narrow", sans-serif', '#fbbf24');
-  t('594 DİLEKÇE.', 56, 88, '700 80px Oswald, "Arial Narrow", sans-serif', '#f1f5f2');
-  t('TEK TEK.', 56, 180, '700 80px Oswald, "Arial Narrow", sans-serif', '#f59e0b');
-  var y = 288;
-  [['Cumhurbaşkanlığı’na, TBMM Başkanlığı’na', '#d8e4dd'], ['ve 592 milletvekilinin her birine.', '#d8e4dd'], ['594 dilekçeyle tarihe not düştü.', '#fcd34d'], ['Sıradaki isim seninki olsun.', '#fcd34d']]
-    .forEach(function (l) { t(l[0], 58, y, '600 26px Inter', l[1]); y += 38; });
-  t('Milyonlarca canın geleceği senin ellerinde.', 58, y + 14, '700 26px Inter', '#f1f5f2');
+  x.textBaseline = 'top'; x.textAlign = 'center';
+  function t(s, py, font, col) { x.font = font; x.fillStyle = col; x.fillText(s, W / 2, py); }
+  t('ONUR KÖŞESİ  ·  7527 İPTAL', 40, '500 28px ' + O, '#fbbf24');
   // madalya
-  var cx = 960, cy = 175;
-  x.fillStyle = '#dc2626'; x.beginPath(); x.moveTo(cx - 70, cy - 140); x.lineTo(cx - 20, cy - 140); x.lineTo(cx, cy - 86); x.lineTo(cx - 40, cy - 78); x.fill();
-  x.fillStyle = '#b91c1c'; x.beginPath(); x.moveTo(cx + 70, cy - 140); x.lineTo(cx + 20, cy - 140); x.lineTo(cx, cy - 86); x.lineTo(cx + 40, cy - 78); x.fill();
-  x.beginPath(); x.arc(cx, cy, 92, 0, Math.PI * 2); x.fillStyle = '#f59e0b'; x.fill(); x.lineWidth = 6; x.strokeStyle = '#fde68a'; x.stroke();
-  x.beginPath(); x.arc(cx, cy, 70, 0, Math.PI * 2); x.lineWidth = 3; x.strokeStyle = '#92400e'; x.stroke();
-  x.textAlign = 'center';
-  t('594', cx, cy - 50, '700 64px Oswald, "Arial Narrow", sans-serif', '#3b2304');
-  t('/ 594', cx, cy + 26, '600 20px Oswald, "Arial Narrow", sans-serif', '#3b2304');
+  var cx = 540, cy = 285;
+  x.fillStyle = '#dc2626'; x.beginPath(); x.moveTo(cx - 80, cy - 160); x.lineTo(cx - 24, cy - 160); x.lineTo(cx, cy - 98); x.lineTo(cx - 46, cy - 88); x.fill();
+  x.fillStyle = '#b91c1c'; x.beginPath(); x.moveTo(cx + 80, cy - 160); x.lineTo(cx + 24, cy - 160); x.lineTo(cx, cy - 98); x.lineTo(cx + 46, cy - 88); x.fill();
+  x.beginPath(); x.arc(cx, cy, 105, 0, Math.PI * 2); x.fillStyle = '#f59e0b'; x.fill(); x.lineWidth = 7; x.strokeStyle = '#fde68a'; x.stroke();
+  x.beginPath(); x.arc(cx, cy, 80, 0, Math.PI * 2); x.lineWidth = 3; x.strokeStyle = '#92400e'; x.stroke();
+  t('594', cy - 50, '700 64px ' + O, '#3b2304');
+  t('/ 594', cy + 28, '600 22px ' + O, '#3b2304');
   // madalyanın altında isim ve il
-  var ad = String(r.etiket || '').toLocaleUpperCase('tr'), sz = 64;
-  x.font = '700 ' + sz + 'px Oswald, "Arial Narrow", sans-serif'; while (x.measureText(ad).width > 400 && sz > 34) { sz -= 2; x.font = '700 ' + sz + 'px Oswald, "Arial Narrow", sans-serif'; }
-  t(ad, cx, cy + 108, '700 ' + sz + 'px Oswald, "Arial Narrow", sans-serif', '#ffffff');
-  var yer = rkYer(r); if (yer) t(yer, cx, cy + 108 + sz * 1.35, '500 24px Oswald, "Arial Narrow", sans-serif', '#fbbf24');
-  x.textAlign = 'left';
+  var ad = String(r.etiket || '').toLocaleUpperCase('tr'), sz = 88;
+  x.font = '700 ' + sz + 'px ' + O; while (x.measureText(ad).width > 900 && sz > 40) { sz -= 2; x.font = '700 ' + sz + 'px ' + O; }
+  t(ad, 404, '700 ' + sz + 'px ' + O, '#ffffff');
+  var yer = rkYer(r); if (yer) t(yer, 404 + sz * 1.18, '500 30px ' + O, '#fbbf24');
+  t('594 DİLEKÇE. TEK TEK.', 576, '700 56px ' + O, '#f59e0b');
+  var y = 652;
+  [['Cumhurbaşkanlığı’na, TBMM Başkanlığı’na', '#d8e4dd'], ['ve 592 milletvekilinin her birine.', '#d8e4dd'], ['594 dilekçeyle tarihe not düştü.', '#fcd34d'], ['Sıradaki isim seninki olsun.', '#fcd34d']]
+    .forEach(function (l) { t(l[0], y, '600 30px Inter', l[1]); y += 44; });
+  t('Milyonlarca canın geleceği senin ellerinde.', y + 14, '700 31px Inter', '#f1f5f2');
   // alt şerit
-  x.font = '600 26px Oswald, "Arial Narrow", sans-serif'; var cag = '594 DİLEKÇE GÖNDER, GELECEĞE HAYAT VER.', w = x.measureText(cag).width + 48;
-  x.fillStyle = '#f59e0b'; x.beginPath(); if (x.roundRect) x.roundRect(56, 540, w, 56, 28); else x.rect(56, 540, w, 56); x.fill();
-  t(cag, 80, 551, '600 26px Oswald, "Arial Narrow", sans-serif', '#1c1203');
-  x.textAlign = 'right'; t('7527iptal.org', W - 56, 554, '700 26px Inter', '#9db3a8'); x.textAlign = 'left';
+  x.font = '600 32px ' + O; var cag = '594 DİLEKÇE GÖNDER, GELECEĞE HAYAT VER.', w = x.measureText(cag).width + 60, x0 = (W - w) / 2;
+  x.fillStyle = '#f59e0b'; x.beginPath(); if (x.roundRect) x.roundRect(x0, 948, w, 64, 32); else x.rect(x0, 948, w, 64); x.fill();
+  t(cag, 959, '600 32px ' + O, '#1c1203');
+  t('7527iptal.org', 1030, '700 24px Inter', '#9db3a8');
   return await new Promise(function (ok) { c.toBlob(ok, 'image/png'); });
 }
 function rkOnurMetin(r) {
   var yer = rkYer(r);
   return '🏅 ' + r.etiket + (yer ? ' (' + yer + ')' : '') + ', 594 dilekçenin tamamını gönderdi: Cumhurbaşkanlığı’na, TBMM Başkanlığı’na ve 592 milletvekilinin her birine, tek tek.\n\n' +
     'Milyonlarca canın geleceği senin ellerinde. 594 dilekçe gönder, geleceğe hayat ver. #7527İptal\n\n' +
-    SITE_URL + '/paylas-siralama.html?v=3';
+    SITE_URL + '/?siralama=1';
 }
 // İsme dokununca: telefonda cihazın paylaşım menüsü (görsel + metin),
-// bilgisayarda görselli küçük bir pencere (WhatsApp, X, Facebook, Telegram, Görseli indir)
+// bilgisayarda görselli küçük bir pencere (görseli indir + metni kopyala)
 var _rkOnurMeşgul = false;
 async function rkOnurPaylas(r) {
   if (_rkOnurMeşgul) return; _rkOnurMeşgul = true;
@@ -7109,28 +7109,23 @@ async function rkOnurPaylas(r) {
 }
 function rkOnurPencere(r, blob, dosyaAdi, metin) {
   var eski = document.getElementById('rk-onur-pencere'); if (eski) eski.remove();
-  var url = URL.createObjectURL(blob), link = SITE_URL + '/paylas-siralama.html?v=3', q = encodeURIComponent;
-  var yalin = metin.replace(/\s*https?:\/\/\S+\s*$/, '').trim();
-  var kisa = '🏅 ' + r.etiket + ', 594 dilekçenin tamamını gönderdi: CB, TBMM ve 592 milletvekilinin her birine. Milyonlarca canın geleceği senin ellerinde. #7527İptal';
+  var url = URL.createObjectURL(blob);
   var m = document.createElement('div'); m.id = 'rk-onur-pencere';
   m.className = 'fixed inset-0 z-[100000] bg-black/85 flex items-center justify-center p-4';
   m.innerHTML = '<div class="bg-zinc-900 border border-amber-700 rounded-2xl max-w-lg w-full p-4 space-y-3 shadow-2xl">' +
     '<div class="flex justify-between items-center"><b class="text-amber-300 text-sm uppercase tracking-wide">🏅 Onur Köşesi</b>' +
     '<button type="button" data-k="x" class="text-zinc-400 hover:text-white text-2xl leading-none" aria-label="Kapat">&times;</button></div>' +
     '<img alt="" class="w-full rounded-xl border border-zinc-700">' +
-    '<div class="grid grid-cols-2 gap-2 text-xs font-bold">' +
-    '<a data-k="wa" target="_blank" rel="noopener" class="py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white text-center">WhatsApp</a>' +
-    '<a data-k="xx" target="_blank" rel="noopener" class="py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-white text-center">X</a>' +
-    '<a data-k="fb" target="_blank" rel="noopener" class="py-2.5 rounded-xl bg-blue-800 hover:bg-blue-700 text-white text-center">Facebook</a>' +
-    '<a data-k="tg" target="_blank" rel="noopener" class="py-2.5 rounded-xl bg-sky-700 hover:bg-sky-600 text-white text-center">Telegram</a>' +
-    '<a data-k="dl" class="col-span-2 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 text-center">⬇ Görseli indir (Instagram için)</a>' +
+    '<button type="button" data-k="dl" class="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 text-sm font-extrabold">⬇ Görseli indir ve metni kopyala</button>' +
+    '<p data-k="st" class="text-[12px] text-zinc-300 text-center leading-relaxed">WhatsApp, X, Facebook ya da Instagram’da görseli ekle, metni yapıştır.</p>' +
     '</div></div>';
   m.querySelector('img').src = url;
-  m.querySelector('[data-k="wa"]').href = 'https://api.whatsapp.com/send?text=' + q(metin);
-  m.querySelector('[data-k="xx"]').href = 'https://twitter.com/intent/tweet?text=' + q(kisa) + '&url=' + q(link);
-  m.querySelector('[data-k="fb"]').href = 'https://www.facebook.com/sharer/sharer.php?u=' + q(link);
-  m.querySelector('[data-k="tg"]').href = 'https://t.me/share/url?url=' + q(link) + '&text=' + q(yalin);
-  var dl = m.querySelector('[data-k="dl"]'); dl.href = url; dl.setAttribute('download', dosyaAdi);
+  m.querySelector('[data-k="dl"]').onclick = async function () {
+    var x = document.createElement('a'); x.href = url; x.download = dosyaAdi; document.body.appendChild(x); x.click(); x.remove();
+    var ok = false; try { await navigator.clipboard.writeText(metin); ok = true; } catch (e) {}
+    m.querySelector('[data-k="st"]').textContent = ok ? '✓ Görsel indi, metin kopyalandı. Şimdi WhatsApp, X ya da Facebook’ta görseli ekle, metni yapıştır.' : '✓ Görsel indi. Metni aşağıdan kopyalayabilirsin.';
+    if (!ok) { var pr = document.createElement('pre'); pr.className = 'text-[11px] text-zinc-300 whitespace-pre-wrap bg-zinc-950 border border-zinc-800 rounded-lg p-2'; pr.textContent = metin; m.querySelector('[data-k="st"]').after(pr); }
+  };
   function kapat() { m.remove(); setTimeout(function () { URL.revokeObjectURL(url); }, 60000); }
   m.querySelector('[data-k="x"]').onclick = kapat;
   m.addEventListener('click', function (e) { if (e.target === m) kapat(); });
