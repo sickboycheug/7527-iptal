@@ -7044,8 +7044,7 @@ function rkRender() {
 }
 // --- ONUR KÖŞESİ: KİŞİYE ÖZEL GÖRSEL VE PAYLAŞIM -------------------------
 // Görsel telefonda üretilir (GitHub'a dosya yüklemek gerekmez). Her tamamlayanın rozetinin yanına
-// tek bir "Paylaş" düğmesi eklenir. Telefonda görsel + metin paylaşım menüsüyle gider,
-// bilgisayarda görsel iner ve metin kopyalanır.
+// isim dokunulabilir olur (ayrı düğme yok).
 async function rkOnurGorsel(r) {
   try { await Promise.all([document.fonts.load("700 80px Oswald"), document.fonts.load("600 26px Inter"), document.fonts.load("700 26px Inter")]); } catch (e) {}
   var W = 1200, H = 630, K = 2, c = document.createElement('canvas'); c.width = W * K; c.height = H * K;
@@ -7059,7 +7058,7 @@ async function rkOnurGorsel(r) {
   t('594 DİLEKÇE.', 56, 88, '700 80px Oswald, "Arial Narrow", sans-serif', '#f1f5f2');
   t('TEK TEK.', 56, 180, '700 80px Oswald, "Arial Narrow", sans-serif', '#f59e0b');
   var y = 288;
-  [['Cumhurbaşkanlığı’na, TBMM Başkanlığı’na', '#d8e4dd'], ['ve 592 milletvekilinin her birine.', '#d8e4dd'], ['Sıralamaya gir,', '#fcd34d'], ['adını onur köşesine yaz.', '#fcd34d']]
+  [['Cumhurbaşkanlığı’na, TBMM Başkanlığı’na', '#d8e4dd'], ['ve 592 milletvekilinin her birine.', '#d8e4dd'], ['594 dilekçeyle tarihe not düştü.', '#fcd34d'], ['Sıradaki isim seninki olsun.', '#fcd34d']]
     .forEach(function (l) { t(l[0], 58, y, '600 26px Inter', l[1]); y += 38; });
   t('Milyonlarca canın geleceği senin ellerinde.', 58, y + 14, '700 26px Inter', '#f1f5f2');
   // madalya
@@ -7090,23 +7089,54 @@ function rkOnurMetin(r) {
     'Milyonlarca canın geleceği senin ellerinde. 594 dilekçe gönder, geleceğe hayat ver. #7527İptal\n\n' +
     SITE_URL + '/paylas-siralama.html?v=3';
 }
-async function rkOnurPaylas(r, btn) {
-  var eski = btn.textContent; btn.disabled = true; btn.textContent = 'Hazırlanıyor…';
+// İsme dokununca: telefonda cihazın paylaşım menüsü (görsel + metin),
+// bilgisayarda görselli küçük bir pencere (WhatsApp, X, Facebook, Telegram, Görseli indir)
+var _rkOnurMeşgul = false;
+async function rkOnurPaylas(r) {
+  if (_rkOnurMeşgul) return; _rkOnurMeşgul = true;
   try {
     var blob = await rkOnurGorsel(r), metin = rkOnurMetin(r);
     var dosyaAdi = '7527-onur-' + rkNorm(r.etiket).replace(/\s+/g, '-') + '.png';
     var dosya = new File([blob], dosyaAdi, { type: 'image/png' });
-    if (navigator.canShare && navigator.canShare({ files: [dosya] })) {
+    var mobil = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+    if (mobil && navigator.canShare && navigator.canShare({ files: [dosya] })) {
       await navigator.share({ files: [dosya], text: metin }).catch(function () {});
     } else {
-      var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = dosyaAdi; document.body.appendChild(a); a.click(); a.remove();
-      try { await navigator.clipboard.writeText(metin); } catch (e) {}
-      btn.textContent = '✓ Görsel indi, metin kopyalandı'; setTimeout(function () { btn.textContent = eski; btn.disabled = false; }, 2500); return;
+      rkOnurPencere(r, blob, dosyaAdi, metin);
     }
   } catch (e) { alert('Görsel hazırlanamadı. Sayfayı yenileyip tekrar dene.'); }
-  btn.textContent = eski; btn.disabled = false;
+  _rkOnurMeşgul = false;
 }
-// Onur Köşesi her çizildiğinde rozetlerin yanına Paylaş düğmesi eklenir
+function rkOnurPencere(r, blob, dosyaAdi, metin) {
+  var eski = document.getElementById('rk-onur-pencere'); if (eski) eski.remove();
+  var url = URL.createObjectURL(blob), link = SITE_URL + '/paylas-siralama.html?v=3', q = encodeURIComponent;
+  var yalin = metin.replace(/\s*https?:\/\/\S+\s*$/, '').trim();
+  var kisa = '🏅 ' + r.etiket + ', 594 dilekçenin tamamını gönderdi: CB, TBMM ve 592 milletvekilinin her birine. Milyonlarca canın geleceği senin ellerinde. #7527İptal';
+  var m = document.createElement('div'); m.id = 'rk-onur-pencere';
+  m.className = 'fixed inset-0 z-[100000] bg-black/85 flex items-center justify-center p-4';
+  m.innerHTML = '<div class="bg-zinc-900 border border-amber-700 rounded-2xl max-w-lg w-full p-4 space-y-3 shadow-2xl">' +
+    '<div class="flex justify-between items-center"><b class="text-amber-300 text-sm uppercase tracking-wide">🏅 Onur Köşesi</b>' +
+    '<button type="button" data-k="x" class="text-zinc-400 hover:text-white text-2xl leading-none" aria-label="Kapat">&times;</button></div>' +
+    '<img alt="" class="w-full rounded-xl border border-zinc-700">' +
+    '<div class="grid grid-cols-2 gap-2 text-xs font-bold">' +
+    '<a data-k="wa" target="_blank" rel="noopener" class="py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white text-center">WhatsApp</a>' +
+    '<a data-k="xx" target="_blank" rel="noopener" class="py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-white text-center">X</a>' +
+    '<a data-k="fb" target="_blank" rel="noopener" class="py-2.5 rounded-xl bg-blue-800 hover:bg-blue-700 text-white text-center">Facebook</a>' +
+    '<a data-k="tg" target="_blank" rel="noopener" class="py-2.5 rounded-xl bg-sky-700 hover:bg-sky-600 text-white text-center">Telegram</a>' +
+    '<a data-k="dl" class="col-span-2 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 text-center">⬇ Görseli indir (Instagram için)</a>' +
+    '</div></div>';
+  m.querySelector('img').src = url;
+  m.querySelector('[data-k="wa"]').href = 'https://api.whatsapp.com/send?text=' + q(metin);
+  m.querySelector('[data-k="xx"]').href = 'https://twitter.com/intent/tweet?text=' + q(kisa) + '&url=' + q(link);
+  m.querySelector('[data-k="fb"]').href = 'https://www.facebook.com/sharer/sharer.php?u=' + q(link);
+  m.querySelector('[data-k="tg"]').href = 'https://t.me/share/url?url=' + q(link) + '&text=' + q(yalin);
+  var dl = m.querySelector('[data-k="dl"]'); dl.href = url; dl.setAttribute('download', dosyaAdi);
+  function kapat() { m.remove(); setTimeout(function () { URL.revokeObjectURL(url); }, 60000); }
+  m.querySelector('[data-k="x"]').onclick = kapat;
+  m.addEventListener('click', function (e) { if (e.target === m) kapat(); });
+  document.body.appendChild(m);
+}
+// Onur Köşesi her çizildiğinde: isimler dokunulabilir olur
 var _rkRenderAsil = rkRender;
 rkRender = function () {
   _rkRenderAsil();
@@ -7114,11 +7144,11 @@ rkRender = function () {
   var honor = _rkRows.filter(function (r) { return Number(r.toplam) >= RK_TOPLAM; });
   Array.prototype.slice.call(hb.children).forEach(function (chip, i) {
     var r = honor[i]; if (!r) return;
-    var b = document.createElement('button'); b.type = 'button';
-    b.className = 'ml-1 px-2.5 py-1.5 rounded-full bg-zinc-900/80 border border-amber-500 text-amber-300 text-[11px] font-bold';
-    b.textContent = '📤 Paylaş';
-    b.onclick = function () { rkOnurPaylas(r, b); };
-    chip.insertAdjacentElement('afterend', b);
+    chip.setAttribute('role', 'button'); chip.setAttribute('tabindex', '0');
+    chip.classList.add('cursor-pointer', 'hover:bg-amber-400', 'active:scale-95', 'transition');
+    chip.title = 'Paylaşmak için dokun';
+    chip.onclick = function () { rkOnurPaylas(r); };
+    chip.onkeydown = function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); rkOnurPaylas(r); } };
   });
 };
 function rkToggle() { _rkOpen = !_rkOpen; rkRender(); if (!_rkOpen) { var c = document.getElementById('rk-card'); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }
