@@ -3935,7 +3935,7 @@ async function sendPetitionViaEmail() {
       return;
     }
   }
-    // Sunucu kontrolü (her cihazda çalışır): aynı ad-soyadla bu hedefe daha önce dilekçe oluşturulmuş mu?
+  // Sunucu kontrolü (her cihazda çalışır): aynı ad-soyadla bu hedefe daha önce dilekçe oluşturulmuş mu?
   // Onaylıysa ikinci dilekçe oluşturulmaz. Onaysızsa yenisi açılmaz, o dilekçe kullanılır.
   if (!oncekiNo) {
     var mevcut = null;
@@ -7042,6 +7042,85 @@ function rkRender() {
   more.textContent = _rkOpen ? 'Daralt ▲' : 'Tüm sıralamayı gör (' + rest.length + ' kişi) ▼';
   card.classList.remove('hidden');
 }
+// --- ONUR KÖŞESİ: KİŞİYE ÖZEL GÖRSEL VE PAYLAŞIM -------------------------
+// Görsel telefonda üretilir (GitHub'a dosya yüklemek gerekmez). Her tamamlayanın rozetinin yanına
+// tek bir "Paylaş" düğmesi eklenir. Telefonda görsel + metin paylaşım menüsüyle gider,
+// bilgisayarda görsel iner ve metin kopyalanır.
+async function rkOnurGorsel(r) {
+  try { await Promise.all([document.fonts.load("700 80px Oswald"), document.fonts.load("600 26px Inter"), document.fonts.load("700 26px Inter")]); } catch (e) {}
+  var W = 1200, H = 630, K = 2, c = document.createElement('canvas'); c.width = W * K; c.height = H * K;
+  var x = c.getContext('2d'); x.scale(K, K);
+  x.fillStyle = '#0b0f0d'; x.fillRect(0, 0, W, H);
+  var g = x.createRadialGradient(1000, 300, 20, 1000, 300, 520); g.addColorStop(0, 'rgba(120,80,10,.55)'); g.addColorStop(1, 'rgba(11,15,13,0)');
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+  x.textBaseline = 'top';
+  function t(s, px, py, font, col) { x.font = font; x.fillStyle = col; x.fillText(s, px, py); }
+  t('ONUR KÖŞESİ  ·  7527 İPTAL', 56, 44, '500 24px Oswald, "Arial Narrow", sans-serif', '#fbbf24');
+  t('594 DİLEKÇE.', 56, 88, '700 80px Oswald, "Arial Narrow", sans-serif', '#f1f5f2');
+  t('TEK TEK.', 56, 180, '700 80px Oswald, "Arial Narrow", sans-serif', '#f59e0b');
+  var y = 288;
+  [['Cumhurbaşkanlığı’na, TBMM Başkanlığı’na', '#d8e4dd'], ['ve 592 milletvekilinin her birine.', '#d8e4dd'], ['Sıralamaya gir,', '#fcd34d'], ['adını onur köşesine yaz.', '#fcd34d']]
+    .forEach(function (l) { t(l[0], 58, y, '600 26px Inter', l[1]); y += 38; });
+  t('Milyonlarca canın geleceği senin ellerinde.', 58, y + 14, '700 26px Inter', '#f1f5f2');
+  // madalya
+  var cx = 960, cy = 175;
+  x.fillStyle = '#dc2626'; x.beginPath(); x.moveTo(cx - 70, cy - 140); x.lineTo(cx - 20, cy - 140); x.lineTo(cx, cy - 86); x.lineTo(cx - 40, cy - 78); x.fill();
+  x.fillStyle = '#b91c1c'; x.beginPath(); x.moveTo(cx + 70, cy - 140); x.lineTo(cx + 20, cy - 140); x.lineTo(cx, cy - 86); x.lineTo(cx + 40, cy - 78); x.fill();
+  x.beginPath(); x.arc(cx, cy, 92, 0, Math.PI * 2); x.fillStyle = '#f59e0b'; x.fill(); x.lineWidth = 6; x.strokeStyle = '#fde68a'; x.stroke();
+  x.beginPath(); x.arc(cx, cy, 70, 0, Math.PI * 2); x.lineWidth = 3; x.strokeStyle = '#92400e'; x.stroke();
+  x.textAlign = 'center';
+  t('594', cx, cy - 50, '700 64px Oswald, "Arial Narrow", sans-serif', '#3b2304');
+  t('/ 594', cx, cy + 26, '600 20px Oswald, "Arial Narrow", sans-serif', '#3b2304');
+  // madalyanın altında isim ve il
+  var ad = String(r.etiket || '').toLocaleUpperCase('tr'), sz = 64;
+  x.font = '700 ' + sz + 'px Oswald, "Arial Narrow", sans-serif'; while (x.measureText(ad).width > 400 && sz > 34) { sz -= 2; x.font = '700 ' + sz + 'px Oswald, "Arial Narrow", sans-serif'; }
+  t(ad, cx, cy + 108, '700 ' + sz + 'px Oswald, "Arial Narrow", sans-serif', '#ffffff');
+  var yer = rkYer(r); if (yer) t(yer, cx, cy + 108 + sz * 1.35, '500 24px Oswald, "Arial Narrow", sans-serif', '#fbbf24');
+  x.textAlign = 'left';
+  // alt şerit
+  x.font = '600 26px Oswald, "Arial Narrow", sans-serif'; var cag = '594 DİLEKÇE GÖNDER, GELECEĞE HAYAT VER.', w = x.measureText(cag).width + 48;
+  x.fillStyle = '#f59e0b'; x.beginPath(); if (x.roundRect) x.roundRect(56, 540, w, 56, 28); else x.rect(56, 540, w, 56); x.fill();
+  t(cag, 80, 551, '600 26px Oswald, "Arial Narrow", sans-serif', '#1c1203');
+  x.textAlign = 'right'; t('7527iptal.org', W - 56, 554, '700 26px Inter', '#9db3a8'); x.textAlign = 'left';
+  return await new Promise(function (ok) { c.toBlob(ok, 'image/png'); });
+}
+function rkOnurMetin(r) {
+  var yer = rkYer(r);
+  return '🏅 ' + r.etiket + (yer ? ' (' + yer + ')' : '') + ', 594 dilekçenin tamamını gönderdi: Cumhurbaşkanlığı’na, TBMM Başkanlığı’na ve 592 milletvekilinin her birine, tek tek.\n\n' +
+    'Milyonlarca canın geleceği senin ellerinde. 594 dilekçe gönder, geleceğe hayat ver. #7527İptal\n\n' +
+    SITE_URL + '/paylas-siralama.html?v=3';
+}
+async function rkOnurPaylas(r, btn) {
+  var eski = btn.textContent; btn.disabled = true; btn.textContent = 'Hazırlanıyor…';
+  try {
+    var blob = await rkOnurGorsel(r), metin = rkOnurMetin(r);
+    var dosyaAdi = '7527-onur-' + rkNorm(r.etiket).replace(/\s+/g, '-') + '.png';
+    var dosya = new File([blob], dosyaAdi, { type: 'image/png' });
+    if (navigator.canShare && navigator.canShare({ files: [dosya] })) {
+      await navigator.share({ files: [dosya], text: metin }).catch(function () {});
+    } else {
+      var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = dosyaAdi; document.body.appendChild(a); a.click(); a.remove();
+      try { await navigator.clipboard.writeText(metin); } catch (e) {}
+      btn.textContent = '✓ Görsel indi, metin kopyalandı'; setTimeout(function () { btn.textContent = eski; btn.disabled = false; }, 2500); return;
+    }
+  } catch (e) { alert('Görsel hazırlanamadı. Sayfayı yenileyip tekrar dene.'); }
+  btn.textContent = eski; btn.disabled = false;
+}
+// Onur Köşesi her çizildiğinde rozetlerin yanına Paylaş düğmesi eklenir
+var _rkRenderAsil = rkRender;
+rkRender = function () {
+  _rkRenderAsil();
+  var hb = document.getElementById('rk-honor'); if (!hb) return;
+  var honor = _rkRows.filter(function (r) { return Number(r.toplam) >= RK_TOPLAM; });
+  Array.prototype.slice.call(hb.children).forEach(function (chip, i) {
+    var r = honor[i]; if (!r) return;
+    var b = document.createElement('button'); b.type = 'button';
+    b.className = 'ml-1 px-2.5 py-1.5 rounded-full bg-zinc-900/80 border border-amber-500 text-amber-300 text-[11px] font-bold';
+    b.textContent = '📤 Paylaş';
+    b.onclick = function () { rkOnurPaylas(r, b); };
+    chip.insertAdjacentElement('afterend', b);
+  });
+};
 function rkToggle() { _rkOpen = !_rkOpen; rkRender(); if (!_rkOpen) { var c = document.getElementById('rk-card'); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }
 async function rkLoad() {
   if (!supabaseClient) return;
