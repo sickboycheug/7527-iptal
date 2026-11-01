@@ -63,7 +63,7 @@
 
 <div class="bg-zinc-900 border-b border-zinc-800">
   <div class="max-w-4xl mx-auto px-4 py-3 grid grid-cols-2 sm:grid-cols-5 gap-3 text-center">
-    <div><div id="c-sign" class="text-xl font-extrabold text-white">–</div><div class="text-[10px] uppercase tracking-wider text-zinc-400">İmzacı</div></div>
+    <div><div id="c-sign" class="text-xl font-extrabold text-white">–</div><div class="text-[10px] uppercase tracking-wider text-zinc-400">Dilekçe</div></div>
     <div><div id="c-vol" class="text-xl font-extrabold text-emerald-400">–</div><div class="text-[10px] uppercase tracking-wider text-zinc-400">Gönüllü</div></div>
     <div><div id="c-cb" class="text-xl font-extrabold text-white">–</div><div class="text-[10px] uppercase tracking-wider text-zinc-400">Cumhurbaşkanlığı</div></div>
     <div><div id="c-mb" class="text-xl font-extrabold text-white">–</div><div class="text-[10px] uppercase tracking-wider text-zinc-400">TBMM Başkanlığı</div></div>
@@ -84,7 +84,7 @@
           <span class="text-zinc-500">10 – 19 Ekim 2026</span>
         </div>
         <h2 class="font-impact text-2xl text-white uppercase tracking-wide">Gönüllü sayfamız: kolay, görünür, güvenli</h2>
-        <p class="text-sm text-zinc-300 leading-relaxed">Kampanya yalnızca imzayla değil, kendi şehrinde ses olan insanlarla büyür. Bu sayfa gönüllülerin tanıştığı, görev aldığı ve birbirini gördüğü yer. Neler var, ne işe yarıyor, nasıl kullanılır:</p>
+        <p class="text-sm text-zinc-300 leading-relaxed">Kampanya yalnızca dilekçeyle değil, kendi şehrinde ses olan insanlarla büyür. Bu sayfa gönüllülerin tanıştığı, görev aldığı ve birbirini gördüğü yer. Neler var, ne işe yarıyor, nasıl kullanılır:</p>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -1841,21 +1841,6 @@ async function adminDeleteMaterial(m) {
     alert('Kayıt güncellendi.');
   } catch (e) { alert('HATA: ' + (e && e.message ? e.message : e)); }
 }
-  async function adminEditApp(a) {
-  var name = prompt('Ad Soyad:', a.name); if (name === null) return;
-  var contact = prompt('Telefon veya e-posta:', a.contact); if (contact === null) return;
-  name = name.trim(); contact = contact.trim();
-  if (name.split(/\s+/).filter(function (p) { return p.length >= 2; }).length < 2) { alert('Ad ve soyad birlikte yazılmalı.'); return; }
-  var ck = contactKind(contact);
-  if (ck.type !== 'phone' && ck.type !== 'email') { alert('Geçerli bir telefon veya e-posta yazın.'); return; }
-  try {
-    var env = await encryptPayload({ name: name, contact: contact, note: a.note, country: a.country, city: a.city, district: a.district, ref: a.ref, at: a.created_at || new Date().toISOString() });
-    await callRpc('admin_update_volunteer_enc', { p_pin: adminPin, p_id: a.id, p_payload_enc: env });
-    a.name = name; a.contact = contact;
-    renderApps();
-    alert('Kayıt güncellendi.');
-  } catch (e) { alert('HATA: ' + (e && e.message ? e.message : e)); }
-}
   async function adminAddMaterial() {
   var kind = $('adm-m-kind').value;
   var title = ($('adm-m-title').value || '').trim();
@@ -2231,6 +2216,25 @@ function renderMaterials() {
     var k = await adminIdbGet();
     if (k && k.key && Date.now() - k.t <= ADMIN_TTL) { adminKey = k.key; adminLoadApps(); }
   } catch (e) { adminSessionClear(); }
+})();
+</script>
+<script>window.__tekPaylasHedefler = function () { function u(x){return x&&x.parentNode;} return [[u([].slice.call(document.querySelectorAll('span')).filter(function(s){return /Bu sayfayı paylaş/.test(s.textContent);})[0]),'Bu sayfayı paylaş','btn flex items-center justify-center gap-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-white'],[u(document.querySelector("button[onclick=\"ilDavet('wa')\"]")),'Davet metnini paylaş','btn flex items-center justify-center gap-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-white']].filter(function(h){return h[0];}); };</script>
+<script>
+// Paylaşım düğme grupları tek "📤 Paylaş" düğmesinin arkasında durur; basınca açılır.
+(function () {
+  function tek(el, etiket, cls) {
+    if (!el || el.__tek) return; el.__tek = 1;
+    var b0 = el.querySelector('b, span');
+    if (!etiket && b0 && /payla/i.test(b0.textContent)) etiket = b0.textContent.replace(/[:\s]+$/, '');
+    var btn = document.createElement('button');
+    btn.type = 'button'; btn.className = cls; btn.textContent = '📤 ' + (etiket || 'Paylaş');
+    btn.setAttribute('aria-expanded', 'false');
+    el.style.display = 'none';
+    el.parentNode.insertBefore(btn, el);
+    btn.onclick = function () { var ac = el.style.display === 'none'; el.style.display = ac ? '' : 'none'; btn.setAttribute('aria-expanded', String(ac)); };
+  }
+  function kur() { try { (window.__tekPaylasHedefler || function () { return []; })().forEach(function (h) { tek(h[0], h[1], h[2]); }); } catch (e) {} }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', kur); else kur();
 })();
 </script>
 </body>

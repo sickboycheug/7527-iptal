@@ -790,19 +790,24 @@ button.btn.dy-ghost{border:1px solid var(--em)}
 <a class="mail" href="mailto:iletisim@7527iptal.org">iletisim@7527iptal.org</a><br><a class="mail" href="mailto:bilgi@7527iptal.org">bilgi@7527iptal.org</a>
 </div>
 </footer>
+
+<script>window.__tekPaylasHedefler = function () { function u(x){return x&&x.parentNode;} return [].slice.call(document.querySelectorAll('.up-share')).map(function(e){return [e,'','btn dy-ghost'];}).concat([].slice.call(document.querySelectorAll('.vw-share')).map(function(e){return [e,'Paylaş','btn dy-ghost'];})); };</script>
 <script>
-(function(){
-  var s=document.getElementById('slides'),p=document.getElementById('sl-prev'),n=document.getElementById('sl-next'),c=document.getElementById('sl-cnt');
-  if(!s)return;
-  var imgs=s.querySelectorAll('img');
-  function step(){var a=imgs[0],b=imgs[1];return b?b.offsetLeft-a.offsetLeft:a.offsetWidth+14}
-  function idx(){return Math.min(imgs.length-1,Math.round(s.scrollLeft/step()))}
-  function upd(){var i=idx();c.textContent=(i+1)+' / '+imgs.length;p.disabled=s.scrollLeft<4;n.disabled=s.scrollLeft+s.clientWidth>=s.scrollWidth-4}
-  p.addEventListener('click',function(){s.scrollBy({left:-step(),behavior:'smooth'})});
-  n.addEventListener('click',function(){s.scrollBy({left:step(),behavior:'smooth'})});
-  s.addEventListener('scroll',upd,{passive:true});
-  s.addEventListener('keydown',function(e){if(e.key==='ArrowRight'){n.click();e.preventDefault()}if(e.key==='ArrowLeft'){p.click();e.preventDefault()}});
-  window.addEventListener('resize',upd);upd();
+// Paylaşım düğme grupları tek "📤 Paylaş" düğmesinin arkasında durur; basınca açılır.
+(function () {
+  function tek(el, etiket, cls) {
+    if (!el || el.__tek) return; el.__tek = 1;
+    var b0 = el.querySelector('b, span');
+    if (!etiket && b0 && /payla/i.test(b0.textContent)) etiket = b0.textContent.replace(/[:\s]+$/, '');
+    var btn = document.createElement('button');
+    btn.type = 'button'; btn.className = cls; btn.textContent = '📤 ' + (etiket || 'Paylaş');
+    btn.setAttribute('aria-expanded', 'false');
+    el.style.display = 'none';
+    el.parentNode.insertBefore(btn, el);
+    btn.onclick = function () { var ac = el.style.display === 'none'; el.style.display = ac ? '' : 'none'; btn.setAttribute('aria-expanded', String(ac)); };
+  }
+  function kur() { try { (window.__tekPaylasHedefler || function () { return []; })().forEach(function (h) { tek(h[0], h[1], h[2]); }); } catch (e) {} }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', kur); else kur();
 })();
 </script>
 </body>
