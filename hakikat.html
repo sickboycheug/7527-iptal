@@ -204,6 +204,7 @@ footer a.mail{font-size:clamp(20px,3.4vw,28px);font-weight:700;text-decoration:n
 .up-share{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:14px}
 .up-share>b{font-family:'Oswald',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--em2);margin-right:4px}
 .up-cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+@media(max-width:600px){.up-cta>.btn,#harita .hm-cta>.btn{flex:1 1 100%;text-align:center;justify-content:center}}
 .dy-news{display:flex;gap:18px;margin-top:10px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding-bottom:12px;scrollbar-color:var(--em) transparent}
 .dy-card{flex:0 0 min(86%,21rem);scroll-snap-align:start;background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column}
 .dy-cov{display:block;width:100%;aspect-ratio:4/5;overflow:hidden;background:#0b0f0d;border:0;padding:0;cursor:pointer}
@@ -318,12 +319,12 @@ button.btn.dy-ghost{border:1px solid var(--em)}
 <div class="up-pr"><b>Bunları yaparken neleri gözetiyoruz?</b>
 <ul>
 <li><b>Kaynaksız yayınlamıyoruz.</b> Her vaka bir haber ya da resmî kayda dayanır.</li>
-<li><b>İddia ile kesin bilgiyi ayırıyoruz.</b> Bilmediğimizi “bilinmiyor” diye yazıyoruz.</li>
+<li><b>İddia ile kesin bilgiyi ayırıyoruz.</b> Bilmediğimizi açıkça “bilinmiyor” olarak yazıyoruz.</li>
 <li><b>Kişi değil, sayı gösteriyoruz.</b> Haritada isim yok, yalnızca il bazında rakamlar var.</li>
 <li><b>Herkesin verisini koruyoruz.</b> Bildirenin bilgisi ve dosya numaraları gibi ayrıntılar herkese açık değildir.</li>
 <li><b>Gizlimiz saklımız yok.</b> Ne yaptığımızı ve neden yaptığımızı burada açıkça yazıyoruz.</li>
 </ul></div>
-<div class="up-cta"><a class="btn" href="#harita">Haritayı gör</a><a class="btn dy-ghost" href="https://7527iptal.org/">Vaka bildir ve dilekçeni gönder</a></div>
+<div class="up-cta"><a class="btn" href="#harita">Haritayı gör</a><a class="btn dy-ghost" href="https://7527iptal.org/">Dilekçeni gönder</a></div>
 <div class="up-share"><b>Bu güncellemeyi paylaş:</b>
 <a class="btn dy-ghost" href="https://wa.me/?text=7527%20%C4%B0ptal%20kampanyas%C4%B1%20g%C3%BCncellendi%3A%203%20ad%C4%B1mda%20dilek%C3%A7e%2C%20vaka%20haritas%C4%B1%2C%20adli%20takip.%20Sen%20de%20sesini%20ilet%3A%20https%3A%2F%2F7527iptal.org%2Fpaylas-guncelleme.html" target="_blank" rel="noopener">WhatsApp</a>
 <a class="btn dy-ghost" href="https://twitter.com/intent/tweet?text=7527%20%C4%B0ptal%20kampanyas%C4%B1%20g%C3%BCncellendi%3A%203%20ad%C4%B1mda%20dilek%C3%A7e%2C%20vaka%20haritas%C4%B1%2C%20adli%20takip.%20Sen%20de%20sesini%20ilet%3A&url=https%3A%2F%2F7527iptal.org%2Fpaylas-guncelleme.html" target="_blank" rel="noopener">X</a>
@@ -809,7 +810,9 @@ button.btn.dy-ghost{border:1px solid var(--em)}
     btn.type = 'button'; btn.className = cls; btn.textContent = '📤 ' + (etiket || 'Paylaş');
     btn.setAttribute('aria-expanded', 'false');
     el.style.display = 'none';
-    el.parentNode.insertBefore(btn, el);
+    var row = el.previousElementSibling;
+    if (row && /(^|\s)(up-cta|hm-cta)(\s|$)/.test(row.className)) { btn.className = btn.className.replace(/\s*tek-paylas/, ''); row.appendChild(btn); }
+    else el.parentNode.insertBefore(btn, el);
     btn.onclick = function () { var ac = el.style.display === 'none'; el.style.display = ac ? '' : 'none'; btn.setAttribute('aria-expanded', String(ac)); };
   }
   function kur() { try { (window.__tekPaylasHedefler || function () { return []; })().forEach(function (h) { tek(h[0], h[1], h[2]); }); } catch (e) {} }
