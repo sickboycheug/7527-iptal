@@ -3244,6 +3244,32 @@ function selectTarget(target) {
   }
 
   updatePetitionPreview();
+  try { hedefDurumGoster(target); } catch (e) {}
+}
+
+// CB / TBMM seçildiğinde: bu hedefe daha önce gönderildiyse hemen söylenir, sıradaki hedef önerilir.
+async function hedefDurumGoster(t) {
+  if (t !== 'cb' && t !== 'mb') return;
+  var ad = (document.getElementById('citizen-name') || {}).value || '';
+  if (ad.trim()) { try { await gonderilenSenkron(ad); } catch (e) {} }
+  if (selectedTarget !== t || !hedefGonderildi(t)) return;
+  var h = document.getElementById('target-help-text');
+  if (!h) return;
+  var yer = t === 'cb' ? 'Cumhurbaşkanlığı' : 'TBMM Başkanlığı';
+  var sonraki = siradakiHedef();
+  var il = getPlace().city;
+  var oneri = sonraki === 'mb' ? 'Sıradaki: TBMM Başkanlığı.'
+            : sonraki === 'cb' ? 'Sıradaki: Cumhurbaşkanlığı.'
+            : (il && !getAbroad().on ? il + ' vekillerinden başlayarak bütün vekillere gönderebilirsin.' : 'Şimdi vekillere gönderebilirsin; önce kendi ilinin vekillerini seç.');
+  h.textContent = '';
+  var span = document.createElement('span');
+  span.textContent = '✓ ' + yer + "'na dilekçeni gönderdin. " + oneri + ' ';
+  var btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'underline font-bold text-emerald-300';
+  btn.textContent = 'Sıradakine geç →';
+  btn.onclick = function () { siradakineGec(siradakiHedef()); };
+  h.appendChild(span); h.appendChild(btn);
 }
 
 // Dilekçe Metni Önizlemesini Güncelle
@@ -3901,6 +3927,16 @@ async function sendPetitionViaEmail() {
     alert('Devam edebilmek için aydınlatma metnini okuyup onay kutusunu işaretlemeniz gerekir.');
     consent.scrollIntoView({ behavior: 'smooth', block: 'center' });
     consent.focus();
+    return;
+  }
+  // Uyarıdan önce sunucudaki gönderim listesi alınır (her cihazda doğru kalan sayısı)
+  try { await gonderilenSenkron(name); } catch (e) {}
+  var zatenGitti = (selectedTarget === 'mp' && selectedMP && getSentMpIds().indexOf(selectedMP.id) !== -1) ||
+                   ((selectedTarget === 'cb' || selectedTarget === 'mb') && hedefGonderildi(selectedTarget));
+  if (zatenGitti) {
+    var hedefAdi = selectedTarget === 'cb' ? 'Cumhurbaşkanlığı' : selectedTarget === 'mb' ? 'TBMM Başkanlığı' : selectedMP.name;
+    alert(hedefAdi + ' için bu ad-soyadla dilekçe zaten gönderilmiş. Aynı hedefe ikinci dilekçe oluşturulmaz.\n\n' + kalanMetni());
+    try { hedefSunucuKontrol(); } catch (e) {}
     return;
   }
     var tekrarAnahtar = '7527_gonderim_' + selectedTarget +
@@ -5571,12 +5607,15 @@ function kalanMetni() {
   if (n >= top) return top + ' dilekçenin hepsini gönderdin. Onur Köşesi\'ndesin 🏅';
   return top + ' dilekçeden ' + n + ' tanesini gönderdin, ' + (top - n) + ' dilekçen kaldı.';
 }
-async function hedefSunucuKontrol() {
-  var name = (document.getElementById('citizen-name').value || '').trim();
-  if (name.split(/\s+/).filter(function (p) { return p.length >= 2; }).length < 2) return;
+var _senkAd = '';
+async function gonderilenSenkron(name) {
+  name = (name || '').trim();
+  if (name.split(/\s+/).filter(function (p) { return p.length >= 2; }).length < 2) return false;
+  var anahtar = rkNorm ? rkNorm(name) : name.toLocaleLowerCase('tr');
+  if (_senkAd === anahtar) return true;
   var kh = null;
-  try { kh = await rkHash(name); } catch (e) { return; }
-  if (!kh) return;
+  try { kh = await rkHash(name); } catch (e) { return false; }
+  if (!kh) return false;
   var rows = null;
   try { rows = await callRpc('petition_sent_targets', { p_hash: kh }); } catch (e) { rows = null; }
   if (Array.isArray(rows)) {
@@ -5599,7 +5638,13 @@ async function hedefSunucuKontrol() {
       } catch (e) {}
     }
   }
+  _senkAd = anahtar;
   try { filterMps(); updateSentMpNotice(); } catch (e) {}
+  return true;
+}
+async function hedefSunucuKontrol() {
+  var name = (document.getElementById('citizen-name').value || '').trim();
+  if (!(await gonderilenSenkron(name))) return;
   var onceki = selectedTarget, sonraki = siradakiHedef();
   if (sonraki !== onceki && (onceki === 'cb' || onceki === 'mb')) siradakineGec(sonraki);
   if (selectedMP && getSentMpIds().indexOf(selectedMP.id) !== -1) {
@@ -7379,7 +7424,12 @@ function switchVideoTab(tab) {
         guvenli('hedef seçimi', function() { siradakineGec(siradakiHedef()); });
         guvenli('sıradaki hedef kontrolü', function() {
           var nm = document.getElementById('citizen-name');
-          if (nm) nm.addEventListener('change', hedefSunucuKontrol);
+          if (nm) {
+            var zam = null;
+            nm.addEventListener('change', hedefSunucuKontrol);
+            nm.addEventListener('input', function () { clearTimeout(zam); zam = setTimeout(hedefSunucuKontrol, 900); });
+            setTimeout(function () { if (nm.value) hedefSunucuKontrol(); }, 1500);
+          }
         });
 
         guvenli('video dinleyicileri', function() {
