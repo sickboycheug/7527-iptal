@@ -1319,6 +1319,11 @@
       <p class="text-xs text-zinc-300 mt-1">Dilekçeniz kayda geçti ve sayaçlara yansıtıldı.</p>
     </div>
 
+    <div id="thanks-next" class="hidden p-3 bg-emerald-950/60 border border-emerald-600 rounded-xl text-left space-y-2">
+      <p id="thanks-next-text" class="text-xs text-emerald-200 font-bold leading-relaxed"></p>
+      <button type="button" onclick="thanksSiradaki()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-sm font-extrabold">➡️ Sıradaki dilekçeye geç</button>
+    </div>
+
     <div id="petition-number-box" class="hidden p-3 bg-emerald-950/60 border border-emerald-700 rounded-xl">
       <p class="text-[10px] text-emerald-400 uppercase tracking-widest font-bold">Dilekçe Numaranız</p>
       <p id="petition-number-value" class="font-mono text-sm text-white font-bold mt-0.5 break-all">-</p>
@@ -3548,8 +3553,7 @@ function generateMailtoUrl() {
   var yer = [district, city, getPlace().country].filter(Boolean).join(' / ');
   var tarih = new Date().toLocaleDateString('tr-TR');
 
-  var subject = "7527 Sayılı Kanun'un İptali ve 5199'a Dönülmesi Talebimdir" +
-                (name ? ' - ' + name : '');
+  var subject = (name ? name + ' – ' : '') + "7527 Sayılı Kanun'un İptali ve 5199'a Dönülmesi Talebimdir";
 
   var satirlar = [
     fillTemplatePlaceholders(tpl.header),
@@ -4077,6 +4081,7 @@ async function confirmPetitionSent(didSend) {
       updatePetitionPreview();
     } catch (e) {}
   }
+  try { siradakineGec(siradakiHedef()); } catch (e) {}
   openThanksModal();
 }
 
@@ -5497,8 +5502,92 @@ function openThanksModal() {
   document.getElementById('share-x').href = "https://twitter.com/intent/tweet?text=" + text;
   document.getElementById('share-fb').href = "https://www.facebook.com/sharer/sharer.php?u=" + url;
   document.getElementById('share-tg').href = "https://t.me/share/url?url=" + url + "&text=" + textTg;
+  try { thanksSiradakiDoldur(); } catch (e) {}
   var nb = document.getElementById('share-native-thanks');
   if (nb) nb.classList.toggle('hidden', !navigator.share);
+}
+
+// --- SIRADAKİ HEDEF: Cumhurbaşkanlığı → TBMM Başkanlığı → vekiller (önce kişinin ili) ---
+function hedefGonderildi(t) {
+  try { return !!localStorage.getItem('7527_gonderim_' + t + '_onay'); } catch (e) { return false; }
+}
+function siradakiHedef() {
+  if (!hedefGonderildi('cb')) return 'cb';
+  if (!hedefGonderildi('mb')) return 'mb';
+  return 'mp';
+}
+function vekilIliniSec() {
+  var f = document.getElementById('mp-city-filter');
+  var il = getPlace().city;
+  if (!f || !il || getAbroad().on) return;
+  for (var i = 0; i < f.options.length; i++) {
+    if (f.options[i].value === il) {
+      f.value = il;
+      var q = document.getElementById('mp-search-input'); if (q) q.value = '';
+      filterMps();
+      return;
+    }
+  }
+}
+function siradakineGec(t) {
+  selectTarget(t);
+  if (t === 'mp') vekilIliniSec();
+}
+function ildeKalanVekil() {
+  var il = getPlace().city;
+  if (!il || getAbroad().on) return -1;
+  var gonderilen = getSentMpIds();
+  return MP_DATABASE.filter(function (m) { return m.city === il && gonderilen.indexOf(m.id) === -1; }).length;
+}
+function thanksSiradakiDoldur() {
+  var kutu = document.getElementById('thanks-next'), yazi = document.getElementById('thanks-next-text');
+  if (!kutu || !yazi) return;
+  var t = siradakiHedef(), metin = '';
+  if (t === 'cb') metin = 'Sıradaki: Cumhurbaşkanlığı. Bilgilerin hazır, dilekçen tek dokunuşla hazırlanır.';
+  else if (t === 'mb') metin = 'Sıradaki: TBMM Başkanlığı. Bilgilerin hazır, dilekçen tek dokunuşla hazırlanır.';
+  else {
+    var kalan = ildeKalanVekil(), il = getPlace().city;
+    if (kalan > 0) metin = 'Sıradaki: ' + il + ' milletvekilleri. ' + kalan + ' vekile daha dilekçe gönderebilirsin.';
+    else metin = 'Sıradaki: milletvekilleri. Listeden bir vekil seç, dilekçen hazırlansın.';
+  }
+  yazi.textContent = metin;
+  kutu.classList.remove('hidden');
+}
+function thanksSiradaki() {
+  closeThanksModal();
+  var hedef = selectedTarget === 'mp'
+    ? document.getElementById('mp-selector-panel')
+    : document.getElementById('petition-send-btn');
+  if (hedef) hedef.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+// Ad-soyad yazılınca: CB / TBMM'ye bu adla daha önce onaylı dilekçe gitmişse sıradaki hedefe geçilir (her cihazda).
+async function hedefSunucuKontrol() {
+  if (selectedTarget !== 'cb' && selectedTarget !== 'mb') return;
+  var name = (document.getElementById('citizen-name').value || '').trim();
+  if (name.split(/\s+/).filter(function (p) { return p.length >= 2; }).length < 2) return;
+  try {
+    var kh = await rkHash(name);
+    if (!kh) return;
+    var hedefler = ['cb', 'mb'];
+    for (var i = 0; i < hedefler.length; i++) {
+      var r = await callRpc('petition_existing', { p_hash: kh, p_type: hedefler[i], p_id: null });
+      if (r && r.no && r.onay) {
+        try {
+          localStorage.setItem('7527_gonderim_' + hedefler[i], r.no);
+          localStorage.setItem('7527_gonderim_' + hedefler[i] + '_onay', '1');
+        } catch (e) {}
+      }
+    }
+  } catch (e) { return; }
+  var onceki = selectedTarget, sonraki = siradakiHedef();
+  if (sonraki !== onceki) {
+    siradakineGec(sonraki);
+    var h = document.getElementById('target-help-text');
+    var yapilan = [];
+    if (hedefGonderildi('cb')) yapilan.push('Cumhurbaşkanlığı');
+    if (hedefGonderildi('mb')) yapilan.push('TBMM Başkanlığı');
+    if (h && yapilan.length) h.textContent = '✓ ' + yapilan.join(' ve ') + "'na dilekçen daha önce gönderilmiş. Sıradaki hedef seçildi.";
+  }
 }
 
 async function shareThanksNative() {
@@ -6721,7 +6810,7 @@ function tkIletisimEkle(x, r) {
       if (!confirm(x.n.value + ' adresine resmi adresten (bilgi@7527iptal.org) e-posta gönderilecek. Devam edilsin mi?')) return;
       mb.disabled = true; mb.textContent = 'Gönderiliyor…';
       try {
-        var res = await supabaseClient.functions.invoke('send-invite', { body: { pin: adminPinCache, to: x.n.value, subject: x.confirmed ? '7527 İptal: teşekkürler' : '7527 İptal: dilekçeni birlikte tamamlayalım', text: msg } });
+        var res = await supabaseClient.functions.invoke('send-invite', { body: { pin: adminPinCache, to: x.n.value, subject: ((x.name || '').trim() ? (x.name || '').trim() + ', ' : '') + x.no + (x.confirmed ? ' numaralı dilekçen için teşekkürler' : ' numaralı dilekçen henüz onaylanmadı'), text: msg } });
         if (res.error) throw res.error;
         mb.textContent = '✓ E-posta gönderildi';
       } catch (e) { console.error('[send-invite]', e); mb.disabled = false; mb.textContent = '✉ E-posta gönder'; alert('E-posta gönderilemedi. Tekrar dene.'); }
@@ -6916,14 +7005,6 @@ async function tekrarTekSil(x, rowEl, btn) {
     rowEl.textContent = '';
     rowEl.appendChild(tkEl('span', 'text-zinc-500', '✔ silindi: ' + x.no));
     try { lkTemizle(x.no); } catch (e) {}
-    if (x.type === 'mp' && x.target) {
-      try {
-        var tn = function (t) { return String(t || '').toLocaleUpperCase('tr').replace(/İ/g, 'I').replace(/\s+/g, ' ').trim(); };
-        var ids = MP_DATABASE.filter(function (m) { return tn(m.name) === tn(x.target); }).map(function (m) { return m.id; });
-        var kalan = getSentMpIds().filter(function (i) { return ids.indexOf(i) === -1; });
-        localStorage.setItem(SENT_MPS_KEY, JSON.stringify(kalan));
-      } catch (e) {}
-    }
     try { await refreshCounters(); } catch (e) {}
   } catch (e) { btn.disabled = false; btn.textContent = '🗑 Sil'; alert(dataErrorText(e)); }
 }
@@ -7274,7 +7355,11 @@ function switchVideoTab(tab) {
         guvenli('karekod', initCampaignQR);
         guvenli('imzacı vekiller', renderSignedMpsList);
         guvenli('vekil beyanı', updateMpDocument);
-        guvenli('hedef seçimi', function() { selectTarget('cb'); });
+        guvenli('hedef seçimi', function() { siradakineGec(siradakiHedef()); });
+        guvenli('sıradaki hedef kontrolü', function() {
+          var nm = document.getElementById('citizen-name');
+          if (nm) nm.addEventListener('change', hedefSunucuKontrol);
+        });
 
         guvenli('video dinleyicileri', function() {
         var cVid = document.getElementById('gate-citizen-video');
