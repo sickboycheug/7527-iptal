@@ -6,8 +6,21 @@
 <title>Gönüllü Koordinasyon Panosu - 7527 İPTAL!</title>
 <meta name="description" content="7527 iptal kampanyası gönüllü başvurusu ve görev panosu.">
 <meta name="robots" content="noindex">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="tr_TR">
+<meta property="og:site_name" content="7527 İPTAL">
+<meta property="og:title" content="Kendi şehrinde ses ol: gönüllü ağına katıl">
+<meta property="og:description" content="Formu doldur, kodunu al, panoya geç. 7527 İptal gönüllü ağı seni bekliyor.">
+<meta property="og:url" content="https://7527iptal.org/gorev.html">
+<meta property="og:image" content="https://7527iptal.org/og-gonullu.png?v=1">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Kendi şehrinde ses ol: gönüllü ağına katıl">
+<meta name="twitter:description" content="Formu doldur, kodunu al, panoya geç. 7527 İptal gönüllü ağı seni bekliyor.">
+<meta name="twitter:image" content="https://7527iptal.org/og-gonullu.png?v=1">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -81,10 +94,28 @@
       <div class="space-y-2">
         <div class="flex items-center justify-between text-[11px] uppercase tracking-wider">
           <span class="bg-emerald-700 text-white font-bold px-2 py-0.5 rounded">Güncelleme</span>
-          <span class="text-zinc-500">10 – 19 Ekim 2026</span>
+          <span class="text-zinc-500">1 Kasım 2026</span>
         </div>
-        <h2 class="font-impact text-2xl text-white uppercase tracking-wide">Gönüllü sayfamız: kolay, görünür, güvenli</h2>
-        <p class="text-sm text-zinc-300 leading-relaxed">Kampanya yalnızca dilekçeyle değil, kendi şehrinde ses olan insanlarla büyür. Bu sayfa gönüllülerin tanıştığı, görev aldığı ve birbirini gördüğü yer. Neler var, ne işe yarıyor, nasıl kullanılır:</p>
+        <h2 class="font-impact text-2xl text-white uppercase tracking-wide">39 günde 3.354 dilekçe. Şimdi sıra sahada.</h2>
+        <p class="text-sm text-zinc-300 leading-relaxed">Kampanyanın bugünkü tablosu, olduğu gibi:</p>
+        <ul class="text-sm text-zinc-300 leading-relaxed space-y-1 list-none">
+          <li>📨 <strong class="text-white">3.354 dilekçe:</strong> 908 kişi, 55 il. Cumhurbaşkanlığı'na 855, TBMM Başkanlığı'na 154, vekillere 2.345.</li>
+          <li>🤝 <strong class="text-white">84 gönüllü:</strong> 23 il ve 1 ülke.</li>
+          <li>🐾 <strong class="text-white">87 vaka:</strong> 38 ilde belgelendi.</li>
+        </ul>
+        <p class="text-sm font-bold text-amber-300 pt-1">Nerede eksiğiz?</p>
+        <ul class="text-sm text-zinc-300 leading-relaxed space-y-1 list-disc pl-5">
+          <li>58 ilde henüz gönüllümüz yok.</li>
+          <li>26 ilden henüz tek dilekçe gelmedi.</li>
+          <li>Cumhurbaşkanlığı'na gönderenlerin çoğu TBMM'ye ve vekillere geçmedi: 855'e karşı 154.</li>
+        </ul>
+        <p class="text-sm font-bold text-emerald-300 pt-1">Gönüllüden beklediğimiz:</p>
+        <ol class="text-sm text-zinc-300 leading-relaxed space-y-1 list-decimal pl-5">
+          <li><strong class="text-white">Kendi dilekçelerini tamamla:</strong> Cumhurbaşkanlığı → TBMM → ilinin vekilleri. Site artık sıradaki hedefi kendisi getiriyor ve kaç dilekçen kaldığını gösteriyor.</li>
+          <li><strong class="text-white">Çevrendeki üç kişiye dilekçe gönderttir.</strong> Özellikle dilekçe gelmeyen illerde tanıdığın varsa.</li>
+          <li><strong class="text-white">Şehrinde gördüğün eski ya da yeni vakayı bildir.</strong></li>
+        </ol>
+        <p class="text-sm text-zinc-300 leading-relaxed">594 dilekçenin tamamını gönderen 2 kişi Onur Köşesi'nde. Sıradaki isim seninki olsun.</p>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -105,40 +136,7 @@
       </div>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-      <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-4 space-y-1.5">
-        <h4 class="font-bold text-white text-sm">🗺️ Gönüllü Haritası (Türkiye ve Dünya)</h4>
-        <p class="text-xs text-zinc-400 leading-relaxed"><span class="font-bold text-amber-400">Amaç:</span> Kampanyanın hangi ilde ve hangi ülkede sahada olduğunu, hangi illerde gönüllü eksik olduğunu göstermek.</p>
-        <p class="text-xs text-zinc-400 leading-relaxed"><span class="font-bold text-emerald-400">Nasıl kullanılır:</span> Panoda haritadan bir noktaya dokun, oradaki gönüllülerin takma adlarını gör. Gri iller gönüllü arıyor, davet metnini tek dokunuşla paylaş.</p>
-      </div>
-      <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-4 space-y-1.5">
-        <h4 class="font-bold text-white text-sm">🌍 Yurtdışından gönüllülük</h4>
-        <p class="text-xs text-zinc-400 leading-relaxed"><span class="font-bold text-amber-400">Amaç:</span> Yurtdışındaki destekçilerin de kampanyanın parçası olması. Çeviri ve basın iletişimi gibi alanlarda ihtiyacımız büyük.</p>
-        <p class="text-xs text-zinc-400 leading-relaxed"><span class="font-bold text-emerald-400">Nasıl kullanılır:</span> Formda "Yurtdışında yaşıyorum" kutusunu işaretle, ülkeni ve şehrini seç. Dünya haritasında yerin görünür.</p>
-      </div>
-      <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-4 space-y-1.5">
-        <h4 class="font-bold text-white text-sm">🎯 En Çok Dilekçe Alan Vekiller</h4>
-        <p class="text-xs text-zinc-400 leading-relaxed"><span class="font-bold text-amber-400">Amaç:</span> Baskı stratejisini veriyle kurmak. Dilekçesi az gelen vekil, kamuoyundan az ses duymuş demektir.</p>
-        <p class="text-xs text-zinc-400 leading-relaxed"><span class="font-bold text-emerald-400">Nasıl kullanılır:</span> Giriş yaptıktan sonra listeye bak, hedef seçerken dilekçe sayısı düşük olan vekillere öncelik ver.</p>
-      </div>
-      <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-4 space-y-1.5">
-        <h4 class="font-bold text-white text-sm">💬 Kampanya Ofisi</h4>
-        <p class="text-xs text-zinc-400 leading-relaxed"><span class="font-bold text-amber-400">Amaç:</span> Gönüllülerin etkinlik, duyuru ve çalışmalarını birbirine hızlıca iletmesi.</p>
-        <p class="text-xs text-zinc-400 leading-relaxed"><span class="font-bold text-emerald-400">Nasıl kullanılır:</span> Mesajını yaz, gönder. Mesajlar 24 saat sonra otomatik silinir.</p>
-      </div>
-      <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-4 space-y-1.5">
-        <h4 class="font-bold text-white text-sm">📋 Görevler ve Materyal Kütüphanesi</h4>
-        <p class="text-xs text-zinc-400 leading-relaxed"><span class="font-bold text-amber-400">Amaç:</span> Herkesin elinin altında net görev ve hazır materyal olması. Kimse boşta, kimse tek başına kalmasın.</p>
-        <p class="text-xs text-zinc-400 leading-relaxed"><span class="font-bold text-emerald-400">Nasıl kullanılır:</span> Panoda görevlerini gör. Afiş, görsel, video, slayt ve paylaşım metinleri materyal kütüphanesinde alanlarına göre durur, senin alanların üstte açılır.</p>
-      </div>
-      <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-4 space-y-1.5">
-        <h4 class="font-bold text-white text-sm">🛡️ Verin sende, kontrol sende</h4>
-        <p class="text-xs text-zinc-400 leading-relaxed"><span class="font-bold text-amber-400">Amaç:</span> Gönüllünün güvenliğini önde tutmak.</p>
-        <p class="text-xs text-zinc-400 leading-relaxed"><span class="font-bold text-emerald-400">Nasıl kullanılır:</span> Adın ve iletişim bilgin şifreli saklanır, yalnızca kampanya yöneticisi görür. Panoda sadece takma adın, ilin ve alanların görünür. İstediğinde verin silinir.</p>
-      </div>
-      </div>
-
-      <p class="text-xs text-zinc-300 leading-relaxed border-l-4 border-amber-500 bg-zinc-950 rounded-r-lg px-4 py-3"><span class="font-bold text-amber-400">Hakkımız, sınırımız:</span> Tüm çalışmalarımız Anayasa’nın 74. maddesindeki dilekçe hakkına ve ifade özgürlüğüne dayanır. Yasal sınırlar içinde, barışçıl ve açık biçimde irade gösteriyoruz. Gönüllülerimizden de bunu bekliyoruz.</p>
+            <p class="text-xs text-zinc-300 leading-relaxed border-l-4 border-amber-500 bg-zinc-950 rounded-r-lg px-4 py-3"><span class="font-bold text-amber-400">Hakkımız, sınırımız:</span> Tüm çalışmalarımız Anayasa’nın 74. maddesindeki dilekçe hakkına ve ifade özgürlüğüne dayanır. Yasal sınırlar içinde, barışçıl ve açık biçimde irade gösteriyoruz. Gönüllülerimizden de bunu bekliyoruz.</p>
       <div class="flex flex-wrap items-center gap-2">
         <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 mr-1">Bu sayfayı paylaş:</span>
         <a class="bg-zinc-950 border border-emerald-700 text-emerald-300 hover:bg-emerald-700 hover:text-white text-xs font-bold px-3 py-2 rounded-full transition" href="https://wa.me/?text=Kendi%20%C5%9Fehrinde%20ses%20ol%3A%207527%20%C4%B0ptal%20g%C3%B6n%C3%BCll%C3%BC%20a%C4%9F%C4%B1na%20kat%C4%B1l.%20Formu%20doldur%2C%20kodunu%20al%2C%20panoya%20ge%C3%A7%3A%20https%3A%2F%2F7527iptal.org%2Fpaylas-gonullu.html" target="_blank" rel="noopener">WhatsApp</a>
@@ -292,7 +290,6 @@
           <a href="/" class="btn block text-center bg-red-600 hover:bg-red-500 text-white">📨 Dilekçeni gönder</a>
           <a href="/?harita=case" class="btn block text-center bg-zinc-800 hover:bg-zinc-700 text-white">🗺️ Vaka haritasını gör</a>
         </div>
-        <a href="https://t.me/Iptal7527_bot" target="_blank" rel="noopener" class="btn block text-center bg-sky-700 hover:bg-sky-600 text-white">📢 Telegram duyurularına katıl</a>
         <p class="text-[11px] text-zinc-400 pt-1">Gönüllümüz olmayan illerden gönüllü arıyoruz. Davet metnini paylaş:</p>
         <div class="grid grid-cols-2 gap-2">
           <button type="button" onclick="ilDavet('wa')" class="btn bg-emerald-700 hover:bg-emerald-600 text-white">💬 WhatsApp</button>
@@ -371,7 +368,7 @@ rows = showAll ? all.slice().reverse() : all;
     try {
       var res = await Promise.all([
         callRpc('mp_petition_counts', {}),
-        fetch('/index.html').then(function (r) { return r.text(); })
+        fetch('/vekil-listesi.txt').then(function (r) { if (!r.ok) throw 0; return r.text(); }).catch(function () { return fetch('/index.html').then(function (r) { return r.text(); }); })
       ]);
       var mps = parseMps(res[1]);
       if (!mps) throw new Error('liste');

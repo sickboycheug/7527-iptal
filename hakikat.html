@@ -2,6 +2,8 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Bir Halk İradesidir: 7527 İptal | 7527iptal.org</title>
 <meta name="description" content="7527 sayılı yasanın iptali için bağımsız halk iradesi: biz kimiz, duyurular, vaka almanağı ve kampanya haritası.">
@@ -431,6 +433,9 @@ button.btn.dy-ghost{border:1px solid var(--em)}
 <style>
 #harita .hm-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
 #harita .hm-b{font-family:'Oswald',sans-serif;letter-spacing:.06em;text-transform:uppercase;font-size:14px;padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--mut);cursor:pointer}
+#harita .hm-vw{position:absolute;right:10px;bottom:10px;z-index:2;display:flex;gap:4px;background:rgba(5,12,9,.85);border:1px solid var(--line);border-radius:999px;padding:4px}
+#harita .hm-vw .hm-b{font-size:12px;padding:4px 12px}
+.tek-paylas{display:table!important;margin:14px auto 0!important}
 #harita .hm-b.on{background:var(--em);color:#052e1f;border-color:var(--em)}
 #harita .hm-sum{color:var(--em2);font-weight:700;margin:6px 0 10px;font-size:16px}
 #harita .hm-sub{color:var(--mut);font-size:15px;margin:0 0 10px}
@@ -461,16 +466,12 @@ button.btn.dy-ghost{border:1px solid var(--em)}
 <button type="button" class="hm-b" id="hm-l-mp">Vekiller</button>
 <button type="button" class="hm-b" id="hm-l-case">Vakalar</button>
 </div>
-<div class="hm-tabs">
-<button type="button" class="hm-b on" id="hm-t-tr">Türkiye</button>
-<button type="button" class="hm-b" id="hm-t-world">Dünya</button>
-</div>
 <div class="hm-sum" id="hm-sum"></div>
-<div class="hm-map" id="hm-map">Harita yükleniyor...</div>
+<div style="position:relative"><div class="hm-vw"><button type="button" class="hm-b on" id="hm-t-tr">Türkiye</button><button type="button" class="hm-b" id="hm-t-world">Dünya</button></div><div class="hm-map" id="hm-map">Harita yükleniyor...</div></div>
 <div class="hm-info" id="hm-info"></div>
 <div class="hm-list" id="hm-list"></div>
 <p class="hm-call" id="hm-call"></p>
-<div class="hm-cta"><a class="btn hm-red" href="https://7527iptal.org/?vaka=bildir">🐾 Vakayı bildir</a><a class="btn" id="hm-cta-pet" href="https://7527iptal.org/">Dilekçeni gönder</a><a class="btn dy-ghost" id="hm-cta-vol" href="https://7527iptal.org/gorev.html">İl gönüllüsü ol</a><a class="btn dy-ghost" href="https://t.me/Iptal7527_bot" target="_blank" rel="noopener">📢 Telegram duyuruları</a></div>
+<div class="hm-cta"><a class="btn hm-red" id="hm-cta-case" href="https://7527iptal.org/?vaka=bildir">🐾 Vakayı bildir</a><a class="btn" id="hm-cta-pet" href="https://7527iptal.org/">Dilekçeni gönder</a><a class="btn dy-ghost" id="hm-cta-vol" href="https://7527iptal.org/gorev.html">İl gönüllüsü ol</a></div>
 <div class="up-share"><b>Haritayı paylaş:</b>
 <button type="button" class="btn dy-ghost" data-hs="wa">WhatsApp</button>
 <button type="button" class="btn dy-ghost" data-hs="x">X</button>
@@ -481,7 +482,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
 <p class="hm-note">Haritada isim gösterilmez, sadece il bazında sayı gösterilir.</p>
 </section>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
 <script>
 (function(){
   var URL_='https://mednnlpprdgupdajmrin.supabase.co',KEY='sb_publishable_4xahmL7yt4C53MAJuorucg_qhImIEwn';
@@ -523,8 +524,9 @@ button.btn.dy-ghost{border:1px solid var(--em)}
     var MPL=layer==='mp',CASE=layer==='case',PET=layer==='pet'||MPL,W=CASE?'vaka':PET?'dilekçe':'gönüllü',MPST=MPL?mpStats():null;
     var SRC=CASE?caseRows():MPL?Object.keys(MPST).map(function(c){return{country:'',city:c,n:MPST[c].n}}):(PET?(pet||[]):rows);
     ['vol','pet','mp','case'].forEach(function(v){$('hm-l-'+v).classList.toggle('on',v===layer)});
+    var ctaA=CASE?'case':(layer==='vol'?'vol':'pet');['case','vol','pet'].forEach(function(k){var c=$('hm-cta-'+k);if(c)c.style.display=k===ctaA?'':'none'});
     ['tr','world'].forEach(function(v){$('hm-t-'+v).classList.toggle('on',v===view)});
-    $('hm-sub').innerHTML=CASE?'Kırmızı iller: haberlere ve resmi kayıtlara yansıyan vakaların yaşandığı iller. Bir ile dokun, vakaları gör. Gri iller: <b>vakası henüz kayda geçmemiş iller.</b>':MPL?'Yeşil iller: o ilin vekillerine dilekçe gitti. Gri iller: <b>vekillerine henüz dilekçe gitmedi.</b>':PET?'Yeşil iller: dilekçe gelen iller. Gri iller: <b>henüz dilekçe gelmedi.</b>':'Yeşil iller: gönüllümüz olan iller. Gri iller: <b>il gönüllüsü arıyoruz.</b>';
+    $('hm-sub').innerHTML=CASE?'Kırmızı daireler: haberlere ve resmi kayıtlara yansıyan vakaların yaşandığı iller. Bir daireye dokun, vakaları gör. Gri noktalar: <b>vakası henüz kayda geçmemiş iller.</b>':MPL?'Yeşil daireler: o ilin vekillerine giden dilekçe sayısı. Gri noktalar: <b>vekillerine henüz dilekçe gitmeyen iller.</b>':PET?'Yeşil daireler: dilekçe gelen iller. Gri noktalar: <b>henüz dilekçe gelmeyen iller.</b>':'Yeşil daireler: gönüllümüz olan iller. Gri noktalar: <b>il gönüllüsü arıyoruz.</b>';
     info.textContent='';list.textContent='';
     var trRows=[],ab={};
     SRC.forEach(function(r){if(r.country){var a=ab[r.country]||(ab[r.country]={country:r.country,n:0,cities:[]});a.n+=Number(r.n);a.cities.push(r.city)}else trRows.push(r)});
@@ -533,7 +535,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
     var byCity={};trRows.forEach(function(r){byCity[r.city]=r});
     var all=Object.keys(TR_XY),withV=all.filter(function(c){return byCity[c]&&Number(byCity[c].n)>0}),without=all.filter(function(c){return !(byCity[c]&&Number(byCity[c].n)>0)});
     sum.textContent='Türkiye: '+withV.length+' / '+all.length+' ilde '+trTotal+' '+W+'  ·  Yurtdışı: '+abArr.length+' ülkede '+abTotal+' '+W;
-    $('hm-call').textContent=CASE?without.length+' ilde henüz kayıtlı vaka yok. Bu, orada yaşanmadığı anlamına gelmiyor. Şehrindeki eski-yeni vakayı bildir.':MPL?without.length+' ilin vekillerine henüz dilekçe gitmedi. Kendi ilinin vekiline dilekçeni gönder, ilindeki vakayı bildir.':PET?without.length+' ilden henüz dilekçe gelmedi. Senin ilinden ses ver: dilekçeni gönder, gördüğün vakayı bildir.':without.length+' ilde il gönüllüsü arıyoruz. İlinde kampanyanın sesi ol, gördüğün vakayı bildir.';
+    $('hm-call').textContent=CASE?without.length+' ilde henüz kayıtlı vaka yok. Bu, orada yaşanmadığı anlamına gelmiyor. Şehrindeki eski-yeni vakayı bildir.':MPL?'Kendi ilinin vekillerine dilekçeni gönder. Her vekile giden dilekçe, Meclis\'te iptal için bir ses daha.':PET?without.length+' ilden henüz dilekçe gelmedi. Senin ilinden ses ver, dilekçeni gönder.':without.length+' ilde il gönüllüsü arıyoruz. İlinde kampanyanın sesi ol.';
     var svg=document.createElementNS(NS,'svg');
     function circle(cx,cy,r,f){var c=document.createElementNS(NS,'circle');c.setAttribute('cx',cx.toFixed(1));c.setAttribute('cy',cy.toFixed(1));c.setAttribute('r',r.toFixed(1));c.setAttribute('fill',f);return c}
     function label(cx,cy,t,s){var x=document.createElementNS(NS,'text');x.setAttribute('x',cx.toFixed(1));x.setAttribute('y',(cy+s*0.35).toFixed(1));x.setAttribute('text-anchor','middle');x.setAttribute('font-size',s);x.setAttribute('font-weight','700');x.setAttribute('fill','#fff');x.setAttribute('pointer-events','none');x.textContent=t;return x}
@@ -541,7 +543,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
     function say(t,n,x){info.textContent='';var b=el('div');b.appendChild(el('b',null,t+' — '+n+' '+W));info.appendChild(b);if(x)info.appendChild(el('small',null,x))}
     if(view==='tr'){
       svg.setAttribute('viewBox','0 0 620 300');borders(svg,'tr');
-      all.forEach(function(city){
+      all.slice().sort(function(a,b){return((byCity[b]&&Number(byCity[b].n))||0)-((byCity[a]&&Number(byCity[a].n))||0)}).forEach(function(city){
         var ll=TR_XY[city],cx=(ll[1]-25.5)*0.777*40,cy=(42.7-ll[0])*40,r=byCity[city];
         if(r&&Number(r.n)>0){var n=Number(r.n),c=circle(cx,cy,7+Math.min(n,20)*0.7,CASE?'#ef4444':'#10b981');c.setAttribute('fill-opacity','0.85');c.setAttribute('stroke','#ecfdf5');c.setAttribute('stroke-width','1');c.style.cursor='pointer';
           c.addEventListener('click',function(){if(CASE){caseSay(city,n);return}var s2=MPST&&MPST[city];say(city,n,s2?(s2.vekil+' vekilden '+s2.alan+' tanesine dilekçe gitti, '+(s2.vekil-s2.alan)+' vekile henüz gitmedi'):'')});
@@ -567,17 +569,18 @@ button.btn.dy-ghost{border:1px solid var(--em)}
   function hsText(){
     function cnt(src){var m={};(src||[]).forEach(function(r){if(!r.country&&r.city)m[r.city]=(m[r.city]||0)+Number(r.n)});return m}
     if(layer==='case'){var il=Object.keys(cnt(caseRows())).length,n=(cases||[]).length,ek=81-il;
-      return{u:'7527 sonrası Türkiye\'de '+il+' ilde '+n+' vaka belgelendi: zehirlenen, vurulan, barınaklarda ölüme terk edilen canlar. '+ek+' ilde ise henüz kayıt yok; bu, orada yaşanmadığı anlamına gelmiyor.\n\nŞehrindeki eski-yeni her şiddet, ihmal ve barınak vakasını bildir. Belgeleyelim, davasının takipçisi olalım.\n\nVakayı bildir, dilekçeni gönder, ilinde gönüllü ol. #7527İptal',
+      return{u:'7527 sonrası Türkiye\'de '+il+' ilde '+n+' vaka belgelendi: zehirlenen, vurulan, barınaklarda ölüme terk edilen canlar. '+ek+' ilde ise henüz kayıt yok; bu, orada yaşanmadığı anlamına gelmiyor.\n\nŞehrindeki eski-yeni her şiddet, ihmal ve barınak vakasını bildir. Belgeleyelim, davasının takipçisi olalım. #7527İptal',
         k:il+' ilde '+n+' vaka belgelendi, '+ek+' ilde kayıt yok. Şehrindeki eski-yeni vakayı bildir. Belgeleyelim, takipçisi olalım. #7527İptal'}}
     if(layer==='mp'){var st=mpStats(),bos=Object.keys(st).filter(function(c){return st[c].n===0}).sort(function(a,b){return st[b].vekil-st[a].vekil}),al=Object.keys(st).length-bos.length;
-      return{u:'7527 sayılı yasanın iptali için vekillere dilekçe gönderiyoruz: '+al+' ilin vekillerine dilekçe ulaştı, '+bos.length+' ilin vekilleri henüz tek dilekçe almadı.\n\nSessiz kalan iller: '+bos.slice(0,12).join(', ')+'.\n\nKendi ilinin vekiline dilekçeni gönder, ilinde yaşanan vakayı bildir, gönüllü ol. #7527İptal',
-        k:bos.length+' ilin vekilleri henüz tek dilekçe almadı. Kendi ilinin vekiline dilekçeni gönder, ilindeki vakayı bildir. #7527İptal'}}
-    var m=cnt(layer==='pet'?pet:rows),il2=Object.keys(TR_XY).map(function(c){return{c:c,n:m[c]||0}}).sort(function(a,b){return a.n-b.n||a.c.localeCompare(b.c,'tr')});
-    var dolu=il2.filter(function(x){return x.n>0}).length,az=il2.slice(0,12).map(function(x){return x.c}).join(', ');
-    if(layer==='pet')return{u:'7527 sayılı yasanın iptali için dilekçe kampanyası sürüyor: '+dolu+' ilden dilekçe geldi, '+(81-dolu)+' ilden henüz ses yok.\n\nEn az dilekçe gelen iller: '+az+'.\n\nBu illerdensen ya da tanıdığın varsa 1 dakikanı ayır: dilekçeni gönder, şehrinde gördüğün vakayı bildir. #7527İptal',
-      k:dolu+' ilden dilekçe geldi, '+(81-dolu)+' ilden henüz ses yok. Dilekçeni gönder, şehrindeki vakayı bildir. #7527İptal'};
-    return{u:'7527 sayılı yasanın iptali için il il örgütleniyoruz: '+dolu+' ilde gönüllümüz var.\n\nEn az gönüllü olan iller: '+az+'.\n\nİlinde kampanyanın sesi ol: gönüllü ol, şehrinde yaşanan vakaları bildir. #7527İptal',
-      k:dolu+' ilde gönüllümüz var, diğer illerde seni arıyoruz. İlinde kampanyanın sesi ol. #7527İptal'};
+      bos=bos.slice().sort(function(a,b){return a.localeCompare(b,'tr')});
+      return{u:'7527 sayılı yasanın iptali için vekillere dilekçe gönderiyoruz: '+al+' ilin vekillerine dilekçe ulaştı.'+(bos.length?'\n\nVekillerine henüz dilekçe gitmeyen iller ('+bos.length+'): '+bos.join(', ')+'.':'')+'\n\nKendi ilinin vekillerine dilekçeni gönder. Her vekile giden dilekçe, Meclis\'te iptal için bir ses daha. #7527İptal',
+        k:al+' ilin vekillerine dilekçe ulaştı. Kendi ilinin vekillerine sen de dilekçeni gönder. #7527İptal'}}
+    var m=cnt(layer==='pet'?pet:rows),il2=Object.keys(TR_XY).map(function(c){return{c:c,n:m[c]||0}}).sort(function(a,b){return a.c.localeCompare(b.c,'tr')});
+    var dolu=il2.filter(function(x){return x.n>0}).length,sifir=il2.filter(function(x){return x.n===0}).map(function(x){return x.c});
+    if(layer==='pet')return{u:'7527 sayılı yasanın iptali için dilekçe kampanyası sürüyor: '+dolu+' ilden dilekçe geldi, '+sifir.length+' ilden henüz ses yok.\n\nHenüz hiç dilekçe gelmeyen iller ('+sifir.length+'): '+sifir.join(', ')+'.\n\nBu illerdensen ya da tanıdığın varsa 1 dakikanı ayır, dilekçeni gönder. #7527İptal',
+      k:dolu+' ilden dilekçe geldi, '+sifir.length+' ilden henüz ses yok. Senin ilinden ses ver, dilekçeni gönder. #7527İptal'};
+    return{u:'7527 sayılı yasanın iptali için il il örgütleniyoruz: '+dolu+' ilde gönüllümüz var.\n\nHenüz gönüllümüz olmayan iller ('+sifir.length+'): '+sifir.join(', ')+'.\n\nİlinde kampanyanın sesi ol, gönüllü ol. #7527İptal',
+      k:dolu+' ilde gönüllümüz var, '+sifir.length+' ilde seni arıyoruz. İlinde kampanyanın sesi ol. #7527İptal'};
   }
   function hsShare(how,btn){
     if(rows===null)return;
@@ -756,8 +759,10 @@ button.btn.dy-ghost{border:1px solid var(--em)}
     r.sort(function(a,b){var x=String(a.case_date||''),y=String(b.case_date||'');return so==='old'?x.localeCompare(y):y.localeCompare(x)});
     return r;
   }
+  var FOCUS=(function(){var m=/[?&]vaka=(\d+)/.exec(location.search)||/vaka-(\d+)/.exec(location.hash);return m?String(m[1]):null})();
   function render(){
-    var r=list(),g=$('vk-grid');g.textContent='';
+    var r=list(),g=$('vk-grid');
+    if(FOCUS){var fi=r.findIndex(function(v){return String(v.id)===FOCUS});if(fi>0)r.unshift(r.splice(fi,1)[0]);}g.textContent='';
     $('vk-n').textContent=r.length===ALL.length?'':r.length+' vaka gösteriliyor';
     if(!r.length){g.appendChild(el('p','vk-n','Bu ölçütlere uyan vaka yok.'));$('vk-more').hidden=true;return}
     r.slice(0,SHOWN).forEach(function(v){g.appendChild(card(v))});
@@ -778,6 +783,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
     fill($('vk-city'),Object.keys(cities));fill($('vk-cat'),Object.keys(cats));
     if(!ALL.length){$('vk-grid').textContent='';$('vk-grid').appendChild(el('p','vk-n','Vakalar şu an yüklenemedi.'));return}
     render();
+    if(FOCUS){setTimeout(function(){var c=$('vk-grid').firstElementChild;if(c){c.style.outline='3px solid #f87171';c.style.borderRadius='16px';c.scrollIntoView({behavior:'smooth',block:'center'})}},400)}
   }
   load();
 })();
@@ -791,7 +797,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
 </div>
 </footer>
 
-<script>window.__tekPaylasHedefler = function () { function u(x){return x&&x.parentNode;} return [].slice.call(document.querySelectorAll('.up-share')).map(function(e){return [e,'','btn dy-ghost'];}).concat([].slice.call(document.querySelectorAll('.vw-share')).map(function(e){return [e,'Paylaş','btn dy-ghost'];})); };</script>
+<script>window.__tekPaylasHedefler = function () { function u(x){return x&&x.parentNode;} return [].slice.call(document.querySelectorAll('.up-share')).map(function(e){return [e,'','btn dy-ghost tek-paylas'];}).concat([].slice.call(document.querySelectorAll('.vw-share')).map(function(e){return [e,'Paylaş','btn dy-ghost'];})); };</script>
 <script>
 // Paylaşım düğme grupları tek "📤 Paylaş" düğmesinin arkasında durur; basınca açılır.
 (function () {

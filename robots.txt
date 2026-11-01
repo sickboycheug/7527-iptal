@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://7527iptal.org/sitemap.xml
