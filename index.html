@@ -3919,7 +3919,7 @@ async function sendPetitionViaEmail() {
       bekleyenSil(oncekiNo); oncekiNo = ''; onayli = false;
     } else {
       if (selectedTarget === 'mp' && selectedMP) { try { markMpAsSent(selectedMP.id); filterMps(); updateSentMpNotice(); } catch (e) {} }
-      alert('Bu hedefe dilekçenizi zaten gönderdiniz. Aynı hedefe ikinci dilekçe oluşturulmaz.\n\nBaşka bir hedef (başka bir milletvekili gibi) seçerek devam edebilirsiniz.');
+      alert('Bu hedefe dilekçenizi zaten gönderdiniz. Aynı hedefe ikinci dilekçe oluşturulmaz.\n\n' + kalanMetni());
       return;
     }
   }
@@ -3933,7 +3933,7 @@ async function sendPetitionViaEmail() {
       bekleyenSil(oncekiNo); oncekiNo = '';
     } else if (stx && stx.found && stx.confirmed) {
       try { localStorage.setItem(tekrarAnahtar + '_onay', '1'); } catch (e) {}
-      alert('Bu hedefe dilekçen zaten onaylanmış ve sayılıyor. Başka bir hedef seçerek devam edebilirsin.');
+      alert('Bu hedefe dilekçen zaten onaylanmış ve sayılıyor.\n\n' + kalanMetni());
       return;
     } else {
       oncekiSor(tekrarAnahtar, oncekiNo);
@@ -3955,7 +3955,7 @@ async function sendPetitionViaEmail() {
       if (mevcut.onay) {
         if (selectedTarget === 'mp' && selectedMP) { try { markMpAsSent(selectedMP.id); filterMps(); updateSentMpNotice(); } catch (e) {} }
         var hedefAd = selectedTarget === 'cb' ? 'Cumhurbaşkanlığı' : selectedTarget === 'mb' ? 'TBMM Başkanlığı' : (selectedMP ? selectedMP.name : 'bu vekil');
-        alert(hedefAd + ' için bu ad-soyadla dilekçe zaten gönderilmiş (' + new Date(mevcut.tarih).toLocaleDateString('tr-TR') + ').\n\nAynı hedefe ikinci dilekçe sayılmaz. Lütfen başka bir hedef seç.');
+        alert(hedefAd + ' için bu ad-soyadla dilekçe zaten gönderilmiş (' + new Date(mevcut.tarih).toLocaleDateString('tr-TR') + ').\n\nAynı hedefe ikinci dilekçe sayılmaz.\n\n' + kalanMetni());
         return;
       }
       try { localStorage.setItem(tekrarAnahtar, mevcut.no); } catch (e) {}
@@ -5560,34 +5560,55 @@ function thanksSiradaki() {
     : document.getElementById('petition-send-btn');
   if (hedef) hedef.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
-// Ad-soyad yazılınca: CB / TBMM'ye bu adla daha önce onaylı dilekçe gitmişse sıradaki hedefe geçilir (her cihazda).
+// Ad-soyad yazılınca: bu adla onaylı dilekçe giden hedefler sunucudan alınır (her cihazda doğru liste).
+// Gönderilen vekiller listeden düşer, CB / TBMM gönderildiyse sıradaki hedefe geçilir, kalan dilekçe sayısı gösterilir.
+function toplamHedef() { return 2 + MP_DATABASE.length; }
+function gonderilenSayisi() {
+  return (hedefGonderildi('cb') ? 1 : 0) + (hedefGonderildi('mb') ? 1 : 0) + getSentMpIds().length;
+}
+function kalanMetni() {
+  var top = toplamHedef(), n = Math.min(gonderilenSayisi(), top);
+  if (n >= top) return top + ' dilekçenin hepsini gönderdin. Onur Köşesi\'ndesin 🏅';
+  return top + ' dilekçeden ' + n + ' tanesini gönderdin, ' + (top - n) + ' dilekçen kaldı.';
+}
 async function hedefSunucuKontrol() {
-  if (selectedTarget !== 'cb' && selectedTarget !== 'mb') return;
   var name = (document.getElementById('citizen-name').value || '').trim();
   if (name.split(/\s+/).filter(function (p) { return p.length >= 2; }).length < 2) return;
-  try {
-    var kh = await rkHash(name);
-    if (!kh) return;
+  var kh = null;
+  try { kh = await rkHash(name); } catch (e) { return; }
+  if (!kh) return;
+  var rows = null;
+  try { rows = await callRpc('petition_sent_targets', { p_hash: kh }); } catch (e) { rows = null; }
+  if (Array.isArray(rows)) {
+    rows.forEach(function (r) {
+      if (r.recipient_type === 'mp') { var id = parseInt(r.recipient_id, 10); if (id) markMpAsSent(id); }
+      else if (r.recipient_type === 'cb' || r.recipient_type === 'mb') {
+        try { localStorage.setItem('7527_gonderim_' + r.recipient_type + '_onay', '1'); } catch (e) {}
+      }
+    });
+  } else {
+    // Sunucu fonksiyonu yoksa: yalnızca CB / TBMM tek tek sorulur
     var hedefler = ['cb', 'mb'];
     for (var i = 0; i < hedefler.length; i++) {
-      var r = await callRpc('petition_existing', { p_hash: kh, p_type: hedefler[i], p_id: null });
-      if (r && r.no && r.onay) {
-        try {
+      try {
+        var r = await callRpc('petition_existing', { p_hash: kh, p_type: hedefler[i], p_id: null });
+        if (r && r.no && r.onay) {
           localStorage.setItem('7527_gonderim_' + hedefler[i], r.no);
           localStorage.setItem('7527_gonderim_' + hedefler[i] + '_onay', '1');
-        } catch (e) {}
-      }
+        }
+      } catch (e) {}
     }
-  } catch (e) { return; }
-  var onceki = selectedTarget, sonraki = siradakiHedef();
-  if (sonraki !== onceki) {
-    siradakineGec(sonraki);
-    var h = document.getElementById('target-help-text');
-    var yapilan = [];
-    if (hedefGonderildi('cb')) yapilan.push('Cumhurbaşkanlığı');
-    if (hedefGonderildi('mb')) yapilan.push('TBMM Başkanlığı');
-    if (h && yapilan.length) h.textContent = '✓ ' + yapilan.join(' ve ') + "'na dilekçen daha önce gönderilmiş. Sıradaki hedef seçildi.";
   }
+  try { filterMps(); updateSentMpNotice(); } catch (e) {}
+  var onceki = selectedTarget, sonraki = siradakiHedef();
+  if (sonraki !== onceki && (onceki === 'cb' || onceki === 'mb')) siradakineGec(sonraki);
+  if (selectedMP && getSentMpIds().indexOf(selectedMP.id) !== -1) {
+    selectedMP = null;
+    var mb = document.getElementById('selected-mp-badge'); if (mb) mb.classList.add('hidden');
+    updatePetitionPreview();
+  }
+  var h = document.getElementById('target-help-text');
+  if (h && gonderilenSayisi() > 0) h.textContent = '✓ ' + kalanMetni();
 }
 
 async function shareThanksNative() {
