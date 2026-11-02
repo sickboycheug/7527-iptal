@@ -7141,5 +7141,22 @@ async function rkAdminList() {
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', kur); else kur();
 })();
 </script>
+<!-- Güncelleme uyarısı: sekmeye dönüldüğünde sunucudaki sayfa daha yeniyse yenileme bandı gösterir -->
+<div id="guncelleme-bandi" style="display:none;position:fixed;left:0;right:0;top:0;z-index:2147483600" class="bg-emerald-600 text-white text-center text-sm font-bold px-4 py-3 shadow-xl cursor-pointer" onclick="location.reload()">🔄 Site güncellendi. Yenilemek için dokun.</div>
+<script>
+(function () {
+  var yuklenen = Date.parse(document.lastModified) || 0, son = 0;
+  function bak() {
+    if (document.visibilityState !== 'visible' || !yuklenen || Date.now() - son < 60000) return;
+    son = Date.now();
+    fetch('/?_g=' + son, { method: 'HEAD', cache: 'no-store' }).then(function (r) {
+      var t = Date.parse(r.headers.get('last-modified') || '');
+      if (t && t > yuklenen + 1000) { var b = document.getElementById('guncelleme-bandi'); if (b) b.style.display = 'block'; }
+    }).catch(function () {});
+  }
+  document.addEventListener('visibilitychange', bak);
+  window.addEventListener('pageshow', function (e) { if (e.persisted) { son = 0; bak(); } });
+})();
+</script>
 </body>
 </html>
