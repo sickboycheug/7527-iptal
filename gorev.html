@@ -94,20 +94,20 @@
       <div class="space-y-2">
         <div class="flex items-center justify-between text-[11px] uppercase tracking-wider">
           <span class="bg-emerald-700 text-white font-bold px-2 py-0.5 rounded">Güncelleme</span>
-          <span class="text-zinc-500">1 Kasım 2026</span>
+          <span class="text-zinc-500 g-tarih"></span>
         </div>
-        <h2 class="font-impact text-2xl text-white uppercase tracking-wide">39 günde 3.354 dilekçe. Şimdi sıra sahada.</h2>
+        <h2 class="font-impact text-2xl text-white uppercase tracking-wide"><span class="g-gun">…</span> günde <span class="g-top">…</span> dilekçe. Şimdi sıra sahada.</h2>
         <p class="text-sm text-zinc-300 leading-relaxed">Kampanyanın bugünkü tablosu, olduğu gibi:</p>
         <ul class="text-sm text-zinc-300 leading-relaxed space-y-1 list-none">
-          <li>📨 <strong class="text-white">3.354 dilekçe:</strong> 908 kişi, 55 il. Cumhurbaşkanlığı'na 855, TBMM Başkanlığı'na 154, vekillere 2.345.</li>
-          <li>🤝 <strong class="text-white">84 gönüllü:</strong> 23 il ve 1 ülke.</li>
-          <li>🐾 <strong class="text-white">87 vaka:</strong> 38 ilde belgelendi.</li>
+          <li>📨 <strong class="text-white"><span class="g-top">…</span> dilekçe:</strong> <span class="g-kisi">…</span> kişi, <span class="g-petil">…</span> il. Cumhurbaşkanlığı'na <span class="g-cb">…</span>, TBMM Başkanlığı'na <span class="g-mb">…</span>, vekillere <span class="g-mp">…</span>.</li>
+          <li>🤝 <strong class="text-white"><span class="g-vol">…</span> gönüllü:</strong> <span class="g-volil">…</span> il ve <span class="g-volulke">…</span> ülke.</li>
+          <li>🐾 <strong class="text-white"><span class="g-vaka">…</span> vaka:</strong> <span class="g-vakail">…</span> ilde belgelendi.</li>
         </ul>
         <p class="text-sm font-bold text-amber-300 pt-1">Nerede eksiğiz?</p>
         <ul class="text-sm text-zinc-300 leading-relaxed space-y-1 list-disc pl-5">
-          <li>58 ilde henüz gönüllümüz yok.</li>
-          <li>26 ilden henüz tek dilekçe gelmedi.</li>
-          <li>Cumhurbaşkanlığı'na gönderenlerin çoğu TBMM'ye ve vekillere geçmedi: 855'e karşı 154.</li>
+          <li><span class="g-volyok">…</span> ilde henüz gönüllümüz yok.</li>
+          <li><span class="g-petyok">…</span> ilden henüz tek dilekçe gelmedi.</li>
+          <li>Cumhurbaşkanlığı'na gönderenlerin çoğu TBMM'ye ve vekillere geçmedi. Cumhurbaşkanlığı: <span class="g-cb">…</span>, TBMM Başkanlığı: <span class="g-mb">…</span>.</li>
         </ul>
         <p class="text-sm font-bold text-emerald-300 pt-1">Gönüllüden beklediğimiz:</p>
         <ol class="text-sm text-zinc-300 leading-relaxed space-y-1 list-decimal pl-5">
@@ -115,7 +115,7 @@
           <li><strong class="text-white">Çevrendeki üç kişiye dilekçe gönderttir.</strong> Özellikle dilekçe gelmeyen illerde tanıdığın varsa.</li>
           <li><strong class="text-white">Şehrinde gördüğün eski ya da yeni vakayı bildir.</strong></li>
         </ol>
-        <p class="text-sm text-zinc-300 leading-relaxed">594 dilekçenin tamamını gönderen 2 kişi Onur Köşesi'nde. Sıradaki isim seninki olsun.</p>
+        <p class="text-sm text-zinc-300 leading-relaxed">594 dilekçenin tamamını gönderen <span class="g-onur">…</span> kişi Onur Köşesi'nde. Sıradaki isim seninki olsun.</p>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -1008,6 +1008,26 @@ async function goBoard() {
 
 var CAMPAIGN_START = '2026-09-25';
 function fmtN(n) { return Number(n || 0).toLocaleString('tr-TR'); }
+// Güncelleme kartı: bütün sayılar her açılışta canlı veriden doldurulur
+async function guncellemeDoldur() {
+  function yaz(k, v) { Array.prototype.forEach.call(document.querySelectorAll('.g-' + k), function (e) { e.textContent = v; }); }
+  async function al(fn) { try { var r = await callRpc(fn, {}); return Array.isArray(r) ? r : (r ? [r] : []); } catch (e) { return null; } }
+  try {
+    var bugun = new Date(), t = bugun.toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' }).split('-'), b = CAMPAIGN_START.split('-');
+    yaz('gun', String(Math.floor((Date.UTC(+t[0], +t[1] - 1, +t[2]) - Date.UTC(+b[0], +b[1] - 1, +b[2])) / 86400000) + 1));
+    yaz('tarih', bugun.toLocaleDateString('tr-TR', { timeZone: 'Europe/Istanbul', day: 'numeric', month: 'long', year: 'numeric' }));
+  } catch (e) {}
+  var cc = await al('campaign_counts');
+  if (cc && cc[0]) { var c = cc[0]; yaz('top', fmtN(c.citizen_total)); yaz('cb', fmtN(c.cb_total)); yaz('mb', fmtN(c.mb_total)); yaz('mp', fmtN(c.mp_total)); yaz('vol', fmtN(c.volunteers)); }
+  var pm = await al('petition_public_map');
+  if (pm) { var pil = {}; pm.forEach(function (x) { if (!x.country && x.city && Number(x.n) > 0) pil[x.city] = 1; }); var n1 = Object.keys(pil).length; yaz('petil', String(n1)); yaz('petyok', String(81 - n1)); }
+  var gv = await al('gv_public_map');
+  if (gv) { var vil = {}, vul = {}; gv.forEach(function (x) { if (Number(x.n) > 0) { if (x.country) vul[x.country] = 1; else if (x.city) vil[x.city] = 1; } }); var n2 = Object.keys(vil).length; yaz('volil', String(n2)); yaz('volyok', String(81 - n2)); yaz('volulke', String(Object.keys(vul).length)); }
+  var vk = await al('list_almanac_cases');
+  if (vk) { var kil = {}; vk.forEach(function (x) { if (x.city) kil[x.city] = 1; }); yaz('vaka', fmtN(vk.length)); yaz('vakail', String(Object.keys(kil).length)); }
+  var rk = await al('public_petition_ranking');
+  if (rk) { yaz('kisi', fmtN(rk.length)); yaz('onur', String(rk.filter(function (x) { return Number(x.toplam) >= 594; }).length)); }
+}
 async function loadCounters() {
   // Kampanya gunu (Istanbul saatine gore, 25 Eylul = 1. gun)
   try {
@@ -2227,6 +2247,7 @@ function renderMaterials() {
   admMatKind();
   $('vol-name').addEventListener('blur', function () { if (!$('vol-nick').value) $('vol-nick').value = suggestNick($('vol-name').value); });
   loadCounters();
+  guncellemeDoldur();
   var saved = load('gv_code');
   var fromLink = '';
   try { fromLink = (new URLSearchParams(location.search).get('kod') || '').trim(); } catch (e) {}
