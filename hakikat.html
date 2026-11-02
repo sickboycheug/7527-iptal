@@ -585,7 +585,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
   }
   function hsShare(how,btn){
     if(rows===null)return;
-    var m=hsText(),lnk='https://7527iptal.org/'+(layer==='vol'?'paylas-gonullu.html':'paylas-harita.html?v=2'),tam=m.u+'\n\n'+lnk,q=encodeURIComponent;
+    var m=hsText(),lnk='https://7527iptal.org/'+(layer==='vol'?'paylas-gonullu.html':layer==='case'?'paylas-harita.html?v=2':''),tam=m.u+'\n\n'+lnk,q=encodeURIComponent;
     if(how==='wa'){window.open('https://api.whatsapp.com/send?text='+q(tam),'_blank');return}
     if(how==='x'){window.open('https://twitter.com/intent/tweet?text='+q(m.k)+'&url='+q(lnk),'_blank');return}
     if(how==='fb'){window.open('https://www.facebook.com/sharer/sharer.php?u='+q(lnk),'_blank');return}
