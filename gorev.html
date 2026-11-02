@@ -274,28 +274,28 @@
 
    <div id="map-box" class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-3">
       <h3 class="font-impact text-lg text-white uppercase tracking-wide">🗺️ Kampanya Haritası</h3>
-      <div class="flex flex-wrap gap-2">
-        <button type="button" id="map-l-vol" onclick="mapLayer('vol')" class="btn bg-emerald-600 text-white">🤝 Gönüllüler</button>
-        <button type="button" id="map-l-pet" onclick="mapLayer('pet')" class="btn bg-zinc-800 text-zinc-300">📨 Dilekçeler</button>
-        <button type="button" id="map-l-mp" onclick="mapLayer('mp')" class="btn bg-zinc-800 text-zinc-300">🏛 Vekiller</button>
-        <button type="button" id="map-l-case" onclick="mapLayer('case')" class="btn bg-zinc-800 text-zinc-300">🐾 Vakalar</button>
-      </div>
-      <div class="flex gap-2">
-        <button type="button" id="map-tab-tr" onclick="mapTab('tr')" class="btn bg-emerald-600 text-white">🇹🇷 Türkiye</button>
-        <button type="button" id="map-tab-world" onclick="mapTab('world')" class="btn bg-zinc-800 text-zinc-300">🌍 Dünya</button>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+        <button type="button" id="map-l-vol" onclick="mapLayer('vol')" class="btn px-2 text-xs bg-emerald-600 text-white">🤝 Gönüllüler</button>
+        <button type="button" id="map-l-pet" onclick="mapLayer('pet')" class="btn px-2 text-xs bg-zinc-800 text-zinc-300">📨 Dilekçeler</button>
+        <button type="button" id="map-l-mp" onclick="mapLayer('mp')" class="btn px-2 text-xs bg-zinc-800 text-zinc-300">🏛 Vekiller</button>
+        <button type="button" id="map-l-case" onclick="mapLayer('case')" class="btn px-2 text-xs bg-zinc-800 text-zinc-300">🐾 Vakalar</button>
       </div>
       <p id="map-summary" class="text-[11px] text-emerald-400 font-semibold"></p>
       <p id="map-sub" class="text-[11px] text-zinc-500 leading-relaxed">Bir noktaya dokun, oradaki gönüllülerin takma adlarını gör. Gri noktalar: henüz gönüllümüz olmayan iller.</p>
-      <div id="map-svg" class="w-full rounded-xl bg-zinc-950 overflow-hidden min-h-[220px] flex items-center justify-center text-xs text-zinc-500">Harita yükleniyor...</div>
+      <div class="relative">
+        <div class="absolute bottom-2 right-2 z-10 flex gap-1 bg-zinc-900/90 border border-zinc-700 rounded-lg p-1">
+          <button type="button" id="map-tab-tr" onclick="mapTab('tr')" class="px-3 py-1 rounded-md text-[11px] font-bold bg-emerald-600 text-white">Türkiye</button>
+          <button type="button" id="map-tab-world" onclick="mapTab('world')" class="px-3 py-1 rounded-md text-[11px] font-bold bg-zinc-800 text-zinc-300">Dünya</button>
+        </div>
+        <div id="map-svg" class="w-full rounded-xl bg-zinc-950 overflow-hidden min-h-[220px] flex items-center justify-center text-xs text-zinc-500">Harita yükleniyor...</div>
+      </div>
       <div id="map-info" class="text-xs text-zinc-300 min-h-[32px]"></div>
       <div id="map-list" class="space-y-2"></div>
       <div class="border-t border-zinc-800 pt-3 space-y-2">
         <p id="map-call" class="text-xs font-bold text-amber-300 leading-relaxed"></p>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-          <a href="/?vaka=bildir" class="btn block text-center bg-red-700 hover:bg-red-600 text-white">🐾 Vakayı bildir</a>
-          <a href="/" class="btn block text-center bg-red-600 hover:bg-red-500 text-white">📨 Dilekçeni gönder</a>
-          <a href="/?harita=case" class="btn block text-center bg-zinc-800 hover:bg-zinc-700 text-white">🗺️ Vaka haritasını gör</a>
-        </div>
+        <a id="map-cta-case" href="/?vaka=bildir" style="display:none" class="btn block text-center bg-red-700 hover:bg-red-600 text-white">🐾 Vakayı bildir</a>
+        <a id="map-cta-pet" href="/" style="display:none" class="btn block text-center bg-red-600 hover:bg-red-500 text-white">📨 Dilekçeni gönder</a>
+        <div id="map-davet" class="space-y-2">
         <p class="text-[11px] text-zinc-400 pt-1">Gönüllümüz olmayan illerden gönüllü arıyoruz. Davet metnini paylaş:</p>
         <div class="grid grid-cols-2 gap-2">
           <button type="button" onclick="ilDavet('wa')" class="btn bg-emerald-700 hover:bg-emerald-600 text-white">💬 WhatsApp</button>
@@ -304,6 +304,7 @@
           <button type="button" onclick="ilDavet('tg')" class="btn bg-sky-700 hover:bg-sky-600 text-white">Telegram</button>
           <button type="button" id="il-davet-native" onclick="ilDavet('native')" class="hidden col-span-2 btn bg-zinc-800 hover:bg-zinc-700 text-white">📲 Diğer uygulamalar (Instagram, e-posta…)</button>
           <button type="button" id="il-davet-kopya" onclick="ilDavet('copy')" class="col-span-2 btn bg-zinc-800 text-zinc-200">📋 Metni kopyala</button>
+        </div>
         </div>
       </div>
     </div>
@@ -2023,6 +2024,8 @@ function renderMap() {
   var VOL = _mapLayer === 'vol', CASE = _mapLayer === 'case', MPL = _mapLayer === 'mp';
   var W = VOL ? 'gönüllü' : CASE ? 'vaka' : 'dilekçe';
   var RENK = CASE ? '#dc2626' : '#10b981';
+  // Her katmanda yalnızca kendi çağrısı: vaka → Vakayı bildir, dilekçe/vekil → Dilekçeni gönder, gönüllü → davet paylaşımı
+  [['map-cta-case', CASE], ['map-cta-pet', !VOL && !CASE], ['map-davet', VOL]].forEach(function (x) { var e = $(x[0]); if (e) e.style.display = x[1] ? '' : 'none'; });
   var ms = $('map-sub');
   if (ms) ms.textContent = VOL ? 'Bir noktaya dokun, oradaki gönüllülerin takma adlarını gör. Gri noktalar: henüz gönüllümüz olmayan iller.'
     : CASE ? 'Kırmızı daireler: belgelenmiş vaka olan iller. Gri noktalar: vakası henüz kayda geçmemiş iller.'
