@@ -4016,7 +4016,7 @@ function hmDavetMetni() {
 function hmDavet(how) {
   var m = hmDavetMetni(), t = m.uzun;
   // Her paylasim yalnizca kendi sayfasinin baglantisini tasir (onizleme gorseli o sayfadan gelir)
-  var lnk = SITE_URL + (_hmLayer === 'vol' ? '/paylas-gonullu.html' : '/paylas-harita.html?v=2');
+  var lnk = SITE_URL + (_hmLayer === 'vol' ? '/paylas-gonullu.html' : _hmLayer === 'case' ? '/paylas-harita.html?v=2' : '/');
   var tam = t + '\n\n' + lnk;
   if (how === 'wa') { window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(tam), '_blank'); return; }
   if (how === 'x') { window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(m.kisa) + '&url=' + encodeURIComponent(lnk), '_blank'); return; }
