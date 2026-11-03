@@ -553,7 +553,7 @@
         <div class="bg-zinc-900 rounded-2xl border border-red-800/70 shadow-xl p-5 space-y-3">
           <div class="space-y-1">
             <h2 class="text-xs font-bold text-red-300 uppercase tracking-wider">🎯 Bugünün Hedefi</h2>
-            <p class="text-[13px] text-zinc-200 leading-relaxed">En az dilekçe alan vekillerden başla. Sen dilekçeni gönder, vekilin Meclis'te imzacı olsun.</p>
+            <p class="text-[13px] text-zinc-200 leading-relaxed">Bu sayılar halk iradesidir. Bu haklar bize verilmedi, kazanıldı. Egemenlik kayıtsız şartsız milletindir; biz de kayıtsız şartsız 7527'nin iptalini istiyoruz.</p>
           </div>
           <div id="th-filters" class="hidden grid grid-cols-1 sm:grid-cols-3 gap-2">
             <select id="th-il" aria-label="İl" onchange="thRender()" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-2 py-2 text-xs text-zinc-200"></select>
@@ -593,7 +593,8 @@ function vkMetin(r) {
   var imza = window.__vkImza[r.id];
   return r.name + ' (' + r.party + ' ' + r.city + ' Milletvekili)' + (VK_OY[r.vote] ? ' ' + VK_OY[r.vote] : '') +
     ' Bugüne kadar ' + Number(r.total).toLocaleString('tr-TR') + ' yurttaş dilekçesi aldı' +
-    (imza ? ' ve iptal teklifine imza attı. Teşekkür ederiz.' : ', iptal teklifine hâlâ imza atmadı.') +
+    (imza ? ' ve iptal teklifine imza attı. Teşekkür ederiz.' : ', halk iradesini hâlâ görmezden geliyor, iptal teklifine imza atmadı.') +
+    (imza ? '' : '\n\nBu haklar bize verilmedi, kazanıldı. Egemenlik kayıtsız şartsız milletindir; biz de kayıtsız şartsız 7527\'nin iptalini istiyoruz.') +
     '\n\nSen de vekiline dilekçeni gönder: https://7527iptal.org\n#7527İptal';
 }
 function vkSar(ctx, t, x, y, w, lh) {
@@ -608,16 +609,17 @@ async function vkGorsel(r) {
   x.fillStyle = '#0b0f0d'; x.fillRect(0, 0, 1080, 1350); x.fillStyle = g; x.fillRect(0, 0, 1080, 1350);
   var imza = window.__vkImza[r.id], L = 80;
   x.fillStyle = '#f87171'; x.font = '700 30px Oswald, sans-serif'; x.fillText('7527 İPTAL! · VEKİL KARNESİ', L, 130);
-  x.fillStyle = '#f1f5f2'; x.font = '700 92px Oswald, sans-serif'; var y = vkSar(x, r.name.toLocaleUpperCase('tr'), L, 260, 920, 100);
-  x.fillStyle = '#9fb3a8'; x.font = '600 38px Inter, sans-serif'; x.fillText(r.party + ' · ' + r.city + ' Milletvekili', L, y + 10);
-  x.fillStyle = '#fbbf24'; x.font = '700 230px Oswald, sans-serif'; x.fillText(Number(r.total).toLocaleString('tr-TR'), L, y + 300);
-  x.fillStyle = '#f1f5f2'; x.font = '700 52px Oswald, sans-serif'; x.fillText('YURTTAŞ DİLEKÇESİ ALDI', L, y + 380);
-  var by = y + 480;
+  x.fillStyle = '#f1f5f2'; x.font = '700 72px Oswald, sans-serif'; var y = vkSar(x, r.name.toLocaleUpperCase('tr'), L, 230, 920, 80);
+  x.fillStyle = '#9fb3a8'; x.font = '600 38px Inter, sans-serif'; x.fillText(r.party + ' · ' + r.city + ' Milletvekili', L, y);
+  x.fillStyle = '#fbbf24'; x.font = '700 170px Oswald, sans-serif'; x.fillText(Number(r.total).toLocaleString('tr-TR'), L, y + 190);
+  x.fillStyle = '#f1f5f2'; x.font = '700 48px Oswald, sans-serif'; x.fillText('YURTTAŞ DİLEKÇESİ ALDI', L, y + 255);
+  var by = y + 325;
   if (VK_OY[r.vote]) { x.fillStyle = r.vote === 'R' ? '#34d399' : '#f87171'; x.font = '600 38px Inter, sans-serif'; by = vkSar(x, VK_OY[r.vote], L, by, 920, 50); }
-  x.fillStyle = imza ? '#34d399' : '#f87171'; x.font = '700 58px Oswald, sans-serif';
-  by = vkSar(x, imza ? 'İPTAL TEKLİFİNE İMZA ATTI.' : 'İPTAL TEKLİFİNE HÂLÂ İMZA ATMADI.', L, by + 20, 920, 66);
+  x.fillStyle = imza ? '#34d399' : '#f87171'; x.font = '700 50px Oswald, sans-serif';
+  by = vkSar(x, imza ? 'İPTAL TEKLİFİNE İMZA ATTI.' : 'HALK İRADESİNİ GÖRMEZDEN GELİYOR.', L, by + 5, 920, 58);
+  if (!imza) { x.fillStyle = '#f1f5f2'; x.font = '700 40px Oswald, sans-serif'; vkSar(x, 'EGEMENLİK KAYITSIZ ŞARTSIZ MİLLETİNDİR.', L, by + 4, 920, 48); }
   x.fillStyle = '#dc2626'; x.fillRect(L, 1150, 920, 110);
-  x.fillStyle = '#ffffff'; x.font = '700 44px Oswald, sans-serif'; x.textAlign = 'center'; x.fillText('VEKİLİNE DİLEKÇENİ GÖNDER · 7527iptal.org', 540, 1222);
+  x.fillStyle = '#ffffff'; x.font = '700 40px Oswald, sans-serif'; x.textAlign = 'center'; x.fillText('VEKİLİNE DİLEKÇENİ GÖNDER · 7527iptal.org', 540, 1222);
   return new Promise(function (ok) { c.toBlob(function (b) { ok(b); }, 'image/png'); });
 }
 async function vkPaylas(r) {
@@ -640,7 +642,7 @@ async function vkPaylas(r) {
 }
 </script>
 <script>
-// Bugunun Hedefi: en az dilekce alan vekiller; kendi gonderdikleri sona iner ve isaretlenir
+// Bugunun Hedefi: en cok dilekce alan vekillerden baslar (halk iradesi baskisi); gonderilenler isaretlenir
 var _thAll = false, _thFiltre = false;
 function thRow(m, box, sent) {
   var n = Number(MP_COUNTS[m.id] || 0), oy = MP_VOTES[m.id] || '';
@@ -687,7 +689,7 @@ function thRender() {
   var rows = MP_DATABASE.filter(function (m) {
     return (!il || m.city === il) && (!pa || m.party === pa) && (!oy || MP_VOTES[m.id] === oy);
   }).sort(function (a, b) {
-    return (sent.indexOf(a.id) !== -1) - (sent.indexOf(b.id) !== -1) || Number(MP_COUNTS[a.id] || 0) - Number(MP_COUNTS[b.id] || 0) || a.name.localeCompare(b.name, 'tr');
+    return Number(MP_COUNTS[b.id] || 0) - Number(MP_COUNTS[a.id] || 0) || a.name.localeCompare(b.name, 'tr');
   });
   box.textContent = '';
   more.classList.remove('hidden');

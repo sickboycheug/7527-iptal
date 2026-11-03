@@ -32,14 +32,35 @@
   .btn { border-radius:.75rem; font-weight:700; font-size:.75rem; padding:.6rem 1rem; transition:.15s; cursor:pointer; }
   .btn:disabled { opacity:.5; cursor:not-allowed; }
     /* Gönüllü panosu düzeni: mobilde tek sütun, geniş ekranda iki sütun */
-  #view-board:not(.hidden) { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.5rem; align-items: start; }
+  #view-board:not(.hidden) { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; align-items: start; }
   #view-board > * { grid-column: 1 / -1; margin-top: 0 !important; }
   #col-l, #r-top { display: contents; }
   #view-board > div:first-child { order: 1; }
   #view-board > #announce-box { order: 3; }
-  #view-board > #hedef-cta { order: 4; }
-  #view-board > #stats-box { order: 6; }
-  #view-board > #map-box { order: 7 !important; }
+  #view-board > #pano-nav { order: 2; }
+  #view-board:not([data-p="gorevler"]) #r-top > div:has(#prog-label) { display:none; }
+  #view-board > #stats-box { order: 5; }
+  #pano-nav { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.5rem; }
+  .pn-b { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.1rem; min-width:0; padding:.6rem .25rem; background:#18181b; border:1px solid #27272a; border-radius:.75rem; color:#e4e4e7; font-size:.72rem; font-weight:700; text-align:center; cursor:pointer; }
+  .pn-b i { font-style:normal; font-size:1.15rem; line-height:1.3; }
+  .pn-b small { font-size:.62rem; font-weight:600; color:#a1a1aa; }
+  .pn-hedef { background:#450a0a; border-color:#991b1b; }
+  .pn-hedef small { color:#fca5a5; }
+  #view-board[data-p="gorevler"] .pn-b[data-p="gorevler"], #view-board[data-p="veriler"] .pn-b[data-p="veriler"], #view-board[data-p="harita"] .pn-b[data-p="harita"], #view-board[data-p="ofis"] .pn-b[data-p="ofis"], #view-board[data-p="materyal"] .pn-b[data-p="materyal"] { background:#064e3b; border-color:#10b981; color:#fff; }
+  #view-board:not([data-p="gorevler"]) > #task-list, #view-board:not([data-p="veriler"]) > #stats-box, #view-board:not([data-p="harita"]) > #map-box, #view-board:not([data-p="materyal"]) > #mat-box, #view-board:not([data-p="ofis"]) #col-l { display:none !important; }
+  #task-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.5rem; }
+  #task-list > h3, #task-list > p { grid-column:1 / -1; }
+  .tk-b { display:flex; flex-direction:column; gap:.25rem; min-width:0; min-height:4.75rem; padding:.6rem .7rem; background:#18181b; border:1px solid #3f3f46; border-radius:.75rem; text-align:left; cursor:pointer; }
+  .tk-b:hover { border-color:#10b981; }
+  .tk-b b { color:#fff; font-size:.75rem; line-height:1.25; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; overflow-wrap:anywhere; }
+  .tk-b span { margin-top:auto; font-size:.64rem; color:#a1a1aa; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .tk-b.mine { background:#022c22; border-color:#059669; }
+  .tk-b.mine span { color:#34d399; font-weight:700; }
+  .tk-b.done { opacity:.6; }
+  #task-modal { display:none; position:fixed; inset:0; z-index:99000; background:rgba(0,0,0,.8); align-items:center; justify-content:center; padding:16px; }
+  #task-modal.on { display:flex; }
+  @media (min-width: 640px) { #pano-nav { grid-template-columns:repeat(6,minmax(0,1fr)); } #task-list { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+  #view-board > #map-box { order: 5 !important; }
   .st-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.5rem; }
   .st-tile { background:#09090b; border:1px solid #27272a; border-radius:.75rem; padding:.6rem .75rem; min-width:0; }
   .st-tile b { display:block; font-family:'Oswald',sans-serif; font-weight:700; font-size:1.5rem; line-height:1.2; color:#fbbf24; white-space:nowrap; }
@@ -57,19 +78,18 @@
   @media (min-width: 640px) { .st-grid { grid-template-columns:repeat(4,minmax(0,1fr)); } }
   @media (min-width: 1024px) { .st-cols { grid-template-columns:repeat(3,minmax(0,1fr)); } }
   #col-l > *, #r-top > * { grid-column: 1 / -1; }
-  #col-l > div:has(#chat-list) { order: 8; }
-  #r-top > div:has(#prog-label) { order: 2; }
-  #r-top > #me-box { order: 2; }
-  #r-top > p:not(#board-msg) { order: 2; }
-  #r-top > #board-msg { order: 2; }
+  #col-l > div:has(#chat-list) { order: 5; }
+  #r-top > div:has(#prog-label) { order: 4; }
+  #r-top > #me-box { order: 4; }
+  #r-top > p:not(#board-msg) { order: 4; }
+  #r-top > #board-msg { order: 4; }
   #r-top > #board-msg:empty { display: none; }
   #view-board > #task-list { order: 5; }
-  #view-board > #mat-box { order: 9; }
+  #view-board > #mat-box { order: 5; }
   div:has(> #adm-teams) { display: none; }
   @media (min-width: 1024px) {
     #view-board:not(.hidden) { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; }
-    #view-board > #task-list { grid-column: 1 / -1; order: 5; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem 1.5rem; align-items: start; }
-    #view-board > #task-list > h3, #view-board > #task-list > p { grid-column: 1 / -1; }
+    #task-list { grid-template-columns:repeat(4,minmax(0,1fr)); }
   }
 </style>
 </head>
@@ -273,7 +293,7 @@
   </div>
 
   <!-- ===== GÖNÜLLÜ PANOSU ===== -->
-  <div id="view-board" class="hidden grid grid-cols-1 gap-6 items-start">
+  <div id="view-board" data-p="gorevler" class="hidden grid grid-cols-1 gap-6 items-start">
     <div class="flex items-center justify-between gap-3">
       <h2 class="font-impact text-2xl text-white uppercase tracking-wide">📋 Görev Panosu</h2>
       <span id="online-count" class="text-[11px] text-emerald-400 font-semibold"></span>
@@ -285,13 +305,16 @@
       <p id="announce-text" class="text-sm text-zinc-100 leading-relaxed whitespace-pre-line"></p>
     </div>
 
-    <a id="hedef-cta" href="/?hedef=1" class="block bg-red-950/50 border border-red-800 hover:border-red-600 rounded-2xl p-4 space-y-1 transition">
-      <h3 class="font-impact text-lg text-white uppercase tracking-wide">🎯 Bugünün Hedefi</h3>
-      <p class="text-xs text-zinc-200 leading-relaxed">En az dilekçe alan vekillerden başla. Sen dilekçeni gönder, vekilin Meclis'te imzacı olsun.</p>
-      <span class="inline-block text-xs font-bold text-red-300 pt-1">Hedef vekilleri gör →</span>
-    </a>
+    <nav id="pano-nav" aria-label="Pano bölümleri">
+      <button type="button" class="pn-b" data-p="gorevler" onclick="panoAc('gorevler')"><i>📋</i>Görevler<small id="pn-gorev">—</small></button>
+      <a class="pn-b pn-hedef" href="/?hedef=1"><i>🎯</i>Bugünün Hedefi<small>Vekiller</small></a>
+      <button type="button" class="pn-b" data-p="veriler" onclick="panoAc('veriler')"><i>📊</i>Veriler<small>Canlı</small></button>
+      <button type="button" class="pn-b" data-p="harita" onclick="panoAc('harita')"><i>🗺️</i>Harita<small>İller</small></button>
+      <button type="button" class="pn-b" data-p="ofis" onclick="panoAc('ofis')"><i>💬</i>Ofis<small>Sohbet</small></button>
+      <button type="button" class="pn-b" data-p="materyal" onclick="panoAc('materyal')"><i>📦</i>Materyal<small>İndir</small></button>
+    </nav>
 
-    <div id="stats-box" class="hidden bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-4">
+    <div id="stats-box" class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-4">
       <div>
         <h3 class="font-impact text-lg text-white uppercase tracking-wide">📊 Kampanya Verileri</h3>
         <p class="text-[11px] text-zinc-400">Sayılar site verisinden canlı gelir, yalnızca onaylı dilekçeler sayılır.</p>
@@ -374,10 +397,10 @@
         <div><div id="st-claimed" class="text-lg font-extrabold text-white">0</div>üstlenilen</div>
         <div><div id="st-vol" class="text-lg font-extrabold text-white">0</div>gönüllü</div>
       </div>
-      <p class="text-[11px] text-zinc-500 leading-relaxed pt-1">
+      <details class="text-[11px] text-zinc-500 leading-relaxed"><summary class="cursor-pointer text-zinc-400 font-semibold">Görev kuralları</summary>
       Görev almak gönüllüdür. Aldığın görev bir sözdür: yapamayacaksan <strong class="text-zinc-300">Bırak</strong> de, bunun cezası yok.
       Süresi dolup yapılmayan görev serbest kalır; üç kez böyle olursa izleyici moduna geçilir (iletişim listesinde kalırsın, yeni görev alamazsın).
-    </p>
+      </details>
     </div>
 
     <div id="me-box" class="hidden rounded-2xl p-4 text-xs leading-relaxed"></div>
@@ -385,11 +408,18 @@
 
     <p id="board-msg" class="text-xs text-red-400 min-h-[16px]"></p>
     </div>
-<div id="task-list" class="space-y-3"></div>
+<div id="task-list"></div>
   <div id="mat-box" class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-3">
       <h3 class="font-impact text-lg text-white uppercase tracking-wide">📦 Materyal Kütüphanesi</h3>
       <p class="text-[11px] text-zinc-500 leading-relaxed">Bütün afiş, görsel, video, slayt ve paylaşım metinleri alanlara göre burada. Senin alanların üstte açık durur.</p>
       <div id="mat-list" class="space-y-2 text-xs text-zinc-300">Yükleniyor...</div>
+    </div>
+  </div>
+
+  <div id="task-modal" onclick="if(event.target===this)taskModalClose()">
+    <div class="w-full max-w-md max-h-full overflow-y-auto space-y-2">
+      <div class="flex justify-end"><button type="button" onclick="taskModalClose()" aria-label="Kapat" class="text-zinc-300 text-2xl leading-none px-2">×</button></div>
+      <div id="task-modal-body"></div>
     </div>
   </div>
 
@@ -1263,7 +1293,8 @@ function renderBoard(b) {
   var list = $('task-list');
   list.textContent = '';
   var tasks = b.tasks || [];
-  if (!tasks.length) { list.appendChild(h('p', 'text-sm text-zinc-500 text-center py-6', 'Şu an görev yok. Yeni görevler eklendiğinde burada görünecek.')); return; }
+  $('pn-gorev').textContent = open + ' açık';
+  if (!tasks.length) { list.appendChild(h('p', 'text-sm text-zinc-500 text-center py-6', 'Şu an görev yok. Yeni görevler eklendiğinde burada görünecek.')); taskModalSync(tasks, me); return; }
 
   var mine = [], fit = [], other = [], rest = [];
   tasks.forEach(function (t) {
@@ -1277,13 +1308,47 @@ function renderBoard(b) {
   function section(title, arr) {
     if (!arr.length) return;
     list.appendChild(h('h3', 'text-[11px] font-bold uppercase tracking-wider text-emerald-400 pt-2', title));
-    arr.forEach(function (t) { list.appendChild(taskCard(t, me)); });
+    arr.forEach(function (t) { list.appendChild(taskChip(t, me)); });
   }
   section('Üstlendiklerin', mine);
   section(fitTitle, fit);
   section('Diğer alanlar', other);
   section('Üstlenilen ve tamamlanan', rest);
+  taskModalSync(tasks, me);
 }
+
+function taskChip(t, me) {
+  var cls = t.status === 'done' ? ' done' : (t.status === 'claimed' && t.mine) ? ' mine' : '';
+  var alt = t.status === 'claimed' && t.mine ? 'Sende · ' + fmtLeft(t.due_at) :
+    t.status === 'open' ? (t.area || 'Süre: ' + fmtHours(t.due_hours)) :
+    t.status === 'claimed' ? '⏳ ' + (t.claimed_nick || 'Bir gönüllü') : '✓ ' + (t.claimed_nick || 'Tamamlandı');
+  var b = h('button', 'tk-b' + cls);
+  b.type = 'button'; b.appendChild(h('b', '', t.title)); b.appendChild(h('span', '', alt));
+  b.onclick = function () { taskModalOpen(t, me); };
+  return b;
+}
+var _tmId = null;
+function taskModalOpen(t, me) {
+  _tmId = t.id;
+  var b = $('task-modal-body'); b.textContent = ''; b.appendChild(taskCard(t, me));
+  $('task-modal').classList.add('on');
+}
+function taskModalClose() { _tmId = null; $('task-modal').classList.remove('on'); }
+// Pano yenilenince acik pencere de guncel gorevi gosterir
+function taskModalSync(tasks, me) {
+  if (_tmId == null) return;
+  var t = tasks.filter(function (x) { return x.id === _tmId; })[0];
+  if (t) taskModalOpen(t, me); else taskModalClose();
+}
+function panoAc(p) {
+  $('view-board').setAttribute('data-p', p);
+  try { localStorage.setItem('7527_pano_bolum', p); } catch (e) {}
+  if (p === 'harita') { try { mapLayer(_mapLayer); } catch (e) {} }
+  if (p === 'ofis') { var c = $('chat-list'); if (c) c.scrollTop = c.scrollHeight; }
+}
+window.addEventListener('load', function () {
+  try { var p = localStorage.getItem('7527_pano_bolum'); if (p) panoAc(p); } catch (e) {}
+});
 
 function taskCard(t, me) {
   var card = h('div', 'border rounded-2xl p-4 space-y-2 ' +
