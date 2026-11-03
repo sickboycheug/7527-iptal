@@ -46,8 +46,11 @@
   .pn-b small { font-size:.62rem; font-weight:600; color:#a1a1aa; }
   .pn-hedef { background:#450a0a; border-color:#991b1b; }
   .pn-hedef small { color:#fca5a5; }
-  #view-board[data-p="gorevler"] .pn-b[data-p="gorevler"], #view-board[data-p="veriler"] .pn-b[data-p="veriler"], #view-board[data-p="harita"] .pn-b[data-p="harita"], #view-board[data-p="ofis"] .pn-b[data-p="ofis"], #view-board[data-p="materyal"] .pn-b[data-p="materyal"] { background:#064e3b; border-color:#10b981; color:#fff; }
-  #view-board:not([data-p="gorevler"]) > #task-list, #view-board:not([data-p="veriler"]) > #stats-box, #view-board:not([data-p="harita"]) > #map-box, #view-board:not([data-p="materyal"]) > #mat-box, #view-board:not([data-p="ofis"]) #col-l { display:none !important; }
+  #view-board[data-p="gorevler"] .pn-b[data-p="gorevler"], #view-board[data-p="veriler"] .pn-b[data-p="veriler"], #view-board[data-p="harita"] .pn-b[data-p="harita"], #view-board[data-p="ofis"] .pn-b[data-p="ofis"], #view-board[data-p="materyal"] .pn-b[data-p="materyal"], #view-board[data-p="hedef"] .pn-b[data-p="hedef"] { background:#064e3b; border-color:#10b981; color:#fff; }
+  #view-board:not([data-p="gorevler"]) > #task-list, #view-board:not([data-p="veriler"]) > #stats-box, #view-board:not([data-p="harita"]) > #map-box, #view-board:not([data-p="materyal"]) > #mat-box, #view-board:not([data-p="ofis"]) #col-l, #view-board:not([data-p="hedef"]) > #mp-rank-card { display:none !important; }
+  #view-board > #mp-rank-card { order: 5; }
+  #task-list, #stats-box, #map-box, #mat-box, #mp-rank-card, #col-l > div { scroll-margin-top: 1rem; }
+  #announce-text.kisa { display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
   #task-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.5rem; }
   #task-list > h3, #task-list > p { grid-column:1 / -1; }
   .tk-b { display:flex; flex-direction:column; gap:.25rem; min-width:0; min-height:4.75rem; padding:.6rem .7rem; background:#18181b; border:1px solid #3f3f46; border-radius:.75rem; text-align:left; cursor:pointer; }
@@ -289,6 +292,13 @@
         <button type="button" id="login-btn" onclick="loginClick()" class="btn bg-emerald-600 hover:bg-emerald-500 text-white whitespace-nowrap">Giriş Yap</button>
       </div>
       <p id="login-msg" class="text-xs text-center text-red-400 min-h-[16px]"></p>
+      <div class="text-center"><button type="button" onclick="kodIsteAc()" class="text-xs text-emerald-400 underline cursor-pointer">Kodum yok, kod iste</button></div>
+      <div id="kod-iste" class="hidden max-w-md mx-auto space-y-2">
+        <input type="text" id="ki-name" maxlength="80" placeholder="Kayıtlı adın soyadın" class="inp" autocomplete="name">
+        <input type="text" id="ki-contact" maxlength="120" placeholder="Kayıtlı telefonun veya e-postan" class="inp" autocomplete="off">
+        <button type="button" id="ki-btn" onclick="kodIsteGonder()" class="btn w-full bg-zinc-800 hover:bg-zinc-700 text-white">Kod iste</button>
+        <p id="ki-msg" class="text-xs text-center text-emerald-400 min-h-[16px]"></p>
+      </div>
     </section>
   </div>
 
@@ -302,18 +312,161 @@
 
     <div id="announce-box" class="hidden bg-emerald-950/60 border border-emerald-700 rounded-2xl p-4">
       <p class="text-[11px] font-bold uppercase tracking-wider text-emerald-400 mb-1">📢 Duyuru</p>
-      <p id="announce-text" class="text-sm text-zinc-100 leading-relaxed whitespace-pre-line"></p>
+      <p id="announce-text" class="kisa text-sm text-zinc-100 leading-relaxed whitespace-pre-line"></p>
+      <button type="button" id="announce-more" onclick="duyuruAc()" class="text-xs text-emerald-300 underline mt-1 cursor-pointer">Devamını oku</button>
     </div>
 
     <nav id="pano-nav" aria-label="Pano bölümleri">
-      <button type="button" class="pn-b" data-p="ofis" onclick="panoAc('ofis')"><i>💬</i>Ofis<small>Sohbet</small></button>
-      <button type="button" class="pn-b" data-p="gorevler" onclick="panoAc('gorevler')"><i>📋</i>Görevler<small id="pn-gorev">—</small></button>
-      <a class="pn-b pn-hedef" href="/?hedef=1"><i>🎯</i>Bugünün Hedefi<small>Vekiller</small></a>
-      <button type="button" class="pn-b" data-p="veriler" onclick="panoAc('veriler')"><i>📊</i>Veriler<small>Canlı</small></button>
-      <button type="button" class="pn-b" data-p="harita" onclick="panoAc('harita')"><i>🗺️</i>Harita<small>İller</small></button>
-      <button type="button" class="pn-b" data-p="materyal" onclick="panoAc('materyal')"><i>📦</i>Materyal<small>İndir</small></button>
+      <button type="button" class="pn-b" data-p="ofis" onclick="panoAc('ofis', true)"><i>💬</i>Ofis<small>Sohbet</small></button>
+      <button type="button" class="pn-b" data-p="gorevler" onclick="panoAc('gorevler', true)"><i>📋</i>Görevler<small id="pn-gorev">—</small></button>
+      <button type="button" class="pn-b pn-hedef" data-p="hedef" onclick="panoAc('hedef', true)"><i>🎯</i>Bugünün Hedefi<small>Vekiller</small></button>
+      <button type="button" class="pn-b" data-p="veriler" onclick="panoAc('veriler', true)"><i>📊</i>Veriler<small>Canlı</small></button>
+      <button type="button" class="pn-b" data-p="harita" onclick="panoAc('harita', true)"><i>🗺️</i>Harita<small>İller</small></button>
+      <button type="button" class="pn-b" data-p="materyal" onclick="panoAc('materyal', true)"><i>📦</i>Materyal<small>İndir</small></button>
     </nav>
 
+    <div id="vk-modal" style="display:none;position:fixed;inset:0;z-index:2147483500;background:rgba(0,0,0,.8);align-items:center;justify-content:center;padding:16px" onclick="if(event.target===this)this.style.display='none'">
+  <div class="bg-zinc-900 border border-zinc-700 rounded-2xl p-4 w-full max-w-sm space-y-3 max-h-full overflow-y-auto">
+    <div class="flex items-center justify-between"><h3 class="font-bold text-white text-sm">Vekili paylaş</h3><button type="button" class="text-zinc-400 text-xl leading-none" onclick="document.getElementById('vk-modal').style.display='none'">×</button></div>
+    <img id="vk-img" alt="" class="w-full rounded-xl border border-zinc-800">
+    <div class="grid grid-cols-2 gap-2">
+      <button type="button" id="vk-sh" class="col-span-2 rounded-xl font-bold text-xs py-2.5 px-3 bg-emerald-600 hover:bg-emerald-500 text-white">📲 Görseli paylaş (Instagram ve diğerleri)</button>
+      <button type="button" id="vk-x" class="rounded-xl font-bold text-xs py-2.5 px-3 bg-zinc-800 hover:bg-zinc-700 text-white">𝕏 (Twitter)</button>
+      <button type="button" id="vk-wa" class="rounded-xl font-bold text-xs py-2.5 px-3 bg-emerald-700 hover:bg-emerald-600 text-white">💬 WhatsApp</button>
+      <button type="button" id="vk-tg" class="rounded-xl font-bold text-xs py-2.5 px-3 bg-sky-700 hover:bg-sky-600 text-white">Telegram</button>
+      <button type="button" id="vk-fb" class="rounded-xl font-bold text-xs py-2.5 px-3 bg-blue-800 hover:bg-blue-700 text-white">Facebook</button>
+      <button type="button" id="vk-cp" class="rounded-xl font-bold text-xs py-2.5 px-3 bg-zinc-800 text-zinc-200">📋 Metni kopyala</button>
+      <a id="vk-dl" class="block text-center rounded-xl font-bold text-xs py-2.5 px-3 bg-zinc-800 text-zinc-200">⬇ Görseli indir</a>
+    </div>
+    <p id="vk-st" class="text-[11px] text-emerald-400 text-center min-h-[16px]"></p>
+  </div>
+</div>
+<script>
+window.__vkImza = {};
+var VK_OY = { K: '7527 sayılı yasaya kabul oyu verdi.', R: '7527 sayılı yasaya ret oyu verdi.', Y: '7527 oylamasında yoktu.', C: '7527 oylamasında çekimser kaldı.' };
+function vkMetin(r) {
+  var imza = window.__vkImza[r.id];
+  return r.name + ' (' + r.party + ' ' + r.city + ' Milletvekili)' + (VK_OY[r.vote] ? ' ' + VK_OY[r.vote] : '') +
+    ' Bugüne kadar ' + Number(r.total).toLocaleString('tr-TR') + ' yurttaş dilekçesi aldı' +
+    (imza ? ' ve iptal teklifine imza attı. Teşekkür ederiz.' : ', halk iradesini hâlâ görmezden geliyor, iptal teklifine imza atmadı.') +
+    (imza ? '' : '\n\nBu haklar bize verilmedi, kazanıldı. Egemenlik kayıtsız şartsız milletindir; biz de kayıtsız şartsız 7527\'nin iptalini istiyoruz.') +
+    '\n\nSen de vekiline dilekçeni gönder: https://7527iptal.org\n#7527İptal';
+}
+function vkSar(ctx, t, x, y, w, lh) {
+  var k = t.split(' '), sat = '', yy = y;
+  k.forEach(function (s) { var dene = sat ? sat + ' ' + s : s; if (ctx.measureText(dene).width > w && sat) { ctx.fillText(sat, x, yy); sat = s; yy += lh; } else sat = dene; });
+  if (sat) ctx.fillText(sat, x, yy); return yy + lh;
+}
+async function vkGorsel(r) {
+  try { await document.fonts.load('700 80px Oswald'); await document.fonts.load('600 30px Inter'); } catch (e) {}
+  var c = document.createElement('canvas'); c.width = 1080; c.height = 1350; var x = c.getContext('2d');
+  var g = x.createRadialGradient(1080, 0, 0, 1080, 0, 900); g.addColorStop(0, '#3a1212'); g.addColorStop(1, '#0b0f0d');
+  x.fillStyle = '#0b0f0d'; x.fillRect(0, 0, 1080, 1350); x.fillStyle = g; x.fillRect(0, 0, 1080, 1350);
+  var imza = window.__vkImza[r.id], L = 80;
+  x.fillStyle = '#f87171'; x.font = '700 30px Oswald, sans-serif'; x.fillText('7527 İPTAL! · VEKİL KARNESİ', L, 130);
+  x.fillStyle = '#f1f5f2'; x.font = '700 72px Oswald, sans-serif'; var y = vkSar(x, r.name.toLocaleUpperCase('tr'), L, 230, 920, 80);
+  x.fillStyle = '#9fb3a8'; x.font = '600 38px Inter, sans-serif'; x.fillText(r.party + ' · ' + r.city + ' Milletvekili', L, y);
+  x.fillStyle = '#fbbf24'; x.font = '700 170px Oswald, sans-serif'; x.fillText(Number(r.total).toLocaleString('tr-TR'), L, y + 190);
+  x.fillStyle = '#f1f5f2'; x.font = '700 48px Oswald, sans-serif'; x.fillText('YURTTAŞ DİLEKÇESİ ALDI', L, y + 255);
+  var by = y + 325;
+  if (VK_OY[r.vote]) { x.fillStyle = r.vote === 'R' ? '#34d399' : '#f87171'; x.font = '600 38px Inter, sans-serif'; by = vkSar(x, VK_OY[r.vote], L, by, 920, 50); }
+  x.fillStyle = imza ? '#34d399' : '#f87171'; x.font = '700 50px Oswald, sans-serif';
+  by = vkSar(x, imza ? 'İPTAL TEKLİFİNE İMZA ATTI.' : 'HALK İRADESİNİ GÖRMEZDEN GELİYOR.', L, by + 5, 920, 58);
+  if (!imza) { x.fillStyle = '#f1f5f2'; x.font = '700 40px Oswald, sans-serif'; vkSar(x, 'EGEMENLİK KAYITSIZ ŞARTSIZ MİLLETİNDİR.', L, by + 4, 920, 48); }
+  x.fillStyle = '#dc2626'; x.fillRect(L, 1150, 920, 110);
+  x.fillStyle = '#ffffff'; x.font = '700 40px Oswald, sans-serif'; x.textAlign = 'center'; x.fillText('VEKİLİNE DİLEKÇENİ GÖNDER · 7527iptal.org', 540, 1222);
+  return new Promise(function (ok) { c.toBlob(function (b) { ok(b); }, 'image/png'); });
+}
+async function vkPaylas(r) {
+  var m = document.getElementById('vk-modal'), q = encodeURIComponent, t = vkMetin(r), st = document.getElementById('vk-st');
+  m.style.display = 'flex'; st.textContent = 'Görsel hazırlanıyor…';
+  var blob = await vkGorsel(r), url = URL.createObjectURL(blob), ad = 'vekil-' + r.id + '.png';
+  document.getElementById('vk-img').src = url; st.textContent = '';
+  var dl = document.getElementById('vk-dl'); dl.href = url; dl.download = ad;
+  function kop() { if (navigator.clipboard) navigator.clipboard.writeText(t).then(function () { st.textContent = '✓ Metin kopyalandı'; }); }
+  document.getElementById('vk-cp').onclick = kop;
+  document.getElementById('vk-x').onclick = function () { window.open('https://twitter.com/intent/tweet?text=' + q(t), '_blank'); };
+  document.getElementById('vk-wa').onclick = function () { window.open('https://api.whatsapp.com/send?text=' + q(t), '_blank'); };
+  document.getElementById('vk-tg').onclick = function () { window.open('https://t.me/share/url?url=' + q('https://7527iptal.org') + '&text=' + q(t), '_blank'); };
+  document.getElementById('vk-fb').onclick = function () { window.open('https://www.facebook.com/sharer/sharer.php?u=' + q('https://7527iptal.org'), '_blank'); };
+  document.getElementById('vk-sh').onclick = function () {
+    kop(); var f = new File([blob], ad, { type: 'image/png' });
+    if (navigator.canShare && navigator.canShare({ files: [f] })) navigator.share({ files: [f], text: t }).catch(function () {});
+    else dl.click();
+  };
+}
+</script>
+<div id="mp-rank-card" class="bg-zinc-900 border border-red-900 rounded-2xl p-4 space-y-3">
+  <div class="space-y-1">
+    <h3 class="font-impact text-lg text-white uppercase tracking-wide">🎯 Bugünün Hedefi</h3>
+    <p class="text-[12px] text-zinc-300 leading-relaxed">Bu sayılar halk iradesidir. Bu haklar bize verilmedi, kazanıldı. Egemenlik kayıtsız şartsız milletindir; biz de kayıtsız şartsız 7527'nin iptalini istiyoruz.</p>
+  </div>
+  <input type="search" id="mp-rank-q" placeholder="Vekil, parti veya il ara" aria-label="Vekil, parti veya il ara" class="inp">
+  <div id="mp-rank-list" class="space-y-2 text-xs text-zinc-300 max-h-[32rem] overflow-y-auto">Yükleniyor...</div>
+</div>
+<script>
+(function () {
+  var all = [];
+  function parseMps(txt) {
+    var m = txt.match(/var RAW_MP_STRING = `([\s\S]*?)`/);
+    if (!m) return null;
+    var out = {}, lines = m[1].trim().split('\n');
+    for (var i = 0; i < lines.length; i++) {
+      var c = lines[i].split('|');
+      if (c.length >= 3) out[i + 1] = { city: c[0].trim(), name: c[1].trim(), party: c[2].trim() };
+    }
+    return out;
+  }
+  var VT = { K: ['7527: Kabul etti', 'text-red-300 bg-red-950/60 border-red-800'], R: ['7527: Ret etti', 'text-emerald-300 bg-emerald-950/60 border-emerald-800'], Y: ['7527: Oylamada yoktu', 'text-amber-300 bg-amber-950/60 border-amber-800'], C: ['7527: Çekimser', 'text-zinc-300 bg-zinc-800 border-zinc-600'] };
+  function render() {
+    var box = document.getElementById('mp-rank-list'), q = (document.getElementById('mp-rank-q').value || '').toLocaleLowerCase('tr').trim();
+    if (!box || !all.length) return;
+    var top = box.scrollTop; box.textContent = '';
+    var rows = all.filter(function (r) { return !q || (r.name + ' ' + r.party + ' ' + r.city).toLocaleLowerCase('tr').indexOf(q) !== -1; });
+    if (!rows.length) { box.textContent = 'Eşleşen vekil yok.'; return; }
+    rows.forEach(function (r) {
+      var d = h('div', 'bg-zinc-800/70 rounded-xl p-3 space-y-2');
+      var ust = h('div', 'flex items-start justify-between gap-3'), sol = h('div', 'min-w-0'), sag = h('div', 'shrink-0 text-right');
+      sol.appendChild(h('p', 'text-sm font-bold text-white truncate', r.name));
+      sol.appendChild(h('p', 'text-[11px] text-zinc-400 truncate', r.party + ' · ' + r.city));
+      sag.appendChild(h('p', 'text-base font-extrabold text-amber-300 leading-none', Number(r.total).toLocaleString('tr-TR')));
+      sag.appendChild(h('p', 'text-[10px] text-zinc-400', 'dilekçe'));
+      ust.appendChild(sol); ust.appendChild(sag); d.appendChild(ust);
+      var alt = h('div', 'flex flex-wrap items-center justify-between gap-2'), vt = VT[r.vote];
+      alt.appendChild(vt ? h('span', 'text-[10px] px-2 py-0.5 rounded-full border ' + vt[1], vt[0]) : h('span', ''));
+      var bt = h('div', 'flex gap-2 shrink-0 ml-auto');
+      var gn = h('a', 'px-3 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-bold', 'Dilekçe gönder'); gn.href = '/?hedef=1';
+      var pl = h('button', 'px-3 py-2 rounded-lg bg-zinc-700 hover:bg-zinc-600 text-white text-xs font-bold', 'Paylaş');
+      pl.type = 'button'; pl.setAttribute('aria-label', r.name + ' için paylaş'); pl.onclick = function () { vkPaylas(r); };
+      bt.appendChild(gn); bt.appendChild(pl); alt.appendChild(bt); d.appendChild(alt);
+      box.appendChild(d);
+    });
+    box.scrollTop = top;
+  }
+  async function load() {
+    var box = document.getElementById('mp-rank-list');
+    try {
+      var res = await Promise.all([
+        callRpc('mp_petition_counts', {}),
+        fetch('/vekil-listesi.txt').then(function (r) { if (!r.ok) throw 0; return r.text(); }).catch(function () { return fetch('/index.html').then(function (r) { return r.text(); }); })
+      ]);
+      var mps = parseMps(res[1]);
+      if (!mps) throw new Error('liste');
+      try { ((await callRpc('list_signed_mps', {})) || []).forEach(function (x) { window.__vkImza[Number(x.mp_id)] = 1; }); } catch (e) {}
+      var votes = {}, sayi = {};
+      var vm = res[1].match(/var MP_VOTES = \{([\s\S]*?)\};/);
+      if (vm) vm[1].replace(/(\d+):"([KRYC])"/g, function (_, id, v) { votes[id] = v; return ''; });
+      (res[0] || []).forEach(function (r) { sayi[r.mp_id] = Number(r.total); });
+      all = Object.keys(mps).map(function (id) { var m = mps[id]; return { id: Number(id), name: m.name, party: m.party, city: m.city, total: sayi[id] || 0, vote: votes[id] || '' }; })
+        .sort(function (a, b) { return b.total - a.total || a.name.localeCompare(b.name, 'tr'); });
+      render();
+    } catch (e) { if (box && !all.length) box.textContent = 'Liste yüklenemedi, sayfayı yenile.'; }
+  }
+  window.mpRankLoad = load;
+  var q = document.getElementById('mp-rank-q'); if (q) q.addEventListener('input', render);
+  window.addEventListener('load', function () { load(); setInterval(load, 60000); });
+})();
+</script>
     <div id="stats-box" class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-4">
       <div>
         <h3 class="font-impact text-lg text-white uppercase tracking-wide">📊 Kampanya Verileri</h3>
@@ -377,9 +530,11 @@
       </div>
       <div id="chat-list" class="space-y-2 h-[26rem] overflow-y-auto overscroll-contain pr-1 text-sm"></div>
       <div class="flex gap-2">
+        <label class="btn bg-zinc-800 hover:bg-zinc-700 text-white" aria-label="Fotoğraf ekle">📷<input type="file" id="chat-file" accept="image/*" class="hidden" onchange="chatFotoSec(this)"></label>
         <input type="text" id="chat-input" maxlength="1000" placeholder="Mesaj, link veya video linki yaz…" class="inp" autocomplete="off" onkeydown="if(event.key==='Enter')sendChat()">
         <button type="button" onclick="sendChat()" class="btn bg-emerald-600 hover:bg-emerald-500 text-white whitespace-nowrap">Gönder</button>
       </div>
+      <div id="chat-foto" class="hidden flex items-center gap-2 text-xs text-zinc-300"><img id="chat-foto-img" alt="Seçilen fotoğraf" class="h-12 w-12 object-cover rounded-lg"><span>Fotoğraf hazır</span><button type="button" onclick="chatFotoSil()" aria-label="Fotoğrafı kaldır" class="text-zinc-400 text-lg leading-none">×</button></div>
       <p id="chat-msg" class="text-xs text-red-400 min-h-[16px]"></p>
       <div id="online-list" class="text-[11px] text-emerald-400 leading-relaxed"></div>
     </div>
@@ -467,6 +622,7 @@
           <button type="button" id="adm-bulk-btn" onclick="adminBulkCodes()" class="btn hidden bg-emerald-700 hover:bg-emerald-600 text-white">Bekleyenlerin hepsine kod üret</button>
           <button type="button" id="adm-csv-btn" onclick="downloadCodesCsv()" class="btn hidden bg-zinc-800 hover:bg-zinc-700 text-white">Kodları CSV indir</button>
         </div>
+        <div id="adm-reqs" class="space-y-2"></div>
         <p id="adm-apps-status" class="text-[11px] text-zinc-500 min-h-[16px]"></p>
         <div id="adm-apps" class="space-y-2"></div>
       </div>
@@ -1220,12 +1376,46 @@ async function refreshChat() {
       var row = h('div', 'rounded-lg px-3 py-2 ' + (r.mine ? 'bg-emerald-950/60 border border-emerald-800' : 'bg-zinc-950/60 border border-zinc-800'));
       var t = new Date(r.at);
       row.appendChild(h('div', 'text-[11px] text-zinc-400', r.nick + ' · ' + t.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })));
-      row.appendChild(chatBody(r.body));
+      if (r.body) row.appendChild(chatBody(r.body));
+      if (r.has_image) row.appendChild(chatFotoEl(r.id));
+      if (adminPin) row.appendChild(actBtn('Sil', 'bg-red-900 hover:bg-red-800 text-white mt-1', async function () {
+        try { await callRpc('gv_admin_chat_delete', { p_pin: adminPin, p_id: r.id }); refreshChat(); }
+        catch (e) { $('chat-msg').textContent = errText(e); }
+      }));
       box.appendChild(row);
     });
     if (atEnd || rows.length !== chatCount) box.scrollTop = box.scrollHeight;
     chatCount = rows.length;
   } catch (e) {}
+}
+
+// Fotograf: gonderilmeden kucultulur; listede bir kez yuklenip saklanir
+var _chatFoto = null, _chatFotoAl = {};
+function chatFotoEl(id) {
+  var im = h('img', 'mt-2 rounded-lg border border-zinc-700 max-w-full max-h-64 cursor-pointer'); im.alt = 'Paylaşılan fotoğraf';
+  im.onclick = function () { if (!im.src) return; var b = $('task-modal-body'), z = h('img', 'w-full rounded-xl'); z.src = im.src; z.alt = im.alt; b.textContent = ''; b.appendChild(z); $('task-modal').classList.add('on'); };
+  if (!_chatFotoAl[id]) _chatFotoAl[id] = callRpc('gv_chat_image', { p_code: memberCode, p_id: id });
+  _chatFotoAl[id].then(function (s) { if (s) im.src = s; }).catch(function () { delete _chatFotoAl[id]; });
+  return im;
+}
+function chatFotoSil() { _chatFoto = null; $('chat-file').value = ''; $('chat-foto').classList.add('hidden'); }
+async function chatFotoSec(inp) {
+  var f = inp.files && inp.files[0], msg = $('chat-msg');
+  if (!f) return;
+  try {
+    var url = URL.createObjectURL(f), im = new Image();
+    await new Promise(function (ok, no) { im.onload = ok; im.onerror = no; im.src = url; });
+    var s = null;
+    [[1280, .7], [1024, .6], [800, .5]].some(function (d) {
+      var k = Math.min(1, d[0] / Math.max(im.naturalWidth, im.naturalHeight)), c = document.createElement('canvas');
+      c.width = Math.round(im.naturalWidth * k); c.height = Math.round(im.naturalHeight * k);
+      c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+      s = c.toDataURL('image/jpeg', d[1]); return s.length <= 480000;
+    });
+    URL.revokeObjectURL(url);
+    if (!s || s.length > 480000) { msg.textContent = 'Fotoğraf çok büyük.'; chatFotoSil(); return; }
+    _chatFoto = s; $('chat-foto-img').src = s; $('chat-foto').classList.remove('hidden'); msg.textContent = '';
+  } catch (e) { msg.textContent = 'Bu fotoğraf açılamadı.'; chatFotoSil(); }
 }
 
 // Mesajdaki linkleri tiklanabilir yapar; YouTube linkinde video kapagi gosterir
@@ -1252,17 +1442,19 @@ function chatBody(text) {
 async function sendChat() {
   var inp = $('chat-input'), msg = $('chat-msg');
   var text = (inp.value || '').trim();
-  if (!text || chatBusy || !memberCode) return;
+  if ((!text && !_chatFoto) || chatBusy || !memberCode) return;
   chatBusy = true;
   try {
-    await callRpc('gv_chat_send', { p_code: memberCode, p_body: text });
-    inp.value = ''; msg.textContent = '';
+    await callRpc('gv_chat_send', { p_code: memberCode, p_body: text, p_image: _chatFoto });
+    inp.value = ''; msg.textContent = ''; chatFotoSil();
   } catch (e) {
     var m = (e && e.message) || '';
     if (m.indexOf('blocked_word') !== -1) msg.textContent = 'Mesajın uygunsuz bir ifade içeriyor, gönderilmedi.';
     else if (m.indexOf('blocked_content') !== -1) msg.textContent = 'E-posta adresi paylaşılamaz.';
     else if (m.indexOf('invalid_message') !== -1) msg.textContent = 'Mesaj en fazla 1000 karakter olabilir.';
     else if (m.indexOf('rate_limited') !== -1) msg.textContent = 'Çok hızlı yazıyorsun, birkaç saniye bekle.';
+    else if (m.indexOf('invalid_image') !== -1) msg.textContent = 'Fotoğraf gönderilemedi, başka bir fotoğraf dene.';
+    else if (m.indexOf('image_limit') !== -1) msg.textContent = 'Saatte en fazla 10 fotoğraf paylaşılabilir.';
     else if (m.indexOf('unauthorized') !== -1) msg.textContent = 'Kodun artık geçerli değil.';
     else msg.textContent = errText(e);
   }
@@ -1361,11 +1553,65 @@ function taskModalSync(tasks, me) {
   var t = tasks.filter(function (x) { return x.id === _tmId; })[0];
   if (t) taskModalOpen(t, me); else taskModalClose();
 }
-function panoAc(p) {
+function kodIsteAc() { $('kod-iste').classList.toggle('hidden'); }
+async function kodIsteGonder() {
+  var msg = $('ki-msg'), ad = ($('ki-name').value || '').trim(), il = ($('ki-contact').value || '').trim(), b = $('ki-btn');
+  if (ad.length < 2 || il.length < 5) { msg.textContent = 'Adını ve kayıtlı iletişim bilgini yaz.'; return; }
+  b.disabled = true;
+  try { await callRpc('gv_code_request', { p_name: ad, p_contact: il }); msg.textContent = 'İsteğin alındı. Kodun kayıtlı iletişim bilgine gönderilecek.'; $('ki-name').value = ''; $('ki-contact').value = ''; }
+  catch (e) { msg.textContent = 'İstek gönderilemedi, biraz sonra tekrar dene.'; }
+  b.disabled = false;
+}
+function kiNorm(s) { var t = String(s || '').toLocaleLowerCase('tr').trim(); return t.indexOf('@') !== -1 ? t : t.replace(/\D/g, '').slice(-10); }
+function kiBul(r) {
+  var k = kiNorm(r.contact), ad = String(r.name || '').toLocaleLowerCase('tr').trim();
+  return adminApps.filter(function (a) { return a.ok && a.contact && String(a.contact).toLocaleLowerCase('tr').split(/[\s,;\/|]+/).concat([a.contact]).some(function (c) { return kiNorm(c) === k; }); })[0] ||
+    adminApps.filter(function (a) { return a.ok && String(a.name || '').toLocaleLowerCase('tr').trim() === ad; })[0] || null;
+}
+async function adminKodIstekleri() {
+  var box = $('adm-reqs'); if (!box || !adminPin) return;
+  var rows = []; try { rows = (await callRpc('gv_admin_code_requests', { p_pin: adminPin })) || []; } catch (e) { return; }
+  box.textContent = '';
+  if (!rows.length) return;
+  box.appendChild(h('h3', 'text-xs font-bold uppercase tracking-wider text-amber-300', 'Kod istekleri (' + rows.length + ')'));
+  rows.forEach(function (r) {
+    var row = h('div', 'bg-amber-950/40 border border-amber-700 rounded-lg p-3 space-y-2');
+    row.appendChild(h('div', 'text-xs text-white font-semibold', r.name));
+    row.appendChild(h('div', 'text-[11px] text-zinc-300', r.contact + ' · ' + new Date(r.at).toLocaleString('tr-TR')));
+    var line = h('div', 'flex flex-wrap gap-2'), out = h('div', 'space-y-2');
+    line.appendChild(actBtn('Yeni kod üret', 'bg-amber-600 hover:bg-amber-500 text-white', async function () {
+      out.textContent = '';
+      if (!adminApps.length) { out.appendChild(h('div', 'text-[11px] text-zinc-300', 'Önce aşağıdan Başvuruları Yükle yap.')); return; }
+      var a = kiBul(r);
+      if (!a) { out.appendChild(h('div', 'text-[11px] text-red-300', 'Bu bilgilerle başvuru bulunamadı.')); return; }
+      try {
+        var code = await callRpc('gv_admin_reissue_code', { p_pin: adminPin, p_application_id: a.id });
+        codesByApp[a.id] = code;
+        out.appendChild(h('div', 'text-[11px] text-zinc-300', 'Eşleşen başvuru: ' + (a.name || '') + ' · ' + (a.contact || '')));
+        out.appendChild(h('div', 'font-mono text-base font-bold tracking-widest text-white select-all', code));
+        out.appendChild(sendButtons(a, code));
+      } catch (e) { out.appendChild(h('div', 'text-[11px] text-red-300', errText(e))); }
+    }));
+    line.appendChild(actBtn('Sil', 'bg-zinc-800 hover:bg-zinc-700 text-zinc-200', async function () {
+      try { await callRpc('gv_admin_code_request_delete', { p_pin: adminPin, p_id: r.id }); adminKodIstekleri(); } catch (e) { $('admin-msg').textContent = errText(e); }
+    }));
+    row.appendChild(line); row.appendChild(out); box.appendChild(row);
+  });
+}
+function panoAc(p, git) {
   $('view-board').setAttribute('data-p', p);
   try { localStorage.setItem('7527_pano_bolum', p); } catch (e) {}
   if (p === 'harita') { try { mapLayer(_mapLayer); } catch (e) {} }
   if (p === 'ofis') { var c = $('chat-list'); if (c) c.scrollTop = c.scrollHeight; }
+  if (git) {
+    var el = { gorevler: 'task-list', hedef: 'mp-rank-card', veriler: 'stats-box', harita: 'map-box', materyal: 'mat-box' }[p];
+    var t = p === 'ofis' ? $('chat-list').parentElement : $(el);
+    if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+function duyuruAc() {
+  var a = $('announce-text'), b = $('announce-more'), kisa = a.classList.toggle('kisa');
+  b.textContent = kisa ? 'Devamını oku' : 'Kısalt';
 }
 window.addEventListener('load', function () {
   try { var p = localStorage.getItem('7527_pano_bolum'); if (p) panoAc(p); } catch (e) {}
@@ -1517,6 +1763,7 @@ function adminSessionSave(pin) { try { sessionStorage.setItem('gv_admin_pin', JS
 function adminSessionClear() { try { sessionStorage.removeItem('gv_admin_pin'); } catch (e) {} adminIdbSet(null); }
 var taskLogRows = [], admClaims = [];
 async function adminReload() {
+  adminKodIstekleri();
   try { admClaims = (await callRpc('gv_admin_task_claims', { p_pin: adminPin })) || []; } catch (e) { admClaims = []; }
   try { renderAdmin(await callRpc('gv_admin_state', { p_pin: adminPin })); $('admin-msg').textContent = ''; }
   catch (e) { $('admin-msg').textContent = errText(e); }
