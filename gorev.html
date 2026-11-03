@@ -293,7 +293,7 @@
   </div>
 
   <!-- ===== GÖNÜLLÜ PANOSU ===== -->
-  <div id="view-board" data-p="gorevler" class="hidden grid grid-cols-1 gap-6 items-start">
+  <div id="view-board" data-p="ofis" class="hidden grid grid-cols-1 gap-6 items-start">
     <div class="flex items-center justify-between gap-3">
       <h2 class="font-impact text-2xl text-white uppercase tracking-wide">📋 Görev Panosu</h2>
       <span id="online-count" class="text-[11px] text-emerald-400 font-semibold"></span>
@@ -306,11 +306,11 @@
     </div>
 
     <nav id="pano-nav" aria-label="Pano bölümleri">
+      <button type="button" class="pn-b" data-p="ofis" onclick="panoAc('ofis')"><i>💬</i>Ofis<small>Sohbet</small></button>
       <button type="button" class="pn-b" data-p="gorevler" onclick="panoAc('gorevler')"><i>📋</i>Görevler<small id="pn-gorev">—</small></button>
       <a class="pn-b pn-hedef" href="/?hedef=1"><i>🎯</i>Bugünün Hedefi<small>Vekiller</small></a>
       <button type="button" class="pn-b" data-p="veriler" onclick="panoAc('veriler')"><i>📊</i>Veriler<small>Canlı</small></button>
       <button type="button" class="pn-b" data-p="harita" onclick="panoAc('harita')"><i>🗺️</i>Harita<small>İller</small></button>
-      <button type="button" class="pn-b" data-p="ofis" onclick="panoAc('ofis')"><i>💬</i>Ofis<small>Sohbet</small></button>
       <button type="button" class="pn-b" data-p="materyal" onclick="panoAc('materyal')"><i>📦</i>Materyal<small>İndir</small></button>
     </nav>
 
@@ -375,7 +375,7 @@
         <h3 class="text-sm font-bold text-white">💬 Kampanya Ofisi</h3>
         <span class="text-[11px] text-zinc-500">Mesajlar 24 saat sonra silinir</span>
       </div>
-      <div id="chat-list" class="space-y-2 h-80 overflow-y-auto overscroll-contain pr-1 text-sm"></div>
+      <div id="chat-list" class="space-y-2 h-[26rem] overflow-y-auto overscroll-contain pr-1 text-sm"></div>
       <div class="flex gap-2">
         <input type="text" id="chat-input" maxlength="300" placeholder="Etkinlik, duyuru veya çalışmanı paylaş…" class="inp" autocomplete="off" onkeydown="if(event.key==='Enter')sendChat()">
         <button type="button" onclick="sendChat()" class="btn bg-emerald-600 hover:bg-emerald-500 text-white whitespace-nowrap">Gönder</button>
