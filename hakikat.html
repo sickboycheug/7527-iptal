@@ -802,7 +802,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
     <p style="margin:0;font-family:Oswald,sans-serif;font-weight:700;letter-spacing:.08em;color:#f87171;font-size:13px;text-transform:uppercase">🌍 Gurbetteki yurttaşlarımıza çağrımızdır</p>
     <p style="margin:8px 0 14px;color:#e5ece8;font-size:15px;font-weight:700">Uzakta olman sesinin uzak olduğu anlamına gelmiyor. Dilini seç, paylaş:</p>
     <div style="max-width:420px;margin:0 auto">
-      <img id="gc-big" src="/cagri/cagri-tr-ig.jpg" width="1080" height="1350" loading="lazy" alt="Gurbet çağrısı" style="display:block;width:100%;height:auto;border-radius:14px;border:1px solid #1f2b25">
+      <img id="gc-big" src="/cagri/cagri-tr-ig.jpg?v=4" width="1080" height="1350" loading="lazy" alt="Gurbet çağrısı" style="display:block;width:100%;height:auto;border-radius:14px;border:1px solid #1f2b25">
       <button type="button" id="gc-ac" onclick="var g=document.getElementById('gc-btn');var a=g.style.display==='none';g.style.display=a?'grid':'none';this.setAttribute('aria-expanded',a)" aria-expanded="false" style="display:block;width:100%;margin-top:10px;padding:12px 8px;border-radius:12px;border:1px solid #2b3a33;background:#16201b;color:#f1f5f2;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit">📤 Paylaş</button>
       <div id="gc-btn" style="display:none;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
         <button type="button" id="gc-sh" style="display:block;width:100%;padding:11px 8px;border-radius:12px;border:1px solid #2b3a33;background:#16201b;color:#f1f5f2;font-weight:700;font-size:14px;text-align:center;text-decoration:none;cursor:pointer;font-family:inherit;grid-column:1/-1;background:#047857;border-color:#047857">📲 Görseli paylaş (Instagram ve diğerleri)</button>
@@ -811,7 +811,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
         <button type="button" id="gc-tg" style="display:block;width:100%;padding:11px 8px;border-radius:12px;border:1px solid #2b3a33;background:#16201b;color:#f1f5f2;font-weight:700;font-size:14px;text-align:center;text-decoration:none;cursor:pointer;font-family:inherit">Telegram</button>
         <button type="button" id="gc-fb" style="display:block;width:100%;padding:11px 8px;border-radius:12px;border:1px solid #2b3a33;background:#16201b;color:#f1f5f2;font-weight:700;font-size:14px;text-align:center;text-decoration:none;cursor:pointer;font-family:inherit">Facebook</button>
         <button type="button" id="gc-cp" style="display:block;width:100%;padding:11px 8px;border-radius:12px;border:1px solid #2b3a33;background:#16201b;color:#f1f5f2;font-weight:700;font-size:14px;text-align:center;text-decoration:none;cursor:pointer;font-family:inherit">📋 Metni kopyala</button>
-        <a id="gc-dl" href="/cagri/cagri-tr-ig.jpg" download style="display:block;width:100%;padding:11px 8px;border-radius:12px;border:1px solid #2b3a33;background:#16201b;color:#f1f5f2;font-weight:700;font-size:14px;text-align:center;text-decoration:none;cursor:pointer;font-family:inherit">⬇ Görseli indir</a>
+        <a id="gc-dl" href="/cagri/cagri-tr-ig.jpg?v=4" download style="display:block;width:100%;padding:11px 8px;border-radius:12px;border:1px solid #2b3a33;background:#16201b;color:#f1f5f2;font-weight:700;font-size:14px;text-align:center;text-decoration:none;cursor:pointer;font-family:inherit">⬇ Görseli indir</a>
       </div>
       <p id="gc-st" style="min-height:18px;font-size:13px;color:#34d399;margin:8px 0 0"></p>
     </div>
@@ -827,7 +827,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
   function durum(t) { $('gc-st').textContent = t; setTimeout(function () { $('gc-st').textContent = ''; }, 3000); }
   function kopyala(t) { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(function () { durum('✓ Metin kopyalandı'); }, function () {}); }
   function sec_(c) {
-    sec = c; $('gc-big').src = '/cagri/cagri-' + c + '-ig.jpg'; $('gc-dl').href = '/cagri/cagri-' + c + '-ig.jpg';
+    sec = c; $('gc-big').src = '/cagri/cagri-' + c + '-ig.jpg?v=4'; $('gc-dl').href = '/cagri/cagri-' + c + '-ig.jpg?v=4';
     Array.prototype.forEach.call(document.querySelectorAll('#gc-dil [data-gc]'), function (b) { var on = b.getAttribute('data-gc') === c; b.style.background = on ? '#047857' : '#16201b'; b.style.borderColor = on ? '#10b981' : '#2b3a33'; });
   }
   Array.prototype.forEach.call(document.querySelectorAll('#gc-dil [data-gc]'), function (b) { b.onclick = function () { sec_(b.getAttribute('data-gc')); }; });
@@ -840,9 +840,9 @@ button.btn.dy-ghost{border:1px solid var(--em)}
   $('gc-sh').onclick = function () {
     // 2 sayfalı gönderi: 1. sayfa o dil, 2. sayfa Türkçe
     var imgs = sec === 'tr' ? ['tr'] : [sec, 'tr'];
-    veri().then(function (d) { kopyala(d[sec].ig); return Promise.all(imgs.map(function (k) { return fetch('/cagri/cagri-' + k + '-ig.jpg').then(function (r) { return r.blob(); }).then(function (bl) { return new File([bl], 'cagri-' + k + '.jpg', { type: 'image/jpeg' }); }); })).then(function (fs) {
+    veri().then(function (d) { kopyala(d[sec].ig); return Promise.all(imgs.map(function (k) { return fetch('/cagri/cagri-' + k + '-ig.jpg?v=4').then(function (r) { return r.blob(); }).then(function (bl) { return new File([bl], 'cagri-' + k + '.jpg', { type: 'image/jpeg' }); }); })).then(function (fs) {
       if (navigator.canShare && navigator.canShare({ files: fs })) return navigator.share({ files: fs, text: d[sec].ig });
-      imgs.forEach(function (k) { var a = document.createElement('a'); a.href = '/cagri/cagri-' + k + '-ig.jpg'; a.download = 'cagri-' + k + '.jpg'; document.body.appendChild(a); a.click(); a.remove(); });
+      imgs.forEach(function (k) { var a = document.createElement('a'); a.href = '/cagri/cagri-' + k + '-ig.jpg?v=4'; a.download = 'cagri-' + k + '.jpg'; document.body.appendChild(a); a.click(); a.remove(); });
     }); }).catch(function () {});
   };
   sec_('tr');
