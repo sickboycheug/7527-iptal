@@ -640,7 +640,7 @@ async function vkPaylas(r) {
 }
 </script>
 <script>
-// Bugunun Hedefi: en az dilekce alan vekiller; kendi gonderdigi vekiller listeye girmez
+// Bugunun Hedefi: en az dilekce alan vekiller; kendi gonderdikleri sona iner ve isaretlenir
 var _thAll = false, _thFiltre = false;
 function thRow(m, box, sent) {
   var n = Number(MP_COUNTS[m.id] || 0), oy = MP_VOTES[m.id] || '';
@@ -663,6 +663,7 @@ function thRow(m, box, sent) {
   var bt = document.createElement('div'); bt.className = 'flex gap-2 shrink-0 ml-auto';
   var gn = document.createElement('button'); gn.type = 'button'; gn.className = 'px-3 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-bold';
   gn.textContent = 'Dilekçe gönder'; gn.onclick = function () { thGonder(m); };
+  if (sent) { gn.disabled = true; gn.className = 'px-3 py-2 rounded-lg bg-zinc-800 text-emerald-300 text-xs font-bold cursor-default'; gn.textContent = '✓ Gönderdin'; }
   var pl = document.createElement('button'); pl.type = 'button'; pl.className = 'px-3 py-2 rounded-lg bg-zinc-700 hover:bg-zinc-600 text-white text-xs font-bold';
   pl.textContent = 'Paylaş'; pl.setAttribute('aria-label', m.name + ' için paylaş');
   pl.onclick = function () { vkPaylas({ id: m.id, name: m.name, party: m.party, city: m.city, total: n, vote: oy }); };
@@ -684,12 +685,14 @@ function thRender() {
   var sent = getSentMpIds(), il = '', pa = '', oy = '';
   if (_thAll) { il = document.getElementById('th-il').value; pa = document.getElementById('th-parti').value; oy = document.getElementById('th-oy').value; }
   var rows = MP_DATABASE.filter(function (m) {
-    return sent.indexOf(m.id) === -1 && (!il || m.city === il) && (!pa || m.party === pa) && (!oy || MP_VOTES[m.id] === oy);
-  }).sort(function (a, b) { return Number(MP_COUNTS[a.id] || 0) - Number(MP_COUNTS[b.id] || 0) || a.name.localeCompare(b.name, 'tr'); });
+    return (!il || m.city === il) && (!pa || m.party === pa) && (!oy || MP_VOTES[m.id] === oy);
+  }).sort(function (a, b) {
+    return (sent.indexOf(a.id) !== -1) - (sent.indexOf(b.id) !== -1) || Number(MP_COUNTS[a.id] || 0) - Number(MP_COUNTS[b.id] || 0) || a.name.localeCompare(b.name, 'tr');
+  });
   box.textContent = '';
-  if (!rows.length) { box.textContent = _thAll ? 'Bu seçime uyan vekil yok.' : 'Bütün vekillere gönderdin. Teşekkürler.'; more.classList.add('hidden'); return; }
   more.classList.remove('hidden');
-  (_thAll ? rows : rows.slice(0, 5)).forEach(function (m) { thRow(m, box); });
+  if (!rows.length) { box.textContent = 'Bu seçime uyan vekil yok.'; return; }
+  (_thAll ? rows : rows.slice(0, 5)).forEach(function (m) { thRow(m, box, sent.indexOf(m.id) !== -1); });
 }
 function thToggle() {
   _thAll = !_thAll; thFiltreDoldur();
