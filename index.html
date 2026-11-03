@@ -185,8 +185,8 @@
   // Vaka paylaşım linki (/vaka/N → /?vaka=N): o vaka, Vakalar sekmesinde açılır
   var mVaka = /[?&]vaka=(\d+)/.exec(qs);
   if (mVaka) { window.location.replace('hakikat.html?vaka=' + mVaka[1] + '#vakalar'); return; }
-  var mHarita = /[?&]harita=(vol|pet|mp|case)/.exec(qs), goRep = /[?&]vaka=bildir/.test(qs), goRank = /[?&]siralama=1/.test(qs);
-  if (mHarita || goRep || goRank) {
+  var mHarita = /[?&]harita=(vol|pet|mp|case)/.exec(qs), goRep = /[?&]vaka=bildir/.test(qs), goRank = /[?&]siralama=1/.test(qs), goHedef = /[?&]hedef=1/.test(qs);
+  if (mHarita || goRep || goRank || goHedef) {
     el.style.display = 'none';
     document.body.style.overflow = '';
     window.addEventListener('load', function () {
@@ -199,6 +199,7 @@
         }
         if (goRep) { try { openReportModal(); } catch (e) {} }
       }, 400);
+      if (goHedef) setTimeout(function () { var hc = document.getElementById('th-card'); if (hc) hc.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 900);
       if (goRank) setTimeout(function () { var rc = document.getElementById('rk-card'); if (rc && !rc.classList.contains('hidden')) rc.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 1500);
     });
   }
@@ -548,9 +549,168 @@
         </div>
       </div>
     </div>
+      <div id="th-card" class="mx-auto max-w-lg text-left scroll-mt-4">
+        <div class="bg-zinc-900 rounded-2xl border border-red-800/70 shadow-xl p-5 space-y-3">
+          <div class="space-y-1">
+            <h2 class="text-xs font-bold text-red-300 uppercase tracking-wider">🎯 Bugünün Hedefi</h2>
+            <p class="text-[13px] text-zinc-200 leading-relaxed">En az dilekçe alan vekillerden başla. Sen dilekçeni gönder, vekilin Meclis'te imzacı olsun.</p>
+          </div>
+          <div id="th-filters" class="hidden grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <select id="th-il" aria-label="İl" onchange="thRender()" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-2 py-2 text-xs text-zinc-200"></select>
+            <select id="th-parti" aria-label="Parti" onchange="thRender()" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-2 py-2 text-xs text-zinc-200"></select>
+            <select id="th-oy" aria-label="7527 oyu" onchange="thRender()" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-2 py-2 text-xs text-zinc-200">
+              <option value="">Tüm oylar</option><option value="K">Kabul etti</option><option value="R">Ret etti</option><option value="Y">Oylamada yoktu</option><option value="C">Çekimser</option>
+            </select>
+          </div>
+          <div id="th-list" class="space-y-2 text-xs text-zinc-400">Yükleniyor...</div>
+          <button type="button" id="th-more" onclick="thToggle()" class="hidden w-full py-2 rounded-xl border border-zinc-700 text-zinc-200 hover:bg-zinc-800 text-xs font-bold">Tümünü gör</button>
+        </div>
+      </div>
     </section>
 
   </main>
+
+    <div id="vk-modal" style="display:none;position:fixed;inset:0;z-index:2147483500;background:rgba(0,0,0,.8);align-items:center;justify-content:center;padding:16px" onclick="if(event.target===this)this.style.display='none'">
+  <div class="bg-zinc-900 border border-zinc-700 rounded-2xl p-4 w-full max-w-sm space-y-3 max-h-full overflow-y-auto">
+    <div class="flex items-center justify-between"><h3 class="font-bold text-white text-sm">Vekili paylaş</h3><button type="button" class="text-zinc-400 text-xl leading-none" onclick="document.getElementById('vk-modal').style.display='none'">×</button></div>
+    <img id="vk-img" alt="" class="w-full rounded-xl border border-zinc-800">
+    <div class="grid grid-cols-2 gap-2">
+      <button type="button" id="vk-sh" class="col-span-2 rounded-xl font-bold text-xs py-2.5 px-3 bg-emerald-600 hover:bg-emerald-500 text-white">📲 Görseli paylaş (Instagram ve diğerleri)</button>
+      <button type="button" id="vk-x" class="rounded-xl font-bold text-xs py-2.5 px-3 bg-zinc-800 hover:bg-zinc-700 text-white">𝕏 (Twitter)</button>
+      <button type="button" id="vk-wa" class="rounded-xl font-bold text-xs py-2.5 px-3 bg-emerald-700 hover:bg-emerald-600 text-white">💬 WhatsApp</button>
+      <button type="button" id="vk-tg" class="rounded-xl font-bold text-xs py-2.5 px-3 bg-sky-700 hover:bg-sky-600 text-white">Telegram</button>
+      <button type="button" id="vk-fb" class="rounded-xl font-bold text-xs py-2.5 px-3 bg-blue-800 hover:bg-blue-700 text-white">Facebook</button>
+      <button type="button" id="vk-cp" class="rounded-xl font-bold text-xs py-2.5 px-3 bg-zinc-800 text-zinc-200">📋 Metni kopyala</button>
+      <a id="vk-dl" class="block text-center rounded-xl font-bold text-xs py-2.5 px-3 bg-zinc-800 text-zinc-200">⬇ Görseli indir</a>
+    </div>
+    <p id="vk-st" class="text-[11px] text-emerald-400 text-center min-h-[16px]"></p>
+  </div>
+</div>
+<script>
+window.__vkImza = {};
+var VK_OY = { K: '7527 sayılı yasaya kabul oyu verdi.', R: '7527 sayılı yasaya ret oyu verdi.', Y: '7527 oylamasında yoktu.', C: '7527 oylamasında çekimser kaldı.' };
+function vkMetin(r) {
+  var imza = window.__vkImza[r.id];
+  return r.name + ' (' + r.party + ' ' + r.city + ' Milletvekili)' + (VK_OY[r.vote] ? ' ' + VK_OY[r.vote] : '') +
+    ' Bugüne kadar ' + Number(r.total).toLocaleString('tr-TR') + ' yurttaş dilekçesi aldı' +
+    (imza ? ' ve iptal teklifine imza attı. Teşekkür ederiz.' : ', iptal teklifine hâlâ imza atmadı.') +
+    '\n\nSen de vekiline dilekçeni gönder: https://7527iptal.org\n#7527İptal';
+}
+function vkSar(ctx, t, x, y, w, lh) {
+  var k = t.split(' '), sat = '', yy = y;
+  k.forEach(function (s) { var dene = sat ? sat + ' ' + s : s; if (ctx.measureText(dene).width > w && sat) { ctx.fillText(sat, x, yy); sat = s; yy += lh; } else sat = dene; });
+  if (sat) ctx.fillText(sat, x, yy); return yy + lh;
+}
+async function vkGorsel(r) {
+  try { await document.fonts.load('700 80px Oswald'); await document.fonts.load('600 30px Inter'); } catch (e) {}
+  var c = document.createElement('canvas'); c.width = 1080; c.height = 1350; var x = c.getContext('2d');
+  var g = x.createRadialGradient(1080, 0, 0, 1080, 0, 900); g.addColorStop(0, '#3a1212'); g.addColorStop(1, '#0b0f0d');
+  x.fillStyle = '#0b0f0d'; x.fillRect(0, 0, 1080, 1350); x.fillStyle = g; x.fillRect(0, 0, 1080, 1350);
+  var imza = window.__vkImza[r.id], L = 80;
+  x.fillStyle = '#f87171'; x.font = '700 30px Oswald, sans-serif'; x.fillText('7527 İPTAL! · VEKİL KARNESİ', L, 130);
+  x.fillStyle = '#f1f5f2'; x.font = '700 92px Oswald, sans-serif'; var y = vkSar(x, r.name.toLocaleUpperCase('tr'), L, 260, 920, 100);
+  x.fillStyle = '#9fb3a8'; x.font = '600 38px Inter, sans-serif'; x.fillText(r.party + ' · ' + r.city + ' Milletvekili', L, y + 10);
+  x.fillStyle = '#fbbf24'; x.font = '700 230px Oswald, sans-serif'; x.fillText(Number(r.total).toLocaleString('tr-TR'), L, y + 300);
+  x.fillStyle = '#f1f5f2'; x.font = '700 52px Oswald, sans-serif'; x.fillText('YURTTAŞ DİLEKÇESİ ALDI', L, y + 380);
+  var by = y + 480;
+  if (VK_OY[r.vote]) { x.fillStyle = r.vote === 'R' ? '#34d399' : '#f87171'; x.font = '600 38px Inter, sans-serif'; by = vkSar(x, VK_OY[r.vote], L, by, 920, 50); }
+  x.fillStyle = imza ? '#34d399' : '#f87171'; x.font = '700 58px Oswald, sans-serif';
+  by = vkSar(x, imza ? 'İPTAL TEKLİFİNE İMZA ATTI.' : 'İPTAL TEKLİFİNE HÂLÂ İMZA ATMADI.', L, by + 20, 920, 66);
+  x.fillStyle = '#dc2626'; x.fillRect(L, 1150, 920, 110);
+  x.fillStyle = '#ffffff'; x.font = '700 44px Oswald, sans-serif'; x.textAlign = 'center'; x.fillText('VEKİLİNE DİLEKÇENİ GÖNDER · 7527iptal.org', 540, 1222);
+  return new Promise(function (ok) { c.toBlob(function (b) { ok(b); }, 'image/png'); });
+}
+async function vkPaylas(r) {
+  var m = document.getElementById('vk-modal'), q = encodeURIComponent, t = vkMetin(r), st = document.getElementById('vk-st');
+  m.style.display = 'flex'; st.textContent = 'Görsel hazırlanıyor…';
+  var blob = await vkGorsel(r), url = URL.createObjectURL(blob), ad = 'vekil-' + r.id + '.png';
+  document.getElementById('vk-img').src = url; st.textContent = '';
+  var dl = document.getElementById('vk-dl'); dl.href = url; dl.download = ad;
+  function kop() { if (navigator.clipboard) navigator.clipboard.writeText(t).then(function () { st.textContent = '✓ Metin kopyalandı'; }); }
+  document.getElementById('vk-cp').onclick = kop;
+  document.getElementById('vk-x').onclick = function () { window.open('https://twitter.com/intent/tweet?text=' + q(t), '_blank'); };
+  document.getElementById('vk-wa').onclick = function () { window.open('https://api.whatsapp.com/send?text=' + q(t), '_blank'); };
+  document.getElementById('vk-tg').onclick = function () { window.open('https://t.me/share/url?url=' + q('https://7527iptal.org') + '&text=' + q(t), '_blank'); };
+  document.getElementById('vk-fb').onclick = function () { window.open('https://www.facebook.com/sharer/sharer.php?u=' + q('https://7527iptal.org'), '_blank'); };
+  document.getElementById('vk-sh').onclick = function () {
+    kop(); var f = new File([blob], ad, { type: 'image/png' });
+    if (navigator.canShare && navigator.canShare({ files: [f] })) navigator.share({ files: [f], text: t }).catch(function () {});
+    else dl.click();
+  };
+}
+</script>
+<script>
+// Bugunun Hedefi: en az dilekce alan vekiller; kendi gonderdigi vekiller listeye girmez
+var _thAll = false, _thFiltre = false;
+function thRow(m, box, sent) {
+  var n = Number(MP_COUNTS[m.id] || 0), oy = MP_VOTES[m.id] || '';
+  var d = document.createElement('div'); d.className = 'bg-zinc-800/70 rounded-xl p-3 space-y-2';
+  var ust = document.createElement('div'); ust.className = 'flex items-start justify-between gap-3';
+  var sol = document.createElement('div'); sol.className = 'min-w-0';
+  var ad = document.createElement('p'); ad.className = 'text-sm font-bold text-white truncate'; ad.textContent = m.name;
+  var alt = document.createElement('p'); alt.className = 'text-[11px] text-zinc-400 truncate'; alt.textContent = m.party + ' · ' + m.city;
+  sol.appendChild(ad); sol.appendChild(alt);
+  var sag = document.createElement('div'); sag.className = 'shrink-0 text-right';
+  var say = document.createElement('p'); say.className = 'text-base font-extrabold text-amber-300 leading-none'; say.textContent = n.toLocaleString('tr-TR');
+  var et = document.createElement('p'); et.className = 'text-[10px] text-zinc-400'; et.textContent = 'dilekçe';
+  sag.appendChild(say); sag.appendChild(et);
+  ust.appendChild(sol); ust.appendChild(sag); d.appendChild(ust);
+  var alta = document.createElement('div'); alta.className = 'flex flex-wrap items-center justify-between gap-2';
+  var vt = { K: ['7527: Kabul etti', 'text-red-300 bg-red-950/60 border-red-800'], R: ['7527: Ret etti', 'text-emerald-300 bg-emerald-950/60 border-emerald-800'], Y: ['7527: Oylamada yoktu', 'text-amber-300 bg-amber-950/60 border-amber-800'], C: ['7527: Çekimser', 'text-zinc-300 bg-zinc-800 border-zinc-600'] }[oy];
+  var bd = document.createElement('span');
+  if (vt) { bd.className = 'text-[10px] px-2 py-0.5 rounded-full border ' + vt[1]; bd.textContent = vt[0]; }
+  alta.appendChild(bd);
+  var bt = document.createElement('div'); bt.className = 'flex gap-2 shrink-0 ml-auto';
+  var gn = document.createElement('button'); gn.type = 'button'; gn.className = 'px-3 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-bold';
+  gn.textContent = 'Dilekçe gönder'; gn.onclick = function () { thGonder(m); };
+  var pl = document.createElement('button'); pl.type = 'button'; pl.className = 'px-3 py-2 rounded-lg bg-zinc-700 hover:bg-zinc-600 text-white text-xs font-bold';
+  pl.textContent = 'Paylaş'; pl.setAttribute('aria-label', m.name + ' için paylaş');
+  pl.onclick = function () { vkPaylas({ id: m.id, name: m.name, party: m.party, city: m.city, total: n, vote: oy }); };
+  bt.appendChild(gn); bt.appendChild(pl); alta.appendChild(bt); d.appendChild(alta);
+  box.appendChild(d);
+}
+function thFiltreDoldur() {
+  if (_thFiltre) return; _thFiltre = true;
+  function doldur(id, ilk, liste) {
+    var s = document.getElementById(id); s.appendChild(new Option(ilk, ''));
+    liste.forEach(function (v) { s.appendChild(new Option(v, v)); });
+  }
+  function tekil(k) { var o = {}; MP_DATABASE.forEach(function (m) { o[m[k]] = 1; }); return Object.keys(o).sort(function (a, b) { return a.localeCompare(b, 'tr'); }); }
+  doldur('th-il', 'Tüm iller', tekil('city')); doldur('th-parti', 'Tüm partiler', tekil('party'));
+}
+function thRender() {
+  var box = document.getElementById('th-list'), more = document.getElementById('th-more');
+  if (!box || !MP_DATABASE.length || !Object.keys(MP_COUNTS || {}).length) return;
+  var sent = getSentMpIds(), il = '', pa = '', oy = '';
+  if (_thAll) { il = document.getElementById('th-il').value; pa = document.getElementById('th-parti').value; oy = document.getElementById('th-oy').value; }
+  var rows = MP_DATABASE.filter(function (m) {
+    return sent.indexOf(m.id) === -1 && (!il || m.city === il) && (!pa || m.party === pa) && (!oy || MP_VOTES[m.id] === oy);
+  }).sort(function (a, b) { return Number(MP_COUNTS[a.id] || 0) - Number(MP_COUNTS[b.id] || 0) || a.name.localeCompare(b.name, 'tr'); });
+  box.textContent = '';
+  if (!rows.length) { box.textContent = _thAll ? 'Bu seçime uyan vekil yok.' : 'Bütün vekillere gönderdin. Teşekkürler.'; more.classList.add('hidden'); return; }
+  more.classList.remove('hidden');
+  (_thAll ? rows : rows.slice(0, 5)).forEach(function (m) { thRow(m, box); });
+}
+function thToggle() {
+  _thAll = !_thAll; thFiltreDoldur();
+  document.getElementById('th-filters').classList.toggle('hidden', !_thAll);
+  var box = document.getElementById('th-list');
+  box.classList.toggle('max-h-96', _thAll); box.classList.toggle('overflow-y-auto', _thAll);
+  document.getElementById('th-more').textContent = _thAll ? 'İlk 5 vekile dön' : 'Tümünü gör';
+  thRender();
+}
+function thGonder(m) {
+  try { switchTab('vatandas'); } catch (e) {}
+  selectTarget('mp'); selectMP(m);
+  var hedef = document.getElementById('selected-mp-badge');
+  if (hedef) hedef.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+window.addEventListener('load', function () {
+  setTimeout(thRender, 1500);
+  setTimeout(function () { var b = document.getElementById('th-list'); if (b && b.textContent === 'Yükleniyor...') b.textContent = 'Sayılar yüklenemedi, sayfayı yenile.'; }, 9000);
+  setTimeout(async function () { try { ((await callRpc('list_signed_mps', {})) || []).forEach(function (x) { window.__vkImza[Number(x.mp_id)] = 1; }); } catch (e) {} }, 1000);
+});
+</script>
 
   <!-- GÖNÜLLÜ HARİTASI (isimsiz, sadece sayılar) -->
   <section id="hm-section" class="max-w-4xl mx-auto px-4 py-10 border-t border-zinc-800">
@@ -2939,9 +3099,10 @@ function filterMps() {
 
   if (filtered.length === 0 && (tokens.length || party !== 'TÜMÜ' || city !== 'ALL')) {
     var rest = MP_DATABASE.filter(function (m) { return sent.indexOf(m.id) === -1; });
-    if (rest.length) { renderMpList(rest, true); return; }
+    if (rest.length) { renderMpList(rest, true); try { thRender(); } catch (e) {} return; }
   }
   renderMpList(filtered);
+  try { thRender(); } catch (e) {}
 }
 
 
@@ -3748,6 +3909,7 @@ async function sendPetitionViaEmail() {
       contact: (document.getElementById('citizen-contact').value || '').trim(),
       target: selectedTarget,
       targetName: selectedTarget === 'mp' && selectedMP ? selectedMP.name : '',
+      targetCity: selectedTarget === 'mp' && selectedMP ? selectedMP.city : '',
       at: new Date().toISOString()
     });
 
@@ -6066,7 +6228,7 @@ var EXPORT_KINDS = {
               r.petition_number,
               r.confirmed ? 'Onayladı' : 'Onaylamadı',
               hedefAdi(r.recipient_type),
-              c.targetName || '',
+              (c.targetName || '') + (c.targetCity ? ' (' + c.targetCity + ')' : ''),
               c.name || '', c.country || '', c.city || '', c.district || '',
               c.contact || '',
               r.created_at ? new Date(r.created_at).toLocaleString('tr-TR') : ''];

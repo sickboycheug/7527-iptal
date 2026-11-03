@@ -36,25 +36,38 @@
   #view-board > * { grid-column: 1 / -1; margin-top: 0 !important; }
   #col-l, #r-top { display: contents; }
   #view-board > div:first-child { order: 1; }
-  #view-board > #announce-box { order: 2; }
-  #view-board > #map-box { order: 3 !important; }
-  #col-l > div:has(#chat-list) { order: 4; }
-  #r-top > div:has(#prog-label) { order: 5; }
-  #r-top > #me-box { order: 6; }
-  #r-top > p:not(#board-msg) { order: 7; }
-  #r-top > #board-msg { order: 8; }
-  #view-board > #task-list { order: 8; }
-  #col-l > #mp-rank-card { order: 12; }
-  #view-board > #mat-box { order: 11; }
+  #view-board > #announce-box { order: 3; }
+  #view-board > #hedef-cta { order: 4; }
+  #view-board > #stats-box { order: 6; }
+  #view-board > #map-box { order: 7 !important; }
+  .st-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.5rem; }
+  .st-tile { background:#09090b; border:1px solid #27272a; border-radius:.75rem; padding:.6rem .75rem; min-width:0; }
+  .st-tile b { display:block; font-family:'Oswald',sans-serif; font-weight:700; font-size:1.5rem; line-height:1.2; color:#fbbf24; white-space:nowrap; }
+  .st-tile span { display:block; font-size:.68rem; color:#a1a1aa; }
+  .st-cols { display:grid; grid-template-columns:minmax(0,1fr); gap:1rem; }
+  .st-sec { display:grid; gap:.45rem; min-width:0; align-content:start; }
+  .st-sec h4 { font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:#34d399; margin:0; }
+  .st-row { display:grid; grid-template-columns:minmax(0,6.5rem) minmax(0,1fr) 2.75rem; gap:.5rem; align-items:center; font-size:.72rem; color:#e4e4e7; }
+  .st-row > span:first-child { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .st-row > span:last-child { text-align:right; }
+  .st-tr { height:.6rem; background:#27272a; border-radius:.3rem; overflow:hidden; }
+  .st-fl { height:100%; background:#10b981; border-radius:.3rem; }
+  .st-chips { display:flex; flex-wrap:wrap; gap:.3rem; }
+  .st-chips span { font-size:.68rem; color:#fecaca; background:#450a0a; border:1px solid #7f1d1d; border-radius:.5rem; padding:.1rem .4rem; }
+  @media (min-width: 640px) { .st-grid { grid-template-columns:repeat(4,minmax(0,1fr)); } }
+  @media (min-width: 1024px) { .st-cols { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+  #col-l > *, #r-top > * { grid-column: 1 / -1; }
+  #col-l > div:has(#chat-list) { order: 8; }
+  #r-top > div:has(#prog-label) { order: 2; }
+  #r-top > #me-box { order: 2; }
+  #r-top > p:not(#board-msg) { order: 2; }
+  #r-top > #board-msg { order: 2; }
+  #r-top > #board-msg:empty { display: none; }
+  #view-board > #task-list { order: 5; }
+  #view-board > #mat-box { order: 9; }
   div:has(> #adm-teams) { display: none; }
   @media (min-width: 1024px) {
     #view-board:not(.hidden) { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; }
-    #col-l > div:has(#chat-list) { grid-column: 1; order: 4; }
-    #col-l > #mp-rank-card { grid-column: 1 / -1; order: 12; }
-    #r-top { display: flex; flex-direction: column; gap: 1.5rem; grid-column: 2; order: 4; min-width: 0; }
-    #r-top > #board-msg:empty { display: none; }
-    #r-top > div:has(#prog-label) { flex: 1; display: flex; flex-direction: column; justify-content: center; }
-    #col-l > #mp-rank-card { align-self: start; }
     #view-board > #task-list { grid-column: 1 / -1; order: 5; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem 1.5rem; align-items: start; }
     #view-board > #task-list > h3, #view-board > #task-list > p { grid-column: 1 / -1; }
   }
@@ -272,6 +285,31 @@
       <p id="announce-text" class="text-sm text-zinc-100 leading-relaxed whitespace-pre-line"></p>
     </div>
 
+    <a id="hedef-cta" href="/?hedef=1" class="block bg-red-950/50 border border-red-800 hover:border-red-600 rounded-2xl p-4 space-y-1 transition">
+      <h3 class="font-impact text-lg text-white uppercase tracking-wide">🎯 Bugünün Hedefi</h3>
+      <p class="text-xs text-zinc-200 leading-relaxed">En az dilekçe alan vekillerden başla. Sen dilekçeni gönder, vekilin Meclis'te imzacı olsun.</p>
+      <span class="inline-block text-xs font-bold text-red-300 pt-1">Hedef vekilleri gör →</span>
+    </a>
+
+    <div id="stats-box" class="hidden bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-4">
+      <div>
+        <h3 class="font-impact text-lg text-white uppercase tracking-wide">📊 Kampanya Verileri</h3>
+        <p class="text-[11px] text-zinc-400">Sayılar site verisinden canlı gelir, yalnızca onaylı dilekçeler sayılır.</p>
+      </div>
+      <div class="st-grid">
+        <div class="st-tile"><b id="st-top">—</b><span>Onaylı dilekçe</span></div>
+        <div class="st-tile"><b id="st-kisi">—</b><span>Dilekçe gönderen kişi</span></div>
+        <div class="st-tile"><b id="st-vekil">—</b><span>Dilekçe ulaşan vekil</span></div>
+        <div class="st-tile"><b id="st-il">—</b><span>Dilekçe gelen il</span></div>
+      </div>
+      <div class="st-cols">
+        <div class="st-sec"><h4>Dilekçenin gittiği yer</h4><div id="st-hedef" class="st-sec"></div>
+          <h4 class="mt-2">Onur tablosu</h4><div id="st-onur" class="st-sec"></div></div>
+        <div class="st-sec"><h4>En çok dilekçe gelen iller</h4><div id="st-iller" class="st-sec"></div></div>
+        <div class="st-sec"><h4 id="st-bos-t">Dilekçe bekleyen iller</h4><div id="st-bos" class="st-chips"></div></div>
+      </div>
+    </div>
+
    <div id="map-box" class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-3">
       <h3 class="font-impact text-lg text-white uppercase tracking-wide">🗺️ Kampanya Haritası</h3>
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
@@ -323,164 +361,6 @@
       <div id="online-list" class="text-[11px] text-emerald-400 leading-relaxed"></div>
     </div>
 
-    <div id="vk-modal" style="display:none;position:fixed;inset:0;z-index:2147483500;background:rgba(0,0,0,.8);align-items:center;justify-content:center;padding:16px" onclick="if(event.target===this)this.style.display='none'">
-  <div class="bg-zinc-900 border border-zinc-700 rounded-2xl p-4 w-full max-w-sm space-y-3 max-h-full overflow-y-auto">
-    <div class="flex items-center justify-between"><h3 class="font-bold text-white text-sm">Vekili paylaş</h3><button type="button" class="text-zinc-400 text-xl leading-none" onclick="document.getElementById('vk-modal').style.display='none'">×</button></div>
-    <img id="vk-img" alt="" class="w-full rounded-xl border border-zinc-800">
-    <div class="grid grid-cols-2 gap-2">
-      <button type="button" id="vk-sh" class="col-span-2 btn bg-emerald-600 hover:bg-emerald-500 text-white">📲 Görseli paylaş (Instagram ve diğerleri)</button>
-      <button type="button" id="vk-x" class="btn bg-zinc-800 hover:bg-zinc-700 text-white">𝕏 (Twitter)</button>
-      <button type="button" id="vk-wa" class="btn bg-emerald-700 hover:bg-emerald-600 text-white">💬 WhatsApp</button>
-      <button type="button" id="vk-tg" class="btn bg-sky-700 hover:bg-sky-600 text-white">Telegram</button>
-      <button type="button" id="vk-fb" class="btn bg-blue-800 hover:bg-blue-700 text-white">Facebook</button>
-      <button type="button" id="vk-cp" class="btn bg-zinc-800 text-zinc-200">📋 Metni kopyala</button>
-      <a id="vk-dl" class="btn block text-center bg-zinc-800 text-zinc-200">⬇ Görseli indir</a>
-    </div>
-    <p id="vk-st" class="text-[11px] text-emerald-400 text-center min-h-[16px]"></p>
-  </div>
-</div>
-<script>
-window.__vkImza = {};
-var VK_OY = { K: '7527 sayılı yasaya kabul oyu verdi.', R: '7527 sayılı yasaya ret oyu verdi.', Y: '7527 oylamasında yoktu.', C: '7527 oylamasında çekimser kaldı.' };
-function vkMetin(r) {
-  var imza = window.__vkImza[r.id];
-  return r.name + ' (' + r.party + ' ' + r.city + ' Milletvekili)' + (VK_OY[r.vote] ? ' ' + VK_OY[r.vote] : '') +
-    ' Bugüne kadar ' + Number(r.total).toLocaleString('tr-TR') + ' yurttaş dilekçesi aldı' +
-    (imza ? ' ve iptal teklifine imza attı. Teşekkür ederiz.' : ', iptal teklifine hâlâ imza atmadı.') +
-    '\n\nSen de vekiline dilekçeni gönder: https://7527iptal.org\n#7527İptal';
-}
-function vkSar(ctx, t, x, y, w, lh) {
-  var k = t.split(' '), sat = '', yy = y;
-  k.forEach(function (s) { var dene = sat ? sat + ' ' + s : s; if (ctx.measureText(dene).width > w && sat) { ctx.fillText(sat, x, yy); sat = s; yy += lh; } else sat = dene; });
-  if (sat) ctx.fillText(sat, x, yy); return yy + lh;
-}
-async function vkGorsel(r) {
-  try { await document.fonts.load('700 80px Oswald'); await document.fonts.load('600 30px Inter'); } catch (e) {}
-  var c = document.createElement('canvas'); c.width = 1080; c.height = 1350; var x = c.getContext('2d');
-  var g = x.createRadialGradient(1080, 0, 0, 1080, 0, 900); g.addColorStop(0, '#3a1212'); g.addColorStop(1, '#0b0f0d');
-  x.fillStyle = '#0b0f0d'; x.fillRect(0, 0, 1080, 1350); x.fillStyle = g; x.fillRect(0, 0, 1080, 1350);
-  var imza = window.__vkImza[r.id], L = 80;
-  x.fillStyle = '#f87171'; x.font = '700 30px Oswald, sans-serif'; x.fillText('7527 İPTAL! · VEKİL KARNESİ', L, 130);
-  x.fillStyle = '#f1f5f2'; x.font = '700 92px Oswald, sans-serif'; var y = vkSar(x, r.name.toLocaleUpperCase('tr'), L, 260, 920, 100);
-  x.fillStyle = '#9fb3a8'; x.font = '600 38px Inter, sans-serif'; x.fillText(r.party + ' · ' + r.city + ' Milletvekili', L, y + 10);
-  x.fillStyle = '#fbbf24'; x.font = '700 230px Oswald, sans-serif'; x.fillText(Number(r.total).toLocaleString('tr-TR'), L, y + 300);
-  x.fillStyle = '#f1f5f2'; x.font = '700 52px Oswald, sans-serif'; x.fillText('YURTTAŞ DİLEKÇESİ ALDI', L, y + 380);
-  var by = y + 480;
-  if (VK_OY[r.vote]) { x.fillStyle = r.vote === 'R' ? '#34d399' : '#f87171'; x.font = '600 38px Inter, sans-serif'; by = vkSar(x, VK_OY[r.vote], L, by, 920, 50); }
-  x.fillStyle = imza ? '#34d399' : '#f87171'; x.font = '700 58px Oswald, sans-serif';
-  by = vkSar(x, imza ? 'İPTAL TEKLİFİNE İMZA ATTI.' : 'İPTAL TEKLİFİNE HÂLÂ İMZA ATMADI.', L, by + 20, 920, 66);
-  x.fillStyle = '#dc2626'; x.fillRect(L, 1150, 920, 110);
-  x.fillStyle = '#ffffff'; x.font = '700 44px Oswald, sans-serif'; x.textAlign = 'center'; x.fillText('VEKİLİNE DİLEKÇENİ GÖNDER · 7527iptal.org', 540, 1222);
-  return new Promise(function (ok) { c.toBlob(function (b) { ok(b); }, 'image/png'); });
-}
-async function vkPaylas(r) {
-  var m = document.getElementById('vk-modal'), q = encodeURIComponent, t = vkMetin(r), st = document.getElementById('vk-st');
-  m.style.display = 'flex'; st.textContent = 'Görsel hazırlanıyor…';
-  var blob = await vkGorsel(r), url = URL.createObjectURL(blob), ad = 'vekil-' + r.id + '.png';
-  document.getElementById('vk-img').src = url; st.textContent = '';
-  var dl = document.getElementById('vk-dl'); dl.href = url; dl.download = ad;
-  function kop() { if (navigator.clipboard) navigator.clipboard.writeText(t).then(function () { st.textContent = '✓ Metin kopyalandı'; }); }
-  document.getElementById('vk-cp').onclick = kop;
-  document.getElementById('vk-x').onclick = function () { window.open('https://twitter.com/intent/tweet?text=' + q(t), '_blank'); };
-  document.getElementById('vk-wa').onclick = function () { window.open('https://api.whatsapp.com/send?text=' + q(t), '_blank'); };
-  document.getElementById('vk-tg').onclick = function () { window.open('https://t.me/share/url?url=' + q('https://7527iptal.org') + '&text=' + q(t), '_blank'); };
-  document.getElementById('vk-fb').onclick = function () { window.open('https://www.facebook.com/sharer/sharer.php?u=' + q('https://7527iptal.org'), '_blank'); };
-  document.getElementById('vk-sh').onclick = function () {
-    kop(); var f = new File([blob], ad, { type: 'image/png' });
-    if (navigator.canShare && navigator.canShare({ files: [f] })) navigator.share({ files: [f], text: t }).catch(function () {});
-    else dl.click();
-  };
-}
-</script>
-<div id="mp-rank-card" class="bg-zinc-900 border border-zinc-700 rounded-2xl p-4 space-y-3">
-  <div class="flex items-center justify-between gap-2">
-    <h3 class="font-impact text-lg text-white uppercase tracking-wide">🎯 En Çok Dilekçe Alan Vekiller</h3>
-    <button type="button" id="mp-rank-toggle" class="text-xs text-zinc-400 underline cursor-pointer">Tümünü göster</button>
-  </div>
-  <p class="text-[11px] text-zinc-500 leading-relaxed">Baskı stratejisi için: dilekçe sayısı yüksek vekiller zaten baskı altında. Hedef seçerken bu listeye bak. Sayı ne kadar düşükse o vekile baskı o kadar az demektir.</p>
-  <div id="mp-rank-list" class="space-y-1 text-xs text-zinc-300">Yükleniyor...</div>
-</div>
-<script>
-(function () {
-  var all = [], showAll = false;
-  function parseMps(txt) {
-    var m = txt.match(/var RAW_MP_STRING = `([\s\S]*?)`/);
-    if (!m) return null;
-    var out = {}, lines = m[1].trim().split('\n');
-    for (var i = 0; i < lines.length; i++) {
-      var c = lines[i].split('|');
-      if (c.length >= 3) out[i + 1] = { city: c[0].trim(), name: c[1].trim(), party: c[2].trim() };
-    }
-    return out;
-  }
-  function render() {
-    var box = document.getElementById('mp-rank-list');
-    if (!box) return;
-    box.textContent = '';
-    var rows = showAll ? all : all.slice(0, 20);
-    var tg0 = document.getElementById('mp-rank-toggle');
-if (tg0) tg0.textContent = showAll ? 'En çok alandan başla' : 'En az alandan başla';
-box.style.maxHeight = '24rem';
-box.style.overflowY = 'auto';
-rows = showAll ? all.slice().reverse() : all;
-    if (!rows.length) { box.textContent = 'Henüz dilekçe yok.'; return; }
-    rows.forEach(function (r, i) {
-      var d = document.createElement('div');
-      d.className = 'flex items-center justify-between gap-2 bg-zinc-800 rounded-lg px-3 py-2';
-      var l = document.createElement('span');
-      l.textContent = (i + 1) + '. ' + r.name + ' · ' + r.party + ' · ' + r.city;
-      var n = document.createElement('strong');
-      n.className = 'text-white shrink-0';
-      n.textContent = r.total;
-      d.appendChild(l);
-      var vt = { K: ['Kabul etti', 'text-red-300 bg-red-950/60 border-red-800'], R: ['Ret etti', 'text-emerald-300 bg-emerald-950/60 border-emerald-800'], Y: ['Oylamada yoktu', 'text-amber-300 bg-amber-950/60 border-amber-800'], C: ['Çekimser', 'text-zinc-300 bg-zinc-800 border-zinc-600'] }[r.vote];
-      if (vt) d.appendChild(h('span', 'text-[10px] px-2 py-0.5 rounded-full border shrink-0 ' + vt[1], '7527: ' + vt[0]));
-      d.appendChild(n);
-      var sb = document.createElement('button');
-      sb.type = 'button'; sb.className = 'shrink-0 text-[11px] font-bold px-2 py-1 rounded-md bg-zinc-700 hover:bg-zinc-600 text-white'; sb.textContent = '📤';
-      sb.title = 'Paylaş'; sb.setAttribute('aria-label', r.name + ' için paylaş');
-      sb.onclick = function () { vkPaylas(r); };
-      d.appendChild(sb);
-      box.appendChild(d);
-    });
-  }
-  async function load() {
-    var box = document.getElementById('mp-rank-list');
-    try {
-      var res = await Promise.all([
-        callRpc('mp_petition_counts', {}),
-        fetch('/vekil-listesi.txt').then(function (r) { if (!r.ok) throw 0; return r.text(); }).catch(function () { return fetch('/index.html').then(function (r) { return r.text(); }); })
-      ]);
-      var mps = parseMps(res[1]);
-      if (!mps) throw new Error('liste');
-      try { ((await callRpc('list_signed_mps', {})) || []).forEach(function (x) { window.__vkImza[Number(x.mp_id)] = 1; }); } catch (e) {}
-      var votes = {};
-      var vm = res[1].match(/var MP_VOTES = \{([\s\S]*?)\};/);
-      if (vm) vm[1].replace(/(\d+):"([KRYC])"/g, function (_, id, v) { votes[id] = v; return ''; });
-      all = (res[0] || []).map(function (r) {
-        var m = mps[r.mp_id] || { city: '', name: 'Vekil #' + r.mp_id, party: '' };
-        return { id: Number(r.mp_id), name: m.name, party: m.party, city: m.city, total: Number(r.total), vote: votes[r.mp_id] || '' };
-      }).filter(function (r) { return r.total > 0; })
-       .sort(function (a, b) { return b.total - a.total; });
-      var seen = {};
-      (res[0] || []).forEach(function (r) { if (Number(r.total) > 0) seen[r.mp_id] = true; });
-      Object.keys(mps).forEach(function (id) {
-        if (!seen[id]) all.push({ id: Number(id), name: mps[id].name, party: mps[id].party, city: mps[id].city, total: 0, vote: votes[id] || '' });
-      });
-      render();
-    } catch (e) {
-      if (box) box.textContent = 'Sıralama yüklenemedi.';
-    }
-  }
-  var tg = document.getElementById('mp-rank-toggle');
-  if (tg) tg.addEventListener('click', function () {
-    showAll = !showAll;
-    tg.textContent = showAll ? 'İlk 20' : 'Tümünü göster';
-    render();
-  });
-  window.addEventListener('load', function () { load(); setInterval(load, 60000); });
-})();
-</script>
     </div>
     <div id="r-top">
     <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-3">
@@ -1175,6 +1055,51 @@ async function loadCounters() {
   } catch (e) { /* sayaclar zorunlu degil */ }
 }
 
+// Kampanya Verileri karti: herkese acik toplu sayilardan cizilir (isim yok), dakikada en fazla bir kez yenilenir
+var _statsAt = 0;
+async function statsLoad() {
+  if (Date.now() - _statsAt < 60000) return;
+  _statsAt = Date.now();
+  async function al(fn) { try { var r = await callRpc(fn, {}); return Array.isArray(r) ? r : (r ? [r] : []); } catch (e) { return null; } }
+  var res = await Promise.all([al('campaign_counts'), al('petition_public_map'), al('mp_petition_counts'), al('public_petition_ranking')]);
+  var cc = res[0] && res[0][0], pm = res[1], mp = res[2], rk = res[3];
+  if (!cc) { _statsAt = 0; return; }
+  function bar(box, ad, n, max) {
+    var row = h('div', 'st-row'), tr = h('div', 'st-tr'), fl = h('div', 'st-fl');
+    fl.style.width = (max > 0 ? Math.max(n / max * 100, 1) : 0) + '%';
+    tr.appendChild(fl); row.appendChild(h('span', '', ad)); row.appendChild(tr); row.appendChild(h('span', '', fmtN(n)));
+    box.appendChild(row);
+  }
+  $('st-top').textContent = fmtN(cc.citizen_total);
+  var hedef = [['Milletvekilleri', Number(cc.mp_total)], ['Cumhurbaşkanlığı', Number(cc.cb_total)], ['TBMM Başkanlığı', Number(cc.mb_total)]];
+  var hb = $('st-hedef'); hb.textContent = '';
+  var hm = Math.max.apply(null, hedef.map(function (x) { return x[1] || 0; }));
+  hedef.forEach(function (x) { bar(hb, x[0], x[1] || 0, hm); });
+  if (mp) $('st-vekil').textContent = fmtN(mp.filter(function (x) { return Number(x.total) > 0; }).length) + ' / ' + fmtN(MAP_MPC.length);
+  if (rk) {
+    $('st-kisi').textContent = fmtN(rk.length);
+    var ob = $('st-onur'); ob.textContent = '';
+    var t594 = rk.filter(function (x) { return Number(x.toplam) >= 594; }).length;
+    var t100 = rk.filter(function (x) { return Number(x.toplam) >= 100; }).length;
+    bar(ob, '594 tamamlayan', t594, Math.max(t100, 1)); bar(ob, '100 barajını aşan', t100, Math.max(t100, 1));
+  }
+  if (pm) {
+    var low = function (s) { return String(s || '').trim().toLocaleLowerCase('tr'); };
+    var iller = {}; MAP_MPC.forEach(function (c) { iller[low(c)] = c; });
+    var say = {};
+    pm.forEach(function (x) { var k = low(x.city); if (!x.country && iller[k] && Number(x.n) > 0) say[k] = (say[k] || 0) + Number(x.n); });
+    var dolu = Object.keys(say).sort(function (a, b) { return say[b] - say[a]; });
+    var bos = Object.keys(iller).filter(function (k) { return !say[k]; }).map(function (k) { return iller[k]; }).sort(function (a, b) { return a.localeCompare(b, 'tr'); });
+    $('st-il').textContent = fmtN(dolu.length) + ' / ' + fmtN(Object.keys(iller).length);
+    var ib = $('st-iller'); ib.textContent = '';
+    dolu.slice(0, 8).forEach(function (k) { bar(ib, iller[k], say[k], say[dolu[0]]); });
+    $('st-bos-t').textContent = bos.length ? 'Dilekçe bekleyen ' + bos.length + ' il' : 'Her ilden dilekçe geldi';
+    var bb = $('st-bos'); bb.textContent = '';
+    bos.forEach(function (c) { bb.appendChild(h('span', '', c)); });
+  }
+  $('stats-box').classList.remove('hidden');
+}
+
 // ---------- gonullu girisi ----------
 var memberCode = '';
 var boardTimer = null;
@@ -1324,6 +1249,7 @@ function renderBoard(b) {
   var an = (b.announcement || '').trim();
   $('announce-box').classList.toggle('hidden', !an);
   $('announce-text').textContent = an;
+  statsLoad();
 
   var mb = $('me-box');
   if (me.observer) {
