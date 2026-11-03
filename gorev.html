@@ -377,7 +377,7 @@
       </div>
       <div id="chat-list" class="space-y-2 h-[26rem] overflow-y-auto overscroll-contain pr-1 text-sm"></div>
       <div class="flex gap-2">
-        <input type="text" id="chat-input" maxlength="300" placeholder="Etkinlik, duyuru veya çalışmanı paylaş…" class="inp" autocomplete="off" onkeydown="if(event.key==='Enter')sendChat()">
+        <input type="text" id="chat-input" maxlength="1000" placeholder="Mesaj, link veya video linki yaz…" class="inp" autocomplete="off" onkeydown="if(event.key==='Enter')sendChat()">
         <button type="button" onclick="sendChat()" class="btn bg-emerald-600 hover:bg-emerald-500 text-white whitespace-nowrap">Gönder</button>
       </div>
       <p id="chat-msg" class="text-xs text-red-400 min-h-[16px]"></p>
@@ -1220,12 +1220,33 @@ async function refreshChat() {
       var row = h('div', 'rounded-lg px-3 py-2 ' + (r.mine ? 'bg-emerald-950/60 border border-emerald-800' : 'bg-zinc-950/60 border border-zinc-800'));
       var t = new Date(r.at);
       row.appendChild(h('div', 'text-[11px] text-zinc-400', r.nick + ' · ' + t.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })));
-      row.appendChild(h('div', 'text-zinc-100 whitespace-pre-line break-words', r.body));
+      row.appendChild(chatBody(r.body));
       box.appendChild(row);
     });
     if (atEnd || rows.length !== chatCount) box.scrollTop = box.scrollHeight;
     chatCount = rows.length;
   } catch (e) {}
+}
+
+// Mesajdaki linkleri tiklanabilir yapar; YouTube linkinde video kapagi gosterir
+function chatBody(text) {
+  var box = h('div', 'text-zinc-100 whitespace-pre-line break-words');
+  var re = /(https?:\/\/[^\s<>"']+|www\.[^\s<>"']+)/gi, son = 0, m, yt = '';
+  while ((m = re.exec(text))) {
+    if (m.index > son) box.appendChild(document.createTextNode(text.slice(son, m.index)));
+    var ham = m[0].replace(/[.,;:!?)]+$/, ''), url = /^www\./i.test(ham) ? 'https://' + ham : ham;
+    var a = h('a', 'text-emerald-300 underline break-all', ham); a.href = url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+    box.appendChild(a);
+    son = m.index + ham.length; re.lastIndex = son;
+    if (!yt) { var v = /(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:[^\s]*&)?v=|shorts\/|live\/))([\w-]{6,20})/i.exec(url); if (v) yt = { id: v[1], url: url }; }
+  }
+  if (son < text.length) box.appendChild(document.createTextNode(text.slice(son)));
+  if (yt) {
+    var k = h('a', 'block mt-2 rounded-lg overflow-hidden border border-zinc-700 max-w-xs'); k.href = yt.url; k.target = '_blank'; k.rel = 'noopener noreferrer';
+    var im = h('img', 'w-full block'); im.src = 'https://img.youtube.com/vi/' + yt.id + '/hqdefault.jpg'; im.alt = 'Videoyu aç'; im.loading = 'lazy';
+    k.appendChild(im); box.appendChild(k);
+  }
+  return box;
 }
 
 async function sendChat() {
@@ -1239,8 +1260,8 @@ async function sendChat() {
   } catch (e) {
     var m = (e && e.message) || '';
     if (m.indexOf('blocked_word') !== -1) msg.textContent = 'Mesajın uygunsuz bir ifade içeriyor, gönderilmedi.';
-    else if (m.indexOf('blocked_content') !== -1) msg.textContent = 'Bağlantı, e-posta ve @ kullanılamaz.';
-    else if (m.indexOf('invalid_message') !== -1) msg.textContent = 'Mesaj 1-300 karakter olmalı.';
+    else if (m.indexOf('blocked_content') !== -1) msg.textContent = 'E-posta adresi paylaşılamaz.';
+    else if (m.indexOf('invalid_message') !== -1) msg.textContent = 'Mesaj en fazla 1000 karakter olabilir.';
     else if (m.indexOf('rate_limited') !== -1) msg.textContent = 'Çok hızlı yazıyorsun, birkaç saniye bekle.';
     else if (m.indexOf('unauthorized') !== -1) msg.textContent = 'Kodun artık geçerli değil.';
     else msg.textContent = errText(e);
