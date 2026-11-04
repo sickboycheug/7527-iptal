@@ -7342,7 +7342,8 @@ async function rkLoad() {
   if (!supabaseClient) return;
   try {
     var rows = await callRpc('public_petition_ranking', {});
-    _rkRows = Array.isArray(rows) ? rows : [];
+    // Adı henüz sıralamaya işlenmemiş kayıtlar herkese açık listede gösterilmez
+    _rkRows = (Array.isArray(rows) ? rows : []).filter(function (r) { var e = String(r.etiket || '').trim(); return e && e !== 'İsimsiz'; });
     rkRender();
   } catch (e) { /* servis kurulu degilse kart gizli kalir */ }
 }
