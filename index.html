@@ -550,6 +550,10 @@
         </div>
         <div class="p-5 space-y-2">
           <h3 class="text-xs font-bold text-zinc-300 uppercase tracking-wider">📈 Dilekçe sıralaması</h3>
+<div class="grid grid-cols-2 gap-1 bg-zinc-950 border border-zinc-800 rounded-lg p-1" role="group" aria-label="Sıralama">
+            <button type="button" id="rk-s-cok" onclick="rkSira(true)" aria-pressed="true" class="py-1.5 rounded-md text-[11px] font-bold bg-emerald-700 text-white">En çoktan aza</button>
+            <button type="button" id="rk-s-az" onclick="rkSira(false)" aria-pressed="false" class="py-1.5 rounded-md text-[11px] font-bold text-zinc-300">En azdan çoğa</button>
+          </div>
           <ol id="rk-list" class="space-y-1.5"></ol>
           <p id="rk-empty" class="hidden text-[12px] text-zinc-400">Sıralama ilk dilekçelerle oluşacak. İlk adımı sen at.</p>
           <button type="button" id="rk-more" onclick="rkToggle()" class="hidden w-full mt-1 py-2 rounded-xl border border-zinc-700 text-zinc-200 hover:bg-zinc-800 text-xs font-bold">Tüm sıralamayı gör ▼</button>
@@ -562,6 +566,10 @@
           <div class="space-y-1">
             <h2 class="text-xs font-bold text-red-300 uppercase tracking-wider">🎯 Bugünün Hedefi</h2>
             <p class="text-[13px] text-zinc-200 leading-relaxed">Bu sayılar halk iradesidir. Bu haklar bize verilmedi, kazanıldı. Egemenlik kayıtsız şartsız milletindir; biz de kayıtsız şartsız 7527'nin iptalini istiyoruz.</p>
+          </div>
+<div class="grid grid-cols-2 gap-1 bg-zinc-950 border border-zinc-800 rounded-lg p-1" role="group" aria-label="Sıralama">
+            <button type="button" id="th-s-cok" onclick="thSira(true)" aria-pressed="true" class="py-1.5 rounded-md text-[11px] font-bold bg-emerald-700 text-white">En çoktan aza</button>
+            <button type="button" id="th-s-az" onclick="thSira(false)" aria-pressed="false" class="py-1.5 rounded-md text-[11px] font-bold text-zinc-300">En azdan çoğa</button>
           </div>
           <div id="th-filters" class="hidden grid grid-cols-1 sm:grid-cols-3 gap-2">
             <select id="th-il" aria-label="İl" onchange="thRender()" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-2 py-2 text-xs text-zinc-200"></select>
@@ -667,7 +675,7 @@ async function vkPaylas(r) {
 </div>
 <script>
 // Vekil mektuplari: 7527 oyuna gore secilir, siteden otomatik gorsel uretilir
-var VK_MEKTUP = {"R": ["Sayın Vekilim,", "7527 sayılı Kanun’a karşı ilk oylamada gösterdiğiniz tutum için teşekkür ederek size önemli bir çağrıda bulunmak istiyorum.", "Hayvanların yaşam hakkını savunmak ve bu yasanın iptalini sağlamak için başlattığımız 7527 İPTAL! İmzacısı Ol! kampanyamız kapsamında, Meclis’te sizlerin desteğine ve öncülüğüne ihtiyaç duyuyoruz.", "İlk oylamada bizimle aynı yönde kullandığınız oyun, bugün de somut bir iradeyle devam etmesini istiyoruz. Gelin, halkın yaşam hakkı talebine koşulsuz destek olun; hayvanların yaşamını savunduğunuzu yalnızca sözlerinizle değil, imzanızla da gösterin.", "İlk adım olarak **7527iptal.org** adresindeki Meclis Vekil Paneli üzerinden imzacı olmanızı; ardından bu talebin TBMM çatısı altında imzaya açılması ve gerekli yasal adımların atılması için desteğinizi rica ediyorum.", "Bu mücadelede sizlerin de hayvanların yaşam hakkını bizim gibi savunduğunu ve bu sorumluluğu üstlendiğini ivedilikle görmek istiyoruz.", "Dilediğiniz zaman kampanyamız, dilekçemiz ve izlemeyi önerdiğimiz süreç hakkında gerekli bütün bilgilendirmeleri doğrudan yapmaya hazırım.", "Yaşam hakkı için, hayvanlarımız için, geleceğimiz için…", "Desteğinizi ve imzanızı bekliyorum.", "Saygılarımla,"], "K": ["Sayın Vekilim,", "7527 sayılı Kanun’un kabul edilmesi yönünde kullandığınız oyun sonuçlarını yeniden değerlendirmenizi ve bu büyük hatanın düzeltilmesi için sizi sorumluluk almaya davet ediyorum.", "Yasa birkaç gün içinde, hayvanların yaşamı ve toplumun geleceği üzerindeki sonuçları yeterince sorgulanmadan yürürlüğe sokuldu. Ancak sahadaki gerçeklik, alınan kararın sonuçlarını her gün daha ağır biçimde ortaya koyuyor. Hayvanların yaşam hakkı ihlal ediliyor; toplumun vicdanından öte, birlikte yaşama kültürümüz, kamu kaynakları ve insanın diğer canlılarla kurduğu ilişki ağır bir tahribata uğruyor.", "Katillere, tecavüzcülere, hırsızlara ve teröristlere dahi uygulanmayan bir ölüm cezasını masum hayvanlara uygulayamazsınız. Suç işlememiş, kendini savunma ve hukuki süreçte söz söyleme imkânı bulunmayan canlıları topluca ölüme mahkûm eden bir anlayışın sonuçlarını kabul etmek zorunda değiliz.", "Asırlardır bu topraklarda varlığını sürdüren birlikte yaşam kültürümüze verilen zarar da cabası. Bugün mesele yalnızca hayvanların başına gelenler değil; nasıl bir toplum olmak istediğimiz, hukukun ve kamusal sorumluluğun nasıl anlaşılacağıdır.", "Biz sizden karmaşık bir şey istemiyoruz. 7527 sayılı Kanun’un iptalini talep ediyoruz. Bu yasayı kabul etmiş olmanız, bugün sonuçlarını gördüğünüzde kararınızı yeniden değerlendirmenize engel değildir. Aksine, hatadan dönmek ve ortaya çıkan zararı durdurmak da siyasi sorumluluğun bir parçasıdır.", "Sizi, **7527iptal.org** adresindeki Meclis Vekil Paneli üzerinden 7527 İPTAL! kampanyamıza imzacı olmaya ve ardından bu talebin TBMM çatısı altında imzaya açılması için destek vermeye çağırıyorum.", "Bir kararın birkaç gün içinde alınabilmiş olması, onun doğurduğu sonuçların görmezden gelinebileceği anlamına gelmez. Aynı şekilde, bir yanlıştan dönmek de mümkündür.", "Bugün önünüzde açık bir tercih var: Bu yasanın sonuçlarına seyirci kalmak ya da iptali için sorumluluk üstlenmek.", "Daha fazla can kaybı yaşanmadan, daha fazla toplumsal tahribat oluşmadan bu hatadan acilen dönülmesini istiyoruz. İmzanız, bu yönde atılmış somut bir adım olacaktır.", "Gerekli tüm bilgi ve belgeleri sizinle paylaşmaya, sorularınızı yanıtlamaya hazırım.", "**7527 İPTAL!**\nÖldüren değil, yaşatan olun.", "Saygılarımla,"], "Y": ["Sayın Vekilim,", "7527 sayılı Kanun’un Meclis’te görüşüldüğü oylamaya katılmadınız. Ancak oylamaya katılmamanız, bu yasanın kabul edilmesini engellemedi. Hayvanların yaşam hakkını doğrudan etkileyen böylesine önemli bir konuda Meclis’te bulunmamak ve irade ortaya koymamak, sonuçları itibarıyla yasanın karşısında durulmasını sağlayamadı.", "Bugün sahada yaşananlar, bu yasanın sonuçlarının görmezden gelinemeyeceğini gösteriyor. Hayvanlar yaşamlarını kaybediyor, toplumun birlikte yaşama kültürü ağır yara alıyor ve kamu kaynakları kalıcı çözümler yerine yıkıcı sonuçlar doğuran uygulamalara yöneliyor.", "Katillere, tecavüzcülere, hırsızlara ve teröristlere dahi uygulanmayan bir ölüm cezası, masum hayvanlara uygulanamaz. Bu ülkenin asırlardır sürdürdüğü birlikte yaşam kültürünü bu denli tahrip eden bir yasanın sonuçlarını kabullenmek zorunda değiliz.", "Bugün size çağrımız, geçmişteki tutumunuzdan bağımsız olarak, artık somut bir irade ortaya koymanızdır. Oylamaya katılmamış olmanız, bugün bu yasanın iptali için sorumluluk üstlenmenize engel değil. Aksine, şimdi atacağınız adım, eksik kalan siyasi iradenin tamamlanması için bir fırsattır.", "Sizden açık ve somut bir talebimiz var:", "**7527iptal.org** adresindeki Meclis Vekil Paneli üzerinden 7527 İPTAL! kampanyasına imzacı olun. Ardından bu talebin TBMM çatısı altında imzaya açılması ve yasanın iptali için gerekli siyasi ve hukuki girişimlerin desteklenmesi yönünde adım atın.", "Bu yasa birkaç gün içinde kabul edildi. Şimdi ise sonuçlarını yaşayan binlerce can için daha fazla zaman kaybetme lüksümüz yok.", "Meclis’te ortaya konmayan iradenin bugün ortaya konmasını; sessizliğin yerini açık bir tutuma, tutumun da somut bir eyleme bırakmasını istiyoruz.", "Henüz geç değil. Bu hatanın düzeltilmesi için bugün imzanızı verebilirsiniz.", "Dilediğiniz zaman kampanya ve iptal talebimiz hakkında gerekli bütün bilgi ve belgeleri paylaşmaya hazırım.", "Hayvanların yaşam hakkı, toplumun geleceği ve birlikte yaşama kültürümüz için desteğinizi bekliyorum.", "Saygılarımla,"]};
+var VK_MEKTUP = {"R": ["Sayın Vekilim,", "7527 sayılı Kanun’a karşı ilk oylamada gösterdiğiniz tutum için teşekkür ederek size önemli bir çağrıda bulunmak istiyorum.", "Hayvanların yaşam hakkını savunmak ve bu yasanın iptalini sağlamak için başlattığımız 7527 İPTAL! İmzacısı Ol! kampanyamız kapsamında, Meclis’te sizlerin desteğine ve öncülüğüne ihtiyaç duyuyoruz.", "İlk oylamada bizimle aynı yönde kullandığınız oyun, bugün de somut bir iradeyle devam etmesini istiyoruz. Gelin, halkın yaşam hakkı talebine koşulsuz destek olun; hayvanların yaşamını savunduğunuzu yalnızca sözlerinizle değil, imzanızla da gösterin.", "İlk adım olarak **7527iptal.org** adresindeki Meclis Vekil Paneli üzerinden imzacı olmanızı; ardından bu talebin TBMM çatısı altında imzaya açılması ve gerekli yasal adımların atılması için desteğinizi rica ediyorum.", "Bu mücadelede sizlerin de hayvanların yaşam hakkını bizim gibi savunduğunu ve bu sorumluluğu üstlendiğini ivedilikle görmek istiyoruz.", "Dile getirdiğimiz her şeyin sonucu sahada en acı biçimde yaşanıyor. Bunun kayıtları Vaka Almanağı’nda: **7527iptal.org/hakikat.html#vakalar**", "Yaşam hakkı için, hayvanlarımız için, geleceğimiz için…", "Desteğinizi ve imzanızı bekliyorum.", "Saygılarımla,"], "K": ["Sayın Vekilim,", "7527 sayılı Kanun’un kabul edilmesi yönünde kullandığınız oyun sonuçlarını yeniden değerlendirmenizi ve bu büyük hatanın düzeltilmesi için sizi sorumluluk almaya davet ediyorum.", "Yasa birkaç gün içinde, hayvanların yaşamı ve toplumun geleceği üzerindeki sonuçları yeterince sorgulanmadan yürürlüğe sokuldu. Ancak sahadaki gerçeklik, alınan kararın sonuçlarını her gün daha ağır biçimde ortaya koyuyor. Hayvanların yaşam hakkı ihlal ediliyor; toplumun vicdanından öte, birlikte yaşama kültürümüz, kamu kaynakları ve insanın diğer canlılarla kurduğu ilişki ağır bir tahribata uğruyor.", "Katillere, tecavüzcülere, hırsızlara ve teröristlere dahi uygulanmayan bir ölüm cezasını masum hayvanlara uygulayamazsınız. Suç işlememiş, kendini savunma ve hukuki süreçte söz söyleme imkânı bulunmayan canlıları topluca ölüme mahkûm eden bir anlayışın sonuçlarını kabul etmek zorunda değiliz.", "Asırlardır bu topraklarda varlığını sürdüren birlikte yaşam kültürümüze verilen zarar da cabası. Bugün mesele yalnızca hayvanların başına gelenler değil; nasıl bir toplum olmak istediğimiz, hukukun ve kamusal sorumluluğun nasıl anlaşılacağıdır.", "Biz sizden karmaşık bir şey istemiyoruz. 7527 sayılı Kanun’un iptalini talep ediyoruz. Bu yasayı kabul etmiş olmanız, bugün sonuçlarını gördüğünüzde kararınızı yeniden değerlendirmenize engel değildir. Aksine, hatadan dönmek ve ortaya çıkan zararı durdurmak da siyasi sorumluluğun bir parçasıdır.", "Sizi, **7527iptal.org** adresindeki Meclis Vekil Paneli üzerinden 7527 İPTAL! kampanyamıza imzacı olmaya ve ardından bu talebin TBMM çatısı altında imzaya açılması için destek vermeye çağırıyorum.", "Bir kararın birkaç gün içinde alınabilmiş olması, onun doğurduğu sonuçların görmezden gelinebileceği anlamına gelmez. Aynı şekilde, bir yanlıştan dönmek de mümkündür.", "Bugün önünüzde açık bir tercih var: Bu yasanın sonuçlarına seyirci kalmak ya da iptali için sorumluluk üstlenmek.", "Daha fazla can kaybı yaşanmadan, daha fazla toplumsal tahribat oluşmadan bu hatadan acilen dönülmesini istiyoruz. İmzanız, bu yönde atılmış somut bir adım olacaktır.", "Dile getirdiğimiz her şeyin sonucu sahada en acı biçimde yaşanıyor. Bunun kayıtları Vaka Almanağı’nda: **7527iptal.org/hakikat.html#vakalar**", "**7527 İPTAL!**\nÖldüren değil, yaşatan olun.", "Saygılarımla,"], "Y": ["Sayın Vekilim,", "7527 sayılı Kanun’un Meclis’te görüşüldüğü oylamaya katılmadınız. Ancak oylamaya katılmamanız, bu yasanın kabul edilmesini engellemedi. Hayvanların yaşam hakkını doğrudan etkileyen böylesine önemli bir konuda Meclis’te bulunmamak ve irade ortaya koymamak, sonuçları itibarıyla yasanın karşısında durulmasını sağlayamadı.", "Bugün sahada yaşananlar, bu yasanın sonuçlarının görmezden gelinemeyeceğini gösteriyor. Hayvanlar yaşamlarını kaybediyor, toplumun birlikte yaşama kültürü ağır yara alıyor ve kamu kaynakları kalıcı çözümler yerine yıkıcı sonuçlar doğuran uygulamalara yöneliyor.", "Katillere, tecavüzcülere, hırsızlara ve teröristlere dahi uygulanmayan bir ölüm cezası, masum hayvanlara uygulanamaz. Bu ülkenin asırlardır sürdürdüğü birlikte yaşam kültürünü bu denli tahrip eden bir yasanın sonuçlarını kabullenmek zorunda değiliz.", "Bugün size çağrımız, geçmişteki tutumunuzdan bağımsız olarak, artık somut bir irade ortaya koymanızdır. Oylamaya katılmamış olmanız, bugün bu yasanın iptali için sorumluluk üstlenmenize engel değil. Aksine, şimdi atacağınız adım, eksik kalan siyasi iradenin tamamlanması için bir fırsattır.", "Sizden açık ve somut bir talebimiz var:", "**7527iptal.org** adresindeki Meclis Vekil Paneli üzerinden 7527 İPTAL! kampanyasına imzacı olun. Ardından bu talebin TBMM çatısı altında imzaya açılması ve yasanın iptali için gerekli siyasi ve hukuki girişimlerin desteklenmesi yönünde adım atın.", "Bu yasa birkaç gün içinde kabul edildi. Şimdi ise sonuçlarını yaşayan binlerce can için daha fazla zaman kaybetme lüksümüz yok.", "Meclis’te ortaya konmayan iradenin bugün ortaya konmasını; sessizliğin yerini açık bir tutuma, tutumun da somut bir eyleme bırakmasını istiyoruz.", "Henüz geç değil. Bu hatanın düzeltilmesi için bugün imzanızı verebilirsiniz.", "Dile getirdiğimiz her şeyin sonucu sahada en acı biçimde yaşanıyor. Bunun kayıtları Vaka Almanağı’nda: **7527iptal.org/hakikat.html#vakalar**", "Hayvanların yaşam hakkı, toplumun geleceği ve birlikte yaşama kültürümüz için desteğinizi bekliyorum.", "Saygılarımla,"]};
 async function vkMektupGorsel(oy, r) {
   try { await document.fonts.load('700 60px Oswald'); await document.fonts.load('400 30px Inter'); await document.fonts.load('700 30px Inter'); } catch (e) {}
   var W = 1080, H = 1440, L = 64, G = W - 128, UST = 214, ALT = 1312, c = document.createElement('canvas'); c.width = W; c.height = H;
@@ -762,7 +770,14 @@ async function vkMektupAc(r) {
 </script>
 <script>
 // Bugunun Hedefi: en cok dilekce alan vekillerden baslar (halk iradesi baskisi); gonderilenler isaretlenir
-var _thAll = false, _thFiltre = false;
+var _thAll = false, _thFiltre = false, _thCok = true;
+function siraBoya(pre, cok) {
+  [[pre + '-cok', cok], [pre + '-az', !cok]].forEach(function (x) {
+    var b = document.getElementById(x[0]); b.setAttribute('aria-pressed', String(x[1]));
+    b.className = 'py-1.5 rounded-md text-[11px] font-bold ' + (x[1] ? 'bg-emerald-700 text-white' : 'text-zinc-300');
+  });
+}
+function thSira(cok) { _thCok = cok; siraBoya('th-s', cok); thRender(); }
 function thRow(m, box, sent) {
   var n = Number(MP_COUNTS[m.id] || 0), oy = MP_VOTES[m.id] || '';
   var d = document.createElement('div'); d.className = 'bg-zinc-800/70 rounded-xl p-3 space-y-2';
@@ -811,7 +826,7 @@ function thRender() {
   var rows = MP_DATABASE.filter(function (m) {
     return (!il || m.city === il) && (!pa || m.party === pa) && (!oy || MP_VOTES[m.id] === oy);
   }).sort(function (a, b) {
-    return Number(MP_COUNTS[b.id] || 0) - Number(MP_COUNTS[a.id] || 0) || a.name.localeCompare(b.name, 'tr');
+    return (_thCok ? 1 : -1) * (Number(MP_COUNTS[b.id] || 0) - Number(MP_COUNTS[a.id] || 0)) || a.name.localeCompare(b.name, 'tr');
   });
   box.textContent = '';
   more.classList.remove('hidden');
@@ -4444,6 +4459,16 @@ function hmCaseInfo(city, info) {
   });
   info.appendChild(box);
 }
+var _abCok = true;
+function abSiraDugme(yeniden) {
+  var w = document.createElement('div'); w.className = 'grid grid-cols-2 gap-1 bg-zinc-950 border border-zinc-800 rounded-lg p-1'; w.setAttribute('role', 'group'); w.setAttribute('aria-label', 'Sıralama');
+  [['En çoktan aza', true], ['En azdan çoğa', false]].forEach(function (x) {
+    var b = document.createElement('button'); b.type = 'button'; b.textContent = x[0]; b.setAttribute('aria-pressed', String(_abCok === x[1]));
+    b.className = 'py-1.5 rounded-md text-[11px] font-bold ' + (_abCok === x[1] ? 'bg-emerald-700 text-white' : 'text-zinc-300');
+    b.onclick = function () { _abCok = x[1]; yeniden(); }; w.appendChild(b);
+  });
+  return w;
+}
 function hmRender() {
   var box = document.getElementById('hm-svg'), list = document.getElementById('hm-list'),
       info = document.getElementById('hm-info'), sum = document.getElementById('hm-summary');
@@ -4563,7 +4588,8 @@ function hmRender() {
     if (abArr.length) {
       var ul = hmEl('div', 'space-y-1 pt-1');
       ul.appendChild(hmEl('div', 'text-xs font-semibold text-amber-300', (PET ? 'Yurtdışından dilekçeler' : 'Yurtdışı gönüllülerimiz')));
-      abArr.forEach(function (a) { ul.appendChild(hmEl('div', 'text-[11px] px-2 py-1 rounded-lg bg-zinc-800 text-zinc-200', a.country + ' · ' + a.n + ' ' + W)); });
+      if (abArr.length > 1) ul.appendChild(abSiraDugme(hmRender));
+      (_abCok ? abArr : abArr.slice().reverse()).forEach(function (a) { ul.appendChild(hmEl('div', 'text-[11px] px-2 py-1 rounded-lg bg-zinc-800 text-zinc-200', a.country + ' · ' + a.n + ' ' + W)); });
       list.appendChild(ul);
     } else list.appendChild(hmEl('div', 'text-[11px] text-zinc-500 text-center', (PET ? 'Henüz yurtdışından dilekçe yok.' : 'Henüz yurtdışından gönüllümüz yok. Yurtdışı gönüllüsü arıyoruz.')));
   }
@@ -7136,7 +7162,8 @@ async function backfillPetitionPlaces() {
 // Kişi kodu: ad-soyaddan üretilen tek yönlü SHA-256 (büyük/küçük harf ve ş/s, ı/i farkı gözetilmez).
 // Aynı kişi telefon ya da e-posta, farklı il seçse de tek kişi sayılır.
 // Kod herkese açık listede hiç gösterilmez.
-var RK_TOPLAM = 594, _rkRows = [], _rkOpen = false;
+var RK_TOPLAM = 594, _rkRows = [], _rkOpen = false, _rkCok = true;
+function rkSira(cok) { _rkCok = cok; siraBoya('rk-s', cok); rkRender(); }
 function rkNorm(x) {
   var m = { 'ç': 'c', 'ğ': 'g', 'ı': 'i', 'ö': 'o', 'ş': 's', 'ü': 'u', 'â': 'a', 'î': 'i', 'û': 'u' };
   return String(x || '').toLocaleLowerCase('tr').replace(/[çğıöşüâîû]/g, function (c) { return m[c]; })
@@ -7184,12 +7211,14 @@ function rkRender() {
     ? 'Cumhurbaşkanlığı’na, TBMM Başkanlığı’na ve 592 milletvekilinin her birine: 594 dilekçe, tek tek yazıldı, tek tek gönderildi. Hayattan koparılan canlarımızın sesi ' + (tek ? 'oldun' : 'oldunuz') + '. Bir daha yaşanmasın; barınaklarda bekleyenler kurtulsun. Teşekkür ederiz. Şimdi sıra bizde: dilekçeni gönder, adını bu köşeye sen de yaz.'
     : 'Cumhurbaşkanlığı, TBMM Başkanlığı ve 592 milletvekili: 594 dilekçe. Hayattan koparılan canlarımızın sesi ol. Bir daha yaşanmasın; barınaklarda bekleyenler kurtulsun. Bu köşeye ilk adını yazan sen ol.';
   var ol = document.getElementById('rk-list'); ol.textContent = '';
-  var show = _rkOpen ? rest : rest.slice(0, 10);
+  rest = rest.slice().sort(function (a, b) { return Number(b.toplam) - Number(a.toplam); });
+  var sirali = _rkCok ? rest : rest.slice().reverse();
+  var show = _rkOpen ? sirali : sirali.slice(0, 10);
   show.forEach(function (r, i) {
     var li = rkEl('li', 'bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2');
     var top = rkEl('div', 'flex items-baseline justify-between gap-2 text-xs');
     var sol = rkEl('span', 'min-w-0 truncate');
-    sol.appendChild(rkEl('b', 'text-zinc-400 font-mono mr-1.5', (i + 1) + '.'));
+    sol.appendChild(rkEl('b', 'text-zinc-400 font-mono mr-1.5', (_rkCok ? i + 1 : rest.length - i) + '.'));
     sol.appendChild(rkEl('span', 'font-bold text-white', r.etiket));
     var y = rkYer(r); if (y) sol.appendChild(rkEl('span', 'text-zinc-400', ' · ' + y));
     top.appendChild(sol);
