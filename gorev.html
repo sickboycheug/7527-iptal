@@ -338,6 +338,7 @@
       <button type="button" id="vk-cp" class="rounded-xl font-bold text-xs py-2.5 px-3 bg-zinc-800 text-zinc-200">📋 Metni kopyala</button>
       <a id="vk-dl" class="block text-center rounded-xl font-bold text-xs py-2.5 px-3 bg-zinc-800 text-zinc-200">⬇ Görseli indir</a>
     </div>
+    <button type="button" id="vk-mk" class="w-full rounded-xl font-bold text-xs py-2.5 px-3 bg-red-700 hover:bg-red-600 text-white">📄 Vekile açık mektubu paylaş</button>
     <p id="vk-st" class="text-[11px] text-emerald-400 text-center min-h-[16px]"></p>
   </div>
 </div>
@@ -385,6 +386,7 @@ async function vkPaylas(r) {
   var dl = document.getElementById('vk-dl'); dl.href = url; dl.download = ad;
   function kop() { if (navigator.clipboard) navigator.clipboard.writeText(t).then(function () { st.textContent = '✓ Metin kopyalandı'; }); }
   document.getElementById('vk-cp').onclick = kop;
+  var mk = document.getElementById('vk-mk'), mkOy = r.vote === 'C' ? '' : r.vote; mk.style.display = (mkOy && VK_MEKTUP[mkOy] && !window.__vkImza[r.id]) ? 'block' : 'none'; mk.onclick = function () { vkMektup(r); };
   document.getElementById('vk-x').onclick = function () { window.open('https://twitter.com/intent/tweet?text=' + q(t), '_blank'); };
   document.getElementById('vk-wa').onclick = function () { window.open('https://api.whatsapp.com/send?text=' + q(t), '_blank'); };
   document.getElementById('vk-tg').onclick = function () { window.open('https://t.me/share/url?url=' + q('https://7527iptal.org') + '&text=' + q(t), '_blank'); };
@@ -394,6 +396,65 @@ async function vkPaylas(r) {
     if (navigator.canShare && navigator.canShare({ files: [f] })) navigator.share({ files: [f], text: t }).catch(function () {});
     else dl.click();
   };
+}
+</script>
+<script>
+// Vekil mektuplari: 7527 oyuna gore secilir, siteden otomatik gorsel uretilir
+var VK_MEKTUP = {"R": ["Sayın Vekilim,", "7527 sayılı Kanun’a karşı ilk oylamada gösterdiğiniz tutum için teşekkür ederek size önemli bir çağrıda bulunmak istiyorum.", "Hayvanların yaşam hakkını savunmak ve bu yasanın iptalini sağlamak için başlattığımız 7527 İPTAL! İmzacısı Ol! kampanyamız kapsamında, Meclis’te sizlerin desteğine ve öncülüğüne ihtiyaç duyuyoruz.", "İlk oylamada bizimle aynı yönde kullandığınız oyun, bugün de somut bir iradeyle devam etmesini istiyoruz. Gelin, halkın yaşam hakkı talebine koşulsuz destek olun; hayvanların yaşamını savunduğunuzu yalnızca sözlerinizle değil, imzanızla da gösterin.", "İlk adım olarak **7527iptal.org** adresindeki Meclis Vekil Paneli üzerinden imzacı olmanızı; ardından bu talebin TBMM çatısı altında imzaya açılması ve gerekli yasal adımların atılması için desteğinizi rica ediyorum.", "Bu mücadelede sizlerin de hayvanların yaşam hakkını bizim gibi savunduğunu ve bu sorumluluğu üstlendiğini ivedilikle görmek istiyoruz.", "Dilediğiniz zaman kampanyamız, dilekçemiz ve izlemeyi önerdiğimiz süreç hakkında gerekli bütün bilgilendirmeleri doğrudan yapmaya hazırım.", "Yaşam hakkı için, hayvanlarımız için, geleceğimiz için…", "Desteğinizi ve imzanızı bekliyorum.", "Saygılarımla,"], "K": ["Sayın Vekilim,", "7527 sayılı Kanun’un kabul edilmesi yönünde kullandığınız oyun sonuçlarını yeniden değerlendirmenizi ve bu büyük hatanın düzeltilmesi için sizi sorumluluk almaya davet ediyorum.", "Yasa birkaç gün içinde, hayvanların yaşamı ve toplumun geleceği üzerindeki sonuçları yeterince sorgulanmadan yürürlüğe sokuldu. Ancak sahadaki gerçeklik, alınan kararın sonuçlarını her gün daha ağır biçimde ortaya koyuyor. Hayvanların yaşam hakkı ihlal ediliyor; toplumun vicdanından öte, birlikte yaşama kültürümüz, kamu kaynakları ve insanın diğer canlılarla kurduğu ilişki ağır bir tahribata uğruyor.", "Katillere, tecavüzcülere, hırsızlara ve teröristlere dahi uygulanmayan bir ölüm cezasını masum hayvanlara uygulayamazsınız. Suç işlememiş, kendini savunma ve hukuki süreçte söz söyleme imkânı bulunmayan canlıları topluca ölüme mahkûm eden bir anlayışın sonuçlarını kabul etmek zorunda değiliz.", "Asırlardır bu topraklarda varlığını sürdüren birlikte yaşam kültürümüze verilen zarar da cabası. Bugün mesele yalnızca hayvanların başına gelenler değil; nasıl bir toplum olmak istediğimiz, hukukun ve kamusal sorumluluğun nasıl anlaşılacağıdır.", "Biz sizden karmaşık bir şey istemiyoruz. 7527 sayılı Kanun’un iptalini talep ediyoruz. Bu yasayı kabul etmiş olmanız, bugün sonuçlarını gördüğünüzde kararınızı yeniden değerlendirmenize engel değildir. Aksine, hatadan dönmek ve ortaya çıkan zararı durdurmak da siyasi sorumluluğun bir parçasıdır.", "Sizi, **7527iptal.org** adresindeki Meclis Vekil Paneli üzerinden 7527 İPTAL! kampanyamıza imzacı olmaya ve ardından bu talebin TBMM çatısı altında imzaya açılması için destek vermeye çağırıyorum.", "Bir kararın birkaç gün içinde alınabilmiş olması, onun doğurduğu sonuçların görmezden gelinebileceği anlamına gelmez. Aynı şekilde, bir yanlıştan dönmek de mümkündür.", "Bugün önünüzde açık bir tercih var: Bu yasanın sonuçlarına seyirci kalmak ya da iptali için sorumluluk üstlenmek.", "Daha fazla can kaybı yaşanmadan, daha fazla toplumsal tahribat oluşmadan bu hatadan acilen dönülmesini istiyoruz. İmzanız, bu yönde atılmış somut bir adım olacaktır.", "Gerekli tüm bilgi ve belgeleri sizinle paylaşmaya, sorularınızı yanıtlamaya hazırım.", "**7527 İPTAL!**\nÖldüren değil, yaşatan olun.", "Saygılarımla,"], "Y": ["Sayın Vekilim,", "7527 sayılı Kanun’un Meclis’te görüşüldüğü oylamaya katılmadınız. Ancak oylamaya katılmamanız, bu yasanın kabul edilmesini engellemedi. Hayvanların yaşam hakkını doğrudan etkileyen böylesine önemli bir konuda Meclis’te bulunmamak ve irade ortaya koymamak, sonuçları itibarıyla yasanın karşısında durulmasını sağlayamadı.", "Bugün sahada yaşananlar, bu yasanın sonuçlarının görmezden gelinemeyeceğini gösteriyor. Hayvanlar yaşamlarını kaybediyor, toplumun birlikte yaşama kültürü ağır yara alıyor ve kamu kaynakları kalıcı çözümler yerine yıkıcı sonuçlar doğuran uygulamalara yöneliyor.", "Katillere, tecavüzcülere, hırsızlara ve teröristlere dahi uygulanmayan bir ölüm cezası, masum hayvanlara uygulanamaz. Bu ülkenin asırlardır sürdürdüğü birlikte yaşam kültürünü bu denli tahrip eden bir yasanın sonuçlarını kabullenmek zorunda değiliz.", "Bugün size çağrımız, geçmişteki tutumunuzdan bağımsız olarak, artık somut bir irade ortaya koymanızdır. Oylamaya katılmamış olmanız, bugün bu yasanın iptali için sorumluluk üstlenmenize engel değil. Aksine, şimdi atacağınız adım, eksik kalan siyasi iradenin tamamlanması için bir fırsattır.", "Sizden açık ve somut bir talebimiz var:", "**7527iptal.org** adresindeki Meclis Vekil Paneli üzerinden 7527 İPTAL! kampanyasına imzacı olun. Ardından bu talebin TBMM çatısı altında imzaya açılması ve yasanın iptali için gerekli siyasi ve hukuki girişimlerin desteklenmesi yönünde adım atın.", "Bu yasa birkaç gün içinde kabul edildi. Şimdi ise sonuçlarını yaşayan binlerce can için daha fazla zaman kaybetme lüksümüz yok.", "Meclis’te ortaya konmayan iradenin bugün ortaya konmasını; sessizliğin yerini açık bir tutuma, tutumun da somut bir eyleme bırakmasını istiyoruz.", "Henüz geç değil. Bu hatanın düzeltilmesi için bugün imzanızı verebilirsiniz.", "Dilediğiniz zaman kampanya ve iptal talebimiz hakkında gerekli bütün bilgi ve belgeleri paylaşmaya hazırım.", "Hayvanların yaşam hakkı, toplumun geleceği ve birlikte yaşama kültürümüz için desteğinizi bekliyorum.", "Saygılarımla,"]};
+async function vkMektupGorsel(oy) {
+  try { await document.fonts.load('700 60px Oswald'); await document.fonts.load('400 30px Inter'); await document.fonts.load('700 30px Inter'); } catch (e) {}
+  var pp = VK_MEKTUP[oy], W = 1240, H = 1754, L = 90, G = W - 180, c = document.createElement('canvas'); c.width = W; c.height = H;
+  var x = c.getContext('2d'), imza = 'Bu kampanya yaşam hakkını savunan bağımsız yurttaşlar ve hayvan hakları savunucuları tarafından koordine edilmektedir.';
+  function satirlar(boy) {
+    var out = [];
+    pp.forEach(function (p) {
+      p.split('\n').forEach(function (par) {
+        var sat = [], gen = 0;
+        par.split(' ').forEach(function (k) {
+          var b = /^\*\*/.test(k) || /\*\*$/.test(k) || (par.indexOf('**7527 İPTAL!**') === 0), t = k.replace(/\*\*/g, '');
+          x.font = (b ? '700 ' : '400 ') + boy + 'px Inter, sans-serif';
+          var w = x.measureText(t + ' ').width;
+          if (gen + w > G && sat.length) { out.push({ k: sat, y: 0 }); sat = []; gen = 0; }
+          sat.push({ t: t, b: b, w: w }); gen += w;
+        });
+        out.push({ k: sat, y: 0 });
+      });
+      out.push({ k: [], y: 1 });
+    });
+    return out;
+  }
+  var boy = 31, sat;
+  for (; boy >= 18; boy--) { sat = satirlar(boy); if (sat.reduce(function (t, s) { return t + (s.y ? boy * .55 : boy * 1.5); }, 0) <= 1360) break; }
+  x.fillStyle = '#ffffff'; x.fillRect(0, 0, W, H);
+  x.textBaseline = 'alphabetic'; x.textAlign = 'left';
+  x.font = '700 58px Oswald, sans-serif'; x.fillStyle = '#c0392b'; x.fillText('7527 İPTAL!', L, 112);
+  var w0 = x.measureText('7527 İPTAL! ').width; x.fillStyle = '#18181b'; x.fillText('İmzacısı Ol!', L + w0, 112);
+  x.font = '600 20px Inter, sans-serif'; x.fillStyle = '#71717a'; x.fillText('YAŞAM HAKKI İÇİN  ·  HAYVANLARIMIZ İÇİN  ·  GELECEĞİMİZ İÇİN', L, 152);
+  x.textAlign = 'right'; x.fillText('7527iptal.org', W - L, 152); x.textAlign = 'left';
+  x.fillStyle = '#c0392b'; x.fillRect(L, 172, G, 4);
+  var y = 232;
+  sat.forEach(function (s) {
+    if (s.y) { y += boy * .55; return; }
+    var cx = L;
+    s.k.forEach(function (k) { x.font = (k.b ? '700 ' : '400 ') + boy + 'px Inter, sans-serif'; x.fillStyle = '#18181b'; x.fillText(k.t, cx, y); cx += k.w; });
+    y += boy * 1.5;
+  });
+  x.font = '600 21px Inter, sans-serif'; x.fillStyle = '#c0392b';
+  var kel = imza.split(' '), s2 = '', iy = 1610;
+  kel.forEach(function (k) { var d = s2 ? s2 + ' ' + k : k; if (x.measureText(d).width > G && s2) { x.fillText(s2, L, iy); s2 = k; iy += 30; } else s2 = d; });
+  x.fillText(s2, L, iy);
+  x.fillStyle = '#d4d4d8'; x.fillRect(L, 1672, G, 2);
+  x.font = '500 21px Inter, sans-serif'; x.fillStyle = '#52525b'; x.fillText('7527iptal.org  ·  bilgi@7527iptal.org  ·  iletisim@7527iptal.org', L, 1710);
+  return new Promise(function (ok) { c.toBlob(function (b) { ok(b); }, 'image/png'); });
+}
+async function vkMektup(r) {
+  var st = document.getElementById('vk-st'); st.textContent = 'Mektup hazırlanıyor…';
+  var blob = await vkMektupGorsel(r.vote), ad = 'mektup-' + r.vote + '.png', t = r.name + ' (' + r.party + ' ' + r.city + ' Milletvekili), bu mektup sana.\n\nSen de vekiline dilekçeni gönder: https://7527iptal.org\n#7527İptal';
+  var f = new File([blob], ad, { type: 'image/png' });
+  if (navigator.clipboard) navigator.clipboard.writeText(t).catch(function () {});
+  if (navigator.canShare && navigator.canShare({ files: [f] })) { navigator.share({ files: [f], text: t }).catch(function () {}); st.textContent = ''; return; }
+  var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = ad; a.click();
+  st.textContent = '✓ Mektup indirildi, metin kopyalandı. Paylaşırken vekili etiketle.';
 }
 </script>
 <div id="mp-rank-card" class="bg-zinc-900 border border-red-900 rounded-2xl p-4 space-y-3">
