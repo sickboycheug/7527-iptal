@@ -328,6 +328,7 @@
     <div id="vk-modal" style="display:none;position:fixed;inset:0;z-index:2147483500;background:rgba(0,0,0,.8);align-items:center;justify-content:center;padding:16px" onclick="if(event.target===this)this.style.display='none'">
   <div class="bg-zinc-900 border border-zinc-700 rounded-2xl p-4 w-full max-w-sm space-y-3 max-h-full overflow-y-auto">
     <div class="flex items-center justify-between"><h3 class="font-bold text-white text-sm">Vekili paylaş</h3><button type="button" class="text-zinc-400 text-xl leading-none" onclick="document.getElementById('vk-modal').style.display='none'">×</button></div>
+    <button type="button" id="vk-mk" class="w-full rounded-xl font-bold text-sm py-3 px-3 bg-red-700 hover:bg-red-600 text-white">📄 Vekile açık mektubu paylaş</button>
     <img id="vk-img" alt="" class="w-full rounded-xl border border-zinc-800">
     <div class="grid grid-cols-2 gap-2">
       <button type="button" id="vk-sh" class="col-span-2 rounded-xl font-bold text-xs py-2.5 px-3 bg-emerald-600 hover:bg-emerald-500 text-white">📲 Görseli paylaş (Instagram ve diğerleri)</button>
@@ -338,7 +339,6 @@
       <button type="button" id="vk-cp" class="rounded-xl font-bold text-xs py-2.5 px-3 bg-zinc-800 text-zinc-200">📋 Metni kopyala</button>
       <a id="vk-dl" class="block text-center rounded-xl font-bold text-xs py-2.5 px-3 bg-zinc-800 text-zinc-200">⬇ Görseli indir</a>
     </div>
-    <button type="button" id="vk-mk" class="w-full rounded-xl font-bold text-xs py-2.5 px-3 bg-red-700 hover:bg-red-600 text-white">📄 Vekile açık mektubu paylaş</button>
     <p id="vk-st" class="text-[11px] text-emerald-400 text-center min-h-[16px]"></p>
   </div>
 </div>
