@@ -435,7 +435,7 @@ async function vkPaylas(r) {
       var alt = h('div', 'flex flex-wrap items-center justify-between gap-2'), vt = VT[r.vote];
       alt.appendChild(vt ? h('span', 'text-[10px] px-2 py-0.5 rounded-full border ' + vt[1], vt[0]) : h('span', ''));
       var bt = h('div', 'flex gap-2 shrink-0 ml-auto');
-      var gn = h('a', 'px-3 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-bold', 'Dilekçe gönder'); gn.href = '/?hedef=1';
+      var gn = h('a', 'px-3 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-bold', 'Dilekçe gönder'); gn.href = '/?vekil=' + r.id;
       var pl = h('button', 'px-3 py-2 rounded-lg bg-zinc-700 hover:bg-zinc-600 text-white text-xs font-bold', 'Paylaş');
       pl.type = 'button'; pl.setAttribute('aria-label', r.name + ' için paylaş'); pl.onclick = function () { vkPaylas(r); };
       bt.appendChild(gn); bt.appendChild(pl); alt.appendChild(bt); d.appendChild(alt);

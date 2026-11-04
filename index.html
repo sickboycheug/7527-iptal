@@ -185,8 +185,8 @@
   // Vaka paylaşım linki (/vaka/N → /?vaka=N): o vaka, Vakalar sekmesinde açılır
   var mVaka = /[?&]vaka=(\d+)/.exec(qs);
   if (mVaka) { window.location.replace('hakikat.html?vaka=' + mVaka[1] + '#vakalar'); return; }
-  var mHarita = /[?&]harita=(vol|pet|mp|case)/.exec(qs), goRep = /[?&]vaka=bildir/.test(qs), goRank = /[?&]siralama=1/.test(qs), goHedef = /[?&]hedef=1/.test(qs);
-  if (mHarita || goRep || goRank || goHedef) {
+  var mHarita = /[?&]harita=(vol|pet|mp|case)/.exec(qs), goRep = /[?&]vaka=bildir/.test(qs), goRank = /[?&]siralama=1/.test(qs), goHedef = /[?&]hedef=1/.test(qs), goVekil = /[?&]vekil=(\d+)/.exec(qs);
+  if (mHarita || goRep || goRank || goHedef || goVekil) {
     el.style.display = 'none';
     document.body.style.overflow = '';
     window.addEventListener('load', function () {
@@ -199,6 +199,14 @@
         }
         if (goRep) { try { openReportModal(); } catch (e) {} }
       }, 400);
+      if (goVekil) {
+        var vkDene = 0;
+        (function vkBekle() {
+          var m = (typeof MP_DATABASE !== 'undefined' ? MP_DATABASE : []).filter(function (x) { return x.id === Number(goVekil[1]); })[0];
+          if (m) { try { thGonder(m); } catch (e) {} }
+          else if (++vkDene < 20) setTimeout(vkBekle, 300);
+        })();
+      }
       if (goHedef) setTimeout(function () { var hc = document.getElementById('th-card'); if (hc) hc.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 900);
       if (goRank) setTimeout(function () { var rc = document.getElementById('rk-card'); if (rc && !rc.classList.contains('hidden')) rc.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 1500);
     });
