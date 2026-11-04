@@ -1,0 +1,593 @@
+# numara|ad|il|x|instagram|facebook
+1|Abdullah DOĞRU|Adana|abdullahdogru01|abdullahdogru01|
+2|Ahmet ZENBİLCİ|Adana|ahmetzenbilci|ahmet_zenbilci|
+3|Ayhan BARUT|Adana|AyhanBarut01||
+4|Ayşe Sibel ERSOY|Adana|AyseSibelErsoy||
+5|Ayyüce TÜRKEŞ TAŞ|Adana|||
+6|Bilal BİLİCİ|Adana|||
+7|Burhanettin BULUT|Adana|eczburhan|burhanettin.bulut|burhan.bulut
+8|Faruk AYTEK|Adana|||
+9|Muharrem VARLI|Adana|muharremvarli01||
+10|Müzeyyen ŞEVKİN|Adana|MzyenSEvkin||
+11|Orhan SÜMER|Adana|orhanssumer|orhanssumer|
+12|Ömer ÇELİK|Adana|||
+13|Sadullah KISACIK|Adana|||
+14|Sunay KARAMIK|Adana|||
+15|Tulay HATIMOĞULLARI ORUÇ|Adana|||
+16|Hüseyin ÖZHAN|Adıyaman|||
+17|İshak ŞAN|Adıyaman|||
+18|Mustafa ALKAYIŞ|Adıyaman|||
+19|Resul KURT|Adıyaman|||
+20|Ali ÖZKAYA|Afyonkarahisar|avaliozkaya|avaliozkaya|
+21|Hakan Şeref OLGUN|Afyonkarahisar|||
+22|Hasan ARSLAN|Afyonkarahisar|||
+23|İbrahim YURDUNUSEVEN|Afyonkarahisar|avyurdunuseven||
+24|Mehmet TAYTAK|Afyonkarahisar|MehmetTaytakMHP||
+25|Heval BOZDAĞ|Ağrı|||
+26|Nejla DEMİR|Ağrı|||
+27|Ruken KİLERCİ|Ağrı|||
+28|Sırrı SAKİK|Ağrı|||
+29|Cengiz AYDOĞDU|Aksaray|mvcengizaydogdu||
+30|Hüseyin ALTINSOY|Aksaray|||
+31|Ramazan KAŞLI|Aksaray|Ramazannkasli||
+32|Turan YALDIR|Aksaray|||
+33|Haluk İPEK|Amasya|||
+34|Hasan ÇİLEZ|Amasya|CilezHasan||
+35|Reşat KARAGÖZ|Amasya|||
+36|Adnan BEKER|Ankara|||
+37|Ahmet Eşref FAKIBABA|Ankara|aefakibaba||
+38|Ahmet Fethan BAYKOÇ|Ankara|||
+39|Aliye TİMİSİ ERSEVER|Ankara|||
+40|Asuman ERDOĞAN|Ankara|AAsumanErdogan||
+41|Aylin YAMAN|Ankara|||
+42|Deniz DEMİR|Ankara|||
+43|Fuat OKTAY|Ankara|||
+44|Gamze TAŞCIER|Ankara|gamzetascier||
+45|İdris ŞAHİN|Ankara|||
+46|Jülide SARIEROĞLU|Ankara|jsarieroglu||
+47|Koray AYDIN|Ankara|korayaydinmhp||
+48|Kurtcan ÇELEBİ|Ankara|||
+49|Kürşad ZORLU|Ankara|||
+50|Leyla ŞAHİN USTA|Ankara|leylasahinusta||
+51|Lütfiye Selva ÇAM|Ankara|selvacam||
+52|Mesut DOĞAN|Ankara|||
+53|Mevlüt KARAKAYA|Ankara|KarakayaMevlut||
+54|Murat ALPARSLAN|Ankara|||
+55|Murat EMİR|Ankara|muratemirchp||
+56|Mustafa Nedim YAMALI|Ankara|||
+57|Okan KONURALP|Ankara|||
+58|Orhan YEGİN|Ankara|orhanyegin||
+59|Osman GÖKÇEK|Ankara|||
+60|Ömer İLERİ|Ankara|||
+61|Sadir DURMAZ|Ankara|sadirdurmaz||
+62|Sadullah ERGİN|Ankara|||
+63|Semra DİNÇER|Ankara|||
+64|Tekin BİNGÖL|Ankara|TekinBingolCHP||
+65|Umut AKDOĞAN|Ankara|||
+66|Vedat BİLGİN|Ankara|||
+67|Yaşar YILDIRIM|Ankara|yasaryldrmMHP||
+68|Yıldırım Tuğrul TÜRKEŞ|Ankara|||
+69|Yüksel ARSLAN|Ankara|||
+70|Zehranur AYDEMİR|Ankara|||
+71|Zeynep YILDIZ|Ankara|zyildiz_||
+72|Abdurrahman BAŞKAN|Antalya|abdurrahmanbask||
+73|Aliye COŞAR|Antalya|||
+74|Atay USLU|Antalya|atayuslu||
+75|Aykut KAYA|Antalya|||
+76|Cavit ARI|Antalya|Mv_CavitAri||
+77|Hakkı Saruhan OLUÇ|Antalya|||
+78|Hilmi DURGUN|Antalya|||
+79|İbrahim Ethem TAŞ|Antalya|||
+80|Kemal ÇELİK|Antalya|||
+81|Mevlüt ÇAVUŞOĞLU|Antalya|MevlutCavusoglu|mevlutcavusoglu|
+82|Mustafa ERDEM|Antalya|||
+83|Mustafa KÖSE|Antalya|avmustafakose||
+84|Serap YAZICI ÖZBUDUN|Antalya|||
+85|Sururi ÇORABATIR|Antalya||sururicorabatir|
+86|Şerafettin KILIÇ|Antalya|||
+87|Tuba VURAL ÇOKAL|Antalya|tubavuralcokal||
+88|Uğur POYRAZ|Antalya|||
+89|Kaan KOÇ|Ardahan|||
+90|Özgür Erdem İNCESU|Ardahan|||
+91|Faruk ÇELİK|Artvin|||
+92|Uğur BAYRAKTUTAN|Artvin|UgurBayraktutan||ugurbayraktutan
+93|Bülent TEZCAN|Aydın|bulenttezcanchp||
+94|Evrim KARAKOZ|Aydın|||
+95|Hüseyin YILDIZ|Aydın|||
+96|Mustafa SAVAŞ|Aydın|aydinmsavas||
+97|Ömer KARAKAŞ|Aydın|||
+98|Ömer ÖZMEN|Aydın|||
+99|Seda SARIBAŞ|Aydın|||
+100|Süleyman BÜLBÜL|Aydın|avsbulbul||
+101|Ali Taylan ÖZTAYLAN|Balıkesir|||
+102|Belgin UYGUR|Balıkesir|belginuygur10||
+103|Burak DALGIN|Balıkesir|||
+104|Ekrem Gökay YÜKSEL|Balıkesir|||
+105|Ensar AYTEKİN|Balıkesir|EnsarAytekin10|ensaraytekin10|
+106|İsmail OK|Balıkesir|ismailok_||
+107|Mustafa CANBEY|Balıkesir|MustafaCanbey||
+108|Serkan SARI|Balıkesir|||
+109|Turhan ÇÖMEZ|Balıkesir|||
+110|Aysu BANKOĞLU|Bartın|AysuBankoglu||
+111|Yusuf Ziya ALDATMAZ|Bartın|yaldatmaz||
+112|Ferhat NASIROĞLU|Batman|||
+113|Keskin BAYINDIR|Batman|||
+114|Mehmet Rüştü TİRYAKİ|Batman|tiryaki_rustu||
+115|Serkan RAMANLI|Batman|||
+116|Zeynep ODUNCU KUTEVİ|Batman|||
+117|Orhan ATEŞ|Bayburt|profdrorhanates||
+118|Halil ELDEMİR|Bilecik|||
+119|Yaşar TÜZÜN|Bilecik|yasartuzun06||
+120|Feyzi BERDİBEK|Bingöl|FeyziBerdibek1||
+121|Ömer Faruk HÜLAKÜ|Bingöl|||
+122|Zeki KORKUTATA|Bingöl|||
+123|Hüseyin OLAN|Bitlis|||
+124|Semra ÇAĞLAR GÖKALP|Bitlis|||
+125|Turan BEDİRHANOĞLU|Bitlis|||
+126|İsmail AKGÜL|Bolu|||
+127|Türker ATEŞ|Bolu|||
+128|Yüksel COŞKUNYÜREK|Bolu|||
+129|Adem KORKMAZ|Burdur|||
+130|İzzet AKBULUT|Burdur|||
+131|Mustafa OĞUZ|Burdur|||
+132|Ahmet KILIÇ|Bursa||kilicahmet16|
+133|Ayhan SALMAN|Bursa|||
+134|Cemalettin Kani TORUN|Bursa|||
+135|Efkan ALA|Bursa|efkanala||
+136|Emel GÖZÜKARA DURMAZ|Bursa|||
+137|Emine YAVUZ GÖZGEÇ|Bursa|Emine_Gozgec16||
+138|Fevzi ZIRHLIOĞLU|Bursa|||
+139|Hasan ÖZTÜRK|Bursa|||
+140|Hasan TOKTAŞ|Bursa|||
+141|İsmet BÜYÜKATAMAN|Bursa|buyukataman||
+142|Kayıhan PALA|Bursa|||
+143|Mehmet ATMACA|Bursa|||
+144|Muhammet Müfit AYDIN|Bursa|MufitAydin16||
+145|Mustafa VARANK|Bursa|||
+146|Mustafa YAVUZ|Bursa|||
+147|Nurhayat ALTACA KAYIŞOĞLU|Bursa|||
+148|Orhan SARIBAL|Bursa|orhansaribalchp||
+149|Osman MESTEN|Bursa|OsmanMesten16||
+150|Refik ÖZEN|Bursa|||
+151|Yüksel Selçuk TÜRKOĞLU|Bursa|||
+152|Ayhan GİDER|Çanakkale|||
+153|İsmet GÜNEŞHAN|Çanakkale|||
+154|Özgür CEYLAN|Çanakkale|ozgurceylanchp|ozgurceylanchp|
+155|Rıdvan UZ|Çanakkale|||
+156|Muhammet Emin AKBAŞOĞLU|Çankırı|eminakbasoglu||
+157|Pelin YILIK|Çankırı|||
+158|Mehmet TAHTASIZ|Çorum|||
+159|Oğuzhan KAYA|Çorum||avoguzhankaya|
+160|Vahit KAYRICI|Çorum|||
+161|Yusuf AHLATCI|Çorum|||
+162|Cahit ÖZKAN|Denizli|avcahitozkan||
+163|Gülizar BİÇER KARACA|Denizli|GulizarBicer||
+164|Nilgün ÖK|Denizli|Nilgun_OK||
+165|Sema SİLKİN ÜN|Denizli|||
+166|Şahin TİN|Denizli|sahin_tin|sahin_tin|
+167|Şeref ARPACI|Denizli|||
+168|Yasin ÖZTÜRK|Denizli|Ozturkdenizli|yasinozturk20|
+169|Adalet KAYA|Diyarbakır|||
+170|Berdan ÖZTÜRK|Diyarbakır|berdan_ozturk||
+171|Ceylan AKÇA CUPOLO|Diyarbakır|||
+172|Halide TÜRKOĞLU|Diyarbakır|halide_turkoglu||
+173|Mehmet KAMAÇ|Diyarbakır|||
+174|Mehmet Galip ENSARİOĞLU|Diyarbakır|||
+175|Mehmet Sait YAZ|Diyarbakır|||
+176|Mustafa Sezgin TANRIKULU|Diyarbakır|||
+177|Osman Cengiz ÇANDAR|Diyarbakır|||
+178|Serhat EREN|Diyarbakır|||
+179|Sevilay ÇELENK ÖZEN|Diyarbakır|||
+180|Suna KEPOLU ATAMAN|Diyarbakır|||
+181|Ayşe KEŞİR|Düzce|aysekesir|ayse.kesir|
+182|Ercan ÖZTÜRK|Düzce|||
+183|Talih ÖZCAN|Düzce|||
+184|Ahmet Baran YAZGAN|Edirne|BaranYazgan22|baranyazgan22|
+185|Ediz ÜN|Edirne|||
+186|Fatma AKSAL|Edirne|fatmaaksal|fatmaaksal|
+187|Mehmet AKALIN|Edirne||mehmetakalin22|
+188|Ejder AÇIKKAPI|Elazığ|||
+189|Erol KELEŞ|Elazığ|||
+190|Gürsel EROL|Elazığ|gurselerol62|gurseleroll|
+191|Mahmut Rıdvan NAZIRLI|Elazığ|||
+192|Semih IŞIKVER|Elazığ|||
+193|Mustafa SARIGÜL|Erzincan|||
+194|Süleyman KARAMAN|Erzincan|SuleymanKrmn||
+195|Abdurrahim FIRAT|Erzurum|||
+196|Fatma ÖNCÜ|Erzurum|||
+197|Kamil AYDIN|Erzurum|kamilaydinmhp|kamilaydinmhp|
+198|Mehmet Emin ÖZ|Erzurum|||
+199|Meral DANIŞ BEŞTAŞ|Erzurum|meraldanis||
+200|Selami ALTINOK|Erzurum|Selami__Altinok|selami__altinok|
+201|Ayşen GÜRCAN|Eskişehir|||
+202|Fatih DÖNMEZ|Eskişehir|||
+203|İbrahim ARSLAN|Eskişehir|||
+204|İdris Nebi HATİPOĞLU|Eskişehir|||
+205|Jale Nur SÜLLÜ|Eskişehir|jalenursullu||
+206|Utku ÇAKIRÖZER|Eskişehir|utkucakirozer|utkucakirozer|
+207|Abdulhamit GÜL|Gaziantep|abdulhamitgul|abdulhamitgul|
+208|Ali ŞAHİN|Gaziantep|AliSahin501||
+209|Bünyamin BOZGEYİK|Gaziantep|||
+210|Derya BAKBAK|Gaziantep|deryabakbak27||
+211|Ertuğrul KAYA|Gaziantep|||
+212|Hasan ÖZTÜRKMEN|Gaziantep|||
+213|İrfan ÇELİKASLAN|Gaziantep|||
+214|Mehmet Eyup ÖZKEÇECİ|Gaziantep||eyupozkececi|
+215|Mehmet Mustafa GÜRBAN|Gaziantep|||
+216|Melih MERİÇ|Gaziantep|||
+217|Mesut BOZATLI|Gaziantep|||
+218|Sermet ATAY|Gaziantep|sermetatay||
+219|Sevda KARACA DEMİR|Gaziantep|||
+220|Şahzade DEMİR|Gaziantep|||
+221|Ali TEMÜR|Giresun|||
+222|Elvan IŞIK GEZMİŞ|Giresun|elvangezmischp||
+223|Ertuğrul Gazi KONAL|Giresun|||
+224|Nazım ELMAS|Giresun|||
+225|Celalettin KÖSE|Gümüşhane|||
+226|Musa KÜÇÜK|Gümüşhane|||
+227|Onur DÜŞÜNMEZ|Hakkari|||
+228|Öznur BARTİN|Hakkari|||
+229|Vezir Coşkun PARLAK|Hakkari|vezirparlak||
+230|Abdulkadir ÖZEL|Hatay|AbdulkadirOzl|akadir_ozel|
+231|Adem YEŞİLDAL|Hatay|||
+232|Adnan Şefik ÇİRKİN|Hatay|||
+233|Hüseyin YAYMAN|Hatay|HuseyinYayman||
+234|Kemal KARAHAN|Hatay|||
+235|Lütfi KAŞIKÇI|Hatay|lutfikasikci||
+236|Mehmet GÜZELMANSUR|Hatay|mguzelmansurchp||
+237|Necmettin ÇALIŞKAN|Hatay|||
+238|Nermin YILDIRIM KARA|Hatay|||
+239|Servet MULLAOĞLU|Hatay|||
+240|Cantürk ALAGÖZ|Iğdır|||
+241|Yılmaz HUN|Iğdır|||
+242|Hasan Basri SÖNMEZ|Isparta|||
+243|Hikmet Yalım HALICI|Isparta|||
+244|Mehmet Uğur GÖKGÖZ|Isparta|mugokgoz32||
+245|Osman ZABUN|Isparta|||
+246|Adem YILDIRIM|İstanbul|||
+247|Ahmet ŞIK|İstanbul|sahmetsahmet||
+248|Ahmet Ersagun YÜCEL|İstanbul|||
+249|Ali GÖKÇEK|İstanbul|||
+250|Ayşe Sibel YANIKÖMEROĞLU|İstanbul|||
+251|Azmi EKİNCİ|İstanbul|||
+252|Bayram ŞENOCAK|İstanbul|||
+253|Behiye EKER|İstanbul|||
+254|Birol AYDIN|İstanbul|||
+255|Burak AKBURAK|İstanbul|||
+256|Bülent KAYA|İstanbul|||
+257|Büşra PAKER|İstanbul|||
+258|Celal ADAN|İstanbul|celal_adan||
+259|Celal FIRAT|İstanbul|||
+260|Cemal ENGİNYURT|İstanbul|cenginyurt52|cemalenginyurt|cemal.enginyurt
+261|Cengiz ÇİÇEK|İstanbul|||
+262|Cüneyt YÜKSEL|İstanbul|||
+263|Çiçek OTLU|İstanbul|||
+264|Çiğdem KILIÇGÜN UÇAR|İstanbul|||
+265|Derya AYAYDIN|İstanbul|||
+266|Doğan BEKİN|İstanbul|||
+267|Doğan DEMİR|İstanbul|||
+268|Edip Semih YALÇIN|İstanbul|||
+269|Elif ESEN|İstanbul|||
+270|Engin ALTAY|İstanbul|enginaltaychp||
+271|Erdoğan TOPRAK|İstanbul|EToprakCHP||
+272|Erkan BAŞ|İstanbul|||
+273|Erkan KANDEMİR|İstanbul|erkankandemir||
+274|Ersin BEYAZ|İstanbul|||
+275|Evrim RIZVANOĞLU EMİR|İstanbul|||
+276|Fethi AÇIKEL|İstanbul|FethiAcikel||
+277|Feti YILDIZ|İstanbul|||
+278|Gamze AKKUŞ İLGEZDİ|İstanbul|gamzeilgezdi||
+279|Gökan ZEYBEK|İstanbul|||
+280|Gökhan GÜNAYDIN|İstanbul|||
+281|Halis DALKILIÇ|İstanbul|halisdalkilic||
+282|Halit YEREBAKAN|İstanbul|||
+283|Hasan KARAL|İstanbul|||
+284|Hasan TURAN|İstanbul|hasanturantr||
+285|Hulusi ŞENTÜRK|İstanbul|||
+286|İlhan KESİCİ|İstanbul|ilhankesici||
+287|İsa Mesih ŞAHİN|İstanbul|||
+288|İskender BAYHAN|İstanbul|||
+289|İsmail ERDEM|İstanbul|||
+290|İsmail Emrah KARAYEL|İstanbul|iekarayel||
+291|İsmail Faruk AKSU|İstanbul|ifarukaksu||
+292|İzzet Ulvi YÖNTER|İstanbul|UlviYonter||
+293|Kadri Enis BERBEROĞLU|İstanbul|||
+294|Keziban KONUKCU KOK|İstanbul|kezbankonukcu||
+295|Medeni YILMAZ|İstanbul|||
+296|Mehmet Önder AKSAKAL|İstanbul|||
+297|Mehmet Satuk Buğra KAVUNCU|İstanbul|||
+298|Mehmet Selim ENSARİOĞLU|İstanbul|||
+299|Muhammed Ali Fatih ERBAKAN|İstanbul|||
+300|Mustafa DEMİR|İstanbul|||
+301|Mustafa KAYA|İstanbul|||
+302|Mustafa YENEROĞLU|İstanbul|myeneroglu||
+303|Mustafa Cihan PAÇACI|İstanbul|||
+304|Mustafa Hulki CEVİZOĞLU|İstanbul|||
+305|Müşerref Pervin Tuba DURGUT|İstanbul|||
+306|Namık TAN|İstanbul|||
+307|Nilhan AYAN|İstanbul|||
+308|Nimet ÖZDEMİR|İstanbul|||
+309|Numan KURTULMUŞ|İstanbul|NumanKurtulmus||
+310|Nurettin ALAN|İstanbul|||
+311|Oğuz ÜÇÜNCÜ|İstanbul|||
+312|Oğuz Kaan SALICI|İstanbul|oguzksalici||
+313|Özgül SAKİ|İstanbul|||
+314|Özgür KARABAT|İstanbul|OzgurKarabatCHP||
+315|Özlem ZENGİN|İstanbul|AvOzlemZengin||
+316|Rabia İLHAN|İstanbul|||
+317|Rümeysa KADAK|İstanbul|RumeysaKadak||
+318|Saliha Sera KADIGİL|İstanbul|||
+319|Seda GÖREN|İstanbul|||
+320|Selim TEMURCİ|İstanbul|||
+321|Sena Nur ÇELİK KANAT|İstanbul|||
+322|Serkan BAYRAM|İstanbul|AvSerkanBayram||
+323|Sevan SIVACIOĞLU|İstanbul|||
+324|Seyithan İZSİZ|İstanbul|||
+325|Suat ÖZÇAĞDAŞ|İstanbul|||
+326|Suat PAMUKÇU|İstanbul|||
+327|Süleyman SOYLU|İstanbul|suleymansoylu|suleyman_soylu|suleymansoylu
+328|Şamil AYRIM|İstanbul|samilayrim||
+329|Şengül KARSLI|İstanbul|||
+330|Tuğba IŞIK ERCAN|İstanbul|||
+331|Turan Taşkın ÖZER|İstanbul|||
+332|Türkan ELÇİ|İstanbul|||
+333|Ümmügülşen ÖZTÜRK|İstanbul|||
+334|Yahya ÇELİK|İstanbul|||
+335|Yıldız KONAL SÜSLÜ|İstanbul|||
+336|Yunus EMRE|İstanbul|yunusemrechp||
+337|Yücel Arzen HACIOĞULLARI|İstanbul|||
+338|Yüksel Mansur KILINÇ|İstanbul|yukselmkilinc||
+339|Zafer SIRAKAYA|İstanbul|SirakayaZafer||
+340|Zekeriya YAPICIOĞLU|İstanbul|||
+341|Zeynel EMRE|İstanbul|ZeynelEmre_||
+342|Ahmet Tuncay ÖZKAN|İzmir|||
+343|Burcugül ÇUBUK|İzmir|||
+344|Ceyda BÖLÜNMEZ ÇANKIRI|İzmir|CeydaBC47||
+345|Deniz YÜCEL|İzmir|avdenizyucel|avdenizyucel|avdenizyucel
+346|Dursun Müsavat DERVİŞOĞLU|İzmir|||
+347|Ednan ARSLAN|İzmir|ednanarslanchp||
+348|Eyyüp Kadir İNAN|İzmir|||
+349|Fehmi Alpay ÖZALAN|İzmir|||
+350|Gökçe GÖKÇEN|İzmir|||
+351|Haydar ALTINTAŞ|İzmir|||
+352|Hüsmen KIRKPINAR|İzmir|||
+353|İbrahim AKIN|İzmir|ibrahimyesilsol||
+354|Mahir POLAT|İzmir|vekilmahirpolat||
+355|Mahmut Atilla KAYA|İzmir|MAtillaKaya||
+356|Mehmet Ali ÇELEBİ|İzmir|||
+357|Mehmet Muharrem KASAPOĞLU|İzmir|||
+358|Mehmet Salih UZUN|İzmir|||
+359|Murat BAKAN|İzmir|CHPMuratBakan||
+360|Mustafa BİLİCİ|İzmir|||
+361|Rahmi Aşkın TÜRELİ|İzmir|||
+362|Rıfat Turuntay NALBANTOĞLU|İzmir|||
+363|Seda KÂYA ÖSEN|İzmir|||
+364|Sevda ERDAN KILIÇ|İzmir|||
+365|Şebnem BURSALI AKSOY|İzmir|||
+366|Tamer OSMANAĞAOĞLU|İzmir|TmrOsmanagaoglu||
+367|Ümit ÖZLALE|İzmir|||
+368|Yaşar KIRKPINAR|İzmir|yasarkirkpinarr||
+369|Yüksel TAŞKIN|İzmir|||
+370|Ali ÖZTUNÇ|Kahramanmaraş|Ali_Oztunc||
+371|İrfan KARATUTLU|Kahramanmaraş|||
+372|Mehmet ŞAHİN|Kahramanmaraş|||
+373|Mevlüt KURT|Kahramanmaraş|||
+374|Ömer Oruç Bilal DEBGİCİ|Kahramanmaraş|||
+375|Tuba KÖKSAL|Kahramanmaraş|||
+376|Vahit KİRİŞCİ|Kahramanmaraş|||
+377|Zuhal KARAKOÇ|Kahramanmaraş|||
+378|Cem ŞAHİN|Karabük|||
+379|Cevdet AKAY|Karabük|||
+380|Durmuş Ali KESKİNKILIÇ|Karabük|||
+381|İsmail Atakan ÜNVER|Karaman|chpatakanunver||
+382|Osman SAĞLAM|Karaman|||
+383|Selman Oğuzhan ESER|Karaman|avSelmanEser||
+384|Adem ÇALKIN|Kars|||
+385|Gülüstan KILIÇ KOÇYİĞİT|Kars|||
+386|İnan Akgün ALP|Kars|||
+387|Fatma Serap EKMEKCİ|Kastamonu|||
+388|Halil ULUAY|Kastamonu|||
+389|Aşkın GENÇ|Kayseri|||
+390|Ayşe BÖHÜRLER|Kayseri|||
+391|Dursun ATAŞ|Kayseri|DursunATAS38||
+392|Hulusi AKAR|Kayseri|||
+393|İsmail ÖZDEMİR|Kayseri|||
+394|Mahmut ARIKAN|Kayseri||mahmutarikansp|
+395|Murat Cahid CINGI|Kayseri|||
+396|Mustafa Baki ERSOY|Kayseri||bakiersoymhp|
+397|Sayın Bayar ÖZSOY|Kayseri|||
+398|Şaban ÇOPUROĞLU|Kayseri|||
+399|Halil ÖZTÜRK|Kırıkkale|Avkthalilozturk||
+400|Mustafa KAPLAN|Kırıkkale|||
+401|Ahmet Gökhan SARIÇAM|Kırklareli|||
+402|Fahri ÖZKAN|Kırklareli||fahriozkanchp|100008276587479
+403|Vecdi GÜNDOĞDU|Kırklareli|VecdiGundogdu||
+404|Metin İLHAN|Kırşehir|||
+405|Necmettin ERKAN|Kırşehir|||
+406|Ahmet Salih DAL|Kilis|ahmetsalihdal||
+407|Mustafa DEMİR|Kilis|||
+408|Cemil YAMAN|Kocaeli|cemil_yaman||
+409|Harun Özgür YILDIZLI|Kocaeli||harunyildizli|
+410|Lütfü TÜRKKAN|Kocaeli|LutfuTurkkan||
+411|Mehmet AŞILA|Kocaeli|||
+412|Mehmet Akif YILMAZ|Kocaeli|makif_yilmaz||
+413|Mühip KANKO|Kocaeli|||
+414|Nail ÇİLER|Kocaeli||nailciler|
+415|Ömer Faruk GERGERLİOĞLU|Kocaeli|gergerliogluof|gergerliogluof|omer.gergerlioglu
+416|Radiye Sezer KATIRCIOĞLU|Kocaeli|||
+417|Sadettin HÜLAGÜ|Kocaeli|||
+418|Saffet SANCAKLI|Kocaeli|saffetsancakli||
+419|Sami ÇAKIR|Kocaeli|scakir20||
+420|Veysal TİPİOĞLU|Kocaeli|||
+421|Abdullah AĞRALI|Konya|||
+422|Ali YÜKSEL|Konya|||
+423|Barış BEKTAŞ|Konya|||
+424|Hasan EKİCİ|Konya|||
+425|Konur Alp KOÇAK|Konya|||
+426|Latif SELVİ|Konya|||
+427|Mehmet BAYKAN|Konya|||
+428|Meryem GÖKA|Konya|||
+429|Mustafa KALAYCI|Konya|MKalayci42||
+430|Mustafa Hakan ÖZER|Konya|||
+431|Orhan ERDEM|Konya|oerdem42||
+432|Selman ÖZBOYACI|Konya|ozboyaciselman||
+433|Tahir AKYÜREK|Konya|Tahir_Akyurek||
+434|Ünal KARAMAN|Konya|||
+435|Ziya ALTUNYALDIZ|Konya|ziyaaltunyaldiz||
+436|Adil BİÇER|Kütahya|||
+437|Ahmet ERBAŞ|Kütahya|ahmeterbas43||
+438|Ali Fazıl KASAP|Kütahya|fazilkasap||
+439|İsmail Çağlar BAYIRCI|Kütahya|||
+440|Mehmet DEMİR|Kütahya|||
+441|Abdurrahman BABACAN|Malatya|||
+442|Bülent TÜFENKCİ|Malatya|bulenttufenkci||
+443|İhsan KOCA|Malatya|||
+444|İnanç Siraç Kara ÖLMEZTOPRAK|Malatya|||
+445|Mehmet Celal FENDOĞLU|Malatya|||
+446|Veli AĞBABA|Malatya|veliagbaba||
+447|Ahmet Mücahit ARINÇ|Manisa|MucahitArinc||
+448|Ahmet Vehbi BAKIRLIOĞLU|Manisa|AVBakirlioglu||
+449|Bahadır Nahit YENİŞEHİRLİOĞLU|Manisa|||
+450|Bekir BAŞEVİRGEN|Manisa|BasevirgenBekir||bekir.basevirgen
+451|Erkan AKÇAY|Manisa|erkanakcay45||
+452|Murat BAYBATUR|Manisa|BaybaturMurat||
+453|Özgür ÖZEL|Manisa|eczozgurozel|eczozgurozel|
+454|Selma Aliye KAVAF|Manisa|||
+455|Şenol SUNAT|Manisa|||
+456|Tamer AKKAL|Manisa|akkal_tamer||
+457|Beritan GÜNEŞ ALTIN|Mardin|beritangns|beritangunesaltin|beritangunesaltin
+458|Faruk KILIÇ|Mardin|||
+459|George ASLAN|Mardin|george_aryo||
+460|Kamuran TANHAN|Mardin|||
+461|Muhammed ADAK|Mardin|||
+462|Salihe AYDENİZ|Mardin|||
+463|Ali BOZAN|Mersin|||
+464|Ali KIRATLI|Mersin|||
+465|Ali Mahir BAŞARIR|Mersin|alimahir||
+466|Burhanettin KOCAMAZ|Mersin|||
+467|Faruk DİNÇ|Mersin|||
+468|Gülcan KIŞ|Mersin|||
+469|Hasan Ufuk ÇAKIR|Mersin|||
+470|Havva Sibel SÖYLEMEZ|Mersin|||
+471|Levent UYSAL|Mersin|||
+472|Mehmet Emin EKMEN|Mersin|||
+473|Nureddin NEBATİ|Mersin|||
+474|Perihan KOCA DOĞAN|Mersin|||
+475|Talat DİNÇER|Mersin|||
+476|Cumhur UZUN|Muğla|||
+477|Gizem ÖZCAN|Muğla|||
+478|Kadem METE|Muğla|||
+479|Metin ERGUN|Muğla|||
+480|Selçuk ÖZDAĞ|Muğla|||
+481|Süreyya ÖNEŞ DERİCİ|Muğla|||
+482|Yakup OTGÖZ|Muğla|||
+483|Mehmet Emin ŞİMŞEK|Muş|eminsimsekmus||
+484|Sezai TEMELLİ|Muş|SezaiTemelli||
+485|Sümeyye BOZ ÇAKI|Muş|||
+486|Emre ÇALIŞKAN|Nevşehir|||
+487|Filiz KILIÇ|Nevşehir|||
+488|Süleyman ÖZGÜN|Nevşehir|||
+489|Cevahir UZKURT|Niğde|||
+490|Cumali İNCE|Niğde|||
+491|Ömer Fethi GÜRER|Niğde|fethigurer||
+492|İbrahim Ufuk KAYNAK|Ordu|||
+493|Mahmut ÖZER|Ordu|||
+494|Mustafa ADIGÜZEL|Ordu|drmadiguzel||
+495|Mustafa HAMARAT|Ordu|||
+496|Naci ŞANLITÜRK|Ordu|||
+497|Seyit TORUN|Ordu|Seyit_TORUN||
+498|Asu KAYA|Osmaniye|||
+499|Derya YANIK|Osmaniye|||
+500|Devlet BAHÇELİ|Osmaniye|dbdevletbahceli|dbdevletbahceli|
+501|Seydi GÜLSOY|Osmaniye|||
+502|Harun MERTOĞLU|Rize|||
+503|Muhammed AVCI|Rize|muhammedavci53||
+504|Tahsin OCAKLI|Rize|||
+505|Ali İNCİ|Sakarya|||
+506|Ayça TAŞKENT|Sakarya|||
+507|Çiğdem ERDOĞAN|Sakarya|cigdematabek||
+508|Ertuğrul KOCACIK|Sakarya|||
+509|Lütfi BAYRAKTAR|Sakarya|||
+510|Muhammed Levent BÜLBÜL|Sakarya|M_Levent_Bulbul||mleventbulbul
+511|Murat KAYA|Sakarya|||
+512|Ümit DİKBAYIR|Sakarya|||
+513|Çiğdem KARAASLAN|Samsun|CK_Samsun|cigdemkaraaslan55|
+514|Erhan USTA|Samsun|55erhanusta||
+515|Ersan AKSU|Samsun|||
+516|İlyas TOPSAKAL|Samsun|||
+517|Mehmet KARAMAN|Samsun|||
+518|Mehmet MUŞ|Samsun|mehmedmus|dr.mehmedmus|Dr.mehmetmus
+519|Murat ÇAN|Samsun|||
+520|Orhan KIRCALI|Samsun|AvOrhanKIRCALI||
+521|Yusuf Ziya YILMAZ|Samsun|||
+522|Mervan GÜL|Siirt|||
+523|Sabahat ERDOĞAN SARITAŞ|Siirt|||
+524|Tuncer BAKIRHAN|Siirt|tuncerbakirhan||
+525|Barış KARADENİZ|Sinop|bkaradeniz57||
+526|Nazım MAVİŞ|Sinop|NazimMavis||
+527|Abdullah GÜLER|Sivas|avabdullahguler||
+528|Ahmet ÖZYÜREK|Sivas|ahmetozyurekmhp||
+529|Hakan AKSU|Sivas|||
+530|Rukiye TOY|Sivas|||
+531|Ulaş KARASU|Sivas|ulasskarasu||
+532|Abdulkadir Emin ÖNEN|Şanlıurfa|||
+533|Abdürrahim DUSAK|Şanlıurfa|||
+534|Bekir BOZDAĞ|Şanlıurfa|bybekirbozdag|bekirbozdag|
+535|Cevahir Asuman YAZMACI|Şanlıurfa|||
+536|Dilan KUNT AYAN|Şanlıurfa|dilankuntayan||
+537|Ferit ŞENYAŞAR|Şanlıurfa|||
+538|Hikmet BAŞAK|Şanlıurfa|||
+539|İbrahim EYYÜPOĞLU|Şanlıurfa|||
+540|İbrahim ÖZYAVUZ|Şanlıurfa|iozyavuz1963||
+541|Mahmut TANAL|Şanlıurfa|MTanal||
+542|Mehmet Ali CEVHERİ|Şanlıurfa|malicevheri||
+543|Mehmet Faruk PINARBAŞI|Şanlıurfa|||
+544|Mithat SANCAR|Şanlıurfa|mithatsancarr||
+545|Ömer ÖCALAN|Şanlıurfa|OmerOcalann||
+546|Arslan TATAR|Şırnak|||
+547|Ayşegül DOĞAN|Şırnak|||
+548|Mehmet Zeki İRMEZ|Şırnak|||
+549|Nevroz UYSAL ASLAN|Şırnak|newroz_uysal||
+550|Cem AVŞAR|Tekirdağ|||
+551|Çiğdem KONCAGÜL|Tekirdağ|CKoncagul||
+552|Faik ÖZTRAK|Tekirdağ|faikoztrak||
+553|Gökhan DİKTAŞ|Tekirdağ|||
+554|İlhami Özcan AYGUN|Tekirdağ|||
+555|Mestan ÖZCAN|Tekirdağ|||
+556|Nurten YONTAR|Tekirdağ|||
+557|Selcan TAŞCI|Tekirdağ|||
+558|Cüneyt ALDEMİR|Tokat|||
+559|Kadim DURMAZ|Tokat|kadimdurmaz||
+560|Mustafa ARSLAN|Tokat|AvMustafaArslan||
+561|Yusuf BEYAZIT|Tokat|yusufbeyazit60||
+562|Yücel BULUT|Tokat|yclblt06||
+563|Adil KARAİSMAİLOĞLU|Trabzon|||
+564|Mustafa ŞEN|Trabzon|||
+565|Sibel SUİÇMEZ|Trabzon|||
+566|Vehbi KOÇ|Trabzon|||
+567|Yavuz AYDIN|Trabzon|||
+568|Yılmaz BÜYÜKAYDIN|Trabzon|||
+569|Ayten KORDU|Tunceli|||
+570|Ali KARAOBA|Uşak|||
+571|Fahrettin TUĞRUL|Uşak|||
+572|İsmail GÜNEŞ|Uşak|ismailgunes64||
+573|Burhan KAYATÜRK|Van|||
+574|Gülcan KAÇMAZ SAYYİĞİT|Van|||
+575|Gülderen VARLİ|Van|||
+576|Kayhan TÜRKMENOĞLU|Van|||
+577|Mahmut DİNDAR|Van|||
+578|Pervin BULDAN|Van|PervinBuldan||pervin.buldan.761
+579|Sinan ÇİFTYÜREK|Van|||
+580|Zülküf UÇAR|Van|||
+581|Ahmet BÜYÜKGÜMÜŞ|Yalova|abuyukgumus||
+582|Meliha AKYOL|Yalova|melihaakyol77||
+583|Tahsin BECAN|Yalova|||
+584|Abdulkadir AKGÜL|Yozgat|||
+585|İbrahim Ethem SEDEF|Yozgat|ethemsedef||
+586|Lütfullah KAYALAR|Yozgat|||
+587|Süleyman ŞAHAN|Yozgat|||
+588|Ahmet ÇOLAKOĞLU|Zonguldak|||
+589|Deniz YAVUZYILMAZ|Zonguldak|yavuzyilmazd||
+590|Eylem Ertuğ ERTUĞRUL|Zonguldak|||
+591|Muammer AVCI|Zonguldak|||
+592|Saffet BOZKURT|Zonguldak|||
