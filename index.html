@@ -174,10 +174,10 @@
     yan.textContent = '▶ Videoyu tekrar izle';
     yan.onclick = oynat;
   } else {
-    ana.textContent = '▶ Videoyu izle';
-    ana.onclick = oynat;
-    yan.textContent = 'Videoyu geç, dilekçe adımına git';
-    yan.onclick = gec;
+    ana.textContent = '📨 Dilekçeni Gönder';
+    ana.onclick = gec;
+    yan.textContent = '▶ Videoyu izle';
+    yan.onclick = oynat;
   }
 
   // Paylasim baglantisindan gelenler: ?harita=case (haritaya) / ?vaka=bildir (bildirim formuna)
@@ -186,7 +186,8 @@
   var mVaka = /[?&]vaka=(\d+)/.exec(qs);
   if (mVaka) { window.location.replace('hakikat.html?vaka=' + mVaka[1] + '#vakalar'); return; }
   var mHarita = /[?&]harita=(vol|pet|mp|case)/.exec(qs), goRep = /[?&]vaka=bildir/.test(qs), goRank = /[?&]siralama=1/.test(qs), goHedef = /[?&]hedef=1/.test(qs), goVekil = /[?&]vekil=(\d+)/.exec(qs);
-  if (mHarita || goRep || goRank || goHedef || goVekil) {
+  var goIl = /[?&]il=([^&#]+)/.exec(qs);
+  if (mHarita || goRep || goRank || goHedef || goVekil || goIl) {
     el.style.display = 'none';
     document.body.style.overflow = '';
     window.addEventListener('load', function () {
@@ -205,6 +206,14 @@
           var m = (typeof MP_DATABASE !== 'undefined' ? MP_DATABASE : []).filter(function (x) { return x.id === Number(goVekil[1]); })[0];
           if (m) { try { thGonder(m); } catch (e) {} }
           else if (++vkDene < 20) setTimeout(vkBekle, 300);
+        })();
+      }
+      if (goIl) {
+        var ilDene = 0, ilAd = ''; try { ilAd = decodeURIComponent(goIl[1]); } catch (e) {}
+        (function ilBekle() {
+          var s = document.getElementById('citizen-city'), v = s && Array.prototype.some.call(s.options, function (o) { return o.value === ilAd; });
+          if (v) { try { s.value = ilAd; onCitizenCityChange(); siradakineGec(siradakiHedef()); adim1eGit(); } catch (e) {} }
+          else if (++ilDene < 20) setTimeout(ilBekle, 300);
         })();
       }
       if (goHedef) setTimeout(function () { var hc = document.getElementById('th-card'); if (hc) hc.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 900);
@@ -328,8 +337,9 @@
     <section class="lg:col-span-6 space-y-6">
 
 
+    <div class="bg-zinc-900 rounded-2xl border border-zinc-800 border-l-4 border-l-red-600 shadow-xl min-w-0">
     <!-- ADIM 1: Hedef Seçimi -->
-      <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 border-l-4 border-l-red-600 space-y-4 shadow-xl">
+      <div class="p-4 sm:p-6 space-y-4">
         <h2 class="text-sm font-bold text-white border-b border-zinc-800 pb-2.5 flex items-center justify-between">
           <span class="flex items-center gap-2.5"><span class="w-7 h-7 rounded-full bg-red-600 text-white flex items-center justify-center font-extrabold text-sm shrink-0">1</span> KİME GÖNDERECEKSİN?</span>
           <span class="text-xs text-red-400 font-normal">* Zorunlu</span>
@@ -387,10 +397,9 @@
         </div>
       </div>
 
-            <div class="flex flex-col items-center -my-3" aria-hidden="true"><div class="w-0.5 h-4 bg-red-600"></div><div class="text-red-500 text-sm leading-none">▼</div></div>
 
-      <!-- ADIM 2: Vatandaş Bilgileri ve İmza Pedi -->
-      <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 border-l-4 border-l-red-600 space-y-4 shadow-xl">
+      <!-- ADIM 2: Vatandaş Bilgileri -->
+      <div class="p-4 sm:p-6 space-y-4 border-t border-zinc-800">
         <h2 class="text-sm font-bold text-white border-b border-zinc-800 pb-2.5 flex items-center justify-between">
           <span class="flex items-center gap-2.5"><span class="w-7 h-7 rounded-full bg-red-600 text-white flex items-center justify-center font-extrabold text-sm shrink-0">2</span> BİLGİLERİNİ EKLE</span>
         </h2>
@@ -444,30 +453,6 @@
             <p id="contact-feedback" class="hidden text-[11px] mt-1 font-semibold"></p>
           </div>
           
-          <details class="group border-t border-zinc-800 pt-3 mt-1">
-            <summary class="cursor-pointer list-none flex items-start justify-between gap-2">
-              <span>
-                <span class="block text-xs font-bold text-zinc-200 uppercase tracking-wide">Resmi dilekçe: posta ile elle gönderim</span>
-                <span class="block text-[11px] text-zinc-400 mt-0.5 font-normal">Dilekçeyi indirip kendiniz doldurup imzalayarak posta yoluyla göndermek isteyenler içindir. T.C. no ve açık adres yalnızca sizin PDF dilekçenizde yer alır.</span>
-              </span>
-              <span class="text-zinc-300 text-xs font-bold shrink-0 mt-0.5 group-open:hidden">Aç ▾</span>
-              <span class="text-zinc-300 text-xs font-bold shrink-0 mt-0.5 hidden group-open:inline">Kapat ▴</span>
-            </summary>
-            <div class="space-y-3.5 mt-3">
-              <div>
-                <label class="block text-zinc-300 font-semibold mb-1">
-                 T.C. KİMLİK NUMARASI
-                </label>
-                <input type="text" id="citizen-tc" maxlength="11" inputmode="numeric" autocomplete="off" oninput="formatTc(this); updatePetitionPreview();" placeholder="11 haneli T.C. Kimlik Numaranız" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 focus:border-red-500 focus:outline-none font-mono">
-                <p id="tc-feedback" class="hidden text-[11px] mt-1 font-semibold"></p>
-              </div>
-
-              <div>
-                <label class="block text-zinc-300 font-semibold mb-1">AÇIK ADRES</label>
-                <textarea id="citizen-address" rows="2" oninput="updatePetitionPreview()" placeholder="Tebligat ve dilekçe geçerliliği için adresiniz" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 focus:border-red-500 focus:outline-none"></textarea>
-              </div>
-            </div>
-          </details>
         
           <div class="pt-2">     
             <label class="flex items-start gap-2 text-[11px] text-zinc-400 leading-relaxed cursor-pointer bg-zinc-950/60 border border-zinc-800 rounded-xl p-3 mt-3">
@@ -482,10 +467,9 @@
       </div>
     
 
-          <div class="lg:hidden -mt-3"><div class="flex flex-col items-center -my-3" aria-hidden="true"><div class="w-0.5 h-4 bg-red-600"></div><div class="text-red-500 text-sm leading-none">▼</div></div></div>
 
       <!-- ADIM 3: Resmi Dilekçe Belgesi -->
-      <div class="bg-zinc-900 p-6 rounded-2xl border-2 border-emerald-700 border-l-4 border-l-red-600 space-y-4 shadow-2xl sticky top-6">
+      <div class="p-4 sm:p-6 space-y-4 border-t border-zinc-800">
         <div class="border-b border-emerald-800/60 pb-2.5 flex justify-between items-center">
           <h2 class="text-sm font-bold text-white flex items-center gap-2.5">
             <span class="w-7 h-7 rounded-full bg-red-600 text-white flex items-center justify-center font-extrabold text-sm shrink-0">3</span> DİLEKÇE ÖNİZLEMESİ VE GÖNDER
@@ -508,7 +492,6 @@
           <div class="pt-4 border-t border-zinc-300 flex justify-between items-end text-[11px]">
             <div>
               <p><strong>Dilekçe Sahibi:</strong> <span id="doc-val-name">[Adınız Soyadınız]</span></p>
-              <p><strong>T.C. Kimlik No:</strong> <span id="doc-val-tc">……………</span></p>
               <p><strong>Adres:</strong> <span id="doc-val-address">……………</span></p>
               <p><strong>Tarih:</strong> <span id="doc-val-date">24.09.2026</span></p>
             </div>
@@ -534,6 +517,7 @@
 
       </div>
 
+    </div>
     </section>
 
     <!-- SAĞ KOLON: Onur Köşesi ve dilekçe sıralaması (mobilde dilekçe adımlarının altında) -->
@@ -1301,7 +1285,6 @@ window.addEventListener('load', function () {
       <div>
         <h4 class="font-bold text-emerald-400 uppercase text-[11px] tracking-wider mb-1">2. Dilekçe Formu Kapsamında İşlenen Kişisel Veriler</h4>
         <p>Dilekçe formu aracılığıyla <strong class="text-white">ad-soyad, il/ilçe (yurt dışından katılım hâlinde ülke/şehir) ile telefon numarası veya e-posta adresi</strong> bilgileriniz, dilekçenizin kampanya sayımına dâhil edilmesi amacıyla şifrelenmek suretiyle kaydedilmektedir. Bu bilgilere ek olarak dilekçenin iletildiği makam ve gönderim tarihi de kaydedilmektedir.</p>
-        <p class="mt-1.5">Posta ile elle gönderim için sunulan <strong class="text-white">T.C. kimlik numarası ve açık adres</strong> alanları yalnızca kullanıcının tarayıcısında işlenmekte olup <strong class="text-white">sunucularımıza iletilmemekte, kaydedilmemekte ve saklanmamaktadır.</strong> Bu bilgiler yalnızca kullanıcının kendi oluşturduğu PDF dilekçede yer almaktadır.</p>
         <p class="mt-1.5"><strong class="text-white">İşleme amacı ve hukuki sebep:</strong> Kişisel verileriniz; kampanyaya verilen desteğin sayılması ve doğrulanması ile gerektiğinde tarafınızla iletişim kurulması amacıyla, 6698 sayılı Kanun'un 5/1. maddesi uyarınca dilekçe ekranındaki onay kutusunun işaretlenmesi suretiyle verdiğiniz açık rızanıza dayanılarak işlenmektedir.</p>
         <p class="mt-1.5"><strong class="text-white">Saklama süresi ve aktarım:</strong> Kaydedilen veriler kampanya sona erene kadar saklanır, kampanyanın sona ermesiyle birlikte silinir. Veriler üçüncü kişilere aktarılmaz, satılmaz ve reklam amacıyla kullanılmaz.</p>
         <p class="mt-1.5 text-zinc-400">Dilekçenin kendi e-posta hesabınız üzerinden veya elden ilgili kuruma iletilmesi hâlinde, dilekçede yer alan bilgiler alıcı kurumun (Cumhurbaşkanlığı, TBMM veya milletvekili) kendi mevzuatı çerçevesinde ve kendi sorumluluğunda işlenir.</p>
@@ -1337,7 +1320,6 @@ window.addEventListener('load', function () {
           <li><span class="text-zinc-300">Okunamaz kayıt:</span> kayıtlar sunucuda şifreli tutulur; sunucuya ya da veritabanına erişen biri bile bilgilerinizi okuyamaz.</li>
           <li><span class="text-zinc-300">Yetkisiz erişime karşı koruma:</span> kayıtlara erişim yalnızca yetkili kişiyle sınırlıdır.</li>
           <li><span class="text-zinc-300">Güvenli bağlantı:</span> tarayıcınızla site arasındaki tüm iletişim HTTPS ile korunur.</li>
-          <li><span class="text-zinc-300">Az veri:</span> T.C. kimlik numarası ve açık adres hiçbir zaman sunucuya gönderilmez.</li>
         </ul>
         <p class="mt-1.5 text-zinc-400">Hiçbir sistem için mutlak güvenlik garanti edilemez; ancak verileriniz yukarıdaki önlemlerle korunur. Bir güvenlik sorunu fark ederseniz
           <a href="mailto:iletisim@7527iptal.org" class="text-emerald-400 hover:text-emerald-300 font-mono font-bold">iletisim@7527iptal.org</a>
@@ -1717,7 +1699,6 @@ window.addEventListener('load', function () {
   <div style="margin-top:18mm; display:flex; justify-content:space-between; align-items:flex-end; gap:10mm;">
     <div style="flex:1;">
       <p style="margin:0 0 2mm;"><strong>Dilekçe Sahibi:</strong> <span id="print-name"></span></p>
-      <p style="margin:0 0 2mm;"><strong>T.C. Kimlik No:</strong> <span id="print-tc"></span></p>
       <p style="margin:0 0 2mm;"><strong>Adres:</strong> <span id="print-address"></span></p>
       <p style="margin:0 0 2mm;"><strong>İletişim:</strong> <span id="print-contact"></span></p>
       <p style="margin:0;"><strong>Tarih:</strong> <span id="print-date"></span></p>
@@ -3343,14 +3324,11 @@ async function hedefDurumGoster(t) {
 // Dilekçe Metni Önizlemesini Güncelle
   function updatePetitionPreview() {
   var name = document.getElementById('citizen-name').value || '[Adınız Soyadınız]';
-  var tc = (document.getElementById('citizen-tc').value || '').trim() || '……………';
   var city = getPlace().city;
   var district = getPlace().district;
-  var address = (document.getElementById('citizen-address').value || '').trim();
 
-  var fullAddress = [address, district, city, getPlace().country].filter(Boolean).join(' / ') || '……………';
+  var fullAddress = ['………………………………', district, city, getPlace().country].filter(Boolean).join(' / ');
   document.getElementById('doc-val-name').textContent = name;
-  document.getElementById('doc-val-tc').textContent = tc;
   document.getElementById('doc-val-address').textContent = fullAddress;
 
   var today = new Date();
@@ -3377,15 +3355,12 @@ async function hedefDurumGoster(t) {
   if (printHeader) printHeader.textContent = headerEl.textContent;
   var pName = document.getElementById('print-name');
   if (pName) pName.textContent = name;
-  var pTc = document.getElementById('print-tc');
-  if (pTc) pTc.textContent = tc;
   var pAddr = document.getElementById('print-address');
   if (pAddr) pAddr.textContent = fullAddress;
   var pDate = document.getElementById('print-date');
   if (pDate) pDate.textContent = dateStr;
 }
 
-// TC Kimlik Biçimlendirme
 // Iletisim bilgisi dogrulama: e-posta VEYA Turkiye telefon numarasi.
 // Dilekcenin kuruma ulasip geri donus yapilabilmesi icin zorunlu.
 function validateContact(value) {
@@ -3438,67 +3413,6 @@ function updateContactFeedback() {
   }
 }
 
-// T.C. Kimlik Numarasi dogrulama algoritmasi
-//  - 11 hane, tamami rakam, ilk hane 0 olamaz
-//  - 10. hane : ((1,3,5,7,9. hanelerin toplami * 7) - (2,4,6,8. hanelerin toplami)) mod 10
-//  - 11. hane : ilk 10 hanenin toplami mod 10
-function validateTc(value) {
-  var tc = String(value || '').trim();
-  if (!/^[1-9][0-9]{10}$/.test(tc)) return false;
-
-  var digits = tc.split('').map(Number);
-  var tek = digits[0] + digits[2] + digits[4] + digits[6] + digits[8];
-  var cift = digits[1] + digits[3] + digits[5] + digits[7];
-
-  var hane10 = ((tek * 7) - cift) % 10;
-  if (hane10 < 0) hane10 += 10;
-  if (hane10 !== digits[9]) return false;
-
-  var toplam = 0;
-  for (var i = 0; i < 10; i++) toplam += digits[i];
-  if ((toplam % 10) !== digits[10]) return false;
-
-  return true;
-}
-
-function formatTc(input) {
-  input.value = input.value.replace(/\D/g, '').slice(0, 11);
-  updateTcFeedback();
-}
-
-// Girdinin altinda canli durum gosterir. TC zorunlu degil;
-// bos birakilabilir ama girildiyse gecerli olmak zorunda.
-function updateTcFeedback() {
-  var input = document.getElementById('citizen-tc');
-  var note = document.getElementById('tc-feedback');
-  if (!input || !note) return;
-
-  var tc = input.value;
-  var base = 'w-full bg-zinc-950 border rounded-lg px-3 py-2 text-zinc-100 focus:outline-none font-mono';
-
-  if (tc.length === 0) {
-    input.className = base + ' border-zinc-700 focus:border-red-500';
-    note.className = 'hidden text-[11px] mt-1 font-semibold';
-    return;
-  }
-
-  if (tc.length < 11) {
-    input.className = base + ' border-zinc-700 focus:border-red-500';
-    note.className = 'text-[11px] mt-1 font-semibold text-zinc-500';
-    note.textContent = tc.length + '/11 hane';
-    return;
-  }
-
-  if (validateTc(tc)) {
-    input.className = base + ' border-emerald-600 focus:border-emerald-500';
-    note.className = 'text-[11px] mt-1 font-semibold text-emerald-400';
-    note.textContent = '✓ Biçim uygun';
-  } else {
-    input.className = base + ' border-red-600 focus:border-red-500';
-    note.className = 'text-[11px] mt-1 font-semibold text-red-400';
-    note.textContent = '✕ Biçim uygun değil. Lütfen kontrol edin.';
-  }
-}
 
 // --- İMZA TUVALİ YÖNETİMİ ---
 function setupCanvas(canvasId, onSave) {
@@ -3801,11 +3715,9 @@ function fillPrintPetition(number) {
   if (header && printHeader) printHeader.textContent = header.textContent.trim();
   var city = getPlace().city;
   var district = getPlace().district;
-  var address = (document.getElementById('citizen-address').value || '').trim();
-  var yer = [address, district, city, getPlace().country].filter(Boolean).join(' / ');
+  var yer = ['………………………………', district, city, getPlace().country].filter(Boolean).join(' / ');
 
   set('print-name', (document.getElementById('citizen-name').value || '').trim());
-  set('print-tc', (document.getElementById('citizen-tc').value || '').trim() || '……………………');
   set('print-address', yer);
   set('print-contact', (document.getElementById('citizen-contact').value || '').trim());
   set('print-date', new Date().toLocaleDateString('tr-TR'));
@@ -3892,7 +3804,6 @@ loadScriptOnce('jspdf.umd.min.js', function() { return !!(window.jspdf && window
   y += 12;
   var sigTop = y;
   field('Dilekçe Sahibi:', txt('print-name'), 2, 115);
-  field('T.C. Kimlik No:', txt('print-tc'), 2, 115);
   field('Adres:', txt('print-address'), 2, 115);
   field('İletişim:', txt('print-contact'), 2, 115);
   field('Tarih:', txt('print-date'), 0, 115);
@@ -4448,7 +4359,7 @@ function ilpVeri() {
   var p = []; if (v > 0) p.push(v + ' belgelenmiş vaka'); if (g > 0) p.push(g + ' gönüllü');
   var ek = g > 0 ? 'yle' : 'yla';
   var s2 = p.length ? p.join(' ve ') + ek + ' mücadele sürüyor, şimdi sıra senin dilekçende.' : (d > 0 ? 'Şimdi sıra senin dilekçende.' : '');
-  var cagri = "Sen dilekçeni gönder, vekilin Meclis'te imzacı olsun.", lnk = SITE_URL + '/';
+  var cagri = "Sen dilekçeni gönder, vekilin Meclis'te imzacı olsun.", lnk = SITE_URL + (tr ? '/?il=' + encodeURIComponent(y) : '/');
   function et(x) { return '#' + x.replace(/[^0-9A-Za-zÇĞİÖŞÜçğıöşü]/g, ''); }
   return {
     d: d, v: v, g: g, bas: bas, yurtdisi: !tr, y: y, ig: bas + '\n\n' + s1 + (s2 ? '\n' + s2 : '') + '\n' + cagri + '\n\nDilekçe bağlantısını gönderelim mi?',
