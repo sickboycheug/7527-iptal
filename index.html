@@ -337,7 +337,7 @@
     <section class="lg:col-span-6 space-y-6">
 
 
-    <div class="bg-zinc-900 rounded-2xl border border-zinc-800 border-l-4 border-l-red-600 shadow-xl min-w-0">
+    <div id="dilekce-panel" class="lg:sticky bg-zinc-900 rounded-2xl border border-zinc-800 border-l-4 border-l-red-600 shadow-xl min-w-0">
     <!-- ADIM 1: Hedef Seçimi -->
       <div class="p-4 sm:p-6 space-y-4">
         <h2 class="text-sm font-bold text-white border-b border-zinc-800 pb-2.5 flex items-center justify-between">
@@ -4323,6 +4323,14 @@ function hmDavet(how) {
   function fb() { var a = document.createElement('textarea'); a.value = tam; a.style.position = 'fixed'; a.style.opacity = '0'; document.body.appendChild(a); a.select(); try { document.execCommand('copy'); ok(); } catch (e) {} document.body.removeChild(a); }
   if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(tam).then(ok, fb); else fb();
 }
+// Genis ekranda dilekce paneli sag kolonla birlikte kayar, altinda bos alan kalmaz
+(function () {
+  var p = document.getElementById('dilekce-panel'); if (!p) return;
+  function ayarla() { p.style.top = Math.min(24, window.innerHeight - p.offsetHeight - 24) + 'px'; }
+  window.addEventListener('resize', ayarla);
+  if (window.ResizeObserver) new ResizeObserver(ayarla).observe(p);
+  ayarla();
+})();
 // IL / ULKE PAYLASIMI: sayilar haritanin zaten okudugu canli veriden gelir
 function ilpSec(el, ilk, liste) {
   el.textContent = ''; var o = document.createElement('option'); o.value = ''; o.textContent = ilk; el.appendChild(o);
