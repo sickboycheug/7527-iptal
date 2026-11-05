@@ -153,9 +153,9 @@
   // Vaka paylaşım linki (/vaka/N → /?vaka=N): o vaka, Vakalar sekmesinde açılır
   var mVaka = /[?&]vaka=(\d+)/.exec(qs);
   if (mVaka) { window.location.replace('hakikat.html?vaka=' + mVaka[1] + '#vakalar'); return; }
-  var mHarita = /[?&]harita=(vol|pet|mp|case)/.exec(qs), goRep = /[?&]vaka=bildir/.test(qs), goRank = /[?&]siralama=1/.test(qs), goHedef = /[?&]hedef=1/.test(qs), goVekil = /[?&]vekil=(\d+)/.exec(qs);
+  var mHarita = /[?&]harita=(vol|pet|mp|case)/.exec(qs), goRep = /[?&]vaka=bildir/.test(qs), goRank = /[?&]siralama=1/.test(qs), goHedef = /[?&]hedef=1/.test(qs), goVekil = /[?&]vekil=(\d+)/.exec(qs), goAdim = /[?&]adim=1/.test(qs);
   var goIl = /[?&]il=([^&#]+)/.exec(qs);
-  if (mHarita || goRep || goRank || goHedef || goVekil || goIl) {
+  if (mHarita || goRep || goRank || goHedef || goVekil || goIl || goAdim) {
     el.style.display = 'none';
     document.body.style.overflow = '';
     window.addEventListener('load', function () {
@@ -167,6 +167,7 @@
           if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
         if (goRep) { try { openReportModal(); } catch (e) {} }
+        if (goAdim) { try { openAdimModal(); } catch (e) {} }
       }, 400);
       if (goVekil) {
         var vkDene = 0;
@@ -284,12 +285,6 @@
       </div>
     </div>
   </div>
-      <!-- NASIL GÖNDERİLİR (barkod altı) -->
-    <div class="mx-auto max-w-lg mt-3">
-      <button type="button" onclick="openAdimModal()" class="w-full flex items-center justify-center gap-2 bg-emerald-950/50 hover:bg-emerald-900/60 border-2 border-emerald-700 text-emerald-300 font-bold text-sm uppercase py-3 rounded-2xl transition cursor-pointer">
-        📲 Dilekçe nasıl gönderilir? Adım adım gör
-      </button>
-    </div>
 
 </header>
 
@@ -306,6 +301,12 @@
 
 
     <div id="dilekce-panel" class="lg:sticky bg-zinc-900 rounded-2xl border border-zinc-800 border-l-4 border-l-red-600 shadow-xl min-w-0">
+    <!-- NASIL GÖNDERİLİR (1. adımın üstü) -->
+    <div class="p-4 sm:p-6 border-b border-zinc-800">
+      <button type="button" onclick="openAdimModal()" class="w-full flex items-center justify-center gap-2 bg-emerald-950/50 hover:bg-emerald-900/60 border-2 border-emerald-700 text-emerald-300 font-bold text-sm uppercase py-3 rounded-2xl transition cursor-pointer">
+        📲 Dilekçe nasıl gönderilir? Adım adım gör
+      </button>
+    </div>
     <!-- ADIM 1: Hedef Seçimi -->
       <div class="p-4 sm:p-6 space-y-4">
         <h2 class="text-sm font-bold text-white border-b border-zinc-800 pb-2.5 flex items-center justify-between">
@@ -563,7 +564,7 @@ function vkMetin(r) {
     ' Bugüne kadar ' + Number(r.total).toLocaleString('tr-TR') + ' yurttaş dilekçesi aldı' +
     (imza ? ' ve iptal teklifine imza attı. Teşekkür ederiz.' : ', halk iradesini hâlâ görmezden geliyor, iptal teklifine imza atmadı.') +
     (imza ? '' : '\n\nBu haklar bize verilmedi, kazanıldı. Egemenlik kayıtsız şartsız milletindir; biz de kayıtsız şartsız 7527\'nin iptalini istiyoruz.') +
-    '\n\nSen de vekiline dilekçeni gönder: https://7527iptal.org\n#7527İptal';
+    '\n\nSen de vekiline dilekçeni gönder: 7527iptal.org\n#7527İptal';
 }
 function vkSar(ctx, t, x, y, w, lh) {
   var k = t.split(' '), sat = '', yy = y;
@@ -701,7 +702,7 @@ async function vkMektupAc(r) {
   m.style.display = 'flex'; document.getElementById('mk-title').textContent = 'Mektup gönder: ' + r.name; gal.textContent = ''; dl.textContent = ''; tx.value = ''; st.textContent = 'Mektup hazırlanıyor…';
   var h = (await vkHesapYukle())[r.id] || {}, et = [vkEtiket(r.name), vkEtiket(r.city), vkEtiket(r.city + ' Milletvekili'), vkEtiket(r.name + ' Milletvekili')];
   [h.x, h.ig, h.fb].forEach(function (a) { if (a && et.indexOf('@' + a) === -1) et.push('@' + a); });
-  var t = r.name + ' (' + r.party + ' ' + r.city + ' Milletvekili), bu mektup sana.\n\n' + et.join(' ') + '\n\nSen de vekiline dilekçeni gönder: https://7527iptal.org\n#7527İptal';
+  var t = r.name + ' (' + r.party + ' ' + r.city + ' Milletvekili), bu mektup sana.\n\n' + et.join(' ') + '\n\nSen de vekiline dilekçeni gönder: 7527iptal.org\n#7527İptal';
   tx.value = t;
   [['mk-x', h.x, 'https://x.com/'], ['mk-ig', h.ig, 'https://www.instagram.com/'], ['mk-fb', h.fb, 'https://www.facebook.com/']].forEach(function (b) {
     var a = document.getElementById(b[0]); a.style.display = b[1] ? 'block' : 'none'; if (b[1]) a.href = b[2] + encodeURIComponent(b[1]);
@@ -1215,7 +1216,10 @@ window.addEventListener('load', function () {
   <div class="bg-zinc-900 border border-zinc-700 rounded-3xl w-full max-w-md shadow-2xl flex flex-col max-h-[94vh]">
     <div class="flex justify-between items-center gap-3 border-b border-zinc-800 px-4 py-3">
       <h3 class="font-impact text-base text-white uppercase tracking-wide">Dilekçe nasıl gönderilir?</h3>
-      <button type="button" onclick="closeAdimModal()" aria-label="Kapat" class="text-zinc-500 hover:text-white text-2xl leading-none shrink-0 cursor-pointer">&times;</button>
+      <div class="flex items-center gap-3 shrink-0">
+        <button type="button" onclick="adimPaylas()" class="px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-white text-xs font-bold cursor-pointer">📤 Paylaş</button>
+        <button type="button" onclick="closeAdimModal()" aria-label="Kapat" class="text-zinc-500 hover:text-white text-2xl leading-none shrink-0 cursor-pointer">&times;</button>
+      </div>
     </div>
     <div class="p-3 overflow-y-auto flex-1 flex items-center justify-center">
       <img id="adim-img" src="" alt="Dilekçe gönderme adımı" class="w-full h-auto rounded-xl border border-zinc-800">
@@ -3616,7 +3620,7 @@ function closeKvkkModal() {
   if (m) m.style.display = 'none';
 }
 // ADIM ADIM DİLEKÇE SLAYTLARI
-var ADIM_SLAYT = 12;
+var ADIM_SLAYT = 9;
 var adimIdx = 1;
 function adimUrl(i) {
   return 'https://mednnlpprdgupdajmrin.supabase.co/storage/v1/object/public/AdimAdimDilekce/slayt-' + (i < 10 ? '0' : '') + i + '.png';
@@ -3626,7 +3630,12 @@ function adimGoster(i) {
   if (i > ADIM_SLAYT) i = ADIM_SLAYT;
   adimIdx = i;
   var im = document.getElementById('adim-img');
-  if (im) im.src = adimUrl(i);
+  if (im) {
+    im.src = adimUrl(i);
+    // Son slayt: "Sıra sende" dokununca dilekçenin 1. adımına götürür
+    im.style.cursor = (i === ADIM_SLAYT) ? 'pointer' : '';
+    im.onclick = (i === ADIM_SLAYT) ? function () { closeAdimModal(); adim1eGit(); } : null;
+  }
   var c = document.getElementById('adim-sayac');
   if (c) c.textContent = i + ' / ' + ADIM_SLAYT;
   var p = document.getElementById('adim-prev');
@@ -3636,7 +3645,47 @@ function adimGoster(i) {
 }
 function openAdimModal() {
   var m = document.getElementById('adim-modal');
-  if (m) { m.style.display = 'flex'; adimGoster(1); }
+  if (m) { m.style.display = 'flex'; adimGoster(1); adimDosyaHazirla(); }
+}
+// Slayt paylaşımı: telefonda cihaz menüsü (9 görsel), yoksa mevcut paylaşım penceresi
+var adimDosyalar = null;
+function adimMetni() {
+  return '📲 Dilekçeni adım adım gönder!\nAnayasa\'nın 74. maddesindeki dilekçe hakkınla 7527\'nin iptalini iste. 6 adımı sırayla izle, hiçbir adımı atlama.\nSen dilekçeni gönder, vekilin Meclis\'te imzacı olsun.';
+}
+function adimDosyaHazirla() {
+  if (adimDosyalar || !navigator.canShare) return;
+  var isler = [];
+  for (var i = 1; i <= ADIM_SLAYT; i++) {
+    (function (n) {
+      isler.push(fetch(adimUrl(n)).then(function (r) { return r.blob(); }).then(function (b) {
+        return new File([b], 'dilekce-nasil-gonderilir-' + n + '.png', { type: 'image/png' });
+      }));
+    })(i);
+  }
+  Promise.all(isler).then(function (d) { if (navigator.canShare({ files: d })) adimDosyalar = d; }).catch(function () {});
+}
+function adimPaylas() {
+  var link = SITE_URL + '/paylas-adim.html', ad = 'Dilekçe nasıl gönderilir?';
+  if (navigator.share) {
+    var v = adimDosyalar ? { files: adimDosyalar, text: adimMetni() + '\n\n7527iptal.org/paylas-adim.html' } : { title: ad, text: adimMetni(), url: link };
+    navigator.share(v).catch(function () {});
+    return;
+  }
+  closeAdimModal();
+  var o = { adim: true, id: 0, title: ad }, e = encodeURIComponent, m = buildShareText(o, false, true);
+  shareCase = o;
+  document.getElementById('share-title').textContent = 'Paylaş';
+  document.getElementById('share-case-title').textContent = ad;
+  document.getElementById('share-preview').textContent = m;
+  document.getElementById('share-status').textContent = '';
+  document.getElementById('share-case-wa').href = 'https://api.whatsapp.com/send?text=' + e(m);
+  document.getElementById('share-case-x').href = 'https://twitter.com/intent/tweet?text=' + e(buildShareText(o, true, false)) + '&url=' + e(link);
+  document.getElementById('share-case-fb').href = 'https://www.facebook.com/sharer/sharer.php?u=' + e(link);
+  document.getElementById('share-case-tg').href = 'https://t.me/share/url?url=' + e(link) + '&text=' + e(adimMetni());
+  document.getElementById('share-case-mail').href = 'mailto:?subject=' + e(ad) + '&body=' + e(m);
+  var nat = document.getElementById('share-native');
+  if (nat) nat.classList.add('hidden');
+  document.getElementById('share-modal').style.display = 'flex';
 }
 function closeAdimModal() {
   var m = document.getElementById('adim-modal');
@@ -3989,11 +4038,12 @@ async function sendPetitionViaEmail() {
     if (box) box.textContent = dosya;
 
     step('E-posta açılıyor...');
-    // E-posta, onay penceresindeki düğmeyle açılır (mobilde talimatın arkada kalmaması için)
+    // PDF iner, e-posta da kendiliğinden açılır; onay penceresindeki mavi düğme yedek olarak kalır
 
     try { alanDoldur(); } catch (x) {}
     try { var ob = document.getElementById('mail-onay-btn'); if (ob) ob.disabled = true; var on = document.getElementById('mail-onay-not'); if (on) on.textContent = 'Bu düğme, 1. adımdaki düğmeye bastıktan sonra açılır.'; } catch (x) {}
     document.getElementById('confirm-modal').style.display = 'flex';
+    setTimeout(function () { try { epostaAc(); } catch (x) {} }, 800);
   } catch (e) {
         if (e && (e.message === 'pdf_lib' || e.message === 'pdf_timeout' || e.message === 'pdf_font')) {
       alert('PDF hazırlanamadı. Büyük ihtimalle uygulamanın içindeki tarayıcı sorun çıkarıyor.\n\nÇözüm: Bu sayfanın adresini kopyalayıp Safari veya Chrome\'da açın ve dilekçeyi oradan tekrar oluşturun.');
@@ -4802,8 +4852,12 @@ var VOL_URL = SITE_URL + '/paylas-gonullu.html?v=2';
 var shareCase = null;
 
 // Paylasilacak metni kurar. 'short' surumu X'in karakter sinirina gore kisadir.
-function caseLink(item) { return SITE_URL + '/vaka/' + encodeURIComponent(item.id); }
+function caseLink(item) { return item.adim ? SITE_URL + '/paylas-adim.html' : SITE_URL + '/vaka/' + encodeURIComponent(item.id); }
 function buildShareText(item, short, withLink) {
+  if (item.adim) {
+    var ml = short ? 'Dilekçeni adım adım gönder: 6 adımı sırayla izle, hiçbir adımı atlama. #7527İptal' : adimMetni();
+    return withLink ? ml + '\n\n7527iptal.org/paylas-adim.html' : ml;
+  }
   var tarih = item.date ? new Date(item.date).toLocaleDateString('tr-TR') : '';
   var yer = [item.city, item.location].filter(Boolean).join(' · ');
   var satirlar = [item.title];
@@ -4906,6 +4960,7 @@ function openShareModal(caseId) {
   var kisa = buildShareText(item, true, false);
   var link = caseLink(item);
 
+  document.getElementById('share-title').textContent = 'Vakayı Paylaş';
   document.getElementById('share-case-title').textContent = item.title;
   document.getElementById('share-preview').textContent = uzunL;
   document.getElementById('share-status').textContent = '';
@@ -5614,7 +5669,7 @@ function openThanksModal() {
     }
   }
 
-  var text = encodeURIComponent("7527 say\u0131l\u0131 kanunun iptali i\u00e7in ben de dilekçemi gönderdim! Sen de dilek\u00e7eni olu\u015ftur: https://7527iptal.org #7527\u0130ptal");
+  var text = encodeURIComponent("7527 say\u0131l\u0131 kanunun iptali i\u00e7in ben de dilekçemi gönderdim! Sen de dilek\u00e7eni olu\u015ftur: 7527iptal.org #7527\u0130ptal");
   var url = encodeURIComponent("https://7527iptal.org");
   var textTg = encodeURIComponent("7527 say\u0131l\u0131 kanunun iptali i\u00e7in ben de dilekçemi gönderdim! Sen de dilek\u00e7eni olu\u015ftur. #7527\u0130ptal");
 
