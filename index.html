@@ -4427,7 +4427,7 @@ function ilpAc() {
 }
 function ilpYerDegisti() {
   var y = document.getElementById('ilp-yer').value, a = document.getElementById('ilp-alt'), m = {};
-  if (y && CITIES.indexOf(y) >= 0) ilpSec(a, 'İlçe seç', (IL_ILCE[y] || []).slice());
+  if (y && CITIES.indexOf(y) >= 0) ilpSec(a, 'İlçe seç', ['Tüm ilçeler'].concat(IL_ILCE[y] || []));
   else {
     (_hmPet || []).concat(_hmRows || []).forEach(function (r) { if (r.country === y && r.city) m[r.city] = 1; });
     ilpSec(a, y ? 'Tüm ülke' : 'İlçe / şehir', Object.keys(m).sort(function (x, z) { return x.localeCompare(z, 'tr'); }));
@@ -4437,6 +4437,7 @@ function ilpYerDegisti() {
 function ilpVeri() {
   var y = document.getElementById('ilp-yer').value, alt = document.getElementById('ilp-alt').value;
   if (!y) return null;
+  var hep = alt === 'Tüm ilçeler'; if (hep) alt = '';
   var tr = CITIES.indexOf(y) >= 0, d = 0, g = 0, v = 0;
   function tut(r) { return tr ? (!r.country && r.city === y) : (r.country === y && (!alt || r.city === alt)); }
   (_hmPet || []).forEach(function (r) { if (tut(r)) d += Number(r.n); });
@@ -4452,7 +4453,7 @@ function ilpVeri() {
   return {
     d: d, v: v, g: g, bas: bas, yurtdisi: !tr, y: y, ig: bas + '\n\n' + s1 + (s2 ? '\n' + s2 : '') + '\n' + cagri + '\n\nDilekçe bağlantısını gönderelim mi?',
     link: 'Dilekçeni buradan gönderebilirsin: ' + lnk,
-    x: bas + '\n\n' + s1 + (s2 ? '\n' + s2 : '') + '\n\n' + cagri + '\n\n' + lnk + '\n\n' + et(y) + (alt ? ' ' + et(alt) : '') + ' #7527İptal'
+    x: bas + '\n\n' + s1 + (s2 ? '\n' + s2 : '') + '\n\n' + cagri + '\n\n' + lnk + '\n\n' + et(y) + (hep ? ' ' + (IL_ILCE[y] || []).map(et).join(' ') : alt ? ' ' + et(alt) : '') + ' #7527İptal'
   };
 }
 function ilpGoster() {
