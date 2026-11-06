@@ -90,17 +90,9 @@
   #launch-gate > div {
     margin: auto;
   }
-  /* Gönüllü formu: kapı kapalıyken de erişilebilir olmalı */
   /* Imza tuvallerinde parmakla cizerken sayfa kaymasin */
   #mp-canvas {
     touch-action: none;
-  }
-  #volunteer-section {
-    scroll-margin-top: 24px;
-  }
-  #volunteer-section.volunteer-highlight > div {
-    box-shadow: 0 0 0 3px #10b981, 0 12px 40px rgba(16, 185, 129, 0.25);
-    transition: box-shadow 0.3s ease;
   }
   #launch-gate.gate-hidden {
     opacity: 0;
@@ -1062,61 +1054,6 @@ window.addEventListener('load', function () {
   </div>
 </div>
 
-<!-- 8. TEŞEKKÜR VE SOSYAL MEDYA PAYLAŞIM MODALI -->
-<!-- GÖNÜLLÜ TEŞEKKÜR VE PAYLAŞIM MODALI -->
-<div id="vol-thanks-modal" class="fixed inset-0 z-[100000] bg-black/85 backdrop-blur-sm flex items-center justify-center p-4" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="vol-thanks-title">
-  <div class="bg-zinc-900 border-2 border-emerald-600 rounded-3xl max-w-md w-full shadow-2xl flex flex-col max-h-[90vh]">
-    <div class="flex justify-between items-start gap-3 border-b border-zinc-800 p-5">
-      <div class="min-w-0">
-        <h3 id="vol-thanks-title" class="font-impact text-xl text-white uppercase tracking-wide">Aramıza Hoş Geldin!</h3>
-        <p class="text-[11px] text-zinc-400 mt-0.5">Gönüllü kaydın alındı. Şimdi sıra yaymakta.</p>
-      </div>
-      <button type="button" onclick="closeVolunteerThanks()" aria-label="Kapat" class="text-zinc-500 hover:text-white text-2xl leading-none shrink-0 cursor-pointer">&times;</button>
-    </div>
-
-    <div class="overflow-y-auto p-5 space-y-3">
-      <div class="flex items-center gap-3 bg-emerald-950/50 border border-emerald-800 rounded-xl p-3">
-        <span class="text-2xl shrink-0">🤝</span>
-        <p class="text-xs text-emerald-200 leading-relaxed">
-          <strong id="vol-thanks-count">0 Gönüllü</strong> aramıza katıldı.
-          Paylaşarak sayımızı büyütebilirsin.
-        </p>
-      </div>
-
-      <button type="button" id="vol-share-native" onclick="shareVolunteerNative()" class="hidden w-full flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-xs transition cursor-pointer bg-emerald-600 hover:bg-emerald-500 text-white">
-        <span>📲</span> Cihazın Paylaş Menüsü
-      </button>
-
-      <div class="grid grid-cols-2 gap-2">
-        <a id="vol-share-wa" target="_blank" rel="noopener" class="flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-xs transition cursor-pointer bg-emerald-700 hover:bg-emerald-600 text-white"><span>💬</span> WhatsApp</a>
-        <a id="vol-share-x" target="_blank" rel="noopener" class="flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-xs transition cursor-pointer bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700"><span>𝕏</span> X</a>
-        <a id="vol-share-fb" target="_blank" rel="noopener" class="flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-xs transition cursor-pointer bg-blue-800 hover:bg-blue-700 text-white"><span>f</span> Facebook</a>
-        <a id="vol-share-tg" target="_blank" rel="noopener" class="flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-xs transition cursor-pointer bg-sky-700 hover:bg-sky-600 text-white"><span>✈</span> Telegram</a>
-        <button type="button" onclick="shareVolunteerInstagram()" class="flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-xs transition cursor-pointer bg-gradient-to-tr from-amber-600 via-pink-600 to-purple-700 text-white"><span>📷</span> Instagram</button>
-        <a id="vol-share-mail" class="flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-xs transition cursor-pointer bg-zinc-700 hover:bg-zinc-600 text-white"><span>✉</span> E-posta</a>
-      </div>
-
-      <button type="button" onclick="copyVolunteerText()" class="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-xs transition cursor-pointer bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700">
-        <span>📋</span> Metni Kopyala
-      </button>
-
-      <p id="vol-share-status" class="text-[11px] text-center text-zinc-500 min-h-[16px]"></p>
-
-      <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-3 flex items-center gap-3">
-        <div id="vol-qr-box" class="bg-white p-1.5 rounded-lg shrink-0 flex items-center justify-center"></div>
-        <div class="min-w-0">
-          <p class="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-0.5">Karekodu Paylaş</p>
-          <p class="text-[11px] text-zinc-300 leading-relaxed">Afişe, hikayeye veya grup sohbetine ekleyebilirsin.</p>
-          <p class="text-[10px] text-emerald-400 font-mono mt-1">7527iptal.org</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="border-t border-zinc-800 p-4">
-      <button type="button" onclick="closeVolunteerThanks()" class="w-full py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-100 rounded-xl text-xs font-bold uppercase tracking-wide transition cursor-pointer">Kapat</button>
-    </div>
-  </div>
-</div>
 
 <!-- VAKA BİLDİRİM MODALI -->
 <div id="report-modal" class="fixed inset-0 z-[100000] bg-black/85 backdrop-blur-sm flex items-center justify-center p-3" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="report-title">
@@ -1262,15 +1199,18 @@ window.addEventListener('load', function () {
         <p class="mt-1.5 text-zinc-400">Dilekçenin kendi e-posta hesabınız üzerinden veya elden ilgili kuruma iletilmesi hâlinde, dilekçede yer alan bilgiler alıcı kurumun (Cumhurbaşkanlığı, TBMM veya milletvekili) kendi mevzuatı çerçevesinde ve kendi sorumluluğunda işlenir.</p>
       </div>
       <div>
-        <h4 class="font-bold text-emerald-400 uppercase text-[11px] tracking-wider mb-1">3. Gönüllü Kaydı — Bu Veriler Saklanır</h4>
-        <p>Gönüllü formunu doldurmanız halinde <strong class="text-white">ad-soyadınız,
-        iletişim bilginiz (telefon veya e-posta), şehriniz ve varsa notunuz</strong> kayıt altına alınır.</p>
+        <h4 class="font-bold text-emerald-400 uppercase text-[11px] tracking-wider mb-1">3. Gönüllülük ve Kampanya Sohbeti</h4>
+        <p>Gönüllü olmak için ayrıca form doldurmanız gerekmez. Kampanya sohbetine yazmak ya da görev almak için
+        <a href="/gorev.html" class="text-emerald-400 hover:text-emerald-300 underline font-semibold">gönüllü sayfasında</a>
+        e-posta adresinizle giriş yapmanız hâlinde <strong class="text-white">e-posta adresiniz, görünen adınız, il/ilçeniz
+        (yurt dışı için ülke/şehir), avatarınız, mesajlarınız ve görev hareketleriniz</strong> kaydedilir.</p>
         <ul class="mt-1.5 space-y-1 list-disc list-inside text-zinc-400">
-          <li><span class="text-zinc-300">Amaç:</span> kampanyanın gönüllü organizasyonu, saha koordinasyonu ve sizinle iletişim kurulması</li>
-          <li><span class="text-zinc-300">Hukuki sebep:</span> KVKK m.5/1 uyarınca açık rızanız</li>
-          <li><span class="text-zinc-300">Toplama yöntemi:</span> bu web sitesindeki form aracılığıyla, elektronik ortamda</li>
-          <li><span class="text-zinc-300">Saklama süresi:</span> kampanya süresince; kampanya sona erdikten en geç 6 ay sonra silinir</li>
-          <li><span class="text-zinc-300">Aktarım:</span> verileriniz üçüncü kişilerle paylaşılmaz, satılmaz, reklam amaçlı kullanılmaz</li>
+          <li><span class="text-zinc-300">Amaç:</span> giriş kodunun gönderilmesi, sohbetin ve görev panosunun işletilmesi, kampanya duyurularının iletilmesi ve saha koordinasyonu</li>
+          <li><span class="text-zinc-300">Hukuki sebep:</span> KVKK m.5/1 uyarınca giriş sırasında verdiğiniz açık rıza</li>
+          <li><span class="text-zinc-300">Herkese görünenler:</span> görünen adınız, iliniz (ilçeniz görünmez), avatarınız, mesajlarınız ve üstlendiğiniz görevler; e-posta adresiniz yalnızca kampanya yöneticisine görünür</li>
+          <li><span class="text-zinc-300">Saklama:</span> e-posta adresiniz, giriş yapabilmeniz için giriş altyapısında (Supabase) şifrelenmeden saklanır. Sohbet mesajları en geç 24 saat sonra silinir; yönetimin sabitlediği duyuru mesajları kalır. Daha önce gönüllü formuyla verdiğiniz ad-soyad ve iletişim bilgileri şifreli tutulur. Tüm gönüllü verileri kampanya sona erdikten en geç 6 ay sonra silinir.</li>
+          <li><span class="text-zinc-300">Aktif gönüllü:</span> ilinizde stand ve toplantı için bıraktığınız telefon numarası tarayıcınızda şifrelenir, yalnızca kampanya yöneticisi görür</li>
+          <li><span class="text-zinc-300">Aktarım:</span> giriş kodu e-postası Resend altyapısıyla gönderilir; verileriniz başka üçüncü kişilerle paylaşılmaz, satılmaz, reklam amaçlı kullanılmaz</li>
         </ul>
       </div>
 
@@ -1686,58 +1626,6 @@ window.addEventListener('load', function () {
   </div>
 </div>
 
-<!-- GÖNÜLLÜ OL FORMU (footer'in hemen ustunde) -->
-<section id="volunteer-section" class="hidden max-w-4xl mx-auto px-4 py-10 w-full">
-  <div class="bg-zinc-900 border border-zinc-800 p-6 sm:p-8 rounded-2xl shadow-xl space-y-4">
-    <div class="text-center space-y-2">
-      <h2 class="font-impact text-2xl text-white uppercase tracking-wide">
-        🤝 SAHA VE İLETİŞİM GÖNÜLLÜSÜ OL
-      </h2>
-      <p class="text-xs text-zinc-400 max-w-xl mx-auto leading-relaxed">
-        Şehrinizde afiş dağıtımı, milletvekili iletişimi ve sosyal medya yayılımına
-        destek verin. <strong class="text-emerald-400"><span id="vol-count-badge">0 Gönüllü</span></strong> aramıza katıldı.
-      </p>
-    </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-      <input type="text" id="vol-name" placeholder="Adınız Soyadınız" class="bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 text-xs focus:border-emerald-500 focus:outline-none">
-      <select id="vol-city" class="bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 text-xs focus:border-emerald-500 focus:outline-none">
-        <option value="">Şehir Seçiniz</option>
-      </select>
-      <input type="text" id="vol-contact" placeholder="Telefon / E-posta" class="bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-zinc-100 text-xs focus:border-emerald-500 focus:outline-none">
-    </div>
-    <div class="bg-zinc-950/60 border border-zinc-800 rounded-xl p-3 space-y-2">
-      <p class="text-[11px] font-semibold text-zinc-300">Hangi alanlarda katkı verebilirsiniz? (birden fazla seçebilirsiniz)</p>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 text-[11px] text-zinc-300">
-        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="vol-area accent-emerald-600" value="Afiş ve broşür dağıtımı"> Afiş ve broşür dağıtımı</label>
-        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="vol-area accent-emerald-600" value="Sosyal medya paylaşımı"> Sosyal medya paylaşımı</label>
-        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="vol-area accent-emerald-600" value="Milletvekili iletişimi"> Milletvekili iletişimi</label>
-        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="vol-area accent-emerald-600" value="Saha ve etkinlik organizasyonu"> Saha ve etkinlik organizasyonu</label>
-        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="vol-area accent-emerald-600" value="Basın ve medya iletişimi"> Basın ve medya iletişimi</label>
-        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="vol-area accent-emerald-600" value="Hukuki destek"> Hukuki destek</label>
-        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="vol-area accent-emerald-600" value="Tasarım ve video"> Tasarım ve video</label>
-        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="vol-area accent-emerald-600" value="Yazılım ve teknik destek"> Yazılım ve teknik destek</label>
-        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="vol-area accent-emerald-600" value="Çeviri"> Çeviri</label>
-        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="vol-area accent-emerald-600" value="Bağış ve kaynak yaratma"> Bağış ve kaynak yaratma</label>
-        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="vol-area accent-emerald-600" value="Diğer"> Diğer</label>
-      </div>
-    </div>
-
-    <label class="flex items-start gap-2 text-[11px] text-zinc-400 leading-relaxed cursor-pointer bg-zinc-950/60 border border-zinc-800 rounded-xl p-3">
-      <input type="checkbox" id="vol-consent" class="mt-0.5 shrink-0 accent-emerald-600">
-      <span>
-        Adım, iletişim bilgim ve şehrimin bu kampanyanın gönüllü organizasyonu
-        amacıyla işlenmesini ve saklanmasını kabul ediyorum. Verilerim üçüncü
-        kişilerle paylaşılmaz; talep etmeniz halinde silinir.
-        <button type="button" onclick="openKvkkModal()" class="text-emerald-400 hover:text-emerald-300 underline font-semibold cursor-pointer">Aydınlatma Metni</button>
-      </span>
-    </label>
-
-    <button type="button" id="vol-submit-btn" onclick="submitVolunteerForm()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs uppercase tracking-wide transition shadow disabled:opacity-50 disabled:cursor-not-allowed">
-      Gönüllü Olarak Kaydol
-    </button>
-  </div>
-</section>
 <!-- PAYLAŞ MODÜLÜ (QR) - sayfa sonu -->
 <section class="px-4 py-10 bg-zinc-950 border-t border-zinc-800">
   <div class="mx-auto max-w-lg border border-red-900/50 bg-zinc-950/80 p-4 rounded-2xl shadow-xl">
@@ -2884,7 +2772,6 @@ function initMpDatabase() {
   // Şehir filtrelerini doldur
   var mpCityFilter = document.getElementById('mp-city-filter');
   var citCity = document.getElementById('citizen-city');
-  var volCity = document.getElementById('vol-city');
 
   CITIES.forEach(function(c) {
     if (mpCityFilter) {
@@ -2898,12 +2785,6 @@ function initMpDatabase() {
       opt2.value = c;
       opt2.textContent = c;
       citCity.appendChild(opt2);
-    }
-    if (volCity) {
-      var opt3 = document.createElement('option');
-      opt3.value = c;
-      opt3.textContent = c;
-      volCity.appendChild(opt3);
     }
   });
 
@@ -4875,81 +4756,6 @@ function buildShareText(item, short, withLink) {
   return satirlar.join('\n');
 }
 
-// --- GÖNÜLLÜ TEŞEKKÜR / PAYLAŞIM ------------------------------------
-function volunteerShareText(noLink) {
-  return '7527 sayılı Kanun\u2019un iptali ve yaşam hakkı için gönüllü oldum!\n' +
-         'Sen de aramıza katıl.' + (noLink ? '' : ' ' + VOL_URL) + '\n#7527İptal';
-}
-
-function volShareStatus(msg, cls) {
-  var el = document.getElementById('vol-share-status');
-  if (el) { el.textContent = msg || ''; el.className = 'text-[11px] text-center min-h-[16px] ' + (cls || 'text-zinc-500'); }
-}
-
-function openVolunteerThanks() {
-  var metin = volunteerShareText();
-  var e = encodeURIComponent;
-
-  var say = document.getElementById('vol-thanks-count');
-  var kaynak = document.getElementById('vol-count-badge');
-  if (say && kaynak) say.textContent = kaynak.textContent;
-
-  document.getElementById('vol-share-wa').href   = 'https://api.whatsapp.com/send?text=' + e(metin);
-  document.getElementById('vol-share-x').href    = 'https://twitter.com/intent/tweet?text=' + e(metin);
-  document.getElementById('vol-share-fb').href   = 'https://www.facebook.com/sharer/sharer.php?u=' + e(VOL_URL);
-  document.getElementById('vol-share-tg').href   = 'https://t.me/share/url?url=' + e(VOL_URL) + '&text=' + e(volunteerShareText(true));
-  document.getElementById('vol-share-mail').href = 'mailto:?subject=' + e('7527 iptali için gönüllü ol') + '&body=' + e(metin);
-
-  var nat = document.getElementById('vol-share-native');
-  if (nat) nat.classList.toggle('hidden', !navigator.share);
-
-  // Karekod: kutuphane yoksa kutuyu gizle, modali bozma
-  var box = document.getElementById('vol-qr-box');
-  if (box) {
-    if (typeof QRCode === 'undefined') {
-      box.style.display = 'none';
-    } else if (!box.hasChildNodes()) {
-      try {
-        new QRCode(box, { text: SITE_URL, width: 84, height: 84,
-                          colorDark: '#000000', colorLight: '#ffffff',
-                          correctLevel: QRCode.CorrectLevel.M });
-      } catch (err) { box.style.display = 'none'; }
-    }
-  }
-
-  volShareStatus('');
-  document.getElementById('vol-thanks-modal').style.display = 'flex';
-}
-
-function closeVolunteerThanks() {
-  var m = document.getElementById('vol-thanks-modal');
-  if (m) m.style.display = 'none';
-}
-
-async function shareVolunteerNative() {
-  if (!navigator.share) return;
-  try {
-    await navigator.share({ title: '7527 İptal', text: volunteerShareText(true), url: VOL_URL });
-  } catch (e) {
-    if (e && e.name !== 'AbortError') volShareStatus('Paylaşım açılamadı.', 'text-red-400');
-  }
-}
-
-async function copyVolunteerText() {
-  try {
-    await navigator.clipboard.writeText(volunteerShareText());
-    volShareStatus('✓ Metin panoya kopyalandı.', 'text-emerald-400');
-  } catch (e) {
-    volShareStatus('Kopyalanamadı. Metni elle seçip kopyalayabilirsiniz.', 'text-amber-400');
-  }
-}
-
-async function shareVolunteerInstagram() {
-  if (navigator.share) { await shareVolunteerNative(); return; }
-  await copyVolunteerText();
-  volShareStatus('✓ Metin kopyalandı. Instagram’da hikaye veya gönderi açıp yapıştırabilirsiniz.', 'text-emerald-400');
-}
-
 function openShareModal(caseId) {
   var item = ALMANAC_DATA.find(function(x) { return x.id === caseId; });
   if (!item) return;
@@ -5022,67 +4828,6 @@ async function shareInstagram() {
   if (navigator.share) { await shareNative(); return; }
   await copyShareText();
   shareStatus('✓ Metin kopyalandı. Instagram’da hikaye veya gönderi açıp yapıştırabilirsiniz.', 'text-emerald-400');
-}
-
-// --- GÖNÜLLÜ FORMU ---
-var volunteerBusy = false;
-
-async function submitVolunteerForm() {
-  if (volunteerBusy) return;
-
-  var btn     = document.getElementById('vol-submit-btn');
-  var name    = (document.getElementById('vol-name').value || '').trim();
-  var city    = document.getElementById('vol-city').value || '';
-  var contact = (document.getElementById('vol-contact').value || '').trim();
-  var note    = Array.prototype.map.call(
-    document.querySelectorAll('.vol-area:checked'),
-    function(el) { return el.value; }
-  ).join(', ');
-  var consent = document.getElementById('vol-consent');
-
-  if (name.length < 2 || contact.length < 5) {
-    alert('L\u00fctfen ad\u0131n\u0131z\u0131 ve ge\u00e7erli bir ileti\u015fim bilginizi girin.');
-    return;
-  }
-    if (!city) {
-    alert('Lütfen şehrinizi seçin.');
-    document.getElementById('vol-city').focus();
-    return;
-  }
-  if (consent && !consent.checked) {
-    alert('Kayd\u0131n\u0131z\u0131 olu\u015fturabilmemiz i\u00e7in verilerinizin i\u015flenmesini onaylaman\u0131z gerekir.');
-    consent.focus();
-    return;
-  }
-
-  volunteerBusy = true;
-  var oldLabel = btn ? btn.textContent : '';
-  if (btn) { btn.disabled = true; btn.textContent = '\u015eifreleniyor...'; }
-
-  try {
-    // Ad, ileti\u015fim ve not sunucuya G\u0130TMEDEN \u00d6NCE burada \u015fifrelenir.
-    // \u015eehir a\u00e7\u0131k kal\u0131r (istatistik i\u00e7in, tek ba\u015f\u0131na kimlik belirtmez).
-    var envelope = await encryptPayload({
-      name: name, contact: contact, note: note, at: new Date().toISOString()
-    });
-
-    if (btn) btn.textContent = 'Kaydediliyor...';
-    await callRpc('add_volunteer_enc', { p_city: city, p_payload_enc: envelope });
-
-    document.getElementById('vol-name').value = '';
-    document.getElementById('vol-city').value = '';
-    document.getElementById('vol-contact').value = '';
-    Array.prototype.forEach.call(document.querySelectorAll('.vol-area'), function(el) { el.checked = false; });
-    if (consent) consent.checked = false;
-
-    await refreshCounters();
-    openVolunteerThanks();
-  } catch (e) {
-    alert(dataErrorText(e));
-  } finally {
-    volunteerBusy = false;
-    if (btn) { btn.disabled = false; btn.textContent = oldLabel; }
-  }
 }
 
 // --- MECLİS VEKİL İMZA SEÇİCİSİ (A-Z VE ANLIK ARAMA) ---
@@ -6378,27 +6123,16 @@ function saveAdminCounters() {
 var VOLUNTEER_BASELINE = 0;
 
 function updateVolunteerBadge() {
-  // Ayni sayi iki yerde gosteriliyor: kapi ekrani ve gonullu formu
-  var hedefler = [
-    document.getElementById('gate-volunteer-badge'),
-    document.getElementById('vol-count-badge')
-  ];
+  // Sayi kapi ekraninda gosteriliyor
+  var hedefler = [document.getElementById('gate-volunteer-badge')];
   var total = VOLUNTEER_BASELINE + (counters.volunteers || 0);
   var metin = total.toLocaleString('tr-TR') + ' G\u00f6n\u00fcll\u00fc';
   hedefler.forEach(function(el) { if (el) el.textContent = metin; });
 }
 
-// Gonullu formuna kaydir (kapi kapaliyken de calisir; form #volunteer-section footer ustunde)
+// "Gönüllü ol" düğmesi: gönüllü sayfasına (sohbet, görevler, aktif gönüllü) gider
 function scrollToVolunteerForm() {
   window.location.href = "/gorev.html";
-  return;
-  var section = document.getElementById("volunteer-section");
-  if (!section) return;
-  section.scrollIntoView({ behavior: "smooth", block: "center" });
-  section.classList.add("volunteer-highlight");
-  setTimeout(function() { section.classList.remove("volunteer-highlight"); }, 2200);
-  var first = document.getElementById("vol-name");
-  if (first) setTimeout(function() { first.focus({ preventScroll: true }); }, 500);
 }
 
 // SheetJS yalnizca ihtiyac aninda yuklenir (sayfa acilisini yavaslatmasin diye)
@@ -7513,7 +7247,7 @@ async function rkAdminList() {
 
       // --- SAYFA BAŞLATICI ---
       document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') { closeKvkkModal(); closeShareModal(); closeVolunteerThanks(); }
+        if (e.key === 'Escape') { closeKvkkModal(); closeShareModal(); }
       });
 
       // Bir adimin hatasi digerlerini durdurmasin. Eskiden hepsi tek bir
