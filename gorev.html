@@ -3,24 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gönüllü Koordinasyon Panosu - 7527 İPTAL!</title>
-<meta name="description" content="7527 iptal kampanyası gönüllü başvurusu ve görev panosu.">
-<meta name="robots" content="noindex">
+<title>Kampanya Panosu ve Sohbet - 7527 İPTAL!</title>
+<meta name="description" content="7527 iptal kampanyasının herkese açık sohbeti, görev panosu, haritası ve materyal kütüphanesi.">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="tr_TR">
 <meta property="og:site_name" content="7527 İPTAL">
 <meta property="og:title" content="Kendi şehrinde ses ol: gönüllü ağına katıl">
-<meta property="og:description" content="Formu doldur, kodunu al, panoya geç. 7527 İptal gönüllü ağı seni bekliyor.">
+<meta property="og:description" content="Kampanya sohbetine katıl, görev al, materyal indir. 7527 İptal gönüllü ağı seni bekliyor.">
 <meta property="og:url" content="https://7527iptal.org/gorev.html">
 <meta property="og:image" content="https://7527iptal.org/og-gonullu.png?v=1">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Kendi şehrinde ses ol: gönüllü ağına katıl">
-<meta name="twitter:description" content="Formu doldur, kodunu al, panoya geç. 7527 İptal gönüllü ağı seni bekliyor.">
+<meta name="twitter:description" content="Kampanya sohbetine katıl, görev al, materyal indir. 7527 İptal gönüllü ağı seni bekliyor.">
 <meta name="twitter:image" content="https://7527iptal.org/og-gonullu.png?v=1">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -105,7 +105,7 @@
 <header class="border-b border-zinc-800 bg-zinc-950">
   <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
     <a href="/" class="text-xs text-zinc-400 hover:text-white font-semibold">← Ana sayfa</a>
-    <span class="font-impact text-lg tracking-wide uppercase text-white">7527 İPTAL · Gönüllü Koordinasyon Panosu</span>
+    <span class="font-impact text-lg tracking-wide uppercase text-white">7527 İPTAL · Kampanya Panosu</span>
     <span id="who" class="text-xs text-emerald-400 font-semibold"></span>
   </div>
 </header>
@@ -122,192 +122,13 @@
 
 <main class="flex-1 w-full max-w-4xl mx-auto px-4 py-8 space-y-8">
 
-  <!-- ===== MİSAFİR GÖRÜNÜMÜ: başvuru + giriş ===== -->
-  <div id="view-guest" class="space-y-8">
-
-    <!-- ===== GÜNCELLEME: gönüllü sayfası tanıtımı ===== -->
-    <section id="vol-update" class="bg-zinc-900 border border-zinc-800 p-6 sm:p-8 rounded-2xl shadow-xl space-y-5">
-      <div class="space-y-2">
-        <div class="flex items-center justify-between text-[11px] uppercase tracking-wider">
-          <span class="bg-emerald-700 text-white font-bold px-2 py-0.5 rounded">Güncelleme</span>
-          <span class="text-zinc-500 g-tarih"></span>
-        </div>
-        <h2 class="font-impact text-2xl text-white uppercase tracking-wide"><span class="g-gun">…</span> günde <span class="g-top">…</span> dilekçe. Şimdi sıra sahada.</h2>
-        <p class="text-sm text-zinc-300 leading-relaxed">Kampanyanın bugünkü tablosu, olduğu gibi:</p>
-        <ul class="text-sm text-zinc-300 leading-relaxed space-y-1 list-none">
-          <li>📨 <strong class="text-white"><span class="g-top">…</span> dilekçe:</strong> <span class="g-kisi">…</span> kişi, <span class="g-petil">…</span> il. Cumhurbaşkanlığı'na <span class="g-cb">…</span>, TBMM Başkanlığı'na <span class="g-mb">…</span>, vekillere <span class="g-mp">…</span>.</li>
-          <li>🤝 <strong class="text-white"><span class="g-vol">…</span> gönüllü:</strong> <span class="g-volil">…</span> il ve <span class="g-volulke">…</span> ülke.</li>
-          <li>🐾 <strong class="text-white"><span class="g-vaka">…</span> vaka:</strong> <span class="g-vakail">…</span> ilde belgelendi.</li>
-        </ul>
-        <p class="text-sm font-bold text-amber-300 pt-1">Nerede eksiğiz?</p>
-        <ul class="text-sm text-zinc-300 leading-relaxed space-y-1 list-disc pl-5">
-          <li><span class="g-volyok">…</span> ilde henüz gönüllümüz yok.</li>
-          <li><span class="g-petyok">…</span> ilden henüz tek dilekçe gelmedi.</li>
-          <li>Cumhurbaşkanlığı'na gönderenlerin çoğu TBMM'ye ve vekillere geçmedi. Cumhurbaşkanlığı: <span class="g-cb">…</span>, TBMM Başkanlığı: <span class="g-mb">…</span>.</li>
-        </ul>
-        <p class="text-sm font-bold text-emerald-300 pt-1">Gönüllüden beklediğimiz:</p>
-        <ol class="text-sm text-zinc-300 leading-relaxed space-y-1 list-decimal pl-5">
-          <li><strong class="text-white">Kendi dilekçelerini tamamla:</strong> Cumhurbaşkanlığı → TBMM → ilinin vekilleri. Site artık sıradaki hedefi kendisi getiriyor ve kaç dilekçen kaldığını gösteriyor.</li>
-          <li><strong class="text-white">Çevrendeki üç kişiye dilekçe gönderttir.</strong> Özellikle dilekçe gelmeyen illerde tanıdığın varsa.</li>
-          <li><strong class="text-white">Şehrinde gördüğün eski ya da yeni vakayı bildir.</strong></li>
-        </ol>
-        <p class="text-sm text-zinc-300 leading-relaxed">594 dilekçenin tamamını gönderen <span class="g-onur">…</span> kişi Onur Köşesi'nde. Sıradaki isim seninki olsun.</p>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-      <div class="bg-zinc-950 border border-emerald-800/60 rounded-xl p-4 text-center">
-        <div class="font-impact text-2xl text-emerald-400">1</div>
-        <div class="font-bold text-white text-sm">Formu doldur</div>
-        <div class="text-xs text-zinc-400 mt-1">Takma adın, ilin ve katkı vereceğin alanlar yeterli.</div>
-      </div>
-      <div class="bg-zinc-950 border border-emerald-800/60 rounded-xl p-4 text-center">
-        <div class="font-impact text-2xl text-emerald-400">2</div>
-        <div class="font-bold text-white text-sm">Kodunu al</div>
-        <div class="text-xs text-zinc-400 mt-1">Sana özel gönüllü kodu hemen oluşur. Bir yere kaydet.</div>
-      </div>
-      <div class="bg-zinc-950 border border-emerald-800/60 rounded-xl p-4 text-center">
-        <div class="font-impact text-2xl text-emerald-400">3</div>
-        <div class="font-bold text-white text-sm">Panoya geç</div>
-        <div class="text-xs text-zinc-400 mt-1">Haritayı, görevleri ve ofisi kodunla aç.</div>
-      </div>
-      </div>
-
-            <p class="text-xs text-zinc-300 leading-relaxed border-l-4 border-amber-500 bg-zinc-950 rounded-r-lg px-4 py-3"><span class="font-bold text-amber-400">Hakkımız, sınırımız:</span> Tüm çalışmalarımız Anayasa’nın 74. maddesindeki dilekçe hakkına ve ifade özgürlüğüne dayanır. Yasal sınırlar içinde, barışçıl ve açık biçimde irade gösteriyoruz. Gönüllülerimizden de bunu bekliyoruz.</p>
-      <div class="flex flex-wrap items-center gap-2">
-        <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 mr-1">Bu sayfayı paylaş:</span>
-        <a class="bg-zinc-950 border border-emerald-700 text-emerald-300 hover:bg-emerald-700 hover:text-white text-xs font-bold px-3 py-2 rounded-full transition" href="https://wa.me/?text=Kendi%20%C5%9Fehrinde%20ses%20ol%3A%207527%20%C4%B0ptal%20g%C3%B6n%C3%BCll%C3%BC%20a%C4%9F%C4%B1na%20kat%C4%B1l.%20Formu%20doldur%2C%20kodunu%20al%2C%20panoya%20ge%C3%A7%3A%20https%3A%2F%2F7527iptal.org%2Fpaylas-gonullu.html%3Fv%3D2" target="_blank" rel="noopener">WhatsApp</a>
-        <a class="bg-zinc-950 border border-emerald-700 text-emerald-300 hover:bg-emerald-700 hover:text-white text-xs font-bold px-3 py-2 rounded-full transition" href="https://twitter.com/intent/tweet?text=Kendi%20%C5%9Fehrinde%20ses%20ol%3A%207527%20%C4%B0ptal%20g%C3%B6n%C3%BCll%C3%BC%20a%C4%9F%C4%B1na%20kat%C4%B1l.%20Formu%20doldur%2C%20kodunu%20al%2C%20panoya%20ge%C3%A7%3A&url=https%3A%2F%2F7527iptal.org%2Fpaylas-gonullu.html%3Fv%3D2" target="_blank" rel="noopener">X</a>
-        <a class="bg-zinc-950 border border-emerald-700 text-emerald-300 hover:bg-emerald-700 hover:text-white text-xs font-bold px-3 py-2 rounded-full transition" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2F7527iptal.org%2Fpaylas-gonullu.html%3Fv%3D2" target="_blank" rel="noopener">Facebook</a>
-        <a class="bg-zinc-950 border border-emerald-700 text-emerald-300 hover:bg-emerald-700 hover:text-white text-xs font-bold px-3 py-2 rounded-full transition" href="https://t.me/share/url?url=https%3A%2F%2F7527iptal.org%2Fpaylas-gonullu.html%3Fv%3D2&text=Kendi%20%C5%9Fehrinde%20ses%20ol%3A%207527%20%C4%B0ptal%20g%C3%B6n%C3%BCll%C3%BC%20a%C4%9F%C4%B1na%20kat%C4%B1l.%20Formu%20doldur%2C%20kodunu%20al%2C%20panoya%20ge%C3%A7%3A" target="_blank" rel="noopener">Telegram</a>
-        <button type="button" class="bg-zinc-950 border border-emerald-700 text-emerald-300 hover:bg-emerald-700 hover:text-white text-xs font-bold px-3 py-2 rounded-full transition" data-up-native style="display:none">Paylaş…</button>
-        <button type="button" class="bg-zinc-950 border border-emerald-700 text-emerald-300 hover:bg-emerald-700 hover:text-white text-xs font-bold px-3 py-2 rounded-full transition" data-up-copy>Bağlantıyı kopyala</button>
-      </div>
-<script>
-(function(){
-  var box=document.getElementById('vol-update');
-  if(!box)return;
-  var url="https://7527iptal.org/paylas-gonullu.html?v=2", text="Kendi şehrinde ses ol: 7527 İptal gönüllü ağına katıl. Formu doldur, kodunu al, panoya geç:";
-  var cp=box.querySelector('[data-up-copy]'), nv=box.querySelector('[data-up-native]');
-  if(nv&&navigator.share){nv.style.display='';nv.addEventListener('click',function(){navigator.share({title:document.title,text:text,url:url}).catch(function(){});});}
-  if(cp){cp.addEventListener('click',function(){
-    var done=function(){var o=cp.textContent;cp.textContent='✓ Kopyalandı';setTimeout(function(){cp.textContent=o;},1800);};
-    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(done).catch(function(){prompt('Bağlantıyı kopyala:',url);});}
-    else{prompt('Bağlantıyı kopyala:',url);}
-  });}
-})();
-</script>
-    </section>
-
-
-    <section id="vol-form-box" class="bg-zinc-900 border border-zinc-800 p-6 sm:p-8 rounded-2xl shadow-xl space-y-4">
-      <div class="text-center space-y-2">
-        <h2 class="font-impact text-2xl text-white uppercase tracking-wide">🤝 Saha ve İletişim Gönüllüsü Ol</h2>
-        <p class="text-xs text-zinc-400 max-w-xl mx-auto leading-relaxed">
-          Şehrinizde afiş dağıtımı, milletvekili iletişimi ve sosyal medya yayılımına destek verin.
-          <strong class="text-emerald-400"><span id="vol-count-badge"></span></strong>
-        </p>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-        <input type="text" id="vol-name" placeholder="Adınız Soyadınız" class="inp" autocomplete="name">
-        <input type="text" id="vol-nick" placeholder="Takma adınız (panoda görünür)" maxlength="30" class="inp" autocomplete="off">
-        <input type="text" id="vol-contact" placeholder="Telefon / E-posta" class="inp" autocomplete="off">
-      </div>
-      <p class="text-[10px] text-zinc-500 -mt-2">Adınız ve iletişim bilginiz şifreli saklanır, yalnızca kampanya yöneticisi görür. Panoda diğer gönüllüler sadece takma adınızı, ilinizi/ilçenizi ve alanlarınızı görür.</p>
-
-      <div class="bg-zinc-950/60 border border-zinc-800 rounded-xl p-3 space-y-3">
-        <p class="text-[11px] font-semibold text-zinc-300">Hangi ilde yaşıyorsunuz? (yurtdışındaysanız yaşadığınız şehir)</p>
-        <label class="flex items-center gap-2 text-[11px] text-zinc-300 cursor-pointer"><input type="checkbox" id="vol-abroad" class="accent-emerald-600" onchange="onVolAbroad()"> Yurtdışında yaşıyorum</label>
-        <div id="vol-tr-box">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <select id="vol-city" onchange="onVolCity()" class="inp"><option value="">İl seçiniz</option></select>
-            <select id="vol-district" disabled class="inp"><option value="">Önce il seçiniz</option></select>
-          </div>
-        </div>
-        <div id="vol-abroad-box" class="hidden">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <select id="vol-country" onchange="onVolCountry()" class="inp"><option value="">Ülke seçiniz</option></select>
-            <input type="text" id="vol-abroad-city" maxlength="60" placeholder="Şehir" class="inp">
-          </div>
-          <input type="text" id="vol-country-other" maxlength="60" placeholder="Ülke adını yazın" class="inp hidden mt-3">
-        </div>
-      </div>
-
-      <div class="bg-zinc-950/60 border border-zinc-800 rounded-xl p-3 space-y-2">
-        <p class="text-[11px] font-semibold text-zinc-300">Hangi alanlarda katkı verebilirsiniz? (birden fazla seçebilirsiniz)</p>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 text-[11px] text-zinc-300">
-          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="vol-area accent-emerald-600" value="Afiş ve broşür dağıtımı"> Afiş ve broşür dağıtımı</label>
-          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="vol-area accent-emerald-600" value="Sosyal medya paylaşımı"> Sosyal medya paylaşımı</label>
-          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="vol-area accent-emerald-600" value="Milletvekili iletişimi"> Milletvekili iletişimi</label>
-          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="vol-area accent-emerald-600" value="Saha ve etkinlik organizasyonu"> Saha ve etkinlik organizasyonu</label>
-          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="vol-area accent-emerald-600" value="Basın ve medya iletişimi"> Basın ve medya iletişimi</label>
-          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="vol-area accent-emerald-600" value="Hukuki destek"> Hukuki destek</label>
-          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="vol-area accent-emerald-600" value="Tasarım ve video"> Tasarım ve video</label>
-          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="vol-area accent-emerald-600" value="Yazılım ve teknik destek"> Yazılım ve teknik destek</label>
-          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="vol-area accent-emerald-600" value="Çeviri"> Çeviri</label>
-          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="vol-area accent-emerald-600" value="Bağış ve kaynak yaratma"> Bağış ve kaynak yaratma</label>
-          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="vol-area accent-emerald-600" value="Diğer"> Diğer</label>
-        </div>
-      </div>
-
-      <label class="flex items-start gap-2 text-[11px] text-zinc-400 leading-relaxed cursor-pointer bg-zinc-950/60 border border-zinc-800 rounded-xl p-3">
-        <input type="checkbox" id="vol-consent" class="mt-0.5 shrink-0 accent-emerald-600">
-        <span>
-          Adımın ve iletişim bilgimin şifreli olarak saklanmasını ve kampanyanın gönüllü organizasyonu
-          amacıyla işlenmesini kabul ediyorum. Takma adımın, il/ilçemin, seçtiğim alanların ve görev
-          hareketlerimin gönüllü panosunda diğer gönüllülere görünmesini kabul ediyorum. Verilerim üçüncü
-          kişilerle paylaşılmaz; talep etmeniz halinde silinir.
-          <button type="button" onclick="openKvkkModal()" class="text-emerald-400 hover:text-emerald-300 underline font-semibold cursor-pointer">Aydınlatma Metni</button>
-        </span>
-      </label>
-
-      <button type="button" id="vol-submit-btn" onclick="submitVolunteerForm()" class="btn w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white uppercase tracking-wide">
-        Gönüllü Olarak Kaydol
-      </button>
-    </section>
-
-    <section id="vol-done-box" class="hidden bg-zinc-900 border border-emerald-700 p-6 sm:p-8 rounded-2xl shadow-xl text-center space-y-4">
-      <div class="text-4xl">🤝</div>
-      <h2 class="font-impact text-2xl text-white uppercase tracking-wide">Aramıza Hoş Geldin!</h2>
-      <p class="text-sm text-zinc-300 max-w-md mx-auto leading-relaxed">
-        Kişisel <strong class="text-emerald-400">gönüllü kodun</strong> hazır. Bir yere kaydet:
-        bu cihazda kayıtlı kalır, başka cihazdan girmek için gerekir.
-      </p>
-      <div class="inline-flex items-center gap-3 bg-zinc-950 border border-emerald-700 rounded-xl px-4 py-3">
-        <span id="vol-code-val" class="font-mono text-2xl font-bold tracking-widest text-white select-all"></span>
-        <button type="button" onclick="copyVolCode()" class="btn bg-zinc-800 hover:bg-zinc-700 text-white">Kopyala</button>
-      </div>
-      <p class="text-[11px] text-zinc-500">Kodunu kaybedersen iletisim@7527iptal.org adresine yaz.</p>
-      <div><button type="button" onclick="goBoard()" class="btn bg-emerald-600 hover:bg-emerald-500 text-white px-6">Panoya Geç</button></div>
-    </section>
-
-    <section class="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl shadow-xl space-y-3">
-      <div class="text-center space-y-1">
-        <h2 class="font-impact text-xl text-white uppercase tracking-wide">🔑 Gönüllü Girişi</h2>
-        <p class="text-xs text-zinc-400">Sana iletilen gönüllü kodunu gir.</p>
-      </div>
-      <div class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-        <input type="text" id="login-code" placeholder="XXXX-XXXX-XXXX" maxlength="20" autocomplete="off" autocapitalize="characters"
-               class="inp text-center font-mono tracking-widest" onkeydown="if(event.key==='Enter')loginClick()">
-        <button type="button" id="login-btn" onclick="loginClick()" class="btn bg-emerald-600 hover:bg-emerald-500 text-white whitespace-nowrap">Giriş Yap</button>
-      </div>
-      <p id="login-msg" class="text-xs text-center text-red-400 min-h-[16px]"></p>
-      <div class="text-center"><button type="button" onclick="kodIsteAc()" class="text-xs text-emerald-400 underline cursor-pointer">Kodum yok, kod iste</button></div>
-      <div id="kod-iste" class="hidden max-w-md mx-auto space-y-2">
-        <input type="text" id="ki-name" maxlength="80" placeholder="Kayıtlı adın soyadın" class="inp" autocomplete="name">
-        <input type="text" id="ki-contact" maxlength="120" placeholder="Kayıtlı telefonun veya e-postan" class="inp" autocomplete="off">
-        <button type="button" id="ki-btn" onclick="kodIsteGonder()" class="btn w-full bg-zinc-800 hover:bg-zinc-700 text-white">Kod iste</button>
-        <p id="ki-msg" class="text-xs text-center text-emerald-400 min-h-[16px]"></p>
-      </div>
-    </section>
-  </div>
 
   <!-- ===== GÖNÜLLÜ PANOSU ===== -->
-  <div id="view-board" data-p="ofis" class="hidden grid grid-cols-1 gap-6 items-start">
+  <div id="view-board" data-p="ofis" class="grid grid-cols-1 gap-6 items-start">
     <div class="flex items-center justify-between gap-3">
-      <h2 class="font-impact text-2xl text-white uppercase tracking-wide">📋 Görev Panosu</h2>
+      <h2 class="font-impact text-2xl text-white uppercase tracking-wide">📋 Kampanya Panosu</h2>
       <span id="online-count" class="text-[11px] text-emerald-400 font-semibold"></span>
-      <button type="button" onclick="logout()" class="text-xs text-zinc-400 hover:text-white underline cursor-pointer">Çıkış</button>
+      <button type="button" id="acct-btn" onclick="hesapDugme()" class="text-xs text-emerald-400 hover:text-white underline cursor-pointer">Giriş yap</button>
     </div>
 
     <div id="announce-box" class="hidden bg-emerald-950/60 border border-emerald-700 rounded-2xl p-4">
@@ -317,7 +138,7 @@
     </div>
 
     <nav id="pano-nav" aria-label="Pano bölümleri">
-      <button type="button" class="pn-b" data-p="ofis" onclick="panoAc('ofis', true)"><i>💬</i>Ofis<small>Sohbet</small></button>
+      <button type="button" class="pn-b" data-p="ofis" onclick="panoAc('ofis', true)"><i>💬</i>Sohbet<small>Herkese açık</small></button>
       <button type="button" class="pn-b" data-p="gorevler" onclick="panoAc('gorevler', true)"><i>📋</i>Görevler<small id="pn-gorev">—</small></button>
       <button type="button" class="pn-b pn-hedef" data-p="hedef" onclick="panoAc('hedef', true)"><i>🎯</i>Bugünün Hedefi<small>Vekiller</small></button>
       <button type="button" class="pn-b" data-p="veriler" onclick="panoAc('veriler', true)"><i>📊</i>Veriler<small>Canlı</small></button>
@@ -623,7 +444,7 @@ function siraBoya(pre, cok) {
         <button type="button" id="map-l-case" onclick="mapLayer('case')" class="btn px-2 text-xs bg-zinc-800 text-zinc-300">🐾 Vakalar</button>
       </div>
       <p id="map-summary" class="text-[11px] text-emerald-400 font-semibold"></p>
-      <p id="map-sub" class="text-[11px] text-zinc-500 leading-relaxed">Bir noktaya dokun, oradaki gönüllülerin takma adlarını gör. Gri noktalar: henüz gönüllümüz olmayan iller.</p>
+      <p id="map-sub" class="text-[11px] text-zinc-500 leading-relaxed">Yeşil daireler: gönüllümüz olan iller. Gri noktalar: henüz gönüllümüz olmayan iller.</p>
       <div class="relative">
         <div class="absolute bottom-2 right-2 z-10 flex gap-1 bg-zinc-900/90 border border-zinc-700 rounded-lg p-1">
           <button type="button" id="map-tab-tr" onclick="mapTab('tr')" class="px-3 py-1 rounded-md text-[11px] font-bold bg-emerald-600 text-white">Türkiye</button>
@@ -653,17 +474,116 @@ function siraBoya(pre, cok) {
     <div id="col-l">
     <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-3">
       <div class="flex items-center justify-between gap-2">
-        <h3 class="text-sm font-bold text-white">💬 Kampanya Ofisi</h3>
-        <span class="text-[11px] text-zinc-500">Mesajlar 24 saat sonra silinir</span>
+        <h3 class="text-sm font-bold text-white">💬 Kampanya Sohbeti</h3>
+        <span class="text-[11px] text-zinc-500 text-right">Mesajlar 24 saat sonra silinir · sabitlenenler kalır</span>
       </div>
-      <div id="chat-list" class="space-y-2 h-[26rem] overflow-y-auto overscroll-contain pr-1 text-sm"></div>
-      <div class="flex gap-2">
-        <label class="btn bg-zinc-800 hover:bg-zinc-700 text-white" aria-label="Fotoğraf ekle">📷<input type="file" id="chat-file" accept="image/*" class="hidden" onchange="chatFotoSec(this)"></label>
-        <input type="text" id="chat-input" maxlength="1000" placeholder="Mesaj, link veya video linki yaz…" class="inp" autocomplete="off" onkeydown="if(event.key==='Enter')sendChat()">
-        <button type="button" onclick="sendChat()" class="btn bg-emerald-600 hover:bg-emerald-500 text-white whitespace-nowrap">Gönder</button>
+      <div id="chat-pins" class="hidden max-h-48 overflow-y-auto overscroll-contain rounded-xl border border-amber-700/70 bg-amber-950/30 p-2 space-y-2 text-sm"></div>
+      <div id="chat-list" class="space-y-2 h-[26rem] overflow-y-auto overscroll-contain pr-1 text-sm"><div class="text-[12px] text-zinc-500">Sohbet yükleniyor...</div></div>
+
+      <div id="chat-compose" class="hidden space-y-2">
+        <div class="flex gap-2">
+          <label id="chat-foto-btn" class="hidden btn bg-zinc-800 hover:bg-zinc-700 text-white" aria-label="Fotoğraf ekle">📷<input type="file" id="chat-file" accept="image/*" class="hidden" onchange="chatFotoSec(this)"></label>
+          <input type="text" id="chat-input" maxlength="1000" placeholder="Mesajını yaz…" class="inp" autocomplete="off" onkeydown="if(event.key==='Enter')sendChat()">
+          <button type="button" onclick="sendChat()" class="btn bg-emerald-600 hover:bg-emerald-500 text-white whitespace-nowrap">Gönder</button>
+        </div>
+        <div id="chat-foto" class="hidden flex items-center gap-2 text-xs text-zinc-300"><img id="chat-foto-img" alt="Seçilen fotoğraf" class="h-12 w-12 object-cover rounded-lg"><span>Fotoğraf hazır</span><button type="button" onclick="chatFotoSil()" aria-label="Fotoğrafı kaldır" class="text-zinc-400 text-lg leading-none">×</button></div>
       </div>
-      <div id="chat-foto" class="hidden flex items-center gap-2 text-xs text-zinc-300"><img id="chat-foto-img" alt="Seçilen fotoğraf" class="h-12 w-12 object-cover rounded-lg"><span>Fotoğraf hazır</span><button type="button" onclick="chatFotoSil()" aria-label="Fotoğrafı kaldır" class="text-zinc-400 text-lg leading-none">×</button></div>
       <p id="chat-msg" class="text-xs text-red-400 min-h-[16px]"></p>
+
+      <!-- Giriş: 1) e-posta -->
+      <div id="auth-mail" class="hidden bg-zinc-950/60 border border-emerald-800/60 rounded-xl p-3 space-y-2">
+        <p class="text-xs text-zinc-200 font-semibold">Sohbeti herkes okuyabilir. Yazmak için e-postanla bir kez giriş yap.</p>
+        <p class="text-[11px] text-zinc-400 leading-relaxed">E-postana 6 haneli bir kod gelir, şifre yok. Bir kez girdikten sonra bu cihazda açık kalırsın. E-posta adresin kimseye görünmez.</p>
+        <div class="flex flex-col sm:flex-row gap-2">
+          <input type="email" id="auth-email" placeholder="E-posta adresin" maxlength="120" autocomplete="email" inputmode="email" class="inp" onkeydown="if(event.key==='Enter')kodGonder()">
+          <button type="button" id="auth-send" onclick="kodGonder()" class="btn bg-emerald-600 hover:bg-emerald-500 text-white whitespace-nowrap">Kod gönder</button>
+        </div>
+        <div id="ts-box" class="min-h-[65px]"></div>
+        <p id="auth-oldnote" class="hidden text-[11px] text-amber-300 leading-relaxed">Bu cihazda eski gönüllü kodun kayıtlı. E-postanla giriş yaptığında hesabına kendiliğinden bağlanır, görev geçmişin korunur.</p>
+        <p id="auth-msg" class="text-xs text-red-400 min-h-[16px]"></p>
+      </div>
+
+      <!-- Giriş: 2) kod -->
+      <div id="auth-code" class="hidden bg-zinc-950/60 border border-emerald-800/60 rounded-xl p-3 space-y-2">
+        <p class="text-xs text-zinc-200"><strong id="auth-code-to" class="text-emerald-300 break-all"></strong> adresine giriş kodu gönderdik. Gelen kutunu, gelmediyse istenmeyen (spam) klasörünü kontrol et.</p>
+        <div class="flex flex-col sm:flex-row gap-2">
+          <input type="text" id="auth-otp" placeholder="Koddaki rakamlar" maxlength="10" autocomplete="one-time-code" inputmode="numeric" class="inp text-center font-mono tracking-widest text-base" onkeydown="if(event.key==='Enter')kodDogrula()">
+          <button type="button" id="auth-verify" onclick="kodDogrula()" class="btn bg-emerald-600 hover:bg-emerald-500 text-white whitespace-nowrap">Giriş yap</button>
+        </div>
+        <p id="auth-msg2" class="text-xs text-red-400 min-h-[16px]"></p>
+        <button type="button" onclick="kodGeri()" class="text-[11px] text-zinc-400 underline cursor-pointer">Farklı e-posta yaz ya da yeni kod iste</button>
+      </div>
+
+      <!-- Giriş: 3) profil -->
+      <div id="auth-prof" class="hidden bg-zinc-950/60 border border-emerald-800/60 rounded-xl p-3 space-y-3">
+        <div>
+          <p id="pf-title" class="text-xs text-white font-bold">Son adım: sohbette nasıl görüneceğini seç</p>
+          <p id="pf-email" class="text-[11px] text-zinc-500 break-all"></p>
+        </div>
+        <div class="space-y-1">
+          <input type="text" id="pf-nick" maxlength="30" placeholder="Görünen adın (örn. Ayşe K.)" class="inp" autocomplete="off">
+          <p class="text-[10px] text-zinc-500">Herkese görünür. Ad ve soyadının baş harfi yeterli.</p>
+        </div>
+        <div class="space-y-2">
+          <p class="text-[11px] font-semibold text-zinc-300">Nerede yaşıyorsun?</p>
+          <label class="flex items-center gap-2 text-[11px] text-zinc-300 cursor-pointer"><input type="checkbox" id="vol-abroad" class="accent-emerald-600" onchange="onVolAbroad()"> Yurtdışında yaşıyorum</label>
+          <div id="vol-tr-box" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <select id="vol-city" onchange="onVolCity()" class="inp"><option value="">İl seçiniz</option></select>
+            <select id="vol-district" disabled class="inp"><option value="">Önce il seçiniz</option></select>
+          </div>
+          <div id="vol-abroad-box" class="hidden space-y-2">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <select id="vol-country" onchange="onVolCountry()" class="inp"><option value="">Ülke seçiniz</option></select>
+              <input type="text" id="vol-abroad-city" maxlength="60" placeholder="Şehir" class="inp">
+            </div>
+            <input type="text" id="vol-country-other" maxlength="60" placeholder="Ülke adını yazın" class="inp hidden">
+          </div>
+          <p class="text-[10px] text-zinc-500">Sohbette adının yanında ilin görünür, ilçen görünmez.</p>
+        </div>
+        <div class="space-y-2">
+          <p class="text-[11px] font-semibold text-zinc-300">Avatarın</p>
+          <div id="pf-av" class="flex flex-wrap gap-2"></div>
+          <label class="inline-flex items-center gap-2 text-[11px] text-emerald-300 underline cursor-pointer">Kendi fotoğrafımı yükle<input type="file" id="pf-av-file" accept="image/*" class="hidden" onchange="avatarYukle(this)"></label>
+        </div>
+        <div id="pf-saha-wrap" class="bg-zinc-900 border border-zinc-800 rounded-lg p-3 space-y-2">
+          <p class="text-[11px] font-bold text-amber-300">📍 Aktif gönüllü</p>
+          <div id="pf-saha-st" class="text-[11px] text-zinc-300 leading-relaxed"></div>
+          <div id="pf-saha-ask" class="space-y-2">
+            <label class="flex items-start gap-2 text-[11px] text-zinc-300 leading-relaxed cursor-pointer"><input type="checkbox" id="pf-saha" class="mt-0.5 shrink-0 accent-emerald-600" onchange="$('pf-phone-box').classList.toggle('hidden', !this.checked)"> <span>İlimde / ilçemde kampanya için <strong class="text-white">stand ve toplantı</strong> yapmak istiyorum. (İstemiyorsan boş bırak: materyal indirip paylaşarak, dilekçe göndererek de gönüllüsün.)</span></label>
+            <div id="pf-phone-box" class="hidden space-y-1">
+              <input type="tel" id="pf-phone" maxlength="20" placeholder="Telefon numaran (05xx xxx xx xx)" class="inp" autocomplete="tel">
+              <p class="text-[10px] text-zinc-500">Telefonun tarayıcında şifrelenir, yalnızca kampanya yöneticisi görür. Seninle ilindeki çalışma için iletişime geçeriz.</p>
+            </div>
+          </div>
+        </div>
+        <details id="pf-old" class="bg-zinc-900 border border-zinc-800 rounded-lg">
+          <summary class="cursor-pointer select-none px-3 py-2 text-[11px] text-zinc-300 font-semibold">Eski gönüllü kodun var mı? (XXXX-XXXX-XXXX)</summary>
+          <div class="px-3 pb-3 space-y-1">
+            <input type="text" id="pf-oldcode" maxlength="20" placeholder="Eski gönüllü kodun" autocomplete="off" autocapitalize="characters" class="inp font-mono tracking-widest text-center">
+            <p class="text-[10px] text-zinc-500">Bir kez yazman yeter: görev geçmişin bu hesaba taşınır, kod artık gerekmez.</p>
+          </div>
+        </details>
+        <label id="pf-consent-row" class="flex items-start gap-2 text-[11px] text-zinc-400 leading-relaxed cursor-pointer">
+          <input type="checkbox" id="pf-consent" class="mt-0.5 shrink-0 accent-emerald-600">
+          <span>E-posta adresimin giriş ve kampanya duyuruları için saklanmasını; görünen adımın, ilimin, avatarımın, mesajlarımın ve üstlendiğim görevlerin panoda herkese görünmesini kabul ediyorum.
+            <button type="button" onclick="openKvkkModal()" class="text-emerald-400 hover:text-emerald-300 underline font-semibold cursor-pointer">Aydınlatma Metni</button></span>
+        </label>
+        <div class="flex flex-wrap gap-2">
+          <button type="button" id="pf-save" onclick="profKaydet()" class="btn bg-emerald-600 hover:bg-emerald-500 text-white">Kaydet ve sohbete katıl</button>
+          <button type="button" id="pf-cancel" onclick="profVazgec()" class="btn hidden bg-zinc-800 hover:bg-zinc-700 text-zinc-200">Vazgeç</button>
+        </div>
+        <p id="pf-msg" class="text-xs text-red-400 min-h-[16px]"></p>
+      </div>
+
+      <!-- Giriş yapılmış -->
+      <div id="auth-in" class="hidden flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-zinc-400">
+        <span id="auth-in-av"></span>
+        <span class="text-zinc-200 font-semibold" id="auth-in-nick"></span>
+        <button type="button" onclick="profilAc()" class="text-emerald-400 underline cursor-pointer">Profilim</button>
+        <button type="button" onclick="cikis()" class="text-zinc-500 underline cursor-pointer">Çıkış</button>
+        <div id="auth-in-note" class="basis-full leading-relaxed"></div>
+      </div>
+
       <div id="online-list" class="text-[11px] text-emerald-400 leading-relaxed"></div>
     </div>
 
@@ -699,6 +619,78 @@ function siraBoya(pre, cok) {
     </div>
   </div>
 
+    <section id="vol-update" class="bg-zinc-900 border border-zinc-800 p-6 sm:p-8 rounded-2xl shadow-xl space-y-5">
+      <div class="space-y-2">
+        <div class="flex items-center justify-between text-[11px] uppercase tracking-wider">
+          <span class="bg-emerald-700 text-white font-bold px-2 py-0.5 rounded">Güncelleme</span>
+          <span class="text-zinc-500 g-tarih"></span>
+        </div>
+        <h2 class="font-impact text-2xl text-white uppercase tracking-wide"><span class="g-gun">…</span> günde <span class="g-top">…</span> dilekçe. Şimdi sıra sahada.</h2>
+        <p class="text-sm text-zinc-300 leading-relaxed">Kampanyanın bugünkü tablosu, olduğu gibi:</p>
+        <ul class="text-sm text-zinc-300 leading-relaxed space-y-1 list-none">
+          <li>📨 <strong class="text-white"><span class="g-top">…</span> dilekçe:</strong> <span class="g-kisi">…</span> kişi, <span class="g-petil">…</span> il. Cumhurbaşkanlığı'na <span class="g-cb">…</span>, TBMM Başkanlığı'na <span class="g-mb">…</span>, vekillere <span class="g-mp">…</span>.</li>
+          <li>🤝 <strong class="text-white"><span class="g-vol">…</span> gönüllü:</strong> <span class="g-volil">…</span> il ve <span class="g-volulke">…</span> ülke.</li>
+          <li>🐾 <strong class="text-white"><span class="g-vaka">…</span> vaka:</strong> <span class="g-vakail">…</span> ilde belgelendi.</li>
+        </ul>
+        <p class="text-sm font-bold text-amber-300 pt-1">Nerede eksiğiz?</p>
+        <ul class="text-sm text-zinc-300 leading-relaxed space-y-1 list-disc pl-5">
+          <li><span class="g-volyok">…</span> ilde henüz gönüllümüz yok.</li>
+          <li><span class="g-petyok">…</span> ilden henüz tek dilekçe gelmedi.</li>
+          <li>Cumhurbaşkanlığı'na gönderenlerin çoğu TBMM'ye ve vekillere geçmedi. Cumhurbaşkanlığı: <span class="g-cb">…</span>, TBMM Başkanlığı: <span class="g-mb">…</span>.</li>
+        </ul>
+        <p class="text-sm font-bold text-emerald-300 pt-1">Gönüllüden beklediğimiz:</p>
+        <ol class="text-sm text-zinc-300 leading-relaxed space-y-1 list-decimal pl-5">
+          <li><strong class="text-white">Kendi dilekçelerini tamamla:</strong> Cumhurbaşkanlığı → TBMM → ilinin vekilleri. Site artık sıradaki hedefi kendisi getiriyor ve kaç dilekçen kaldığını gösteriyor.</li>
+          <li><strong class="text-white">Çevrendeki üç kişiye dilekçe gönderttir.</strong> Özellikle dilekçe gelmeyen illerde tanıdığın varsa.</li>
+          <li><strong class="text-white">Şehrinde gördüğün eski ya da yeni vakayı bildir.</strong></li>
+        </ol>
+        <p class="text-sm text-zinc-300 leading-relaxed">594 dilekçenin tamamını gönderen <span class="g-onur">…</span> kişi Onur Köşesi'nde. Sıradaki isim seninki olsun.</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div class="bg-zinc-950 border border-emerald-800/60 rounded-xl p-4 text-center">
+        <div class="font-impact text-2xl text-emerald-400">1</div>
+        <div class="font-bold text-white text-sm">E-postanla gir</div>
+        <div class="text-xs text-zinc-400 mt-1">Kod e-postana gelir, şifre yok. Bir kez girersin, bu cihazda açık kalır.</div>
+      </div>
+      <div class="bg-zinc-950 border border-emerald-800/60 rounded-xl p-4 text-center">
+        <div class="font-impact text-2xl text-emerald-400">2</div>
+        <div class="font-bold text-white text-sm">Sohbete katıl, görev al</div>
+        <div class="text-xs text-zinc-400 mt-1">Materyali indir, paylaş, dilekçeni gönder, vakayı bildir.</div>
+      </div>
+      <div class="bg-zinc-950 border border-emerald-800/60 rounded-xl p-4 text-center">
+        <div class="font-impact text-2xl text-emerald-400">3</div>
+        <div class="font-bold text-white text-sm">İstersen aktif gönüllü ol</div>
+        <div class="text-xs text-zinc-400 mt-1">İlinde stand ve toplantı yapmak istiyorsan profilinde işaretle.</div>
+      </div>
+      </div>
+
+            <p class="text-xs text-zinc-300 leading-relaxed border-l-4 border-amber-500 bg-zinc-950 rounded-r-lg px-4 py-3"><span class="font-bold text-amber-400">Hakkımız, sınırımız:</span> Tüm çalışmalarımız Anayasa’nın 74. maddesindeki dilekçe hakkına ve ifade özgürlüğüne dayanır. Yasal sınırlar içinde, barışçıl ve açık biçimde irade gösteriyoruz. Gönüllülerimizden de bunu bekliyoruz.</p>
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 mr-1">Bu sayfayı paylaş:</span>
+        <a class="bg-zinc-950 border border-emerald-700 text-emerald-300 hover:bg-emerald-700 hover:text-white text-xs font-bold px-3 py-2 rounded-full transition" href="https://wa.me/?text=Kendi%20%C5%9Fehrinde%20ses%20ol%3A%207527%20%C4%B0ptal%20kampanyas%C4%B1na%20kat%C4%B1l.%20Sohbete%20kat%C4%B1l%2C%20g%C3%B6rev%20al%2C%20materyal%20indir%3A%20https%3A%2F%2F7527iptal.org%2Fpaylas-gonullu.html%3Fv%3D2" target="_blank" rel="noopener">WhatsApp</a>
+        <a class="bg-zinc-950 border border-emerald-700 text-emerald-300 hover:bg-emerald-700 hover:text-white text-xs font-bold px-3 py-2 rounded-full transition" href="https://twitter.com/intent/tweet?text=Kendi%20%C5%9Fehrinde%20ses%20ol%3A%207527%20%C4%B0ptal%20kampanyas%C4%B1na%20kat%C4%B1l.%20Sohbete%20kat%C4%B1l%2C%20g%C3%B6rev%20al%2C%20materyal%20indir%3A&url=https%3A%2F%2F7527iptal.org%2Fpaylas-gonullu.html%3Fv%3D2" target="_blank" rel="noopener">X</a>
+        <a class="bg-zinc-950 border border-emerald-700 text-emerald-300 hover:bg-emerald-700 hover:text-white text-xs font-bold px-3 py-2 rounded-full transition" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2F7527iptal.org%2Fpaylas-gonullu.html%3Fv%3D2" target="_blank" rel="noopener">Facebook</a>
+        <a class="bg-zinc-950 border border-emerald-700 text-emerald-300 hover:bg-emerald-700 hover:text-white text-xs font-bold px-3 py-2 rounded-full transition" href="https://t.me/share/url?url=https%3A%2F%2F7527iptal.org%2Fpaylas-gonullu.html%3Fv%3D2&text=Kendi%20%C5%9Fehrinde%20ses%20ol%3A%207527%20%C4%B0ptal%20kampanyas%C4%B1na%20kat%C4%B1l.%20Sohbete%20kat%C4%B1l%2C%20g%C3%B6rev%20al%2C%20materyal%20indir%3A" target="_blank" rel="noopener">Telegram</a>
+        <button type="button" class="bg-zinc-950 border border-emerald-700 text-emerald-300 hover:bg-emerald-700 hover:text-white text-xs font-bold px-3 py-2 rounded-full transition" data-up-native style="display:none">Paylaş…</button>
+        <button type="button" class="bg-zinc-950 border border-emerald-700 text-emerald-300 hover:bg-emerald-700 hover:text-white text-xs font-bold px-3 py-2 rounded-full transition" data-up-copy>Bağlantıyı kopyala</button>
+      </div>
+<script>
+(function(){
+  var box=document.getElementById('vol-update');
+  if(!box)return;
+  var url="https://7527iptal.org/paylas-gonullu.html?v=2", text="Kendi şehrinde ses ol: 7527 İptal kampanyasına katıl. Sohbete katıl, görev al, materyal indir:";
+  var cp=box.querySelector('[data-up-copy]'), nv=box.querySelector('[data-up-native]');
+  if(nv&&navigator.share){nv.style.display='';nv.addEventListener('click',function(){navigator.share({title:document.title,text:text,url:url}).catch(function(){});});}
+  if(cp){cp.addEventListener('click',function(){
+    var done=function(){var o=cp.textContent;cp.textContent='✓ Kopyalandı';setTimeout(function(){cp.textContent=o;},1800);};
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(done).catch(function(){prompt('Bağlantıyı kopyala:',url);});}
+    else{prompt('Bağlantıyı kopyala:',url);}
+  });}
+})();
+</script>
+    </section>
+
   <div id="task-modal" onclick="if(event.target===this)taskModalClose()">
     <div class="w-full max-w-md max-h-full overflow-y-auto space-y-2">
       <div class="flex justify-end"><button type="button" onclick="taskModalClose()" aria-label="Kapat" class="text-zinc-300 text-2xl leading-none px-2">×</button></div>
@@ -732,12 +724,43 @@ function siraBoya(pre, cok) {
       </div>
 
       <div id="adm-tabs" class="flex flex-wrap gap-2 border-b border-zinc-800 pb-3">
+        <button type="button" data-t="kisi" onclick="showAdminTab('kisi')" class="btn bg-zinc-800 text-zinc-300">👤 Kişiler</button>
         <button type="button" data-t="apps" onclick="showAdminTab('apps')" class="btn bg-zinc-800 text-zinc-300">👥 Başvurular</button>
         <button type="button" data-t="gorev" onclick="showAdminTab('gorev')" class="btn bg-zinc-800 text-zinc-300">📢 Duyuru ve Görev</button>
         <button type="button" data-t="mat" onclick="showAdminTab('mat')" class="btn bg-zinc-800 text-zinc-300">📦 Materyal</button>
         <button type="button" data-t="ekip" onclick="showAdminTab('ekip')" class="btn bg-zinc-800 text-zinc-300">🔑 Kod Üret</button>
       </div>
 
+      <div class="space-y-2" data-tab="kisi">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400">E-postayla Giren Kişiler</h3>
+        <p class="text-[11px] text-zinc-400 leading-relaxed">Sohbete e-postayla giriş yapan herkes burada. Ekip rolü verebilir (fotoğraf, link, sabitleme, silme), aktif gönüllü isteklerini onaylayabilirsin. Telefonlar şifrelidir: görmek için önce <strong>Başvurular</strong> sekmesinde özel anahtarını yükle.</p>
+        <div id="kp-filt" class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+          <button type="button" data-f="all" onclick="kpFiltre('all')" class="btn px-2 text-xs">Tümü</button>
+          <button type="button" data-f="istek" onclick="kpFiltre('istek')" class="btn px-2 text-xs">İstek bekleyen</button>
+          <button type="button" data-f="saha" onclick="kpFiltre('saha')" class="btn px-2 text-xs">Aktif gönüllü</button>
+          <button type="button" data-f="ekip" onclick="kpFiltre('ekip')" class="btn px-2 text-xs">Ekip</button>
+        </div>
+        <input type="text" id="kp-q" class="inp" placeholder="Ara: ad, e-posta, il" oninput="kpCiz()" autocomplete="off">
+        <div class="flex flex-wrap gap-2">
+          <button type="button" onclick="kpYukle()" class="btn bg-zinc-800 hover:bg-zinc-700 text-white">Yenile</button>
+          <button type="button" onclick="kpCsv()" class="btn bg-zinc-800 hover:bg-zinc-700 text-white">Listeyi CSV indir</button>
+        </div>
+        <details class="bg-zinc-950/60 border border-zinc-800 rounded-lg">
+          <summary class="cursor-pointer select-none px-3 py-2 text-[11px] text-zinc-300 font-semibold">✉ Listelenenlere e-posta gönder</summary>
+          <div class="px-3 pb-3 space-y-2">
+            <p class="text-[11px] text-zinc-500">Mesajda <strong>[AD]</strong> görünen adla değişir. Gönderim, üstteki filtre ve aramaya uyan kişilere yapılır.</p>
+            <input type="text" id="kp-subj" class="inp" value="7527 İptal: ilinde aktif gönüllümüz olur musun?">
+            <textarea id="kp-text" rows="6" maxlength="3000" class="inp">Merhaba [AD],
+
+7527 iptal kampanyasına katıldığın için teşekkürler. İlinde ya da ilçende stand kurmak, toplantı yapmak isteyen aktif gönüllüler arıyoruz.
+
+İstersen https://7527iptal.org/gorev.html adresinde "Profilim" bölümünden "Aktif gönüllü ol" kutusunu işaretle. İstemezsen hiçbir şey yapmana gerek yok: materyal indirip paylaşarak, dilekçe göndererek de gönüllümüzsün.</textarea>
+            <button type="button" id="kp-mailall" onclick="kpMailHepsi()" class="btn bg-sky-700 hover:bg-sky-600 text-white">Listelenenlerin hepsine gönder</button>
+          </div>
+        </details>
+        <p id="kp-info" class="text-[11px] text-zinc-400 min-h-[16px]"></p>
+        <div id="kp-list" class="space-y-2"></div>
+      </div>
       <div class="space-y-2" data-tab="apps">
         <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400">Gönüllü Başvuruları</h3>
         <p class="text-[11px] text-zinc-400">Başvurular şifrelidir. Özel anahtar dosyanı ve parolanı seç; çözme yalnızca bu tarayıcıda yapılır, anahtarın hiçbir yere gönderilmez.</p>
@@ -750,7 +773,6 @@ function siraBoya(pre, cok) {
           <button type="button" id="adm-bulk-btn" onclick="adminBulkCodes()" class="btn hidden bg-emerald-700 hover:bg-emerald-600 text-white">Bekleyenlerin hepsine kod üret</button>
           <button type="button" id="adm-csv-btn" onclick="downloadCodesCsv()" class="btn hidden bg-zinc-800 hover:bg-zinc-700 text-white">Kodları CSV indir</button>
         </div>
-        <div id="adm-reqs" class="space-y-2"></div>
         <p id="adm-apps-status" class="text-[11px] text-zinc-500 min-h-[16px]"></p>
         <div id="adm-apps" class="space-y-2"></div>
       </div>
@@ -937,12 +959,25 @@ Panele giriş: [LİNK]</textarea>
           <li><span class="text-zinc-300">Toplama yöntemi:</span> bu web sitesindeki form aracılığıyla, elektronik ortamda</li>
           <li><span class="text-zinc-300">Saklama süresi:</span> kampanya süresince; kampanya sona erdikten en geç 6 ay sonra silinir</li>
           <li><span class="text-zinc-300">Aktarım:</span> verileriniz üçüncü kişilerle paylaşılmaz, satılmaz, reklam amaçlı kullanılmaz</li>
-          <li><span class="text-zinc-300">Gönüllü panosu:</span> takma adınız, il/ilçeniz (yurtdışı için ülke/şehir), seçtiğiniz alanlar ile üstlendiğiniz ve tamamladığınız görevler panoya giriş yapan diğer gönüllülere görünür; ad-soyadınız ve iletişim bilginiz görünmez</li>
+          <li><span class="text-zinc-300">Gönüllü panosu:</span> takma adınız, il/ilçeniz (yurtdışı için ülke/şehir), seçtiğiniz alanlar ile üstlendiğiniz ve tamamladığınız görevler herkese açık panoda görünür; ad-soyadınız ve iletişim bilginiz görünmez</li>
         </ul>
       </div>
 
       <div>
-        <h4 class="font-bold text-emerald-400 uppercase text-[11px] tracking-wider mb-1">4. Haklarınız (KVKK m.11)</h4>
+        <h4 class="font-bold text-emerald-400 uppercase text-[11px] tracking-wider mb-1">4. Kampanya Sohbeti ve E-posta ile Giriş</h4>
+        <p>Sohbete yazmak ya da görev almak için e-posta adresinizle giriş yapmanız halinde <strong class="text-white">e-posta adresiniz, görünen adınız, il/ilçeniz (yurtdışı için ülke/şehir), seçtiğiniz ya da yüklediğiniz avatar, mesajlarınız ve görev hareketleriniz</strong> kaydedilir.</p>
+        <ul class="mt-1.5 space-y-1 list-disc list-inside text-zinc-400">
+          <li><span class="text-zinc-300">Amaç:</span> giriş kodunun gönderilmesi, sohbetin ve görev panosunun işletilmesi, kampanya duyurularının iletilmesi</li>
+          <li><span class="text-zinc-300">Hukuki sebep:</span> KVKK m.5/1 uyarınca giriş sırasında verdiğiniz açık rıza</li>
+          <li><span class="text-zinc-300">Herkese görünenler:</span> görünen adınız, iliniz (ilçeniz görünmez), avatarınız, mesajlarınız ve üstlendiğiniz görevler. E-posta adresiniz yalnızca kampanya yöneticisine görünür.</li>
+          <li><span class="text-zinc-300">Saklama:</span> e-posta adresiniz giriş altyapısı (Supabase) tarafından, giriş yapabilmeniz için <strong class="text-white">şifrelenmeden</strong> saklanır. Sohbet mesajları en geç 24 saat sonra silinir; yönetimin sabitlediği duyuru mesajları kalır.</li>
+          <li><span class="text-zinc-300">Aktif gönüllü:</span> stand ve toplantı için bıraktığınız telefon numarası tarayıcınızda şifrelenir, yalnızca kampanya yöneticisi görür.</li>
+          <li><span class="text-zinc-300">Aktarım:</span> giriş kodu e-postası Resend altyapısıyla gönderilir; verileriniz başka üçüncü kişilerle paylaşılmaz, satılmaz, reklam amaçlı kullanılmaz</li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="font-bold text-emerald-400 uppercase text-[11px] tracking-wider mb-1">5. Haklarınız (KVKK m.11)</h4>
         <p>Kişisel verilerinizin işlenip işlenmediğini öğrenme, işlenmişse bilgi talep etme,
         düzeltilmesini veya <strong class="text-white">silinmesini</strong> isteme ve işleme itiraz etme
         haklarına sahipsiniz.</p>
@@ -953,9 +988,9 @@ Panele giriş: [LİNK]</textarea>
       </div>
       
       <div>
-        <h4 class="font-bold text-emerald-400 uppercase text-[11px] tracking-wider mb-1">5. Veri Güvenliği</h4>
+        <h4 class="font-bold text-emerald-400 uppercase text-[11px] tracking-wider mb-1">6. Veri Güvenliği</h4>
         <ul class="space-y-1 list-disc list-inside text-zinc-400">
-          <li><span class="text-zinc-300">Uçtan uca şifreleme:</span> bilgileriniz, siz "gönder" dediğiniz anda kendi tarayıcınızda şifrelenir ve sunucuya yalnızca şifreli hâliyle ulaşır. Güçlü ve güncel şifreleme yöntemleri (AES-256, RSA-4096) kullanılır.</li>
+          <li><span class="text-zinc-300">Uçtan uca şifreleme:</span> dilekçe ve gönüllü formundaki bilgileriniz ile aktif gönüllü telefonunuz, siz "gönder" dediğiniz anda kendi tarayıcınızda şifrelenir ve sunucuya yalnızca şifreli hâliyle ulaşır. Güçlü ve güncel şifreleme yöntemleri (AES-256, RSA-4096) kullanılır.</li>
           <li><span class="text-zinc-300">Okunamaz kayıt:</span> kayıtlar sunucuda şifreli tutulur; sunucuya ya da veritabanına erişen biri bile bilgilerinizi okuyamaz.</li>
           <li><span class="text-zinc-300">Yetkisiz erişime karşı koruma:</span> kayıtlara erişim yalnızca yetkili kişiyle sınırlıdır.</li>
           <li><span class="text-zinc-300">Güvenli bağlantı:</span> tarayıcınızla site arasındaki tüm iletişim HTTPS ile korunur.</li>
@@ -1178,10 +1213,15 @@ function $(id) { return document.getElementById(id); }
 
 function errText(e) {
   var m = (e && e.message) || '';
-  if (m.indexOf('unauthorized') !== -1)     return 'Kod ya da PIN geçersiz.';
+  if (m.indexOf('saha_only') !== -1)        return 'Bu görevi ilindeki aktif gönüllüler alabilir. Profilinden aktif gönüllü olmak için istek gönderebilirsin.';
+  if (m.indexOf('no_profile') !== -1)       return 'Önce sohbet bölümünden profilini tamamla.';
+  if (m.indexOf('not_allowed') !== -1)      return 'Bu işlem için yetkin yok.';
+  if (m.indexOf('invalid_avatar') !== -1)   return 'Avatar kaydedilemedi, başka bir fotoğraf ya da hazır avatar seç.';
+  if (m.indexOf('invalid_payload') !== -1)  return 'Telefon bilgisi şifrelenemedi, tekrar dene.';
+  if (m.indexOf('unauthorized') !== -1)     return 'Oturumun ya da PIN geçersiz. Gerekirse tekrar giriş yap.';
   if (m.indexOf('task_unavailable') !== -1) return 'Bu görev artık müsait değil, pano yenilendi.';
   if (m.indexOf('already_has_code') !== -1) return 'Bu başvuruya zaten kod verilmiş.';
-  if (m.indexOf('rate_limited') !== -1)     return 'Bu bağlantıdan kısa sürede çok fazla başvuru yapıldı. Lütfen bir saat sonra tekrar deneyin.';
+  if (m.indexOf('rate_limited') !== -1)     return 'Kısa sürede çok fazla deneme yapıldı. Lütfen bir süre sonra tekrar deneyin.';
   if (m.indexOf('observer') !== -1)         return 'İzleyici modundasın, yeni görev alamazsın. Tekrar aktif olmak için bize yaz.';
   if (m.indexOf('invalid_nickname') !== -1) return 'Takma ad 2-30 karakter olmalı; bağlantı veya @ içeremez.';
   if (m.indexOf('invalid_place') !== -1)    return 'İl, ilçe ya da şehir bilgisi geçersiz.';
@@ -1271,58 +1311,289 @@ function getVolPlace() {
   return { country: '', city: il, district: ilce };
 }
 
-async function submitVolunteerForm() {
-  if (volunteerBusy) return;
-  var btn = $('vol-submit-btn');
-  var name = ($('vol-name').value || '').trim();
-  var nick = ($('vol-nick').value || '').trim();
-  var contact = ($('vol-contact').value || '').trim();
-  var note = Array.prototype.map.call(document.querySelectorAll('.vol-area:checked'), function (el) { return el.value; }).join(', ');
-  var consent = $('vol-consent');
-  var place = getVolPlace();
+// ---------- e-posta ile giriş (Supabase Auth, tek kullanımlık kod) ----------
+var TURNSTILE_SITE_KEY = '0x4AAAAAAF2s7M9cHjnPumFC';
+var authUser = null;     // giriş yapan hesap
+var meInfo = null;       // gv_me: profil, rol, aktif gönüllü durumu
+var profEdit = false;    // profil düzenleme açık mı
+var authNot = '';        // bir kerelik bilgi notu
+var tsWidget = null, tsToken = '', tsTry = 0;
+var otpEmail = '';
 
-  if (name.split(/\s+/).filter(function (p) { return p.length >= 2; }).length < 2) { alert('Lütfen adınızı ve soyadınızı birlikte yazın.'); $('vol-name').focus(); return; }
-  var ckv = contactKind(contact);
-  if (ckv.type !== 'phone' && ckv.type !== 'email') { alert('Lütfen geçerli bir telefon numarası veya e-posta adresi yazın.'); $('vol-contact').focus(); return; }
-  if (nick.length < 2) { alert('Lütfen panoda görünecek bir takma ad yazın (en az 2 karakter).'); $('vol-nick').focus(); return; }
-  if (!place) { alert($('vol-abroad').checked ? 'Lütfen ülke ve şehrinizi girin.' : 'Lütfen il ve ilçenizi seçin.'); return; }
-  if (!consent.checked) { alert('Kaydınızı oluşturabilmemiz için verilerinizin işlenmesini onaylamanız gerekir.'); consent.focus(); return; }
+function isMod() { return !!(meInfo && meInfo.profile && (meInfo.role === 'mod' || meInfo.role === 'admin')); }
+function girisli() { return !!(meInfo && meInfo.profile && !meInfo.blocked); }
 
-  volunteerBusy = true;
-  var oldLabel = btn.textContent;
-  btn.disabled = true; btn.textContent = 'Şifreleniyor...';
+function otpKaydet(e) { store('gv_otp', e ? JSON.stringify({ e: e, t: Date.now() }) : null); }
+function otpOku() { try { var o = JSON.parse(load('gv_otp') || 'null'); return (o && o.e && Date.now() - o.t < 15 * 60000) ? o.e : ''; } catch (e) { return ''; } }
+
+function tsRender() {
+  var box = $('ts-box'); if (!box) return;
+  if (tsWidget !== null) { try { window.turnstile.reset(tsWidget); } catch (e) {} tsToken = ''; return; }
+  if (!window.turnstile) { if (tsTry++ < 60) setTimeout(tsRender, 500); return; }
   try {
-    var ref = randHex(12);
-    var envelope = await encryptPayload({ name: name, contact: contact, note: note,
-      country: place.country, city: place.city, district: place.district, ref: ref, at: new Date().toISOString() });
+    tsWidget = window.turnstile.render(box, {
+      sitekey: TURNSTILE_SITE_KEY, theme: 'dark', language: 'tr',
+      callback: function (t) { tsToken = t; },
+      'expired-callback': function () { tsToken = ''; },
+      'error-callback': function () { tsToken = ''; }
+    });
+  } catch (e) {}
+}
 
-    btn.textContent = 'Kodun hazırlanıyor...';
-    var code = await callRpc('gv_signup', { p_nickname: nick, p_country: place.country, p_city: place.city,
-      p_district: place.district, p_areas: note, p_ref: ref });
-
-    // Sifreli iletisim kaydi (yonetici Excel'i icin); basarisizsa bir kez daha dene
-    var args = { p_city: place.city, p_payload_enc: envelope };
-    try { await callRpc('add_volunteer_enc', args); }
-    catch (e2) { try { await callRpc('add_volunteer_enc', args); } catch (e3) { console.error('[basvuru kaydi]', e3); } }
-
-    memberCode = code; store('gv_code', code);
-    $('vol-code-val').textContent = code;
-    $('vol-form-box').classList.add('hidden');
-    $('vol-done-box').classList.remove('hidden');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    loadCounters();
-  } catch (e) {
-    alert(errText(e));
-  } finally {
-    volunteerBusy = false;
-    btn.disabled = false; btn.textContent = oldLabel;
+// Hangi giriş adımı görünecek
+function authGoster() {
+  var s = !authUser ? (otpEmail ? 'code' : 'mail') : ((!meInfo || !meInfo.profile || profEdit) ? 'prof' : 'in');
+  ['mail', 'code', 'prof', 'in'].forEach(function (k) { $('auth-' + k).classList.toggle('hidden', k !== s); });
+  $('chat-compose').classList.toggle('hidden', !(s === 'in' && girisli()));
+  $('chat-foto-btn').classList.toggle('hidden', !isMod());
+  $('chat-input').placeholder = isMod() ? 'Mesaj, link veya video linki yaz…' : 'Mesajını yaz…';
+  $('acct-btn').textContent = authUser ? 'Çıkış' : 'Giriş yap';
+  $('who').textContent = (meInfo && meInfo.profile) ? '👤 ' + meInfo.nick : '';
+  if (s === 'mail') tsRender();
+  if (s === 'code') $('auth-code-to').textContent = otpEmail;
+  if (s === 'prof') profDoldur();
+  if (s === 'in') {
+    $('auth-in-nick').textContent = meInfo.nick + (meInfo.city ? ' · ' + (meInfo.country || meInfo.city) : '');
+    var av = $('auth-in-av'); av.textContent = ''; av.appendChild(avatarEl({ avatar: meInfo.avatar && meInfo.avatar.indexOf('p:') === 0 ? meInfo.avatar : null, has_avatar: !!(meInfo.avatar && meInfo.avatar.indexOf('data:') === 0), mid: meInfo.id, nick: meInfo.nick }, 24, meInfo.avatar));
+    var n = $('auth-in-note'); n.textContent = '';
+    if (authNot) { n.appendChild(h('div', 'text-emerald-300 font-semibold', authNot)); authNot = ''; }
+    if (meInfo.blocked) n.appendChild(h('div', 'text-red-300', 'Hesabın sohbete yazmaya kapalı. Bir yanlışlık olduğunu düşünüyorsan iletisim@7527iptal.org adresine yaz.'));
+    if (isMod()) n.appendChild(h('div', 'text-emerald-300', 'Ekip yetkin var: fotoğraf ve link paylaşabilir, mesaj sabitleyip silebilirsin.'));
+    if (meInfo.saha) n.appendChild(h('div', 'text-amber-300', '📍 Aktif gönüllüsün: ilindeki saha görevlerini alabilirsin.'));
+    else if (meInfo.saha_istek) n.appendChild(h('div', 'text-amber-300', '📍 Aktif gönüllü isteğin alındı. Ekip seninle iletişime geçecek.'));
+    else {
+      var a = h('button', 'text-amber-300 underline cursor-pointer text-left', '📍 İlinde stand / toplantı yapmak ister misin? Aktif gönüllü ol');
+      a.type = 'button'; a.onclick = function () { profilAc(); }; n.appendChild(a);
+    }
+    if (!meInfo.linked) {
+      var o = h('button', 'block text-zinc-500 underline cursor-pointer', 'Eski gönüllü kodun varsa bağla');
+      o.type = 'button'; o.onclick = function () { profilAc(true); }; n.appendChild(o);
+    }
   }
 }
 
-function copyVolCode() { try { navigator.clipboard.writeText($('vol-code-val').textContent); } catch (e) {} }
-async function goBoard() {
-  try { var nick = await callRpc('gv_login', { p_code: memberCode }); enterBoard(nick); }
-  catch (e) { alert(errText(e)); }
+async function kodGonder() {
+  var em = ($('auth-email').value || '').trim().toLowerCase(), msg = $('auth-msg');
+  msg.textContent = '';
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)) { msg.textContent = 'Geçerli bir e-posta adresi yaz.'; return; }
+  if (!tsToken) { msg.textContent = 'Önce alttaki doğrulama kutusunun tamamlanmasını bekle (gerekirse kutuya dokun).'; return; }
+  var b = $('auth-send'); b.disabled = true; b.textContent = 'Gönderiliyor...';
+  try {
+    var r = await supabaseClient.auth.signInWithOtp({ email: em, options: { shouldCreateUser: true, captchaToken: tsToken } });
+    if (r.error) throw r.error;
+    otpEmail = em; otpKaydet(em);
+    $('auth-otp').value = ''; $('auth-msg2').textContent = '';
+    authGoster();
+    setTimeout(function () { try { $('auth-otp').focus(); } catch (e) {} }, 100);
+  } catch (e) {
+    msg.textContent = otpHata(e);
+    tsRender();
+  } finally { b.disabled = false; b.textContent = 'Kod gönder'; }
+}
+function otpHata(e) {
+  var m = String((e && (e.message || e.code)) || '');
+  if (/seconds|rate|too many|limit/i.test(m)) return 'Çok sık kod istendi. Bir dakika bekleyip tekrar dene.';
+  if (/captcha/i.test(m)) return 'Doğrulama tamamlanamadı. Kutunun yenilenmesini bekleyip tekrar dene.';
+  if (/expired|invalid|token|otp/i.test(m)) return 'Kod hatalı ya da süresi dolmuş. Tekrar dene ya da yeni kod iste.';
+  if (/fetch|network/i.test(m)) return 'Bağlantı kurulamadı. İnternetini kontrol edip tekrar dene.';
+  return 'İşlem tamamlanamadı: ' + m.slice(0, 80);
+}
+async function kodDogrula() {
+  var t = ($('auth-otp').value || '').replace(/\D/g, ''), msg = $('auth-msg2');
+  msg.textContent = '';
+  if (t.length < 6) { msg.textContent = 'E-postana gelen kodu eksiksiz yaz.'; return; }
+  var b = $('auth-verify'); b.disabled = true; b.textContent = 'Kontrol ediliyor...';
+  try {
+    var r = await supabaseClient.auth.verifyOtp({ email: otpEmail, token: t, type: 'email' });
+    if (r.error) throw r.error;
+    otpEmail = ''; otpKaydet(null);
+    await oturumYukle();
+  } catch (e) { msg.textContent = otpHata(e); }
+  finally { b.disabled = false; b.textContent = 'Giriş yap'; }
+}
+function kodGeri() { otpEmail = ''; otpKaydet(null); authGoster(); }
+
+function girisAc() {
+  panoAc('ofis', true);
+  setTimeout(function () {
+    var k = !authUser ? (otpEmail ? 'auth-otp' : 'auth-email') : null;
+    var el = k ? $(k) : $('auth-prof');
+    if (el) { try { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); if (k) el.focus(); } catch (e) {} }
+  }, 350);
+}
+function hesapDugme() { if (authUser) cikis(); else girisAc(); }
+function profilAc(eskiKod) {
+  if (!authUser) { girisAc(); return; }
+  profEdit = true; authGoster();
+  if (eskiKod) $('pf-old').open = true;
+  panoAc('ofis', false);
+  setTimeout(function () { try { $('auth-prof').scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {} }, 100);
+}
+function profVazgec() { profEdit = false; authGoster(); }
+
+async function cikis() {
+  if (!confirm('Bu cihazda oturumu kapatmak istiyor musun?')) return;
+  try { await supabaseClient.auth.signOut(); } catch (e) {}
+  authUser = null; meInfo = null; profEdit = false;
+  authGoster(); refreshBoard(); refreshChat(true);
+}
+
+// Oturumu ve profili yükler; kayıtlı eski gönüllü kodu varsa hesaba bir kez bağlar
+async function oturumYukle() {
+  authUser = null; meInfo = null;
+  if (supabaseClient) {
+    try { var s = await supabaseClient.auth.getSession(); authUser = (s.data && s.data.session) ? s.data.session.user : null; } catch (e) {}
+  }
+  if (authUser) {
+    try { meInfo = await callRpc('gv_me', {}); } catch (e) { meInfo = null; }
+    var kod = load('gv_code');
+    if (kod && meInfo && meInfo.linked) store('gv_code', null);
+    else if (kod && meInfo) {
+      try {
+        await callRpc('gv_link_code', { p_code: kod });
+        store('gv_code', null);
+        meInfo = await callRpc('gv_me', {});
+        authNot = '✓ Eski gönüllü kodun bu hesaba bağlandı, görev geçmişin korundu.';
+      } catch (e) { if ((e.message || '').indexOf('unauthorized') !== -1) store('gv_code', null); }
+    }
+  }
+  authGoster();
+  refreshBoard();
+  refreshChat(true);
+}
+
+// ---------- avatar ----------
+var AVATARS = [['🐶', '#065f46'], ['🐱', '#9a3412'], ['🐾', '#1e3a8a'], ['🦊', '#7c2d12'], ['🐻', '#713f12'], ['🐰', '#831843'],
+  ['🦉', '#3f6212'], ['🐦', '#0e7490'], ['🐴', '#57534e'], ['🕊️', '#334155'], ['🌿', '#14532d'], ['🌻', '#854d0e']];
+var _avAl = {};
+// r: { avatar: 'p:N' | null, has_avatar, mid, nick }; ham: kendi profilimizdeki tam değer (varsa)
+function avatarEl(r, size, ham) {
+  var w = h('span', 'inline-flex items-center justify-center shrink-0 rounded-full overflow-hidden select-none');
+  w.style.width = w.style.height = size + 'px';
+  var p = /^p:(\d{1,2})$/.exec(r.avatar || '');
+  if (p && AVATARS[+p[1]]) {
+    w.style.background = AVATARS[+p[1]][1]; w.style.fontSize = Math.round(size * 0.55) + 'px'; w.textContent = AVATARS[+p[1]][0];
+    return w;
+  }
+  if ((r.has_avatar && r.mid) || (ham && ham.indexOf('data:') === 0)) {
+    var im = h('img', 'w-full h-full object-cover'); im.alt = '';
+    w.style.background = '#27272a'; w.appendChild(im);
+    if (ham && ham.indexOf('data:') === 0) { im.src = ham; return w; }
+    if (!_avAl[r.mid]) _avAl[r.mid] = callRpc('gv_avatar', { p_mid: r.mid });
+    _avAl[r.mid].then(function (s) { if (s) im.src = s; }).catch(function () { delete _avAl[r.mid]; });
+    return w;
+  }
+  w.style.background = '#3f3f46'; w.style.fontSize = Math.round(size * 0.45) + 'px'; w.style.fontWeight = '700'; w.style.color = '#e4e4e7';
+  w.textContent = String(r.nick || '?').trim().charAt(0).toLocaleUpperCase('tr') || '?';
+  return w;
+}
+var pfAv = 'p:0';
+function avatarSecimCiz() {
+  var box = $('pf-av'); box.textContent = '';
+  function sec(el, val) {
+    var b = h('button', 'rounded-full p-0.5 border-2 ' + (pfAv === val ? 'border-emerald-400' : 'border-transparent'));
+    b.type = 'button'; b.setAttribute('aria-pressed', String(pfAv === val)); b.setAttribute('aria-label', 'Avatar seç');
+    b.appendChild(el); b.onclick = function () { pfAv = val; avatarSecimCiz(); };
+    box.appendChild(b);
+  }
+  AVATARS.forEach(function (a, i) { sec(avatarEl({ avatar: 'p:' + i }, 36), 'p:' + i); });
+  if (pfAv && pfAv.indexOf('data:') === 0) sec(avatarEl({}, 36, pfAv), pfAv);
+}
+async function avatarYukle(inp) {
+  var f = inp.files && inp.files[0], msg = $('pf-msg');
+  if (!f) return;
+  try {
+    var url = URL.createObjectURL(f), im = new Image();
+    await new Promise(function (ok, no) { im.onload = ok; im.onerror = no; im.src = url; });
+    var S = 128, c = document.createElement('canvas'); c.width = c.height = S;
+    var k = Math.min(im.naturalWidth, im.naturalHeight), sx = (im.naturalWidth - k) / 2, sy = (im.naturalHeight - k) / 2;
+    c.getContext('2d').drawImage(im, sx, sy, k, k, 0, 0, S, S);
+    URL.revokeObjectURL(url);
+    var s = null;
+    [.85, .7, .55, .4].some(function (q) { s = c.toDataURL('image/jpeg', q); return s.length <= 58000; });
+    if (!s || s.length > 58000) { msg.textContent = 'Bu fotoğraf kullanılamadı, başka bir fotoğraf dene.'; return; }
+    pfAv = s; msg.textContent = ''; avatarSecimCiz();
+  } catch (e) { msg.textContent = 'Bu fotoğraf açılamadı.'; }
+  inp.value = '';
+}
+
+// ---------- profil formu ----------
+function profDoldur() {
+  var m = meInfo || {}, var_ = !!m.profile;
+  $('pf-title').textContent = var_ ? 'Profilim' : 'Son adım: sohbette nasıl görüneceğini seç';
+  $('pf-email').textContent = m.email ? 'Giriş: ' + m.email : '';
+  $('pf-save').textContent = var_ ? 'Kaydet' : 'Kaydet ve sohbete katıl';
+  $('pf-cancel').classList.toggle('hidden', !var_);
+  $('pf-consent-row').classList.toggle('hidden', var_);
+  $('pf-old').classList.toggle('hidden', !!m.linked);
+  $('pf-msg').textContent = '';
+  if ($('pf-av').getAttribute('data-for') !== String(m.id || 'yeni')) {
+    $('pf-av').setAttribute('data-for', String(m.id || 'yeni'));
+    $('pf-nick').value = m.nick || '';
+    pfAv = m.avatar || 'p:' + Math.floor(Math.random() * AVATARS.length);
+    var ab = !!m.country;
+    $('vol-abroad').checked = ab; onVolAbroad();
+    if (ab) {
+      var cs = $('vol-country'), has = Array.prototype.some.call(cs.options, function (o) { return o.value === m.country; });
+      cs.value = has ? m.country : '__other'; onVolCountry();
+      if (!has) $('vol-country-other').value = m.country;
+      $('vol-abroad-city').value = m.city || '';
+    } else if (m.city) {
+      $('vol-city').value = m.city; onVolCity();
+      if (m.district) $('vol-district').value = m.district;
+    }
+  }
+  avatarSecimCiz();
+  var st = $('pf-saha-st'), ask = $('pf-saha-ask');
+  st.textContent = '';
+  if (m.saha) st.textContent = '✓ Aktif gönüllüsün. Saha görevlerini alabilirsin. Bırakmak istersen iletisim@7527iptal.org adresine yaz.';
+  else if (m.saha_istek) st.textContent = 'İsteğin alındı. Ekip telefonla seninle iletişime geçecek.';
+  else st.textContent = 'Aktif gönüllüler ilinde ve ilçende stand kurar, toplantı yapar. Saha görevlerini yalnızca onlar alabilir.';
+  ask.classList.toggle('hidden', !!(m.saha || m.saha_istek));
+  $('pf-phone-box').classList.toggle('hidden', !$('pf-saha').checked);
+}
+
+var profBusy = false;
+async function profKaydet() {
+  if (profBusy) return;
+  var msg = $('pf-msg'); msg.textContent = '';
+  var m = meInfo || {};
+  var nick = ($('pf-nick').value || '').trim().replace(/\s+/g, ' ');
+  var place = getVolPlace();
+  if (nick.length < 2) { msg.textContent = 'Görünen adını yaz (en az 2 harf).'; $('pf-nick').focus(); return; }
+  if (/https?:|www\.|@/i.test(nick)) { msg.textContent = 'Görünen ad bağlantı veya @ içeremez.'; return; }
+  if (!place) { msg.textContent = $('vol-abroad').checked ? 'Ülkeni ve şehrini yaz.' : 'İlini ve ilçeni seç.'; return; }
+  if (!m.profile && !$('pf-consent').checked) { msg.textContent = 'Devam etmek için onay kutusunu işaretle.'; return; }
+  var saha = !m.saha && !m.saha_istek && $('pf-saha').checked, tel = '';
+  if (saha) {
+    tel = ($('pf-phone').value || '').trim();
+    if (contactKind(tel).type !== 'phone') { msg.textContent = 'Aktif gönüllü olmak için geçerli bir telefon numarası yaz.'; $('pf-phone').focus(); return; }
+    if (!cryptoAvailable()) { msg.textContent = errText(new Error('crypto_unavailable')); return; }
+  }
+  var eski = ($('pf-oldcode').value || '').trim();
+  profBusy = true;
+  var b = $('pf-save'), eskiEtiket = b.textContent; b.disabled = true; b.textContent = 'Kaydediliyor...';
+  try {
+    await callRpc('gv_profile_save', { p_nick: nick, p_country: place.country, p_city: place.city, p_district: place.district, p_avatar: pfAv });
+    if (eski) {
+      try { await callRpc('gv_link_code', { p_code: eski }); $('pf-oldcode').value = ''; store('gv_code', null); authNot = '✓ Eski gönüllü kodun bu hesaba bağlandı, görev geçmişin korundu.'; }
+      catch (e2) { var em2 = e2.message || ''; authNot = em2.indexOf('rate_limited') !== -1 ? 'Eski kod için çok fazla deneme yapıldı, bir saat sonra tekrar dene.' : 'Eski gönüllü kodu bulunamadı ya da daha önce bağlanmış. Profilin kaydedildi.'; }
+    }
+    if (saha) {
+      var env = await encryptPayload({ phone: tel, nick: nick, email: m.email || '', country: place.country, city: place.city, district: place.district, at: new Date().toISOString() });
+      await callRpc('gv_saha_istek', { p_payload_enc: env });
+      $('pf-phone').value = ''; $('pf-saha').checked = false;
+      if (!authNot) authNot = '📍 Aktif gönüllü isteğin alındı. Teşekkürler!';
+    }
+    profEdit = false;
+    meInfo = await callRpc('gv_me', {});
+    $('pf-av').removeAttribute('data-for');
+    _avAl = {};
+    authGoster(); refreshChat(true); refreshBoard(); refreshOnline();
+  } catch (e) {
+    var em = e.message || '';
+    msg.textContent = em.indexOf('invalid_avatar') !== -1 ? 'Avatar kaydedilemedi, başka bir fotoğraf ya da hazır avatar seç.' : errText(e);
+  } finally { profBusy = false; b.disabled = false; b.textContent = eskiEtiket; }
 }
 
 var CAMPAIGN_START = '2026-09-25';
@@ -1363,7 +1634,6 @@ async function loadCounters() {
     $('c-vol').textContent  = fmtN(r.volunteers);
     $('c-cb').textContent   = fmtN(r.cb_total);
     $('c-mb').textContent   = fmtN(r.mb_total);
-    $('vol-count-badge').textContent = fmtN(r.volunteers) + ' gönüllü aramıza katıldı.';
   } catch (e) { /* sayaclar zorunlu degil */ }
 }
 
@@ -1417,56 +1687,15 @@ async function statsLoad() {
   $('stats-box').classList.remove('hidden');
 }
 
-// ---------- gonullu girisi ----------
-var memberCode = '';
+// ---------- pano (herkese açık; görev almak için giriş gerekir) ----------
 var boardTimer = null;
 
-async function loginClick() {
-  var code = ($('login-code').value || '').trim();
-  var msg = $('login-msg');
-  msg.textContent = '';
-  if (code.replace(/[^0-9a-zA-Z]/g, '').length < 8) { msg.textContent = 'Lütfen kodunuzu eksiksiz girin.'; return; }
-  var btn = $('login-btn'); btn.disabled = true;
-  try {
-    var nick = await callRpc('gv_login', { p_code: code });
-    memberCode = code;
-    store('gv_code', code);
-    enterBoard(nick);
-  } catch (e) {
-    msg.textContent = errText(e);
-  } finally { btn.disabled = false; }
-}
-
-function enterBoard(nick) {
-  $('who').textContent = '👤 ' + nick;
-  $('view-guest').classList.add('hidden');
-  $('view-board').classList.remove('hidden');
-  refreshBoard();
-  loadMaterials();
-  loadMap();
-  refreshOnline();
-  if (!window._onlineTimer) window._onlineTimer = setInterval(function () { if (document.visibilityState === 'visible' && memberCode) refreshOnline(); }, 60000);
-  if (boardTimer) clearInterval(boardTimer);
-  boardTimer = setInterval(function () { if (document.visibilityState === 'visible' && memberCode) refreshBoard(); }, 60000);
-}
-
-function logout() {
-  memberCode = ''; store('gv_code', null);
-  if (boardTimer) { clearInterval(boardTimer); boardTimer = null; }
-  $('who').textContent = '';
-  $('view-board').classList.add('hidden');
-  $('view-guest').classList.remove('hidden');
-  $('login-code').value = '';
-}
-
 async function refreshBoard() {
-  if (!memberCode) return;
   try {
-    var b = await callRpc('gv_board', { p_code: memberCode });
+    var b = await callRpc('gv_board_public', {});
     $('board-msg').textContent = '';
-    renderBoard(b);
+    renderBoard(b || {});
   } catch (e) {
-    if ((e.message || '').indexOf('unauthorized') !== -1) { logout(); $('login-msg').textContent = 'Kodun artık geçerli değil.'; return; }
     $('board-msg').textContent = errText(e);
   }
 }
@@ -1480,7 +1709,7 @@ function setOnline(n) {
   if (el) el.textContent = n ? '🟢 ' + n + ' kişi çevrimiçi' : '';
 }
 function presenceTick() {
-  var inBoard = !!memberCode && !$('view-board').classList.contains('hidden');
+  var inBoard = document.visibilityState === 'visible';
   if (inBoard && !presCh && supabaseClient) {
     try {
       presCh = supabaseClient.channel('online-panel', { config: { presence: { key: 'v' + Math.random().toString(36).slice(2, 10) } } });
@@ -1494,38 +1723,92 @@ function presenceTick() {
 }
 setInterval(presenceTick, 2000);
 
-var chatCount = -1, chatBusy = false;
-async function refreshChat() {
-  if (!memberCode || chatBusy) return;
+var chatCount = -1, chatBusy = false, chatSig = '', chatLoaded = false;
+async function refreshChat(force) {
+  if (chatBusy && !force) return;
   try {
-    var rows = await callRpc('gv_chat_list', { p_code: memberCode });
-    var box = $('chat-list');
-    var atEnd = box.scrollTop + box.clientHeight >= box.scrollHeight - 30;
-    box.textContent = '';
-    if (!rows.length) box.appendChild(h('div', 'text-[12px] text-zinc-500', 'Henüz mesaj yok. İlk mesajı sen yaz.'));
-    rows.forEach(function (r) {
-      var row = h('div', 'rounded-lg px-3 py-2 ' + (r.mine ? 'bg-emerald-950/60 border border-emerald-800' : 'bg-zinc-950/60 border border-zinc-800'));
-      var t = new Date(r.at);
-      row.appendChild(h('div', 'text-[11px] text-zinc-400', r.nick + ' · ' + t.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })));
-      if (r.body) row.appendChild(chatBody(r.body));
-      if (r.has_image) row.appendChild(chatFotoEl(r.id));
-      if (adminPin) row.appendChild(actBtn('Sil', 'bg-red-900 hover:bg-red-800 text-white mt-1', async function () {
-        try { await callRpc('gv_admin_chat_delete', { p_pin: adminPin, p_id: r.id }); refreshChat(); }
-        catch (e) { $('chat-msg').textContent = errText(e); }
-      }));
-      box.appendChild(row);
-    });
-    if (atEnd || rows.length !== chatCount) box.scrollTop = box.scrollHeight;
-    chatCount = rows.length;
-  } catch (e) {}
+    var rows = (await callRpc('gv_chat_public', {})) || [];
+    var sig = JSON.stringify(rows) + '|' + (isMod() ? 1 : 0) + (adminPin ? 1 : 0);
+    chatLoaded = true;
+    if (!force && sig === chatSig) return;
+    chatSig = sig;
+    chatCiz(rows);
+  } catch (e) {
+    if (!chatLoaded) { var b = $('chat-list'); b.textContent = ''; b.appendChild(h('div', 'text-[12px] text-zinc-500', 'Sohbet şu an yüklenemedi. Sayfayı yenileyip tekrar dene.')); }
+  }
+}
+function chatCiz(rows) {
+  var box = $('chat-list'), pins = $('chat-pins');
+  var atEnd = box.scrollTop + box.clientHeight >= box.scrollHeight - 30;
+  var pinned = rows.filter(function (r) { return r.pinned; }), rest = rows.filter(function (r) { return !r.pinned; });
+  pins.textContent = '';
+  pins.classList.toggle('hidden', !pinned.length);
+  if (pinned.length) {
+    pins.appendChild(h('div', 'text-[10px] font-bold uppercase tracking-wider text-amber-300', '📌 Sabitlenen mesajlar'));
+    pinned.forEach(function (r) { pins.appendChild(chatSatir(r)); });
+  }
+  box.textContent = '';
+  if (!rest.length) box.appendChild(h('div', 'text-[12px] text-zinc-500', 'Son 24 saatte mesaj yok. İlk mesajı sen yaz.'));
+  rest.forEach(function (r) { box.appendChild(chatSatir(r)); });
+  if (atEnd || rest.length !== chatCount) box.scrollTop = box.scrollHeight;
+  chatCount = rest.length;
+}
+function chatSatir(r) {
+  var row = h('div', 'flex gap-2 rounded-lg px-2.5 py-2 ' + (r.mine ? 'bg-emerald-950/60 border border-emerald-800' : 'bg-zinc-950/60 border border-zinc-800'));
+  row.appendChild(avatarEl(r, 32));
+  var col = h('div', 'min-w-0 flex-1');
+  var hd = h('div', 'flex flex-wrap items-center gap-x-1.5 text-[11px] text-zinc-400');
+  hd.appendChild(h('b', 'text-zinc-100 font-semibold', r.nick || 'Gönüllü'));
+  if (r.mod) hd.appendChild(h('span', 'text-[9px] font-bold uppercase tracking-wide bg-emerald-700 text-white px-1.5 rounded', 'Ekip'));
+  if (r.city) hd.appendChild(h('span', '', r.city));
+  var t = new Date(r.at);
+  hd.appendChild(h('span', 'text-zinc-500', t.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })));
+  col.appendChild(hd);
+  if (r.body) col.appendChild(chatBody(r.body));
+  if (r.has_image) col.appendChild(chatFotoEl(r.id));
+  var yetki = isMod() || !!adminPin;
+  if (r.mine || yetki) {
+    var acts = h('div', 'flex flex-wrap gap-3 mt-1 text-[11px]');
+    var sil = h('button', 'text-red-300 hover:text-red-200 underline cursor-pointer', 'Sil'); sil.type = 'button';
+    sil.onclick = function () { chatSil(r); }; acts.appendChild(sil);
+    if (yetki) {
+      var pn = h('button', 'text-amber-300 hover:text-amber-200 underline cursor-pointer', r.pinned ? 'Sabitlemeyi kaldır' : '📌 Sabitle'); pn.type = 'button';
+      pn.onclick = function () { chatPin(r); }; acts.appendChild(pn);
+    }
+    col.appendChild(acts);
+  }
+  row.appendChild(col);
+  return row;
+}
+async function chatSil(r) {
+  if (!confirm('Bu mesaj silinsin mi?')) return;
+  try {
+    if (r.mine || isMod()) await callRpc('gv_chat_delete', { p_id: r.id });
+    else await callRpc('gv_admin_chat_delete', { p_pin: adminPin, p_id: r.id });
+    $('chat-msg').textContent = '';
+  } catch (e) { $('chat-msg').textContent = errText(e); }
+  refreshChat(true);
+}
+async function chatPin(r) {
+  try {
+    if (isMod()) await callRpc('gv_chat_pin', { p_id: r.id, p_on: !r.pinned });
+    else await callRpc('gv_admin_chat_pin', { p_pin: adminPin, p_id: r.id, p_on: !r.pinned });
+    $('chat-msg').textContent = '';
+  } catch (e) { $('chat-msg').textContent = errText(e); }
+  refreshChat(true);
 }
 
 // Fotograf: gonderilmeden kucultulur; listede bir kez yuklenip saklanir
 var _chatFoto = null, _chatFotoAl = {};
 function chatFotoEl(id) {
   var im = h('img', 'mt-2 rounded-lg border border-zinc-700 max-w-full max-h-64 cursor-pointer'); im.alt = 'Paylaşılan fotoğraf';
-  im.onclick = function () { if (!im.src) return; var b = $('task-modal-body'), z = h('img', 'w-full rounded-xl'); z.src = im.src; z.alt = im.alt; b.textContent = ''; b.appendChild(z); $('task-modal').classList.add('on'); };
-  if (!_chatFotoAl[id]) _chatFotoAl[id] = callRpc('gv_chat_image', { p_code: memberCode, p_id: id });
+  im.onclick = function () {
+    if (!im.src) return;
+    var b = $('task-modal-body'), z = h('img', 'w-full rounded-xl'); z.src = im.src; z.alt = im.alt; b.textContent = ''; b.appendChild(z);
+    var dl = h('a', 'btn block text-center bg-emerald-600 hover:bg-emerald-500 text-white mt-2', '⬇ Fotoğrafı indir'); dl.href = im.src; dl.download = '7527iptal-' + id + '.jpg'; b.appendChild(dl);
+    $('task-modal').classList.add('on');
+  };
+  if (!_chatFotoAl[id]) _chatFotoAl[id] = callRpc('gv_chat_image2', { p_id: id });
   _chatFotoAl[id].then(function (s) { if (s) im.src = s; }).catch(function () { delete _chatFotoAl[id]; });
   return im;
 }
@@ -1573,29 +1856,36 @@ function chatBody(text) {
 async function sendChat() {
   var inp = $('chat-input'), msg = $('chat-msg');
   var text = (inp.value || '').trim();
-  if ((!text && !_chatFoto) || chatBusy || !memberCode) return;
+  if ((!text && !_chatFoto) || chatBusy) return;
+  if (!girisli()) { girisAc(); return; }
   chatBusy = true;
   try {
-    await callRpc('gv_chat_send', { p_code: memberCode, p_body: text, p_image: _chatFoto });
+    await callRpc('gv_chat_post', { p_body: text, p_image: _chatFoto });
     inp.value = ''; msg.textContent = ''; chatFotoSil();
   } catch (e) {
     var m = (e && e.message) || '';
     if (m.indexOf('blocked_word') !== -1) msg.textContent = 'Mesajın uygunsuz bir ifade içeriyor, gönderilmedi.';
     else if (m.indexOf('blocked_content') !== -1) msg.textContent = 'E-posta adresi paylaşılamaz.';
+    else if (m.indexOf('link_not_allowed') !== -1) msg.textContent = 'Sohbette link paylaşımı ekibe açık. Paylaşmak istediğin linki ekibe iletebilirsin.';
+    else if (m.indexOf('image_not_allowed') !== -1) msg.textContent = 'Fotoğraf paylaşımı ekibe açık.';
     else if (m.indexOf('invalid_message') !== -1) msg.textContent = 'Mesaj en fazla 1000 karakter olabilir.';
     else if (m.indexOf('rate_limited') !== -1) msg.textContent = 'Çok hızlı yazıyorsun, birkaç saniye bekle.';
     else if (m.indexOf('invalid_image') !== -1) msg.textContent = 'Fotoğraf gönderilemedi, başka bir fotoğraf dene.';
-    else if (m.indexOf('image_limit') !== -1) msg.textContent = 'Saatte en fazla 10 fotoğraf paylaşılabilir.';
-    else if (m.indexOf('unauthorized') !== -1) msg.textContent = 'Kodun artık geçerli değil.';
+    else if (m.indexOf('blocked') !== -1) msg.textContent = 'Hesabın sohbete yazmaya kapalı.';
+    else if (m.indexOf('no_profile') !== -1 || m.indexOf('unauthorized') !== -1) { msg.textContent = 'Oturumun kapanmış, tekrar giriş yap.'; oturumYukle(); }
     else msg.textContent = errText(e);
   }
   chatBusy = false;
-  refreshChat();
+  refreshChat(true);
 }
 
 setInterval(function () {
-  if (memberCode && document.visibilityState === 'visible' && !$('view-board').classList.contains('hidden')) refreshChat();
-}, 5000);
+  if (document.visibilityState === 'visible' && $('view-board').getAttribute('data-p') === 'ofis') refreshChat();
+}, 6000);
+// Çevrimiçi listesi için giriş yapmış kişinin "buradayım" sinyali
+setInterval(function () {
+  if (document.visibilityState === 'visible' && girisli()) callRpc('gv_seen', {}).catch(function () {});
+}, 60000);
 
 function fmtLeft(iso) {
   if (!iso) return '';
@@ -1607,7 +1897,7 @@ function fmtLeft(iso) {
 function fmtHours(h) { h = Number(h) || 72; return (h % 24 === 0) ? (h / 24) + ' gün' : h + ' saat'; }
 
 function renderBoard(b) {
-  var me = b.me || {};
+  var me = b.me || {}; me._in = !!b.me;
   var myAreas = (me.areas || '').split(',').map(function (s) { return s.trim(); }).filter(Boolean);
   myAreasG = myAreas; var _ak = myAreas.join('|'); if (_ak !== myAreasKey) { myAreasKey = _ak; renderMaterials(); }
   var st = b.stats || {};
@@ -1664,7 +1954,7 @@ function renderBoard(b) {
 function taskChip(t, me) {
   var cls = t.status === 'done' ? ' done' : (t.status === 'claimed' && t.mine) ? ' mine' : '';
   var alt = t.status === 'claimed' && t.mine ? 'Sende · ' + fmtLeft(t.due_at) :
-    t.status === 'open' ? (t.area || 'Süre: ' + fmtHours(t.due_hours)) :
+    t.status === 'open' ? ((t.saha ? '📍 ' : '') + (t.area || 'Süre: ' + fmtHours(t.due_hours))) :
     t.status === 'claimed' ? '⏳ ' + (t.claimed_nick || 'Bir gönüllü') : '✓ ' + (t.claimed_nick || 'Tamamlandı');
   var b = h('button', 'tk-b' + cls);
   b.type = 'button'; b.appendChild(h('b', '', t.title)); b.appendChild(h('span', '', alt));
@@ -1684,56 +1974,11 @@ function taskModalSync(tasks, me) {
   var t = tasks.filter(function (x) { return x.id === _tmId; })[0];
   if (t) taskModalOpen(t, me); else taskModalClose();
 }
-function kodIsteAc() { $('kod-iste').classList.toggle('hidden'); }
-async function kodIsteGonder() {
-  var msg = $('ki-msg'), ad = ($('ki-name').value || '').trim(), il = ($('ki-contact').value || '').trim(), b = $('ki-btn');
-  if (ad.length < 2 || il.length < 5) { msg.textContent = 'Adını ve kayıtlı iletişim bilgini yaz.'; return; }
-  b.disabled = true;
-  try { await callRpc('gv_code_request', { p_name: ad, p_contact: il }); msg.textContent = 'İsteğin alındı. Kodun kayıtlı iletişim bilgine gönderilecek.'; $('ki-name').value = ''; $('ki-contact').value = ''; }
-  catch (e) { msg.textContent = 'İstek gönderilemedi, biraz sonra tekrar dene.'; }
-  b.disabled = false;
-}
-function kiNorm(s) { var t = String(s || '').toLocaleLowerCase('tr').trim(); return t.indexOf('@') !== -1 ? t : t.replace(/\D/g, '').slice(-10); }
-function kiBul(r) {
-  var k = kiNorm(r.contact), ad = String(r.name || '').toLocaleLowerCase('tr').trim();
-  return adminApps.filter(function (a) { return a.ok && a.contact && String(a.contact).toLocaleLowerCase('tr').split(/[\s,;\/|]+/).concat([a.contact]).some(function (c) { return kiNorm(c) === k; }); })[0] ||
-    adminApps.filter(function (a) { return a.ok && String(a.name || '').toLocaleLowerCase('tr').trim() === ad; })[0] || null;
-}
-async function adminKodIstekleri() {
-  var box = $('adm-reqs'); if (!box || !adminPin) return;
-  var rows = []; try { rows = (await callRpc('gv_admin_code_requests', { p_pin: adminPin })) || []; } catch (e) { return; }
-  box.textContent = '';
-  if (!rows.length) return;
-  box.appendChild(h('h3', 'text-xs font-bold uppercase tracking-wider text-amber-300', 'Kod istekleri (' + rows.length + ')'));
-  rows.forEach(function (r) {
-    var row = h('div', 'bg-amber-950/40 border border-amber-700 rounded-lg p-3 space-y-2');
-    row.appendChild(h('div', 'text-xs text-white font-semibold', r.name));
-    row.appendChild(h('div', 'text-[11px] text-zinc-300', r.contact + ' · ' + new Date(r.at).toLocaleString('tr-TR')));
-    var line = h('div', 'flex flex-wrap gap-2'), out = h('div', 'space-y-2');
-    line.appendChild(actBtn('Yeni kod üret', 'bg-amber-600 hover:bg-amber-500 text-white', async function () {
-      out.textContent = '';
-      if (!adminApps.length) { out.appendChild(h('div', 'text-[11px] text-zinc-300', 'Önce aşağıdan Başvuruları Yükle yap.')); return; }
-      var a = kiBul(r);
-      if (!a) { out.appendChild(h('div', 'text-[11px] text-red-300', 'Bu bilgilerle başvuru bulunamadı.')); return; }
-      try {
-        var code = await callRpc('gv_admin_reissue_code', { p_pin: adminPin, p_application_id: a.id });
-        codesByApp[a.id] = code;
-        out.appendChild(h('div', 'text-[11px] text-zinc-300', 'Eşleşen başvuru: ' + (a.name || '') + ' · ' + (a.contact || '')));
-        out.appendChild(h('div', 'font-mono text-base font-bold tracking-widest text-white select-all', code));
-        out.appendChild(sendButtons(a, code));
-      } catch (e) { out.appendChild(h('div', 'text-[11px] text-red-300', errText(e))); }
-    }));
-    line.appendChild(actBtn('Sil', 'bg-zinc-800 hover:bg-zinc-700 text-zinc-200', async function () {
-      try { await callRpc('gv_admin_code_request_delete', { p_pin: adminPin, p_id: r.id }); adminKodIstekleri(); } catch (e) { $('admin-msg').textContent = errText(e); }
-    }));
-    row.appendChild(line); row.appendChild(out); box.appendChild(row);
-  });
-}
 function panoAc(p, git) {
   $('view-board').setAttribute('data-p', p);
   try { localStorage.setItem('7527_pano_bolum', p); } catch (e) {}
   if (p === 'harita') { try { mapLayer(_mapLayer); } catch (e) {} }
-  if (p === 'ofis') { var c = $('chat-list'); if (c) c.scrollTop = c.scrollHeight; }
+  if (p === 'ofis') { var c = $('chat-list'); if (c) c.scrollTop = c.scrollHeight; try { refreshChat(); } catch (e) {} }
   if (git) {
     var el = { gorevler: 'task-list', hedef: 'mp-rank-card', veriler: 'stats-box', harita: 'map-box', materyal: 'mat-box' }[p];
     var t = p === 'ofis' ? $('chat-list').parentElement : $(el);
@@ -1763,23 +2008,28 @@ function taskCard(t, me) {
   }
   var row = h('div', 'flex flex-wrap items-center gap-2 pt-1');
   if (t.status === 'open') {
-    if (me.observer) {
+    if (!me._in) {
+      row.appendChild(actBtn('Görev almak için giriş yap', 'bg-emerald-700 hover:bg-emerald-600 text-white', function () { taskModalClose(); girisAc(); }));
+    } else if (me.observer) {
       row.appendChild(h('span', 'text-[11px] text-zinc-500', 'İzleyici modunda görev alınamaz'));
+    } else if (t.saha && !me.saha) {
+      row.appendChild(h('span', 'text-[11px] text-amber-300 basis-full', '📍 Bu görevi ilindeki aktif gönüllüler (stand ve toplantı yapanlar) alabilir.'));
+      row.appendChild(actBtn('Aktif gönüllü ol', 'bg-zinc-800 hover:bg-zinc-700 text-amber-300', function () { taskModalClose(); profilAc(); }));
     } else {
       row.appendChild(actBtn('Ben alıyorum', 'bg-emerald-600 hover:bg-emerald-500 text-white', function () {
-        if (confirm('Bu görevi üstlenirsen ' + fmtHours(t.due_hours) + ' içinde yapman beklenir.\n\nYapamayacaksan "Bırak" demen yeterli, bunun cezası yok.\n\nÜstleniyor musun?')) act('gv_claim', t.id);
+        if (confirm('Bu görevi üstlenirsen ' + fmtHours(t.due_hours) + ' içinde yapman beklenir.\n\nYapamayacaksan "Bırak" demen yeterli, bunun cezası yok.\n\nÜstleniyor musun?')) act('gv_claim_me', t.id);
       }));
-      row.appendChild(h('span', 'text-[11px] text-zinc-500', 'Süre: ' + fmtHours(t.due_hours)));
-      if (t.claim_count > 0 || t.done_count > 0) {
-        var info = [];
-        if (t.claim_count > 0) info.push('⏳ ' + t.claim_count + ' kişi üzerinde çalışıyor');
-        if (t.done_count > 0) info.push('✓ ' + t.done_count + ' kişi tamamladı');
-        row.appendChild(h('span', 'text-[11px] text-amber-400 font-semibold', info.join(' · ')));
-      }
+    }
+    row.appendChild(h('span', 'text-[11px] text-zinc-500', 'Süre: ' + fmtHours(t.due_hours)));
+    if (t.claim_count > 0 || t.done_count > 0) {
+      var info = [];
+      if (t.claim_count > 0) info.push('⏳ ' + t.claim_count + ' kişi üzerinde çalışıyor' + (t.claimers ? ': ' + t.claimers : ''));
+      if (t.done_count > 0) info.push('✓ ' + t.done_count + ' kişi tamamladı');
+      row.appendChild(h('span', 'text-[11px] text-amber-400 font-semibold', info.join(' · ')));
     }
   } else if (t.status === 'claimed' && t.mine) {
-    row.appendChild(actBtn('✓ Yaptım', 'bg-emerald-600 hover:bg-emerald-500 text-white', function () { act('gv_complete', t.id); }));
-    row.appendChild(actBtn('Bırak', 'bg-zinc-800 hover:bg-zinc-700 text-zinc-200', function () { act('gv_release', t.id); }));
+    row.appendChild(actBtn('✓ Yaptım', 'bg-emerald-600 hover:bg-emerald-500 text-white', function () { act('gv_complete_me', t.id); }));
+    row.appendChild(actBtn('Bırak', 'bg-zinc-800 hover:bg-zinc-700 text-zinc-200', function () { act('gv_release_me', t.id); }));
     row.appendChild(h('span', 'text-[11px] text-emerald-400 font-semibold', 'Sende · kalan: ' + fmtLeft(t.due_at)));
   } else if (t.status === 'claimed') {
     row.appendChild(h('span', 'text-[11px] text-amber-400 font-semibold', '⏳ ' + (t.claimed_nick || 'Bir gönüllü') + ' üstlendi'));
@@ -1832,7 +2082,7 @@ async function act(fn, id) {
   if (actBusy) return;
   actBusy = true;
   try {
-    await callRpc(fn, { p_code: memberCode, p_task_id: id });
+    await callRpc(fn, { p_task_id: id });
     $('board-msg').textContent = '';
   } catch (e) {
     $('board-msg').textContent = errText(e);
@@ -1859,7 +2109,7 @@ function admMatKind() {
 }
 function openAdmin() { $('admin-box').classList.remove('hidden'); $('admin-box').scrollIntoView({ behavior: 'smooth' }); setTimeout(function () { var p = $('admin-pin'); if (p && !adminPin) p.focus(); }, 300); }
 function closeAdmin() { if (adminPin) { $('admin-box').classList.add('hidden'); return; } adminLogout(); }
-function adminLogout() { adminSessionClear(); adminPin = ''; adminKey = null; adminApps = []; codesByApp = {}; $('adm-apps').textContent = ''; $('adm-key-pass').value = ''; $('admin-pin').value = ''; $('admin-main').classList.add('hidden'); $('admin-login').classList.remove('hidden'); $('admin-box').classList.add('hidden'); $('adm-newcode').classList.add('hidden'); }
+function adminLogout() { adminSessionClear(); adminPin = ''; adminKey = null; adminApps = []; codesByApp = {}; $('adm-apps').textContent = ''; $('adm-key-pass').value = ''; $('admin-pin').value = ''; $('admin-main').classList.add('hidden'); $('admin-login').classList.remove('hidden'); $('admin-box').classList.add('hidden'); $('adm-newcode').classList.add('hidden'); kpRows = []; refreshChat(true); }
 
 async function adminLogin() {
   var pin = ($('admin-pin').value || '').trim();
@@ -1871,8 +2121,10 @@ async function adminLogin() {
     $('admin-pin').value = '';
     $('admin-login').classList.add('hidden');
     $('admin-main').classList.remove('hidden');
-    showAdminTab('apps');
+    showAdminTab('kisi');
     renderAdmin(s);
+    kpYukle();
+    refreshChat(true);
   } catch (e) { $('admin-msg').textContent = errText(e); }
 }
 
@@ -1894,7 +2146,7 @@ function adminSessionSave(pin) { try { sessionStorage.setItem('gv_admin_pin', JS
 function adminSessionClear() { try { sessionStorage.removeItem('gv_admin_pin'); } catch (e) {} adminIdbSet(null); }
 var taskLogRows = [], admClaims = [];
 async function adminReload() {
-  adminKodIstekleri();
+  kpYukle();
   try { admClaims = (await callRpc('gv_admin_task_claims', { p_pin: adminPin })) || []; } catch (e) { admClaims = []; }
   try { renderAdmin(await callRpc('gv_admin_state', { p_pin: adminPin })); $('admin-msg').textContent = ''; }
   catch (e) { $('admin-msg').textContent = errText(e); }
@@ -2508,9 +2760,9 @@ async function drawBorders(svg, mode) {
 }
 async function loadMap() {
   var box = $('map-svg');
-  if (!box || !memberCode) return;
+  if (!box) return;
   try {
-    _mapRows = (await callRpc('gv_map', { p_code: memberCode })) || [];
+    _mapRows = (await callRpc('gv_public_map', {})) || [];
     renderMap();
   } catch (e) { box.textContent = 'Harita yüklenemedi.'; }
 }
@@ -2574,7 +2826,7 @@ function renderMap() {
   // Her katmanda yalnızca kendi çağrısı: vaka → Vakayı bildir, dilekçe/vekil → Dilekçeni gönder, gönüllü → davet paylaşımı
   [['map-cta-case', CASE], ['map-cta-pet', !VOL && !CASE], ['map-davet', VOL]].forEach(function (x) { var e = $(x[0]); if (e) e.style.display = x[1] ? '' : 'none'; });
   var ms = $('map-sub');
-  if (ms) ms.textContent = VOL ? 'Bir noktaya dokun, oradaki gönüllülerin takma adlarını gör. Gri noktalar: henüz gönüllümüz olmayan iller.'
+  if (ms) ms.textContent = VOL ? 'Yeşil daireler: gönüllümüz olan iller. Gri noktalar: henüz gönüllümüz olmayan iller.'
     : CASE ? 'Kırmızı daireler: belgelenmiş vaka olan iller. Gri noktalar: vakası henüz kayda geçmemiş iller.'
     : MPL ? 'Yeşil daireler: o ilin vekillerine giden dilekçe sayısı. Gri noktalar: vekillerine henüz dilekçe gitmeyen iller.'
     : 'Yeşil daireler: dilekçe gelen iller. Gri noktalar: henüz dilekçe gelmeyen iller.';
@@ -2632,7 +2884,7 @@ function renderMap() {
         var c = circle(cx, cy, 7 + Math.min(n, 20) * 0.7, RENK);
         c.setAttribute('fill-opacity', '0.85'); c.setAttribute('stroke', '#ecfdf5'); c.setAttribute('stroke-width', '1');
         c.style.cursor = 'pointer';
-        c.addEventListener('click', function () { show(city, n, r.nicks || [], n > (r.nicks || []).length ? '...' : ''); });
+        c.addEventListener('click', function () { show(city, n, r.nicks || [], ''); });
         svg.appendChild(c); svg.appendChild(label(cx, cy, String(n), 9));
       } else {
         var d = circle(cx, cy, 3.2, '#52525b'); d.setAttribute('stroke', '#a1a1aa'); d.setAttribute('stroke-width', '0.6');
@@ -2687,25 +2939,23 @@ function renderMap() {
   wrapEl.appendChild(svg);
   box.textContent = ''; box.appendChild(wrapEl);
 }
-  async function refreshOnline() {
+async function refreshOnline() {
   var box = $('online-list');
-  if (!box || !memberCode) return;
+  if (!box) return;
   try {
-    var rows = await callRpc('gv_online', { p_code: memberCode }) || [];
+    var rows = (await callRpc('gv_online_public', {})) || [];
     box.textContent = '';
     if (!rows.length) return;
-    box.textContent = '🟢 Şu an panoda (' + rows.length + '): ' + rows.map(function (r) {
-      var yer = r.country ? r.country : r.city;
-      return r.nick + (yer ? ' (' + yer + ')' : '');
-    }).join(', ');
+    var ad = rows.slice(0, 40).map(function (r) { var yer = r.country ? r.country : r.city; return r.nick + (yer ? ' (' + yer + ')' : ''); }).join(', ');
+    box.textContent = '🟢 Şu an sohbette (' + rows.length + '): ' + ad + (rows.length > 40 ? ' ve ' + (rows.length - 40) + ' kişi daha' : '');
   } catch (e) {}
 }
 var matRows = null, myAreasG = [], myAreasKey = null;
 async function loadMaterials() {
   var box = $('mat-list');
-  if (!box || !memberCode) return;
+  if (!box) return;
   try {
-    matRows = (await callRpc('gv_materials_list', { p_code: memberCode })) || [];
+    matRows = (await callRpc('gv_materials_public', {})) || [];
     renderMaterials();
   } catch (e) { box.textContent = 'Materyaller yüklenemedi.'; }
 }
@@ -2769,35 +3019,156 @@ function renderMaterials() {
     box.appendChild(g);
   });
 }
+
+// ---------- yönetici: e-postayla giren kişiler ----------
+var kpRows = [], kpF = 'all', kpBusy = false;
+async function kpYukle() {
+  if (!adminPin) return;
+  $('kp-info').textContent = 'Yükleniyor...';
+  try { kpRows = (await callRpc('gv_admin_people', { p_pin: adminPin })) || []; kpCiz(); }
+  catch (e) { $('kp-info').textContent = errText(e); }
+}
+function kpFiltre(f) { kpF = f; kpCiz(); }
+function kpListe() {
+  var q = ($('kp-q').value || '').trim().toLocaleLowerCase('tr');
+  return kpRows.filter(function (p) {
+    if (kpF === 'istek' && !(p.saha_istek_at && !p.saha)) return false;
+    if (kpF === 'saha' && !p.saha) return false;
+    if (kpF === 'ekip' && !p.role) return false;
+    if (!q) return true;
+    return [p.nick, p.email, p.city, p.district, p.country].join(' ').toLocaleLowerCase('tr').indexOf(q) !== -1;
+  });
+}
+function kpTarih(v) { try { return v ? new Date(v).toLocaleString('tr-TR', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }) : '—'; } catch (e) { return ''; } }
+function kpCiz() {
+  Array.prototype.forEach.call(document.querySelectorAll('#kp-filt button'), function (b) {
+    var on = b.getAttribute('data-f') === kpF;
+    b.className = 'btn px-2 text-xs ' + (on ? 'bg-emerald-600 text-white' : 'bg-zinc-800 text-zinc-300');
+  });
+  var list = kpListe(), box = $('kp-list'); box.textContent = '';
+  var nIstek = kpRows.filter(function (p) { return p.saha_istek_at && !p.saha; }).length;
+  var nSaha = kpRows.filter(function (p) { return p.saha; }).length;
+  var nEkip = kpRows.filter(function (p) { return p.role; }).length;
+  $('kp-info').textContent = kpRows.length + ' kişi · ' + nIstek + ' istek bekliyor · ' + nSaha + ' aktif gönüllü · ' + nEkip + ' ekip' + (list.length !== kpRows.length ? ' · listelenen: ' + list.length : '');
+  if (!list.length) { box.appendChild(h('p', 'text-xs text-zinc-500', 'Bu listede kimse yok.')); return; }
+  list.forEach(function (p) {
+    var row = h('div', 'bg-zinc-950/60 border rounded-lg p-2 space-y-1.5 ' + (p.saha_istek_at && !p.saha ? 'border-amber-600' : 'border-zinc-800') + (p.active ? '' : ' opacity-60'));
+    var top = h('div', 'flex flex-wrap items-center gap-2');
+    top.appendChild(h('span', 'text-xs text-white font-semibold', p.nick || '(profil yok)'));
+    top.appendChild(h('span', 'text-[11px] text-zinc-400', placeOf(p)));
+    if (p.saha) top.appendChild(h('span', 'text-[10px] font-bold bg-amber-600 text-black px-1.5 rounded', 'AKTİF GÖNÜLLÜ'));
+    else if (p.saha_istek_at) top.appendChild(h('span', 'text-[10px] font-bold bg-amber-900 text-amber-200 px-1.5 rounded', 'İSTEK ' + kpTarih(p.saha_istek_at)));
+    if (p.role) top.appendChild(h('span', 'text-[10px] font-bold bg-emerald-700 text-white px-1.5 rounded', p.role === 'admin' ? 'YÖNETİCİ' : 'MODERATÖR'));
+    if (p.linked) top.appendChild(h('span', 'text-[10px] text-zinc-400 border border-zinc-700 px-1.5 rounded', 'eski kodlu'));
+    if (!p.active) top.appendChild(h('span', 'text-[10px] text-red-300 border border-red-800 px-1.5 rounded', 'pasif'));
+    row.appendChild(top);
+    row.appendChild(h('div', 'text-[11px] text-sky-300 break-all select-all', p.email || ''));
+    row.appendChild(h('div', 'text-[10px] text-zinc-500', 'Kayıt: ' + kpTarih(p.created_at) + ' · son görülme: ' + kpTarih(p.last_seen)));
+    var line = h('div', 'flex flex-wrap items-center gap-2'), out = h('div', 'flex flex-wrap items-center gap-2 text-[11px] text-zinc-300');
+    var sel = h('select', 'inp'); sel.style.width = 'auto';
+    [['', 'Üye'], ['mod', 'Moderatör'], ['admin', 'Yönetici']].forEach(function (o) {
+      var op = document.createElement('option'); op.value = o[0]; op.textContent = o[1]; if ((p.role || '') === o[0]) op.selected = true; sel.appendChild(op);
+    });
+    sel.onchange = async function () {
+      try { await callRpc('gv_admin_set_role', { p_pin: adminPin, p_member_id: p.id, p_role: sel.value }); p.role = sel.value || null; kpCiz(); }
+      catch (e) { $('admin-msg').textContent = errText(e); }
+    };
+    line.appendChild(sel);
+    if (p.saha_istek_at && !p.saha) {
+      line.appendChild(actBtn('✓ Aktif gönüllü onayla', 'bg-amber-600 hover:bg-amber-500 text-black', function () { kpSaha(p, true); }));
+      line.appendChild(actBtn('Reddet', 'bg-zinc-800 hover:bg-zinc-700 text-zinc-200', function () { if (confirm(p.nick + ' isteği reddedilsin mi?')) kpSaha(p, false); }));
+    } else if (p.saha) {
+      line.appendChild(actBtn('Aktif gönüllülükten çıkar', 'bg-zinc-800 hover:bg-zinc-700 text-zinc-200', function () { if (confirm(p.nick + ' aktif gönüllülükten çıkarılsın mı?')) kpSaha(p, false); }));
+    } else {
+      line.appendChild(actBtn('Aktif gönüllü yap', 'bg-zinc-800 hover:bg-zinc-700 text-amber-300', function () { kpSaha(p, true); }));
+    }
+    if (p.saha_payload_enc) line.appendChild(actBtn('📞 Telefon', 'bg-sky-800 hover:bg-sky-700 text-white', function () { kpTelefon(p, out); }));
+    if (p.email) {
+      var mb = actBtn('✉ E-posta', 'bg-sky-700 hover:bg-sky-600 text-white', async function () {
+        mb.disabled = true; var ok = await kpMail(p); mb.textContent = ok ? '✓ Gönderildi' : '⚠ Tekrar dene'; mb.disabled = ok;
+      });
+      row._mb = mb; row._p = p;
+      line.appendChild(mb);
+    }
+    row.appendChild(line); row.appendChild(out);
+    box.appendChild(row);
+  });
+}
+async function kpSaha(p, on) {
+  try { await callRpc('gv_admin_set_saha', { p_pin: adminPin, p_member_id: p.id, p_on: on }); p.saha = on; if (!on) p.saha_istek_at = null; kpCiz(); refreshBoard(); }
+  catch (e) { $('admin-msg').textContent = errText(e); }
+}
+async function kpTelefon(p, out) {
+  out.textContent = '';
+  if (!adminKey) { out.textContent = 'Önce Başvurular sekmesinde özel anahtar dosyanı ve parolanı girip "Başvuruları Yükle" de.'; return; }
+  try {
+    var c = await decryptPayload(adminKey, p.saha_payload_enc);
+    var tel = c.phone || '', ck = contactKind(tel);
+    out.appendChild(h('span', 'font-semibold text-white select-all', tel));
+    if (ck.type === 'phone') {
+      var msg = 'Merhaba ' + (p.nick || '') + ', 7527 iptal kampanyasında ' + (p.city || 'ilinde') + ' için aktif gönüllü olmak istediğini gördük. Konuşmak için uygun bir zaman var mı?';
+      var wa = h('a', 'btn bg-emerald-700 text-white', '💬 WhatsApp'); wa.href = 'https://wa.me/' + ck.value + '?text=' + encodeURIComponent(msg); wa.target = '_blank'; wa.rel = 'noopener noreferrer'; out.appendChild(wa);
+      var tl = h('a', 'btn bg-zinc-800 text-white', '📞 Ara'); tl.href = 'tel:+' + ck.value; out.appendChild(tl);
+    }
+  } catch (e) { out.textContent = 'Telefon çözülemedi (anahtar bu kayda uymuyor).'; }
+}
+async function kpMail(p) {
+  try {
+    var text = ($('kp-text').value || '').replace(/\[AD\]/g, p.nick || '');
+    var res = await supabaseClient.functions.invoke('send-invite', { body: { pin: adminPin, to: p.email, subject: ($('kp-subj').value || '7527 İptal').trim(), text: text } });
+    if (res.error) throw res.error;
+    return true;
+  } catch (e) { return false; }
+}
+async function kpMailHepsi() {
+  if (kpBusy) return;
+  var rows = Array.prototype.filter.call($('kp-list').children, function (r) { return r._mb && !r._mb.disabled; });
+  if (!rows.length) { $('kp-info').textContent = 'Gönderilecek kimse yok.'; return; }
+  if (!confirm(rows.length + ' kişiye e-posta gönderilecek. Devam edilsin mi?')) return;
+  kpBusy = true;
+  var ok = 0, fail = 0, info = $('kp-info');
+  for (var i = 0; i < rows.length; i++) {
+    info.textContent = 'Gönderiliyor: ' + (i + 1) + ' / ' + rows.length;
+    if (await kpMail(rows[i]._p)) { ok++; rows[i]._mb.textContent = '✓ Gönderildi'; rows[i]._mb.disabled = true; }
+    else { fail++; rows[i]._mb.textContent = '⚠ Tekrar dene'; }
+    await new Promise(function (r) { setTimeout(r, 700); });
+  }
+  kpBusy = false;
+  info.textContent = ok + ' gönderildi' + (fail ? ' · ' + fail + ' başarısız (satırdaki düğmeden tekrar dene)' : '');
+}
+function kpCsv() {
+  var lines = [['E-posta', 'Görünen ad', 'Ülke', 'İl / şehir', 'İlçe', 'Rol', 'Aktif gönüllü', 'Aktif gönüllü isteği', 'Eski kodlu', 'Kayıt', 'Son görülme'].join(';')];
+  kpListe().forEach(function (p) {
+    lines.push([p.email, p.nick, p.country, p.city, p.district, p.role || '', p.saha ? 'evet' : '', p.saha_istek_at ? kpTarih(p.saha_istek_at) : '',
+      p.linked ? 'evet' : '', kpTarih(p.created_at), kpTarih(p.last_seen)].map(csvCell).join(';'));
+  });
+  var blob = new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = '7527-sohbet-kisiler.csv';
+  document.body.appendChild(a); a.click();
+  setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
 // ---------- acilis ----------
 (async function init() {
   AREAS.forEach(function (a) { var o = document.createElement('option'); o.value = a; o.textContent = a; $('adm-t-area').appendChild(o); var o2 = document.createElement('option'); o2.value = a; o2.textContent = 'Alan: ' + a; $('adm-m-area').appendChild(o2); });
   admMatKind();
-  $('vol-name').addEventListener('blur', function () { if (!$('vol-nick').value) $('vol-nick').value = suggestNick($('vol-name').value); });
   loadCounters();
   guncellemeDoldur();
-  var saved = load('gv_code');
-  var fromLink = '';
-  try { fromLink = (new URLSearchParams(location.search).get('kod') || '').trim(); } catch (e) {}
-  if (fromLink) { try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) {} }
-  async function tryLogin(c, remember) {
-    try {
-      var nick = await callRpc('gv_login', { p_code: c });
-      memberCode = c;
-      if (remember) store('gv_code', c);
-      enterBoard(nick);
-      return true;
-    } catch (e) {
-      if (!remember && (e.message || '').indexOf('unauthorized') !== -1) store('gv_code', null);
-      return false;
-    }
-  }
-  if (fromLink && fromLink.replace(/[^0-9a-zA-Z]/g, '').length >= 8) {
-    if (await tryLogin(fromLink, true)) return;
-    $('login-code').value = fromLink;
-    $('login-msg').textContent = 'Bağlantıdaki kod geçerli değil. Kodunu elle girebilirsin.';
-  }
-  if (saved && saved !== fromLink) await tryLogin(saved, false);
+  // Eski gönüllü bağlantısı (?kod=...): kod saklanır, e-postayla girişte hesaba bir kez bağlanır
+  try {
+    var k = (new URLSearchParams(location.search).get('kod') || '').trim();
+    if (k && k.replace(/[^0-9a-zA-Z]/g, '').length >= 8) store('gv_code', k);
+    if (k) history.replaceState(null, '', location.pathname + location.hash);
+  } catch (e) {}
+  otpEmail = otpOku();
+  refreshBoard(); refreshChat(true); loadMaterials(); loadMap(); refreshOnline();
+  await oturumYukle();
+  $('auth-oldnote').classList.toggle('hidden', !load('gv_code'));
+  boardTimer = setInterval(function () { if (document.visibilityState === 'visible') refreshBoard(); }, 60000);
+  setInterval(function () { if (document.visibilityState === 'visible') refreshOnline(); }, 60000);
+  if (supabaseClient) supabaseClient.auth.onAuthStateChange(function (ev) {
+    if (ev === 'SIGNED_OUT' && authUser) setTimeout(function () { authUser = null; meInfo = null; profEdit = false; authGoster(); refreshBoard(); refreshChat(true); }, 0);
+  });
 })();
 
 (async function adminRestore() {
@@ -2810,8 +3181,9 @@ function renderMaterials() {
     $('admin-box').classList.remove('hidden');
     $('admin-login').classList.add('hidden');
     $('admin-main').classList.remove('hidden');
-    showAdminTab('apps');
+    showAdminTab('kisi');
     renderAdmin(st);
+    refreshChat(true);
     adminReload();
     var k = await adminIdbGet();
     if (k && k.key && Date.now() - k.t <= ADMIN_TTL) { adminKey = k.key; adminLoadApps(); }
