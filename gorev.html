@@ -89,7 +89,6 @@
   #r-top > #board-msg:empty { display: none; }
   #view-board > #task-list { order: 5; }
   #view-board > #mat-box { order: 5; }
-  div:has(> #adm-teams) { display: none; }
   @media (min-width: 1024px) {
     #view-board:not(.hidden) { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; }
     #task-list { grid-template-columns:repeat(4,minmax(0,1fr)); }
@@ -728,7 +727,6 @@ function siraBoya(pre, cok) {
         <button type="button" data-t="apps" onclick="showAdminTab('apps')" class="btn bg-zinc-800 text-zinc-300">👥 Başvurular</button>
         <button type="button" data-t="gorev" onclick="showAdminTab('gorev')" class="btn bg-zinc-800 text-zinc-300">📢 Duyuru ve Görev</button>
         <button type="button" data-t="mat" onclick="showAdminTab('mat')" class="btn bg-zinc-800 text-zinc-300">📦 Materyal</button>
-        <button type="button" data-t="ekip" onclick="showAdminTab('ekip')" class="btn bg-zinc-800 text-zinc-300">🔑 Kod Üret</button>
       </div>
 
       <div class="space-y-2" data-tab="kisi">
@@ -775,6 +773,7 @@ function siraBoya(pre, cok) {
         </div>
         <p id="adm-apps-status" class="text-[11px] text-zinc-500 min-h-[16px]"></p>
         <div id="adm-apps" class="space-y-2"></div>
+        <div id="adm-orphans" class="space-y-2"></div>
       </div>
 
       <div class="space-y-2 border-t border-zinc-800 pt-3" data-tab="apps">
@@ -833,10 +832,6 @@ Panele giriş: [LİNK]</textarea>
         <button type="button" onclick="adminAddMaterial()" class="btn bg-emerald-600 hover:bg-emerald-500 text-white">Materyali Ekle</button>
         <div id="adm-materials" class="space-y-2 pt-2"></div>
       </div>
-      <div class="space-y-2" data-tab="ekip">
-        <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400">İl / İlçe Dağılımı</h3>
-        <div id="adm-teams" class="space-y-1"></div>
-      </div>
 
       <div class="space-y-2" data-tab="gorev">
         <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400">Görevler</h3>
@@ -847,15 +842,6 @@ Panele giriş: [LİNK]</textarea>
         <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400">Görev Geçmişi</h3>
         <p class="text-[11px] text-zinc-500">Kim hangi görevi üstlendi, bıraktı, tamamladı. Yönetici "Aç" dese bile kayıt silinmez. Kayıt, geçmiş kaydı kurulduktan sonraki işlemlerden başlar.</p>
         <div id="adm-tasklog" class="space-y-1"></div>
-      </div>
-
-      <div class="space-y-2" data-tab="ekip">
-        <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400">Başvurusuz Gönüllü Kodu Üret</h3>
-        <div class="flex flex-col sm:flex-row gap-3 max-w-md">
-          <input type="text" id="adm-m-nick" maxlength="30" placeholder="Takma ad (panoda görünür)" class="inp">
-          <button type="button" onclick="adminAddMember()" class="btn bg-emerald-600 hover:bg-emerald-500 text-white whitespace-nowrap">Kod Üret</button>
-        </div>
-        <div id="adm-members" class="space-y-1 pt-2"></div>
       </div>
     </div>
   </section>
@@ -2207,7 +2193,7 @@ async function adminLoadApps() {
     for (var i = 0; i < rows.length; i++) {
       var r = rows[i], c = null;
       try { c = await decryptPayload(adminKey, r.payload_enc); } catch (e) { c = null; }
-      adminApps.push({ id: r.id, city: r.city || '', created_at: r.created_at, ok: !!c,
+      adminApps.push({ id: r.id, city: (c && c.city) || r.city || '', created_at: r.created_at, ok: !!c,
         name: c ? (c.name || '') : '', contact: c ? (c.contact || '') : '', note: c ? (c.note || '') : '',
         ref: c ? (c.ref || '') : '', district: c ? (c.district || '') : '', country: c ? (c.country || '') : '' });
     }
@@ -2268,40 +2254,51 @@ function renderApps() {
   var todo = adminApps.filter(function (a) { return !memberOf(a); });
   var done = adminApps.filter(function (a) { return memberOf(a); });
   st.className = 'text-[11px] text-emerald-400 min-h-[16px]';
-  st.textContent = '✓ ' + adminApps.length + ' başvuru · ' + todo.length + ' kod bekliyor · ' + done.length + ' kod verildi';
+  st.textContent = '✓ ' + adminApps.length + ' başvuru · ' + todo.length + ' kodsuz · ' + done.length + ' kodlu';
+  renderOrphans();
   $('adm-bulk-btn').classList.toggle('hidden', !todo.some(function (a) { return a.ok; }));
   $('adm-csv-btn').classList.toggle('hidden', !Object.keys(codesByApp).length);
 
   todo.concat(done).forEach(function (a) {
     var m = memberOf(a);
     var code = codesByApp[a.id];
-    var row = h('div', 'bg-zinc-950/60 border border-zinc-800 rounded-lg p-3 space-y-2' + (m && !code ? ' opacity-60' : ''));
+    var row = h('div', 'bg-zinc-950/60 border border-zinc-800 rounded-lg p-3 space-y-2' + (m && !m.active ? ' opacity-60' : ''));
     row.appendChild(h('div', 'text-xs text-white font-semibold', a.ok ? (a.name || '(ad yok)') : '[ÇÖZÜLEMEDİ]'));
     var meta = [a.contact, [a.country, a.city, a.district].filter(Boolean).join(' / '), a.created_at ? new Date(a.created_at).toLocaleDateString('tr-TR') : ''].filter(Boolean).join(' · ');
     if (meta) row.appendChild(h('div', 'text-[11px] text-zinc-400', meta));
     if (a.note) row.appendChild(h('div', 'text-[11px] text-zinc-500', a.note));
-    if (code) {
-      row.appendChild(h('div', 'font-mono text-base font-bold tracking-widest text-white select-all', code));
-      row.appendChild(sendButtons(a, code));
-    } else if (m) {
-      row.appendChild(h('div', 'text-[11px] text-emerald-400 font-semibold', '✓ Kod verildi · takma ad: ' + m.nickname + (m.active ? '' : ' (pasif)')));
-      if (a.ok) row.appendChild(actBtn('✎ Düzenle', 'bg-zinc-800 hover:bg-zinc-700 text-white', function () { adminEditApp(a); }));
-      if (m.application_id != null) {
-        row.appendChild(actBtn('Yeni kod üret ve gönder', 'bg-amber-600 hover:bg-amber-500 text-white', async function () {
-          try {
-            codesByApp[a.id] = await callRpc('gv_admin_reissue_code', { p_pin: adminPin, p_application_id: a.id });
-            $('admin-msg').textContent = '';
-          } catch (e) { $('admin-msg').textContent = errText(e); }
-          adminReload();
-        }));
-      }    } else if (a.ok) {
-      var line = h('div', 'flex flex-col sm:flex-row gap-2');
+    if (m) {
+      var ms = h('div', 'flex flex-wrap items-center gap-2');
+      ms.appendChild(h('span', 'text-[11px] text-emerald-400 font-semibold', '✓ Kodlu · takma ad: ' + m.nickname + ' · üstünde ' + (m.claimed || 0) + ' · biten ' + (m.done || 0) + ' · zaman aşımı ' + (m.strikes || 0)));
+      ms.appendChild(modeSelect(m));
+      row.appendChild(ms);
+    }
+    if (code) row.appendChild(h('div', 'font-mono text-base font-bold tracking-widest text-white select-all', code));
+    var line = h('div', 'flex flex-wrap gap-2'), out = h('div', 'space-y-2');
+    if (a.ok) line.appendChild(actBtn('✎ Düzenle', 'bg-zinc-800 hover:bg-zinc-700 text-white', function () { adminEditApp(a, out); }));
+    if (a.ok) line.appendChild(actBtn('✉ Mesaj gönder', 'bg-sky-800 hover:bg-sky-700 text-white', function () {
+      out.textContent = ''; out.appendChild(sendButtons(a, codesByApp[a.id]));
+    }));
+    if (m && m.application_id != null) {
+      line.appendChild(actBtn(code ? 'Kodu yeniden üret' : 'Yeni kod üret', 'bg-amber-600 hover:bg-amber-500 text-white', async function () {
+        if (!confirm('Yeni kod üretilirse eski kod geçersiz olur. Devam edilsin mi?')) return;
+        try {
+          codesByApp[a.id] = await callRpc('gv_admin_reissue_code', { p_pin: adminPin, p_application_id: a.id });
+          $('admin-msg').textContent = '';
+        } catch (e) { $('admin-msg').textContent = errText(e); }
+        adminReload();
+      }));
+    }
+    row.appendChild(line);
+    if (!m && a.ok) {
+      var cl = h('div', 'flex flex-col sm:flex-row gap-2');
       var inp = h('input', 'inp'); inp.type = 'text'; inp.maxLength = 30; inp.value = suggestNick(a.name);
       inp.setAttribute('aria-label', 'Takma ad');
-      var btn = actBtn('Kod Üret', 'bg-emerald-600 hover:bg-emerald-500 text-white whitespace-nowrap', function () { adminAppCode(a, inp, btn); });
-      line.appendChild(inp); line.appendChild(btn);
-      row.appendChild(line);
+      var btn = actBtn('Kod üret', 'bg-emerald-600 hover:bg-emerald-500 text-white whitespace-nowrap', function () { adminAppCode(a, inp, btn); });
+      cl.appendChild(inp); cl.appendChild(btn);
+      row.appendChild(cl);
     }
+    row.appendChild(out);
     row.appendChild(actBtn('🗑 Sil', 'bg-red-800 hover:bg-red-700 text-white', async function () {
       if (!confirm('"' + (a.name || 'Bu kayıt') + '" kalıcı olarak silinsin mi? Geri alınamaz.')) return;
       try {
@@ -2315,22 +2312,34 @@ function renderApps() {
   });
 }
 
+function genelMesaj(a) {
+  var fn = firstName(a.name);
+  return 'Merhaba' + (fn ? ' ' + fn : '') + ', 7527 iptal kampanyasında gönüllü olduğun için teşekkürler.\n\n' +
+    'Kampanya sohbetine ve görev panosuna https://7527iptal.org/gorev.html adresinden e-postanla giriş yapabilirsin. ' +
+    'Eski gönüllü kodun varsa ilk girişte "Profilim" bölümünden bir kez bağlaman yeterli.';
+}
 function sendButtons(a, code) {
-  var wrap = h('div', 'flex flex-wrap gap-2');
-  var text = inviteText(a, code);
+  var wrap = h('div', 'space-y-2');
+  var ta = h('textarea', 'inp'); ta.rows = 5; ta.maxLength = 3000; ta.value = code ? inviteText(a, code) : genelMesaj(a);
+  ta.setAttribute('aria-label', 'Mesaj metni');
+  wrap.appendChild(ta);
+  var bw = h('div', 'flex flex-wrap gap-2'); wrap.appendChild(bw);
+  var text = ta.value;
+  ta.oninput = function () { text = ta.value; if (wa) wa.href = 'https://wa.me/' + waNum + '?text=' + encodeURIComponent(text); };
   var ck = contactKind(a.contact);
       var waNum = ck.type === 'phone' ? ck.value : (ck.phone || '');
+  var wa = null;
   if (waNum) {
-    var wa = h('a', 'btn bg-emerald-700 hover:bg-emerald-600 text-white', '💬 WhatsApp ile gönder');
+    wa = h('a', 'btn bg-emerald-700 hover:bg-emerald-600 text-white', '💬 WhatsApp ile gönder');
     wa.href = 'https://wa.me/' + waNum + '?text=' + encodeURIComponent(text); wa.target = '_blank'; wa.rel = 'noopener noreferrer';
-    wrap.appendChild(wa);
+    bw.appendChild(wa);
   }
   if (ck.type === 'email') {
         var ml = actBtn('✉ E-posta ile gönder', 'bg-sky-700 hover:bg-sky-600 text-white', async function () {
       ml.disabled = true;
       $('admin-msg').textContent = 'E-posta gönderiliyor…';
       try {
-    var res = await supabaseClient.functions.invoke('send-invite', { body: { pin: adminPin, to: ck.value, subject: '7527 İptal gönüllü kodunuz', text: text } });
+    var res = await supabaseClient.functions.invoke('send-invite', { body: { pin: adminPin, to: ck.value, subject: code ? '7527 İptal gönüllü kodunuz' : '7527 İptal kampanya panosu', text: text } });
         if (res.error) throw res.error;
         $('admin-msg').textContent = '';
         ml.textContent = '✓ E-posta gönderildi';
@@ -2339,9 +2348,9 @@ function sendButtons(a, code) {
         $('admin-msg').textContent = 'E-posta gönderilemedi. Tekrar deneyin.';
       }
     });
-    wrap.appendChild(ml);
+    bw.appendChild(ml);
   }
-  wrap.appendChild(actBtn('Mesajı kopyala', 'bg-zinc-800 hover:bg-zinc-700 text-white', function () { try { navigator.clipboard.writeText(text); } catch (e) {} }));
+  bw.appendChild(actBtn('Mesajı kopyala', 'bg-zinc-800 hover:bg-zinc-700 text-white', function () { try { navigator.clipboard.writeText(text); } catch (e) {} }));
   return wrap;
 }
 
@@ -2493,28 +2502,6 @@ function downloadCodesCsv() {
   setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
 }
 
-function renderTeams() {
-  var box = $('adm-teams'); box.textContent = '';
-  var groups = {};
-  admMembers.filter(function (m) { return m.active; }).forEach(function (m) {
-    var key = (m.country ? m.country + ' · ' : '') + (m.city || '(şehir yok)');
-    var g = groups[key] || (groups[key] = { n: 0, d: {} });
-    g.n++;
-    if (m.district) g.d[m.district] = (g.d[m.district] || 0) + 1;
-  });
-  var keys = Object.keys(groups).sort(function (a, b) { return groups[b].n - groups[a].n || a.localeCompare(b, 'tr'); });
-  if (!keys.length) { box.appendChild(h('p', 'text-xs text-zinc-500', 'Henüz kodlu gönüllü yok.')); return; }
-  keys.forEach(function (k) {
-    var g = groups[k];
-    var dd = Object.keys(g.d).sort(function (a, b) { return g.d[b] - g.d[a] || a.localeCompare(b, 'tr'); })
-      .map(function (n) { return n + ' ' + g.d[n]; }).join(', ');
-    var row = h('div', 'bg-zinc-950/60 border border-zinc-800 rounded-lg p-2 text-xs');
-    row.appendChild(h('span', 'text-white font-semibold', k + ' — ' + g.n));
-    if (dd) row.appendChild(h('span', 'text-zinc-400', '  (' + dd + ')'));
-    box.appendChild(row);
-  });
-}
-
 function renderAdmin(s) {
   $('adm-announce').value = s.announcement || '';
   loadAdminMaterials();
@@ -2566,25 +2553,9 @@ function renderAdmin(s) {
     tl.appendChild(row);
   });
 
-  var ml = $('adm-members'); ml.textContent = '';
-  var ms = s.members || [];
-  admMembers = ms;
+  admMembers = s.members || [];
   if (adminApps.length) renderApps();
-  renderTeams();
-  if (ms.length) ml.appendChild(h('p', 'text-[11px] text-zinc-500 pb-1', ms.length + ' kayıtlı kod'));
-  ms.forEach(function (m) {
-    var mode = !m.active ? 'blocked' : (m.observer ? 'observer' : 'active');
-    var row = h('div', 'flex flex-wrap items-center gap-2 bg-zinc-950/60 border border-zinc-800 rounded-lg p-2' + (m.active ? '' : ' opacity-50'));
-    row.appendChild(h('span', 'text-xs text-white font-semibold flex-1 min-w-[8rem]', m.nickname + (placeOf(m) ? ' · ' + placeOf(m) : '')));
-    row.appendChild(h('span', 'text-[11px] text-zinc-400', 'üstünde ' + m.claimed + ' · biten ' + m.done + ' · zaman aşımı ' + m.strikes));
-    var sel = h('select', 'inp'); sel.style.width = 'auto';
-    [['active', 'Aktif'], ['observer', 'İzleyici'], ['blocked', 'Pasif (giriş yok)']].forEach(function (o) {
-      var op = document.createElement('option'); op.value = o[0]; op.textContent = o[1]; if (o[0] === mode) op.selected = true; sel.appendChild(op);
-    });
-    sel.onchange = function () { adminSetMode(m, sel.value); };
-    row.appendChild(sel);
-    ml.appendChild(row);
-  });
+  renderOrphans();
 }
 
 async function adminAct(fn, args) {
@@ -2619,22 +2590,32 @@ async function adminDeleteMaterial(m) {
     loadAdminMaterials();
   } catch (e) { alert('HATA: ' + (e && e.message ? e.message : e)); }
 }
-  async function adminEditApp(a) {
-  var name = prompt('Ad Soyad:', a.name); if (name === null) return;
-  var contact = prompt('Telefon veya e-posta:', a.contact); if (contact === null) return;
-  name = name.trim(); contact = contact.trim();
-  if (name.split(/\s+/).filter(function (p) { return p.length >= 2; }).length < 2) { alert('Ad ve soyad birlikte yazılmalı.'); return; }
-  var ck = contactKind(contact);
-  if (ck.type !== 'phone' && ck.type !== 'email') { alert('Geçerli bir telefon veya e-posta yazın.'); return; }
-  try {
-    var env = await encryptPayload({ name: name, contact: contact, note: a.note, country: a.country, city: a.city, district: a.district, ref: a.ref, at: a.created_at || new Date().toISOString() });
-    await callRpc('admin_update_volunteer_enc', { p_pin: adminPin, p_id: a.id, p_payload_enc: env });
-    a.name = name; a.contact = contact;
-    renderApps();
-    alert('Kayıt güncellendi.');
-  } catch (e) { alert('HATA: ' + (e && e.message ? e.message : e)); }
+  async function adminEditApp(a, out) {
+  out.textContent = '';
+  var f = h('div', 'bg-zinc-900 border border-zinc-700 rounded-lg p-3 space-y-2');
+  function alan(lbl, val, max) { var i = h('input', 'inp'); i.type = 'text'; i.value = val || ''; i.maxLength = max || 120; i.placeholder = lbl; i.setAttribute('aria-label', lbl); f.appendChild(h('div', 'text-[10px] text-zinc-400', lbl)); f.appendChild(i); return i; }
+  var iAd = alan('Ad Soyad', a.name, 80), iIl = alan('Telefon veya e-posta', a.contact, 120);
+  var iUl = alan('Ülke (Türkiye ise boş bırak)', a.country, 60), iSe = alan('İl / şehir', a.city, 60), iIc = alan('İlçe', a.district, 60);
+  var iNot = h('textarea', 'inp'); iNot.rows = 2; iNot.maxLength = 1000; iNot.value = a.note || ''; iNot.setAttribute('aria-label', 'Not / alanlar');
+  f.appendChild(h('div', 'text-[10px] text-zinc-400', 'Not / alanlar')); f.appendChild(iNot);
+  var bl = h('div', 'flex flex-wrap gap-2'); f.appendChild(bl);
+  bl.appendChild(actBtn('Kaydet', 'bg-emerald-600 hover:bg-emerald-500 text-white', async function () {
+    var name = iAd.value.trim(), contact = iIl.value.trim();
+    if (name.length < 2) { alert('Ad soyad yazılmalı.'); return; }
+    var ck = contactKind(contact);
+    if (contact && ck.type !== 'phone' && ck.type !== 'email') { alert('Geçerli bir telefon veya e-posta yazın (ya da boş bırakın).'); return; }
+    var yeni = { name: name, contact: contact, note: iNot.value.trim(), country: iUl.value.trim(), city: iSe.value.trim(), district: iIc.value.trim(), ref: a.ref, at: a.created_at || new Date().toISOString() };
+    try {
+      var env = await encryptPayload(yeni);
+      await callRpc('admin_update_volunteer_enc', { p_pin: adminPin, p_id: a.id, p_payload_enc: env });
+      a.name = yeni.name; a.contact = yeni.contact; a.note = yeni.note; a.country = yeni.country; a.city = yeni.city; a.district = yeni.district;
+      renderApps();
+    } catch (e) { alert('HATA: ' + (e && e.message ? e.message : e)); }
+  }));
+  bl.appendChild(actBtn('Vazgeç', 'bg-zinc-800 hover:bg-zinc-700 text-zinc-200', function () { out.textContent = ''; }));
+  out.appendChild(f);
 }
-  async function adminAddMaterial() {
+async function adminAddMaterial() {
   var kind = $('adm-m-kind').value;
   var title = ($('adm-m-title').value || '').trim();
   var body = ($('adm-m-body').value || '').trim();
@@ -2671,21 +2652,41 @@ function adminDeleteTask(t) {
   if (!confirm('"' + t.title + '" görevi silinsin mi?')) return;
   adminAct('gv_admin_delete_task', { p_pin: adminPin, p_id: t.id });
 }
+function modeSelect(m) {
+  var mode = !m.active ? 'blocked' : (m.observer ? 'observer' : 'active');
+  var sel = h('select', 'inp'); sel.style.width = 'auto'; sel.setAttribute('aria-label', 'Durum');
+  [['active', 'Aktif'], ['observer', 'İzleyici'], ['blocked', 'Pasif (giriş yok)']].forEach(function (o) {
+    var op = document.createElement('option'); op.value = o[0]; op.textContent = o[1]; if (o[0] === mode) op.selected = true; sel.appendChild(op);
+  });
+  sel.onchange = function () { adminSetMode(m, sel.value); };
+  return sel;
+}
+// Başvurusu bulunmayan, e-postayla da girmemiş kodlu gönüllüler (Kod Üret sekmesi kalktığı için burada)
+function renderOrphans() {
+  var box = $('adm-orphans'); if (!box) return;
+  box.textContent = '';
+  if (!adminApps.length) return;   // başvurular yüklenmeden eşleşme yapılamaz
+  var byApp = {}, byRef = {}, kp = {};
+  adminApps.forEach(function (a) { byApp[a.id] = 1; if (a.ref) byRef[a.ref] = 1; });
+  kpRows.forEach(function (p) { kp[p.id] = 1; });
+  var list = admMembers.filter(function (m) {
+    if (kp[m.id]) return false;
+    if (m.application_id != null && byApp[m.application_id]) return false;
+    if (m.ref && byRef[m.ref]) return false;
+    return true;
+  });
+  if (!list.length) return;
+  box.appendChild(h('h3', 'text-xs font-bold uppercase tracking-wider text-emerald-400 pt-2', 'Başvurusu olmayan kodlu gönüllüler (' + list.length + ')'));
+  list.forEach(function (m) {
+    var row = h('div', 'flex flex-wrap items-center gap-2 bg-zinc-950/60 border border-zinc-800 rounded-lg p-2' + (m.active ? '' : ' opacity-50'));
+    row.appendChild(h('span', 'text-xs text-white font-semibold flex-1 min-w-[8rem]', m.nickname + (placeOf(m) ? ' · ' + placeOf(m) : '')));
+    row.appendChild(h('span', 'text-[11px] text-zinc-400', 'üstünde ' + (m.claimed || 0) + ' · biten ' + (m.done || 0) + ' · zaman aşımı ' + (m.strikes || 0)));
+    row.appendChild(modeSelect(m));
+    box.appendChild(row);
+  });
+}
 function adminSetMode(m, mode) {
   adminAct('gv_admin_set_member_mode', { p_pin: adminPin, p_id: m.id, p_mode: mode });
-}
-
-async function adminAddMember() {
-  var nick = ($('adm-m-nick').value || '').trim();
-  if (nick.length < 2) { $('admin-msg').textContent = 'Takma ad en az 2 karakter olmalı.'; return; }
-  try {
-    var code = await callRpc('gv_admin_create_member', { p_pin: adminPin, p_nickname: nick, p_application_id: null, p_city: null, p_areas: null });
-    $('adm-m-nick').value = '';
-    $('adm-newcode-val').textContent = code;
-    $('adm-newcode').classList.remove('hidden');
-    $('admin-msg').textContent = '';
-  } catch (e) { $('admin-msg').textContent = errText(e); }
-  adminReload();
 }
 
 function copyNewCode() {
@@ -3045,6 +3046,7 @@ function kpCiz() {
     var on = b.getAttribute('data-f') === kpF;
     b.className = 'btn px-2 text-xs ' + (on ? 'bg-emerald-600 text-white' : 'bg-zinc-800 text-zinc-300');
   });
+  renderOrphans();
   var list = kpListe(), box = $('kp-list'); box.textContent = '';
   var nIstek = kpRows.filter(function (p) { return p.saha_istek_at && !p.saha; }).length;
   var nSaha = kpRows.filter(function (p) { return p.saha; }).length;
