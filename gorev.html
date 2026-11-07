@@ -18,7 +18,7 @@
 <meta name="twitter:image" content="https://7527iptal.org/og-gonullu.png?v=1">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="/tailwind.css?v=1">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -46,10 +46,16 @@
   .pn-b small { font-size:.62rem; font-weight:600; color:#a1a1aa; }
   .pn-hedef { background:#450a0a; border-color:#991b1b; }
   .pn-hedef small { color:#fca5a5; }
-  #view-board[data-p="gorevler"] .pn-b[data-p="gorevler"], #view-board[data-p="veriler"] .pn-b[data-p="veriler"], #view-board[data-p="harita"] .pn-b[data-p="harita"], #view-board[data-p="ofis"] .pn-b[data-p="ofis"], #view-board[data-p="materyal"] .pn-b[data-p="materyal"], #view-board[data-p="hedef"] .pn-b[data-p="hedef"] { background:#064e3b; border-color:#10b981; color:#fff; }
-  #view-board:not([data-p="gorevler"]) > #task-list, #view-board:not([data-p="veriler"]) > #stats-box, #view-board:not([data-p="harita"]) > #map-box, #view-board:not([data-p="materyal"]) > #mat-box, #view-board:not([data-p="ofis"]) #col-l, #view-board:not([data-p="hedef"]) > #mp-rank-card { display:none !important; }
+  #view-board[data-p="gorevler"] .pn-b[data-p="gorevler"], #view-board[data-p="veriler"] .pn-b[data-p="veriler"], #view-board[data-p="harita"] .pn-b[data-p="harita"], #view-board[data-p="ofis"] .pn-b[data-p="ofis"], #view-board[data-p="materyal"] .pn-b[data-p="materyal"], #view-board[data-p="hedef"] .pn-b[data-p="hedef"], #view-board[data-p="saha"] .pn-b[data-p="saha"] { background:#064e3b; border-color:#10b981; color:#fff; }
+  #view-board:not([data-p="gorevler"]) > #task-list, #view-board:not([data-p="veriler"]) > #stats-box, #view-board:not([data-p="harita"]) > #map-box, #view-board:not([data-p="materyal"]) > #mat-box, #view-board:not([data-p="ofis"]) #col-l, #view-board:not([data-p="hedef"]) > #mp-rank-card, #view-board:not([data-p="saha"]) > #fp-box { display:none !important; }
+  #view-board > #fp-box { order: 5; }
+  .pn-b.pn-saha { grid-column:1 / -1; flex-direction:row; gap:.5rem; background:#1c1917; border-color:#b45309; }
+  .pn-b.pn-saha small { color:#fcd34d; }
+  .live-dot { width:.6rem; height:.6rem; border-radius:9999px; background:#ef4444; box-shadow:0 0 0 0 rgba(239,68,68,.7); animation:livepuls 1.6s infinite; flex:none; }
+  @keyframes livepuls { 0% { box-shadow:0 0 0 0 rgba(239,68,68,.7); } 70% { box-shadow:0 0 0 8px rgba(239,68,68,0); } 100% { box-shadow:0 0 0 0 rgba(239,68,68,0); } }
+  @media (prefers-reduced-motion: reduce) { .live-dot { animation:none; } }
   #view-board > #mp-rank-card { order: 5; }
-  #task-list, #stats-box, #map-box, #mat-box, #mp-rank-card, #col-l > div { scroll-margin-top: 1rem; }
+  #task-list, #stats-box, #map-box, #mat-box, #mp-rank-card, #fp-box, #col-l > div { scroll-margin-top: 1rem; }
   #announce-text.kisa { display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
   #task-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.5rem; }
   #task-list > h3, #task-list > p { grid-column:1 / -1; }
@@ -137,12 +143,13 @@
     </div>
 
     <nav id="pano-nav" aria-label="Pano bölümleri">
-      <button type="button" class="pn-b" data-p="ofis" onclick="panoAc('ofis', true)"><i>💬</i>Sohbet<small>Herkese açık</small></button>
+      <button type="button" class="pn-b" data-p="ofis" onclick="panoAc('ofis', true)"><i>💬</i>Sohbet<small id="pn-sohbet-sm">Herkese açık</small></button>
       <button type="button" class="pn-b" data-p="gorevler" onclick="panoAc('gorevler', true)"><i>📋</i>Görevler<small id="pn-gorev">—</small></button>
       <button type="button" class="pn-b pn-hedef" data-p="hedef" onclick="panoAc('hedef', true)"><i>🎯</i>Bugünün Hedefi<small>Vekiller</small></button>
       <button type="button" class="pn-b" data-p="veriler" onclick="panoAc('veriler', true)"><i>📊</i>Veriler<small>Canlı</small></button>
       <button type="button" class="pn-b" data-p="harita" onclick="panoAc('harita', true)"><i>🗺️</i>Harita<small>İller</small></button>
       <button type="button" class="pn-b" data-p="materyal" onclick="panoAc('materyal', true)"><i>📦</i>Materyal<small>İndir</small></button>
+      <button type="button" class="pn-b pn-saha" data-p="saha" onclick="panoAc('saha', true)"><i>📣</i>Sahadan Paylaş<small id="pn-saha-sm">Eylem · dava · CİMER · imza</small></button>
     </nav>
 
     <div id="vk-modal" style="display:none;position:fixed;inset:0;z-index:2147483500;background:rgba(0,0,0,.8);align-items:center;justify-content:center;padding:16px" onclick="if(event.target===this)this.style.display='none'">
@@ -474,7 +481,17 @@ function siraBoya(pre, cok) {
     <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-3">
       <div class="flex items-center justify-between gap-2">
         <h3 class="text-sm font-bold text-white">💬 Kampanya Sohbeti</h3>
-        <span class="text-[11px] text-zinc-500 text-right">Mesajlar 24 saat sonra silinir · sabitlenenler kalır</span>
+        <button type="button" onclick="sohbetPaylas()" class="btn bg-emerald-700 hover:bg-emerald-600 text-white px-3 py-1.5 whitespace-nowrap">📤 Sohbete davet et</button>
+      </div>
+      <p class="text-[11px] text-zinc-500 -mt-1">Mesajlar 24 saat sonra silinir · sabitlenenler kalır</p>
+      <div id="live-box" class="hidden rounded-xl overflow-hidden border border-red-700 bg-black">
+        <div class="flex items-center gap-2 px-3 py-2 bg-red-950/80">
+          <span class="live-dot" aria-hidden="true"></span>
+          <b class="text-[11px] text-red-200 uppercase tracking-wider whitespace-nowrap">Canlı yayın</b>
+          <span id="live-title" class="text-xs text-white truncate min-w-0"></span>
+        </div>
+        <div id="live-frame" class="aspect-video w-full bg-black"></div>
+        <a id="live-open" target="_blank" rel="noopener noreferrer" class="block text-center text-[11px] text-red-200 underline py-1.5">▶ YouTube'da izle</a>
       </div>
       <div id="chat-pins" class="hidden max-h-48 overflow-y-auto overscroll-contain rounded-xl border border-amber-700/70 bg-amber-950/30 p-2 space-y-2 text-sm"></div>
       <div id="chat-list" class="space-y-2 h-[26rem] overflow-y-auto overscroll-contain pr-1 text-sm"><div class="text-[12px] text-zinc-500">Sohbet yükleniyor...</div></div>
@@ -616,6 +633,60 @@ function siraBoya(pre, cok) {
       <p class="text-[11px] text-zinc-500 leading-relaxed">Bütün afiş, görsel, video, slayt ve paylaşım metinleri alanlara göre burada. Senin alanların üstte açık durur.</p>
       <div id="mat-list" class="space-y-2 text-xs text-zinc-300">Yükleniyor...</div>
     </div>
+
+  <div id="fp-box" class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-3">
+    <div class="flex items-start justify-between gap-3">
+      <div class="min-w-0">
+        <h3 class="font-impact text-lg text-white uppercase tracking-wide">📣 Sahadan Paylaş</h3>
+        <p class="text-[11px] text-zinc-400 leading-relaxed">Şehrindeki eylemi, açtığın davayı, CİMER başvurunu ya da imza kampanyanı buraya ekle. Ekip onayladığında herkese görünür, herkes tek dokunuşla paylaşır.</p>
+      </div>
+      <button type="button" id="fp-new-btn" onclick="fpFormAc()" class="btn bg-emerald-600 hover:bg-emerald-500 text-white whitespace-nowrap">+ Ekle</button>
+    </div>
+
+    <div id="fp-form" class="hidden bg-zinc-950/60 border border-emerald-800/60 rounded-xl p-3 space-y-2">
+      <p class="text-[11px] font-semibold text-zinc-300">Ne paylaşıyorsun?</p>
+      <div id="fp-kind-btns" class="grid grid-cols-2 sm:grid-cols-4 gap-1.5"></div>
+      <input type="text" id="fp-title" maxlength="140" class="inp" placeholder="Başlık">
+      <textarea id="fp-body" rows="4" maxlength="8000" class="inp"></textarea>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <select id="fp-city" class="inp" onchange="fpIlDegisti()"><option value="">İl seçiniz</option></select>
+        <select id="fp-district" class="inp" disabled><option value="">Önce il seçiniz</option></select>
+      </div>
+      <input type="text" id="fp-abroad" maxlength="80" class="inp hidden" placeholder="Ülke / şehir (örn. Almanya / Berlin)">
+      <input type="text" id="fp-place" maxlength="200" class="inp">
+      <div id="fp-date-row" class="space-y-1">
+        <label for="fp-date" id="fp-date-lbl" class="block text-[11px] text-zinc-400"></label>
+        <input type="datetime-local" id="fp-date" class="inp">
+      </div>
+      <input type="url" id="fp-link" maxlength="600" class="inp" inputmode="url">
+      <input type="text" id="fp-case" maxlength="200" class="inp hidden" placeholder="Vaka Almanağı'ndaki vaka numarası ya da linki (varsa)">
+      <div class="flex items-center gap-3 flex-wrap">
+        <label class="inline-flex items-center gap-2 text-[11px] text-emerald-300 underline cursor-pointer">🖼 Afiş / görsel ekle (isteğe bağlı)<input type="file" id="fp-file" accept="image/*" class="hidden" onchange="fpGorselSec(this)"></label>
+        <span id="fp-img-box" class="hidden items-center gap-2"><img id="fp-img" alt="Seçilen görsel" class="h-12 w-12 object-cover rounded-lg"><button type="button" onclick="fpGorselSil()" class="text-zinc-400 text-lg leading-none" aria-label="Görseli kaldır">×</button></span>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <input type="text" id="fp-nick" maxlength="40" class="inp" placeholder="Adın (paylaşımda görünür, isteğe bağlı)">
+        <input type="tel" id="fp-phone" maxlength="20" class="inp" autocomplete="tel" placeholder="Telefonun (zorunlu, yalnızca ekip görür)">
+      </div>
+      <label class="flex items-start gap-2 text-[11px] text-zinc-400 leading-relaxed cursor-pointer">
+        <input type="checkbox" id="fp-consent" class="mt-0.5 shrink-0 accent-emerald-600">
+        <span>Telefonumun şifrelenerek saklanmasını ve paylaşımımın ekip onayından sonra herkese açık yayınlanmasını kabul ediyorum. <button type="button" onclick="openKvkkModal()" class="text-emerald-400 underline font-semibold cursor-pointer">Aydınlatma Metni</button></span>
+      </label>
+      <div class="flex flex-wrap gap-2">
+        <button type="button" id="fp-send" onclick="fpGonder()" class="btn bg-emerald-600 hover:bg-emerald-500 text-white">Onaya gönder</button>
+        <button type="button" onclick="fpFormKapat()" class="btn bg-zinc-800 hover:bg-zinc-700 text-zinc-200">Vazgeç</button>
+      </div>
+      <p id="fp-form-msg" class="text-xs text-red-400 min-h-[16px]"></p>
+    </div>
+
+    <p id="fp-thanks" class="hidden text-xs text-emerald-300 font-semibold bg-emerald-950/60 border border-emerald-800 rounded-lg p-2">✓ Teşekkürler! Paylaşımın ekibe ulaştı. Onaylanınca burada yayınlanır.</p>
+    <div id="fp-kinds" class="flex flex-wrap gap-1.5"></div>
+    <div class="grid grid-cols-2 gap-2">
+      <select id="fp-f-city" class="inp" onchange="fpCiz()" aria-label="İle göre süz"><option value="">Tüm iller</option></select>
+      <button type="button" id="fp-sort" onclick="fpSirala()" class="btn bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs px-2">↓ Yeniden eskiye</button>
+    </div>
+    <div id="fp-list" class="space-y-2 text-sm"><p class="text-[12px] text-zinc-500">Yükleniyor...</p></div>
+  </div>
   </div>
 
     <section id="vol-update" class="bg-zinc-900 border border-zinc-800 p-6 sm:p-8 rounded-2xl shadow-xl space-y-5">
@@ -727,6 +798,7 @@ function siraBoya(pre, cok) {
         <button type="button" data-t="apps" onclick="showAdminTab('apps')" class="btn bg-zinc-800 text-zinc-300">👥 Başvurular</button>
         <button type="button" data-t="gorev" onclick="showAdminTab('gorev')" class="btn bg-zinc-800 text-zinc-300">📢 Duyuru ve Görev</button>
         <button type="button" data-t="mat" onclick="showAdminTab('mat')" class="btn bg-zinc-800 text-zinc-300">📦 Materyal</button>
+        <button type="button" data-t="fp" onclick="showAdminTab('fp')" class="btn bg-zinc-800 text-zinc-300">📣 Sahadan</button>
       </div>
 
       <div class="space-y-2" data-tab="kisi">
@@ -794,6 +866,36 @@ Panele giriş: [LİNK]</textarea>
           <button type="button" id="adm-bc-mailall" onclick="bcMailAll()" class="btn hidden bg-sky-700 hover:bg-sky-600 text-white">✉ E-postası olanların hepsine gönder</button>
         </div>
         <div id="adm-bc-list" class="space-y-2"></div>
+      </div>
+
+      <div class="space-y-2" data-tab="gorev">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-red-400">🔴 Canlı Yayın</h3>
+        <p class="text-[11px] text-zinc-400 leading-relaxed">YouTube'da yayını başlat, yayının "Paylaş" düğmesinden linki kopyala, buraya yapıştırıp "Yayını aç"a bas. Yayın sohbetin üstünde herkese görünür. Bitince "Kapat"a bas.</p>
+        <input type="url" id="adm-live-url" maxlength="300" class="inp" placeholder="https://youtube.com/live/... ya da https://youtu.be/...">
+        <input type="text" id="adm-live-title" maxlength="120" class="inp" placeholder="Başlık (isteğe bağlı, örn. Meclis önünden canlı)">
+        <div class="flex flex-wrap gap-2">
+          <button type="button" onclick="adminLive(true)" class="btn bg-red-600 hover:bg-red-500 text-white">🔴 Yayını aç</button>
+          <button type="button" onclick="adminLive(false)" class="btn bg-zinc-800 hover:bg-zinc-700 text-white">Kapat</button>
+        </div>
+        <p id="adm-live-st" class="text-[11px] text-zinc-400 min-h-[16px]"></p>
+      </div>
+
+      <div class="space-y-2" data-tab="fp">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400">Sahadan Paylaş Kayıtları</h3>
+        <p class="text-[11px] text-zinc-400 leading-relaxed">Gelen eylem, dava, CİMER ve imza kampanyası paylaşımları. Onaylayınca panoda herkese görünür. Her kaydı düzenleyebilir, yayından kaldırabilir, silebilirsin. Telefonu görmek için önce Başvurular sekmesinde özel anahtarını yükle.</p>
+        <div id="fa-filt" class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+          <button type="button" data-f="pending" onclick="faFiltre('pending')" class="btn px-2 text-xs">Onay bekleyen</button>
+          <button type="button" data-f="approved" onclick="faFiltre('approved')" class="btn px-2 text-xs">Yayında</button>
+          <button type="button" data-f="rejected" onclick="faFiltre('rejected')" class="btn px-2 text-xs">Reddedilen</button>
+          <button type="button" data-f="all" onclick="faFiltre('all')" class="btn px-2 text-xs">Tümü</button>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button type="button" onclick="faYukle()" class="btn bg-zinc-800 hover:bg-zinc-700 text-white">Yenile</button>
+          <button type="button" onclick="faDuzenle(null)" class="btn bg-emerald-700 hover:bg-emerald-600 text-white">+ Yeni kayıt (doğrudan yayında)</button>
+        </div>
+        <p id="fa-info" class="text-[11px] text-zinc-400 min-h-[16px]"></p>
+        <div id="fa-edit"></div>
+        <div id="fa-list" class="space-y-2"></div>
       </div>
 
       <div class="space-y-2" data-tab="gorev">
@@ -958,6 +1060,7 @@ Panele giriş: [LİNK]</textarea>
           <li><span class="text-zinc-300">Herkese görünenler:</span> görünen adınız, iliniz (ilçeniz görünmez), avatarınız, mesajlarınız ve üstlendiğiniz görevler. E-posta adresiniz yalnızca kampanya yöneticisine görünür.</li>
           <li><span class="text-zinc-300">Saklama:</span> e-posta adresiniz giriş altyapısı (Supabase) tarafından, giriş yapabilmeniz için <strong class="text-white">şifrelenmeden</strong> saklanır. Sohbet mesajları en geç 24 saat sonra silinir; yönetimin sabitlediği duyuru mesajları kalır.</li>
           <li><span class="text-zinc-300">Aktif gönüllü:</span> stand ve toplantı için bıraktığınız telefon numarası tarayıcınızda şifrelenir, yalnızca kampanya yöneticisi görür.</li>
+          <li><span class="text-zinc-300">Sahadan Paylaş:</span> eylem, dava, CİMER veya imza kampanyası paylaşırken bıraktığınız telefon numarası tarayıcınızda şifrelenir, yalnızca kampanya yöneticisi görür. Paylaşımın kendisi (başlık, metin, yer, tarih, görsel ve isterseniz adınız) yönetici onayından sonra herkese açık yayınlanır.</li>
           <li><span class="text-zinc-300">Aktarım:</span> giriş kodu e-postası Resend altyapısıyla gönderilir; verileriniz başka üçüncü kişilerle paylaşılmaz, satılmaz, reklam amaçlı kullanılmaz</li>
         </ul>
       </div>
@@ -1966,7 +2069,7 @@ function panoAc(p, git) {
   if (p === 'harita') { try { mapLayer(_mapLayer); } catch (e) {} }
   if (p === 'ofis') { var c = $('chat-list'); if (c) c.scrollTop = c.scrollHeight; try { refreshChat(); } catch (e) {} }
   if (git) {
-    var el = { gorevler: 'task-list', hedef: 'mp-rank-card', veriler: 'stats-box', harita: 'map-box', materyal: 'mat-box' }[p];
+    var el = { gorevler: 'task-list', hedef: 'mp-rank-card', veriler: 'stats-box', harita: 'map-box', materyal: 'mat-box', saha: 'fp-box' }[p];
     var t = p === 'ofis' ? $('chat-list').parentElement : $(el);
     if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
@@ -1976,7 +2079,7 @@ function duyuruAc() {
   b.textContent = kisa ? 'Devamını oku' : 'Kısalt';
 }
 window.addEventListener('load', function () {
-  try { var p = localStorage.getItem('7527_pano_bolum'); if (p) panoAc(p); } catch (e) {}
+  try { var p = localStorage.getItem('7527_pano_bolum'); if (p && !/[?&]saha=/.test(location.search)) panoAc(p); } catch (e) {}
 });
 
 function taskCard(t, me) {
@@ -2132,7 +2235,7 @@ function adminSessionSave(pin) { try { sessionStorage.setItem('gv_admin_pin', JS
 function adminSessionClear() { try { sessionStorage.removeItem('gv_admin_pin'); } catch (e) {} adminIdbSet(null); }
 var taskLogRows = [], admClaims = [];
 async function adminReload() {
-  kpYukle();
+  kpYukle(); faYukle(); liveAdminDoldur();
   try { admClaims = (await callRpc('gv_admin_task_claims', { p_pin: adminPin })) || []; } catch (e) { admClaims = []; }
   try { renderAdmin(await callRpc('gv_admin_state', { p_pin: adminPin })); $('admin-msg').textContent = ''; }
   catch (e) { $('admin-msg').textContent = errText(e); }
@@ -3150,6 +3253,486 @@ function kpCsv() {
   document.body.appendChild(a); a.click();
   setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
 }
+
+// ---------- tek "Paylaş": telefonda cihazın paylaşım menüsü, bilgisayarda küçük pencere ----------
+function paylasAc(baslik, metin, url) {
+  if (navigator.share) {
+    navigator.share({ title: baslik, text: metin, url: url }).catch(function () {});
+    return;
+  }
+  var e = encodeURIComponent, tam = metin + '\n\n' + url;
+  var eski = $('ps-modal'); if (eski) eski.remove();
+  var m = h('div', ''); m.id = 'ps-modal';
+  m.setAttribute('style', 'position:fixed;inset:0;z-index:2147483600;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;padding:16px');
+  var k = h('div', 'bg-zinc-900 border border-zinc-700 rounded-2xl p-4 w-full max-w-sm space-y-3');
+  var bas = h('div', 'flex items-center justify-between gap-2');
+  bas.appendChild(h('b', 'text-sm text-white', baslik));
+  var x = h('button', 'text-zinc-400 hover:text-white text-2xl leading-none', '×'); x.type = 'button'; x.setAttribute('aria-label', 'Kapat');
+  x.onclick = function () { m.remove(); }; bas.appendChild(x); k.appendChild(bas);
+  k.appendChild(h('pre', 'text-[12px] text-zinc-300 whitespace-pre-wrap break-words bg-zinc-950 border border-zinc-800 rounded-lg p-2 font-sans max-h-40 overflow-y-auto', tam));
+  var g = h('div', 'grid grid-cols-2 gap-2');
+  [['💬 WhatsApp', 'https://api.whatsapp.com/send?text=' + e(tam), 'bg-emerald-700 hover:bg-emerald-600'],
+   ['𝕏 X', 'https://twitter.com/intent/tweet?text=' + e(metin) + '&url=' + e(url), 'bg-zinc-800 hover:bg-zinc-700'],
+   ['Facebook', 'https://www.facebook.com/sharer/sharer.php?u=' + e(url), 'bg-blue-800 hover:bg-blue-700'],
+   ['Telegram', 'https://t.me/share/url?url=' + e(url) + '&text=' + e(metin), 'bg-sky-700 hover:bg-sky-600']].forEach(function (s) {
+    var a = h('a', 'btn block text-center text-white ' + s[2], s[0]); a.href = s[1]; a.target = '_blank'; a.rel = 'noopener noreferrer'; g.appendChild(a);
+  });
+  k.appendChild(g);
+  var st = h('p', 'text-[11px] text-zinc-400 text-center min-h-[16px]', 'Instagram için metni kopyala, hikâyede ya da gönderide yapıştır.');
+  var kp = actBtn('📋 Metni kopyala', 'w-full bg-zinc-800 hover:bg-zinc-700 text-white', function () {
+    metniKopyala(tam).then(function (ok) { st.textContent = ok ? '✓ Kopyalandı.' : 'Kopyalanamadı, metni seçip kopyala.'; });
+  });
+  k.appendChild(kp); k.appendChild(st);
+  m.appendChild(k);
+  m.addEventListener('click', function (ev) { if (ev.target === m) m.remove(); });
+  document.body.appendChild(m);
+}
+async function metniKopyala(t) {
+  try { await navigator.clipboard.writeText(t); return true; } catch (e) {}
+  try {
+    var a = document.createElement('textarea'); a.value = t; a.setAttribute('readonly', ''); a.style.position = 'fixed'; a.style.opacity = '0';
+    document.body.appendChild(a); a.select(); var ok = document.execCommand('copy'); a.remove(); return ok;
+  } catch (e) { return false; }
+}
+var PANO_URL = 'https://7527iptal.org/gorev.html';
+function sohbetPaylas() {
+  var metin = (liveDurum && liveDurum.on)
+    ? '🔴 Şu an canlı yayındayız! 7527 İptal kampanya sohbetinde yayını izle, sorunu yaz, şehrinden gönüllülerle tanış. #7527İptal'
+    : '💬 7527 İptal kampanya sohbeti herkese açık. Okumak serbest; yazmak için e-postanla bir kez gir, şehrinden gönüllülerle tanış, görev al. #7527İptal';
+  paylasAc('Sohbete davet et', metin, PANO_URL);
+}
+
+// ---------- canlı yayın (sohbetin üstünde) ----------
+var liveDurum = null, liveSon = '';
+function ytId(u) {
+  var m = /(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:[^#\s]*&)?v=|live\/|embed\/|shorts\/))([\w-]{11})/i.exec(u || '');
+  return m ? m[1] : '';
+}
+async function liveYukle() {
+  try { liveDurum = await callRpc('gv_live_get', {}); } catch (e) { return; }
+  liveCiz();
+}
+function liveCiz() {
+  var d = liveDurum || {}, on = !!(d.on && d.url), box = $('live-box'), sm = $('pn-sohbet-sm');
+  box.classList.toggle('hidden', !on);
+  if (sm) { sm.textContent = on ? '🔴 Canlı yayın' : 'Herkese açık'; sm.style.color = on ? '#fca5a5' : ''; }
+  var imza = on ? d.url + '|' + (d.title || '') : '';
+  if (imza === liveSon) return;
+  liveSon = imza;
+  var fr = $('live-frame'); fr.textContent = '';
+  if (!on) return;
+  $('live-title').textContent = d.title || '';
+  var a = $('live-open'); a.href = d.url;
+  var id = ytId(d.url);
+  fr.classList.toggle('hidden', !id);
+  if (id) {
+    var f = document.createElement('iframe');
+    f.src = 'https://www.youtube-nocookie.com/embed/' + id + '?rel=0&playsinline=1';
+    f.title = 'Canlı yayın'; f.allowFullscreen = true;
+    f.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+    f.setAttribute('style', 'width:100%;height:100%;border:0;display:block');
+    fr.appendChild(f);
+  }
+}
+async function adminLive(on) {
+  var st = $('adm-live-st'), url = ($('adm-live-url').value || '').trim(), t = ($('adm-live-title').value || '').trim();
+  st.className = 'text-[11px] min-h-[16px] text-zinc-400';
+  if (on && !/^https:\/\//i.test(url)) { st.textContent = 'YouTube linkini https:// ile başlayacak şekilde yapıştır.'; st.className += ' text-red-400'; return; }
+  try {
+    liveDurum = await callRpc('gv_admin_live_set', { p_pin: adminPin, p_on: on, p_url: url, p_title: t });
+    liveCiz();
+    st.textContent = on ? (ytId(url) ? '✓ Yayın açık: sohbetin üstünde oynuyor.' : '✓ Yayın açık. Bu link sayfaya gömülemedi, "YouTube\'da izle" düğmesiyle açılıyor. youtube.com/live/… biçimindeki linki kullanırsan sayfada oynar.') : '✓ Yayın kapatıldı.';
+  } catch (e) { st.textContent = errText(e); st.className += ' text-red-400'; }
+}
+function liveAdminDoldur() {
+  var d = liveDurum || {};
+  if (d.url && !$('adm-live-url').value) $('adm-live-url').value = d.url;
+  if (d.title && !$('adm-live-title').value) $('adm-live-title').value = d.title;
+  $('adm-live-st').textContent = d.on ? '🔴 Şu an yayın açık.' : '';
+}
+
+// ---------- Sahadan Paylaş ----------
+var FP_TUR = {
+  eylem: { ad: 'Eylem', ik: '📣', renk: 'bg-red-700', baslik: 'Başlık (örn. Kadıköy iskelede stand)', govde: 'Ne yapılacak, kimler çağrılı? Kısaca anlat.', yer: 'Yer / adres', tarih: 'Tarih ve saat (zorunlu)', link: 'Etkinlik linki (varsa)' },
+  dava: { ad: 'Dava', ik: '⚖️', renk: 'bg-amber-700', baslik: 'Başlık (örn. Barınakta ölen köpekler için suç duyurusu)', govde: 'Dava neyle ilgili, şu an hangi aşamada?', yer: 'Mahkeme / savcılık (varsa)', tarih: 'Duruşma tarihi (varsa)', link: 'İlgili haber ya da belge linki (varsa)' },
+  cimer: { ad: 'CİMER', ik: '📝', renk: 'bg-sky-700', baslik: 'Başlık (örn. Belediye barınağı denetlensin)', govde: 'CİMER başvuru metni: başkaları da kopyalayıp aynı başvuruyu yapabilsin.', yer: '', tarih: '', link: '' },
+  imza: { ad: 'İmza', ik: '✍️', renk: 'bg-emerald-700', baslik: 'Kampanyanın adı', govde: 'Kampanya ne istiyor? Kısaca anlat.', yer: '', tarih: '', link: 'İmza kampanyasının linki (zorunlu, https://...)' }
+};
+var fpRows = [], fpTur = '', fpYon = -1, fpFormTur = 'eylem', fpGorsel = null, fpBusy = false, fpAcilacak = 0, _fpImg = {};
+
+function fpTarihMetni(v, saatli) {
+  try {
+    var d = new Date(v);
+    return d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', weekday: saatli ? 'long' : undefined }) +
+      (saatli ? ' · ' + d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }) : '');
+  } catch (e) { return ''; }
+}
+function fpVakaNo(ref) { var m = /(\d+)\D*$/.exec(ref || ''); return m ? m[1] : ''; }
+async function fpYukle() {
+  try { fpRows = (await callRpc('gv_fp_public', {})) || []; } catch (e) { $('fp-list').textContent = 'Paylaşımlar yüklenemedi.'; return; }
+  var sm = $('pn-saha-sm'); if (sm) sm.textContent = fpRows.length ? fpRows.length + ' paylaşım' : 'Eylem · dava · imza';
+  var sel = $('fp-f-city'), secili = sel.value, iller = {};
+  fpRows.forEach(function (r) { var y = r.country || r.city; if (y) iller[y] = 1; });
+  sel.textContent = '';
+  var o0 = document.createElement('option'); o0.value = ''; o0.textContent = 'Tüm iller'; sel.appendChild(o0);
+  Object.keys(iller).sort(function (a, b) { return a.localeCompare(b, 'tr'); }).forEach(function (c) {
+    var o = document.createElement('option'); o.value = c; o.textContent = c; sel.appendChild(o);
+  });
+  sel.value = iller[secili] ? secili : '';
+  fpCiz();
+  if (fpAcilacak) {
+    var hedef = fpAcilacak; fpAcilacak = 0;
+    panoAc('saha', false);
+    setTimeout(function () {
+      var c = $('fp-c-' + hedef);
+      if (c) { c.scrollIntoView({ behavior: 'smooth', block: 'center' }); c.classList.add('ring-2', 'ring-emerald-400'); }
+    }, 300);
+  }
+}
+function fpTurSec(t) { fpTur = t; fpCiz(); }
+function fpSirala() { fpYon = -fpYon; fpCiz(); }
+function fpCiz() {
+  var kb = $('fp-kinds'); kb.textContent = '';
+  [['', 'Tümü']].concat(Object.keys(FP_TUR).map(function (k) { return [k, FP_TUR[k].ik + ' ' + FP_TUR[k].ad]; })).forEach(function (t) {
+    var n = t[0] ? fpRows.filter(function (r) { return r.kind === t[0]; }).length : fpRows.length;
+    var b = actBtn(t[1] + ' (' + n + ')', 'px-2.5 py-1.5 text-[11px] ' + (fpTur === t[0] ? 'bg-emerald-600 text-white' : 'bg-zinc-800 text-zinc-300'), function () { fpTurSec(t[0]); });
+    b.setAttribute('aria-pressed', String(fpTur === t[0])); kb.appendChild(b);
+  });
+  $('fp-sort').textContent = fpYon < 0 ? '↓ Yeniden eskiye' : '↑ Eskiden yeniye';
+  var il = $('fp-f-city').value, box = $('fp-list');
+  var list = fpRows.filter(function (r) { return (!fpTur || r.kind === fpTur) && (!il || (r.country || r.city) === il); });
+  list.sort(function (a, b) {
+    if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+    return fpYon * (new Date(a.event_at || a.at) - new Date(b.event_at || b.at));
+  });
+  box.textContent = '';
+  if (!list.length) { box.appendChild(h('p', 'text-[12px] text-zinc-500', fpRows.length ? 'Bu seçimde paylaşım yok.' : 'Henüz paylaşım yok. İlk paylaşımı sen ekle.')); return; }
+  list.forEach(function (r) { box.appendChild(fpKart(r)); });
+}
+function fpKart(r) {
+  var T = FP_TUR[r.kind] || FP_TUR.eylem;
+  var c = h('div', 'bg-zinc-950/60 border ' + (r.pinned ? 'border-amber-600' : 'border-zinc-800') + ' rounded-xl p-3 space-y-2'); c.id = 'fp-c-' + r.id;
+  var ust = h('div', 'flex flex-wrap items-center gap-2');
+  ust.appendChild(h('span', 'text-[10px] font-bold uppercase tracking-wide text-white px-2 py-0.5 rounded ' + T.renk, T.ik + ' ' + T.ad));
+  if (r.pinned) ust.appendChild(h('span', 'text-[10px] font-bold text-amber-300', '📌 Öne çıkan'));
+  var gecti = r.kind === 'eylem' && r.event_at && new Date(r.event_at) < new Date(Date.now() - 6 * 3600e3);
+  if (gecti) ust.appendChild(h('span', 'text-[10px] text-zinc-500 border border-zinc-700 px-1.5 rounded', 'Gerçekleşti'));
+  c.appendChild(ust);
+  c.appendChild(h('div', 'text-sm text-white font-bold leading-snug break-words', r.title));
+  var yer = [r.country, r.city, r.district].filter(Boolean).join(' / ');
+  if (yer || r.place) c.appendChild(h('div', 'text-[12px] text-zinc-300', '📍 ' + [yer, r.place].filter(Boolean).join(' · ')));
+  if (r.event_at) c.appendChild(h('div', 'text-[12px] text-zinc-300', '🗓 ' + fpTarihMetni(r.event_at, true)));
+  if (r.has_image) {
+    var im = h('img', 'rounded-lg border border-zinc-700 max-h-72 max-w-full cursor-pointer'); im.alt = r.title; im.loading = 'lazy';
+    if (!_fpImg[r.id]) _fpImg[r.id] = callRpc('gv_fp_image', { p_id: r.id });
+    _fpImg[r.id].then(function (s) { if (s) im.src = s; }).catch(function () { delete _fpImg[r.id]; });
+    im.onclick = function () { if (im.src) fpBuyut(im.src, r); };
+    c.appendChild(im);
+  }
+  if (r.body) {
+    var b = h('div', 'text-[13px] text-zinc-200 whitespace-pre-line break-words leading-relaxed', r.body);
+    if (r.body.length > 280) {
+      b.style.display = '-webkit-box'; b.style.webkitLineClamp = '5'; b.style.webkitBoxOrient = 'vertical'; b.style.overflow = 'hidden';
+      var dv = h('button', 'text-[11px] text-emerald-300 underline cursor-pointer', 'Devamını oku'); dv.type = 'button';
+      dv.onclick = function () { var acik = b.style.display === 'block'; b.style.display = acik ? '-webkit-box' : 'block'; dv.textContent = acik ? 'Devamını oku' : 'Kısalt'; };
+      c.appendChild(b); c.appendChild(dv);
+    } else c.appendChild(b);
+  }
+  if (r.sender_nick) c.appendChild(h('div', 'text-[11px] text-zinc-500', 'Paylaşan: ' + r.sender_nick));
+  var ey = h('div', 'flex flex-wrap gap-2 pt-1'), st = h('p', 'text-[11px] text-emerald-300 min-h-[14px]');
+  var link = safeUrl(r.link) || (/^http:\/\//i.test(r.link || '') ? r.link : '');
+  if (r.kind === 'imza' && link) { var a1 = h('a', 'btn bg-emerald-600 hover:bg-emerald-500 text-white', '✍️ İmzala'); a1.href = link; a1.target = '_blank'; a1.rel = 'noopener noreferrer'; ey.appendChild(a1); }
+  else if (link) { var a2 = h('a', 'btn bg-zinc-800 hover:bg-zinc-700 text-white', '🔗 Bağlantıyı aç'); a2.href = link; a2.target = '_blank'; a2.rel = 'noopener noreferrer'; ey.appendChild(a2); }
+  var vno = r.kind === 'dava' ? fpVakaNo(r.case_ref) : '';
+  if (vno) { var a3 = h('a', 'btn bg-amber-800 hover:bg-amber-700 text-white', '📚 Vaka Almanağı'); a3.href = 'https://7527iptal.org/hakikat.html?vaka=' + vno + '#vakalar'; a3.target = '_blank'; a3.rel = 'noopener'; ey.appendChild(a3); }
+  if (r.kind === 'cimer' && r.body) {
+    ey.appendChild(actBtn('📋 Metni kopyala', 'bg-sky-800 hover:bg-sky-700 text-white', function () {
+      metniKopyala(r.body).then(function (ok) { st.textContent = ok ? '✓ Kopyalandı. cimer.gov.tr\'de "Başvuru Yap"a girip yapıştır.' : 'Kopyalanamadı, metni seçip kopyala.'; });
+    }));
+    var a4 = h('a', 'btn bg-zinc-800 hover:bg-zinc-700 text-white', '🏛 CİMER\'e git'); a4.href = 'https://www.cimer.gov.tr/'; a4.target = '_blank'; a4.rel = 'noopener noreferrer'; ey.appendChild(a4);
+  }
+  ey.appendChild(actBtn('📤 Paylaş', 'bg-emerald-800 hover:bg-emerald-700 text-white', function () { fpPaylas(r); }));
+  c.appendChild(ey); c.appendChild(st);
+  return c;
+}
+function fpBuyut(src, r) {
+  var b = $('task-modal-body'), z = h('img', 'w-full rounded-xl'); z.src = src; z.alt = r.title;
+  b.textContent = ''; b.appendChild(z);
+  var dl = h('a', 'btn block text-center bg-emerald-600 hover:bg-emerald-500 text-white mt-2', '⬇ Görseli indir'); dl.href = src; dl.download = '7527iptal-sahadan-' + r.id + '.jpg';
+  b.appendChild(dl);
+  $('task-modal').classList.add('on');
+}
+function fpPaylas(r) {
+  var yer = [r.city, r.district].filter(Boolean).join(' / ') || r.country || '';
+  var s = [];
+  if (r.kind === 'eylem') {
+    s.push('📣 ' + r.title);
+    if (yer || r.place) s.push('📍 ' + [yer, r.place].filter(Boolean).join(' · '));
+    if (r.event_at) s.push('🗓 ' + fpTarihMetni(r.event_at, true));
+    s.push('Sen de gel, sesimizi birlikte yükseltelim. #7527İptal');
+  } else if (r.kind === 'dava') {
+    s.push('⚖️ ' + r.title); if (yer) s.push('📍 ' + yer);
+    s.push('Davayı takip ediyoruz, cezasızlığa izin yok. #7527İptal');
+  } else if (r.kind === 'cimer') {
+    s.push('📝 CİMER\'e sen de yaz: ' + r.title);
+    s.push('Başvuru metni hazır: kopyala, yapıştır, gönder. #7527İptal');
+  } else {
+    s.push('✍️ ' + r.title);
+    s.push('İmzala ve yay. Her imza bir can için. #7527İptal');
+  }
+  paylasAc('Paylaş', s.join('\n'), PANO_URL + '?saha=' + r.id);
+}
+
+// form
+function fpFormAc() {
+  $('fp-thanks').classList.add('hidden');
+  $('fp-form').classList.remove('hidden');
+  $('fp-new-btn').classList.add('hidden');
+  if (!$('fp-city').options[1]) {
+    CITIES.forEach(function (c) { var o = document.createElement('option'); o.value = c; o.textContent = c; $('fp-city').appendChild(o); });
+    var y = document.createElement('option'); y.value = '__yd'; y.textContent = 'Yurtdışı'; $('fp-city').appendChild(y);
+  }
+  if (meInfo && meInfo.profile) {
+    if (!$('fp-nick').value) $('fp-nick').value = meInfo.nick || '';
+    if (!$('fp-city').value && meInfo.city && !meInfo.country) { $('fp-city').value = meInfo.city; fpIlDegisti(); if (meInfo.district) $('fp-district').value = meInfo.district; }
+  }
+  fpTurAyarla(fpFormTur);
+  setTimeout(function () { try { $('fp-form').scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {} }, 50);
+}
+function fpFormKapat() { $('fp-form').classList.add('hidden'); $('fp-new-btn').classList.remove('hidden'); $('fp-form-msg').textContent = ''; }
+function fpTurAyarla(t) {
+  fpFormTur = t; var T = FP_TUR[t];
+  var kb = $('fp-kind-btns'); kb.textContent = '';
+  Object.keys(FP_TUR).forEach(function (k) {
+    var b = actBtn(FP_TUR[k].ik + ' ' + FP_TUR[k].ad, 'px-2 text-xs ' + (k === t ? 'bg-emerald-600 text-white' : 'bg-zinc-800 text-zinc-300'), function () { fpTurAyarla(k); });
+    b.setAttribute('aria-pressed', String(k === t)); kb.appendChild(b);
+  });
+  $('fp-title').placeholder = T.baslik;
+  $('fp-body').placeholder = T.govde;
+  $('fp-body').rows = t === 'cimer' ? 8 : 4;
+  $('fp-place').classList.toggle('hidden', !T.yer); $('fp-place').placeholder = T.yer;
+  $('fp-date-row').classList.toggle('hidden', !T.tarih); $('fp-date-lbl').textContent = T.tarih;
+  $('fp-link').classList.toggle('hidden', !T.link); $('fp-link').placeholder = T.link;
+  $('fp-case').classList.toggle('hidden', t !== 'dava');
+}
+function fpIlDegisti() {
+  var il = $('fp-city').value, d = $('fp-district');
+  $('fp-abroad').classList.toggle('hidden', il !== '__yd');
+  d.textContent = '';
+  var o0 = document.createElement('option'); o0.value = ''; o0.textContent = il && il !== '__yd' ? 'İlçe (isteğe bağlı)' : 'Önce il seçiniz'; d.appendChild(o0);
+  (IL_ILCE[il] || []).forEach(function (x) { var o = document.createElement('option'); o.value = x; o.textContent = x; d.appendChild(o); });
+  d.disabled = !(IL_ILCE[il] || []).length;
+}
+function fpGorselSil() { fpGorsel = null; $('fp-file').value = ''; $('fp-img-box').classList.add('hidden'); $('fp-img-box').classList.remove('flex'); }
+async function fpGorselSec(inp) {
+  var f = inp.files && inp.files[0], msg = $('fp-form-msg');
+  if (!f) return;
+  try {
+    var url = URL.createObjectURL(f), im = new Image();
+    await new Promise(function (ok, no) { im.onload = ok; im.onerror = no; im.src = url; });
+    var s = null;
+    [[1600, .75], [1280, .7], [1024, .6], [800, .55]].some(function (d) {
+      var k = Math.min(1, d[0] / Math.max(im.naturalWidth, im.naturalHeight)), c = document.createElement('canvas');
+      c.width = Math.round(im.naturalWidth * k); c.height = Math.round(im.naturalHeight * k);
+      c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+      s = c.toDataURL('image/jpeg', d[1]); return s.length <= 560000;
+    });
+    URL.revokeObjectURL(url);
+    if (!s || s.length > 560000) { msg.textContent = 'Görsel çok büyük, başka bir görsel dene.'; fpGorselSil(); return; }
+    fpGorsel = s; $('fp-img').src = s; $('fp-img-box').classList.remove('hidden'); $('fp-img-box').classList.add('flex'); msg.textContent = '';
+  } catch (e) { msg.textContent = 'Bu görsel açılamadı.'; fpGorselSil(); }
+}
+async function fpGonder() {
+  if (fpBusy) return;
+  var msg = $('fp-form-msg'), t = fpFormTur, T = FP_TUR[t];
+  msg.textContent = '';
+  var title = ($('fp-title').value || '').trim(), body = ($('fp-body').value || '').trim();
+  var il = $('fp-city').value, yurtdisi = il === '__yd';
+  var link = T.link ? ($('fp-link').value || '').trim() : '';
+  var tarihV = T.tarih ? $('fp-date').value : '';
+  var tel = ($('fp-phone').value || '').trim();
+  if (title.length < 3) { msg.textContent = 'Başlık yaz (en az 3 harf).'; $('fp-title').focus(); return; }
+  if (t === 'eylem' && (!il || (yurtdisi && !$('fp-abroad').value.trim()))) { msg.textContent = 'Eylemin yapılacağı ili seç.'; return; }
+  if (t === 'eylem' && !tarihV) { msg.textContent = 'Eylemin tarihini ve saatini seç.'; $('fp-date').focus(); return; }
+  if (t === 'cimer' && body.length < 20) { msg.textContent = 'CİMER başvuru metnini yaz (en az 20 harf).'; $('fp-body').focus(); return; }
+  if (t === 'imza' && !/^https?:\/\/\S+\.\S+/i.test(link)) { msg.textContent = 'İmza kampanyasının linkini yapıştır (https:// ile başlar).'; $('fp-link').focus(); return; }
+  if (link && !/^https?:\/\/\S+\.\S+/i.test(link)) { msg.textContent = 'Link https:// ile başlamalı.'; $('fp-link').focus(); return; }
+  if (contactKind(tel).type !== 'phone') { msg.textContent = 'Geçerli bir telefon numarası yaz. Ekip gerektiğinde seninle iletişime geçer, kimse görmez.'; $('fp-phone').focus(); return; }
+  if (!$('fp-consent').checked) { msg.textContent = 'Göndermek için onay kutusunu işaretle.'; return; }
+  if (!cryptoAvailable()) { msg.textContent = errText(new Error('crypto_unavailable')); return; }
+  var ulke = '', sehir = '', ilce = '';
+  if (yurtdisi) { var p = $('fp-abroad').value.split('/'); ulke = (p[0] || '').trim(); sehir = (p.slice(1).join('/') || '').trim(); }
+  else { sehir = il; ilce = $('fp-district').value || ''; }
+  fpBusy = true;
+  var b = $('fp-send'); b.disabled = true; b.textContent = 'Gönderiliyor...';
+  try {
+    var nick = ($('fp-nick').value || '').trim();
+    var env = await encryptPayload({ phone: tel, nick: nick, email: (meInfo && meInfo.email) || '', at: new Date().toISOString() });
+    await callRpc('gv_fp_submit', {
+      p_kind: t, p_title: title, p_body: body, p_country: ulke, p_city: sehir, p_district: ilce,
+      p_place: T.yer ? ($('fp-place').value || '').trim() : '', p_event_at: tarihV ? new Date(tarihV).toISOString() : null,
+      p_link: link, p_case_ref: t === 'dava' ? ($('fp-case').value || '').trim() : '', p_image: fpGorsel,
+      p_sender_nick: nick, p_phone_enc: env
+    });
+    ['fp-title', 'fp-body', 'fp-place', 'fp-date', 'fp-link', 'fp-case', 'fp-phone'].forEach(function (id) { $(id).value = ''; });
+    $('fp-consent').checked = false; fpGorselSil();
+    fpFormKapat();
+    $('fp-thanks').classList.remove('hidden');
+    try { $('fp-thanks').scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
+  } catch (e) {
+    var m = (e && e.message) || '';
+    msg.textContent = m.indexOf('rate_limited') !== -1 ? 'Kısa sürede çok fazla paylaşım gönderildi. Bir saat sonra tekrar dene.'
+      : m.indexOf('link_required') !== -1 || m.indexOf('invalid_url') !== -1 ? 'Link geçersiz. https:// ile başlayan tam linki yapıştır.'
+      : m.indexOf('eylem_fields') !== -1 ? 'Eylemin ilini ve tarihini seç.'
+      : m.indexOf('invalid_image') !== -1 ? 'Görsel kaydedilemedi, başka bir görsel dene.'
+      : errText(e);
+  } finally { fpBusy = false; b.disabled = false; b.textContent = 'Onaya gönder'; }
+}
+
+// ---------- yönetici: Sahadan Paylaş kayıtları ----------
+var faRows = [], faF = 'pending';
+async function faYukle() {
+  if (!adminPin) return;
+  try { faRows = (await callRpc('gv_admin_fp_list', { p_pin: adminPin })) || []; faCiz(); }
+  catch (e) { $('fa-info').textContent = errText(e); }
+}
+function faFiltre(f) { faF = f; faCiz(); }
+var FA_DURUM = { pending: ['ONAY BEKLİYOR', 'bg-amber-600 text-black'], approved: ['YAYINDA', 'bg-emerald-700 text-white'], rejected: ['REDDEDİLDİ', 'bg-zinc-700 text-zinc-200'] };
+function faCiz() {
+  Array.prototype.forEach.call(document.querySelectorAll('#fa-filt button'), function (b) {
+    b.className = 'btn px-2 text-xs ' + (b.getAttribute('data-f') === faF ? 'bg-emerald-600 text-white' : 'bg-zinc-800 text-zinc-300');
+  });
+  var n = { pending: 0, approved: 0, rejected: 0 };
+  faRows.forEach(function (r) { n[r.status] = (n[r.status] || 0) + 1; });
+  $('fa-info').textContent = n.pending + ' onay bekliyor · ' + n.approved + ' yayında · ' + n.rejected + ' reddedildi';
+  var tab = document.querySelector('#adm-tabs button[data-t="fp"]');
+  if (tab) tab.textContent = '📣 Sahadan' + (n.pending ? ' (' + n.pending + ')' : '');
+  var box = $('fa-list'); box.textContent = '';
+  var list = faRows.filter(function (r) { return faF === 'all' || r.status === faF; });
+  if (!list.length) { box.appendChild(h('p', 'text-xs text-zinc-500', 'Bu listede kayıt yok.')); return; }
+  list.forEach(function (r) {
+    var T = FP_TUR[r.kind] || FP_TUR.eylem, D = FA_DURUM[r.status] || FA_DURUM.pending;
+    var row = h('div', 'bg-zinc-950/60 border rounded-lg p-2 space-y-1.5 ' + (r.status === 'pending' ? 'border-amber-600' : 'border-zinc-800'));
+    var top = h('div', 'flex flex-wrap items-center gap-2');
+    top.appendChild(h('span', 'text-[10px] font-bold px-1.5 rounded ' + D[1], D[0]));
+    top.appendChild(h('span', 'text-[10px] font-bold text-white px-1.5 rounded ' + T.renk, T.ik + ' ' + T.ad));
+    if (r.pinned) top.appendChild(h('span', 'text-[10px] text-amber-300 font-bold', '📌'));
+    top.appendChild(h('span', 'text-xs text-white font-semibold', r.title));
+    row.appendChild(top);
+    var meta = [[r.country, r.city, r.district].filter(Boolean).join(' / '), r.place, r.event_at ? fpTarihMetni(r.event_at, true) : '', r.sender_nick ? 'Paylaşan: ' + r.sender_nick : '', 'Geldi: ' + kpTarih(r.created_at)].filter(Boolean).join(' · ');
+    row.appendChild(h('div', 'text-[11px] text-zinc-400', meta));
+    if (r.body) row.appendChild(h('div', 'text-[11px] text-zinc-300 whitespace-pre-line break-words max-h-24 overflow-y-auto', r.body));
+    if (r.link) { var a = h('a', 'text-[11px] text-sky-300 underline break-all', r.link); a.href = r.link; a.target = '_blank'; a.rel = 'noopener noreferrer'; row.appendChild(a); }
+    if (r.case_ref) row.appendChild(h('div', 'text-[11px] text-amber-300', 'Vaka: ' + r.case_ref));
+    var out = h('div', 'flex flex-wrap items-center gap-2 text-[11px] text-zinc-300');
+    var line = h('div', 'flex flex-wrap gap-2');
+    if (r.status !== 'approved') line.appendChild(actBtn('✓ Yayınla', 'bg-emerald-600 hover:bg-emerald-500 text-white', function () { faDurum(r, 'approved'); }));
+    if (r.status === 'approved') line.appendChild(actBtn('Yayından kaldır', 'bg-zinc-800 hover:bg-zinc-700 text-zinc-200', function () { faDurum(r, 'pending'); }));
+    if (r.status !== 'rejected') line.appendChild(actBtn('Reddet', 'bg-zinc-800 hover:bg-zinc-700 text-zinc-200', function () { faDurum(r, 'rejected'); }));
+    line.appendChild(actBtn(r.pinned ? 'Öne çıkarmayı kaldır' : '📌 Öne çıkar', 'bg-zinc-800 hover:bg-zinc-700 text-amber-300', function () { faKaydet(r, { pinned: !r.pinned }); }));
+    line.appendChild(actBtn('✎ Düzenle', 'bg-zinc-800 hover:bg-zinc-700 text-white', function () { faDuzenle(r); }));
+    if (r.has_image) line.appendChild(actBtn('🖼 Görsel', 'bg-zinc-800 hover:bg-zinc-700 text-white', async function () {
+      try { var s = await callRpc('gv_admin_fp_image', { p_pin: adminPin, p_id: r.id }); if (s) fpBuyut(s, r); } catch (e) { $('admin-msg').textContent = errText(e); }
+    }));
+    if (r.phone_enc) line.appendChild(actBtn('📞 Telefon', 'bg-sky-800 hover:bg-sky-700 text-white', function () { faTelefon(r, out); }));
+    line.appendChild(actBtn('🗑 Sil', 'bg-red-900 hover:bg-red-800 text-white', async function () {
+      if (!confirm('"' + r.title + '" kalıcı olarak silinsin mi?')) return;
+      try { await callRpc('gv_admin_fp_delete', { p_pin: adminPin, p_id: r.id }); faYukle(); fpYukle(); } catch (e) { $('admin-msg').textContent = errText(e); }
+    }));
+    row.appendChild(line); row.appendChild(out);
+    box.appendChild(row);
+  });
+}
+async function faTelefon(r, out) {
+  out.textContent = '';
+  if (!adminKey) { out.textContent = 'Önce Başvurular sekmesinde özel anahtar dosyanı ve parolanı girip "Başvuruları Yükle" de.'; return; }
+  try {
+    var c = await decryptPayload(adminKey, r.phone_enc), ck = contactKind(c.phone || '');
+    out.appendChild(h('span', 'font-semibold text-white select-all', (c.nick ? c.nick + ' · ' : '') + (c.phone || '')));
+    if (c.email) out.appendChild(h('span', 'text-sky-300 select-all', c.email));
+    if (ck.type === 'phone') {
+      var wa = h('a', 'btn bg-emerald-700 text-white', '💬 WhatsApp');
+      wa.href = 'https://wa.me/' + ck.value + '?text=' + encodeURIComponent('Merhaba, 7527 İptal panosuna gönderdiğin "' + r.title + '" paylaşımı hakkında yazıyoruz.');
+      wa.target = '_blank'; wa.rel = 'noopener noreferrer'; out.appendChild(wa);
+      var tl = h('a', 'btn bg-zinc-800 text-white', '📞 Ara'); tl.href = 'tel:+' + ck.value; out.appendChild(tl);
+    }
+  } catch (e) { out.textContent = 'Telefon çözülemedi (anahtar bu kayda uymuyor).'; }
+}
+function faAlanlar(r, deg) {
+  var v = {};
+  ['kind', 'title', 'body', 'country', 'city', 'district', 'place', 'event_at', 'link', 'case_ref', 'sender_nick', 'status', 'pinned'].forEach(function (k) { v[k] = r ? r[k] : null; });
+  Object.keys(deg || {}).forEach(function (k) { v[k] = deg[k]; });
+  return {
+    p_pin: adminPin, p_id: r ? r.id : null, p_kind: v.kind || 'eylem', p_title: v.title || '', p_body: v.body || '',
+    p_country: v.country || '', p_city: v.city || '', p_district: v.district || '', p_place: v.place || '',
+    p_event_at: v.event_at || null, p_link: v.link || '', p_case_ref: v.case_ref || '',
+    p_image: deg && 'image' in deg ? deg.image : null, p_sender_nick: v.sender_nick || '',
+    p_status: v.status || 'approved', p_pinned: !!v.pinned
+  };
+}
+async function faKaydet(r, deg) {
+  try { await callRpc('gv_admin_fp_save', faAlanlar(r, deg)); $('admin-msg').textContent = ''; await faYukle(); fpYukle(); return true; }
+  catch (e) { $('admin-msg').textContent = errText(e); return false; }
+}
+function faDurum(r, s) { faKaydet(r, { status: s }); }
+function yerelZaman(v) {
+  if (!v) return '';
+  var d = new Date(v), p = function (n) { return (n < 10 ? '0' : '') + n; };
+  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + 'T' + p(d.getHours()) + ':' + p(d.getMinutes());
+}
+function faDuzenle(r) {
+  var box = $('fa-edit'); box.textContent = '';
+  var f = h('div', 'bg-zinc-900 border border-emerald-700 rounded-lg p-3 space-y-2');
+  f.appendChild(h('div', 'text-xs font-bold text-emerald-300', r ? 'Kaydı düzenle' : 'Yeni kayıt'));
+  function etiket(t) { f.appendChild(h('div', 'text-[10px] text-zinc-400', t)); }
+  function girdi(t, val, tip) { etiket(t); var i = h('input', 'inp'); i.type = tip || 'text'; i.value = val || ''; i.setAttribute('aria-label', t); f.appendChild(i); return i; }
+  function secim(t, ops, val) { etiket(t); var s = h('select', 'inp'); ops.forEach(function (o) { var op = document.createElement('option'); op.value = o[0]; op.textContent = o[1]; if (o[0] === val) op.selected = true; s.appendChild(op); }); s.setAttribute('aria-label', t); f.appendChild(s); return s; }
+  var sKind = secim('Tür', Object.keys(FP_TUR).map(function (k) { return [k, FP_TUR[k].ik + ' ' + FP_TUR[k].ad]; }), r ? r.kind : 'eylem');
+  var iTitle = girdi('Başlık', r && r.title);
+  etiket('Metin'); var iBody = h('textarea', 'inp'); iBody.rows = 5; iBody.value = (r && r.body) || ''; iBody.setAttribute('aria-label', 'Metin'); f.appendChild(iBody);
+  var iUl = girdi('Ülke (Türkiye ise boş bırak)', r && r.country), iIl = girdi('İl / şehir', r && r.city), iIc = girdi('İlçe', r && r.district);
+  var iYer = girdi('Yer / adres / mahkeme', r && r.place), iTar = girdi('Tarih ve saat', yerelZaman(r && r.event_at), 'datetime-local');
+  var iLink = girdi('Link', r && r.link, 'url'), iVaka = girdi('Vaka Almanağı (vaka no ya da link)', r && r.case_ref), iNick = girdi('Paylaşan adı', r && r.sender_nick);
+  var sDur = secim('Durum', [['approved', 'Yayında'], ['pending', 'Onay bekliyor'], ['rejected', 'Reddedildi']], r ? r.status : 'approved');
+  var pinL = h('label', 'flex items-center gap-2 text-[11px] text-zinc-300'); var iPin = h('input', 'accent-emerald-600'); iPin.type = 'checkbox'; iPin.checked = !!(r && r.pinned);
+  pinL.appendChild(iPin); pinL.appendChild(document.createTextNode('📌 Öne çıkar (listenin en üstünde durur)')); f.appendChild(pinL);
+  var yeniGorsel;
+  var gl = h('div', 'flex flex-wrap items-center gap-3 text-[11px]');
+  var fl = h('label', 'text-emerald-300 underline cursor-pointer', '🖼 ' + (r && r.has_image ? 'Görseli değiştir' : 'Görsel ekle'));
+  var fi = h('input', 'hidden'); fi.type = 'file'; fi.accept = 'image/*'; fl.appendChild(fi); gl.appendChild(fl);
+  var gs = h('span', 'text-zinc-400', ''); gl.appendChild(gs);
+  fi.onchange = async function () {
+    var dosya = fi.files && fi.files[0]; if (!dosya) return;
+    try {
+      var url = URL.createObjectURL(dosya), im = new Image();
+      await new Promise(function (ok, no) { im.onload = ok; im.onerror = no; im.src = url; });
+      var k = Math.min(1, 1600 / Math.max(im.naturalWidth, im.naturalHeight)), c = document.createElement('canvas');
+      c.width = Math.round(im.naturalWidth * k); c.height = Math.round(im.naturalHeight * k);
+      c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+      var s = c.toDataURL('image/jpeg', .75); if (s.length > 560000) s = c.toDataURL('image/jpeg', .55);
+      yeniGorsel = s; gs.textContent = '✓ Yeni görsel hazır';
+    } catch (e) { gs.textContent = 'Görsel açılamadı.'; }
+  };
+  if (r && r.has_image) {
+    var sil = actBtn('Görseli kaldır', 'bg-zinc-800 hover:bg-zinc-700 text-red-300 px-2 py-1', function () { yeniGorsel = ''; gs.textContent = 'Görsel kaydedince kaldırılacak'; });
+    gl.appendChild(sil);
+  }
+  f.appendChild(gl);
+  var bl = h('div', 'flex flex-wrap gap-2');
+  bl.appendChild(actBtn('Kaydet', 'bg-emerald-600 hover:bg-emerald-500 text-white', async function () {
+    if (!iTitle.value.trim()) { alert('Başlık yazılmalı.'); return; }
+    var deg = { kind: sKind.value, title: iTitle.value.trim(), body: iBody.value, country: iUl.value, city: iIl.value, district: iIc.value,
+      place: iYer.value, event_at: iTar.value ? new Date(iTar.value).toISOString() : null, link: iLink.value.trim(), case_ref: iVaka.value,
+      sender_nick: iNick.value, status: sDur.value, pinned: iPin.checked };
+    if (yeniGorsel !== undefined) deg.image = yeniGorsel;
+    if (await faKaydet(r, deg)) box.textContent = '';
+  }));
+  bl.appendChild(actBtn('Vazgeç', 'bg-zinc-800 hover:bg-zinc-700 text-zinc-200', function () { box.textContent = ''; }));
+  f.appendChild(bl);
+  box.appendChild(f);
+  try { f.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {}
+}
+
 // ---------- acilis ----------
 (async function init() {
   AREAS.forEach(function (a) { var o = document.createElement('option'); o.value = a; o.textContent = a; $('adm-t-area').appendChild(o); var o2 = document.createElement('option'); o2.value = a; o2.textContent = 'Alan: ' + a; $('adm-m-area').appendChild(o2); });
@@ -3163,7 +3746,12 @@ function kpCsv() {
     if (k) history.replaceState(null, '', location.pathname + location.hash);
   } catch (e) {}
   otpEmail = otpOku();
-  refreshBoard(); refreshChat(true); loadMaterials(); loadMap(); refreshOnline();
+  try {
+    var sh = parseInt(new URLSearchParams(location.search).get('saha') || '', 10);
+    if (sh > 0) { fpAcilacak = sh; panoAc('saha', false); }
+  } catch (e) {}
+  refreshBoard(); refreshChat(true); loadMaterials(); loadMap(); refreshOnline(); liveYukle(); fpYukle();
+  setInterval(function () { if (document.visibilityState === 'visible') liveYukle(); }, 60000);
   await oturumYukle();
   $('auth-oldnote').classList.toggle('hidden', !load('gv_code'));
   boardTimer = setInterval(function () { if (document.visibilityState === 'visible') refreshBoard(); }, 60000);

@@ -20,8 +20,8 @@
 <meta name="twitter:title" content="7527 İPTAL! İmzacısı Ol">
 <meta name="twitter:description" content="Öldüren değil, yaşatan ol. Dilekçeni oluştur, vekiline ilet. 2 dakikanı ayır, canlar için ses ol.">
 <meta name="twitter:image" content="https://7527iptal.org/halk-iradesi.png?v=2">
-<!-- Tailwind CSS via CDN -->
-<script src="https://cdn.tailwindcss.com"></script>
+<!-- Tailwind: hazır CSS dosyası -->
+<link rel="stylesheet" href="/tailwind.css?v=1">
 <!-- QRCode.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <!-- Supabase JS -->
@@ -3526,30 +3526,16 @@ function adimGoster(i) {
 }
 function openAdimModal() {
   var m = document.getElementById('adim-modal');
-  if (m) { m.style.display = 'flex'; adimGoster(1); adimDosyaHazirla(); }
+  if (m) { m.style.display = 'flex'; adimGoster(1); }
 }
-// Slayt paylaşımı: telefonda cihaz menüsü (9 görsel), yoksa mevcut paylaşım penceresi
-var adimDosyalar = null;
+// Slayt paylaşımı: tek link gider; açan kişi slaytları sayfada kaydırarak izler
 function adimMetni() {
   return '📲 Dilekçeni adım adım gönder!\nAnayasa\'nın 74. maddesindeki dilekçe hakkınla 7527\'nin iptalini iste. 6 adımı sırayla izle, hiçbir adımı atlama.\nSen dilekçeni gönder, vekilin Meclis\'te imzacı olsun.';
-}
-function adimDosyaHazirla() {
-  if (adimDosyalar || !navigator.canShare) return;
-  var isler = [];
-  for (var i = 1; i <= ADIM_SLAYT; i++) {
-    (function (n) {
-      isler.push(fetch(adimUrl(n)).then(function (r) { return r.blob(); }).then(function (b) {
-        return new File([b], 'dilekce-nasil-gonderilir-' + n + '.png', { type: 'image/png' });
-      }));
-    })(i);
-  }
-  Promise.all(isler).then(function (d) { if (navigator.canShare({ files: d })) adimDosyalar = d; }).catch(function () {});
 }
 function adimPaylas() {
   var link = SITE_URL + '/paylas-adim.html', ad = 'Dilekçe nasıl gönderilir?';
   if (navigator.share) {
-    var v = adimDosyalar ? { files: adimDosyalar, text: adimMetni() + '\n\n7527iptal.org/paylas-adim.html' } : { title: ad, text: adimMetni(), url: link };
-    navigator.share(v).catch(function () {});
+    navigator.share({ title: ad, text: adimMetni(), url: link }).catch(function () {});
     return;
   }
   closeAdimModal();
@@ -3727,7 +3713,17 @@ loadScriptOnce('jspdf.umd.min.js', function() { return !!(window.jspdf && window
 var petitionBusy = false;
 var currentTekrarKey = '';
 
+// Düğmeye basıldığı an "Kontrol ediliyor..." yazar; sunucu kontrolü sürerken ekran donmuş görünmez
+var _gonderimSuruyor = false;
 async function sendPetitionViaEmail() {
+  if (_gonderimSuruyor || petitionBusy) return;
+  var b0 = document.getElementById('petition-send-btn'), h0 = b0 ? b0.innerHTML : '';
+  _gonderimSuruyor = true;
+  if (b0) { b0.disabled = true; b0.textContent = 'Kontrol ediliyor...'; }
+  try { await _dilekceGonder(); }
+  finally { _gonderimSuruyor = false; if (b0) { b0.disabled = false; b0.innerHTML = h0; } }
+}
+async function _dilekceGonder() {
   if (petitionBusy) return;
 
   var btn = document.getElementById('petition-send-btn');
@@ -3778,8 +3774,7 @@ async function sendPetitionViaEmail() {
                    ((selectedTarget === 'cb' || selectedTarget === 'mb') && hedefGonderildi(selectedTarget));
   if (zatenGitti) {
     var hedefAdi = selectedTarget === 'cb' ? 'Cumhurbaşkanlığı' : selectedTarget === 'mb' ? 'TBMM Başkanlığı' : selectedMP.name;
-    alert(hedefAdi + ' için bu ad-soyadla dilekçe zaten gönderilmiş. Aynı hedefe ikinci dilekçe oluşturulmaz.\n\n' + kalanMetni());
-    try { hedefSunucuKontrol(); } catch (e) {}
+    sonrakineYonlendir(hedefAdi + ' için bu ad-soyadla dilekçe zaten gönderilmiş. Aynı hedefe ikinci dilekçe oluşturulmaz.');
     return;
   }
     var tekrarAnahtar = '7527_gonderim_' + selectedTarget +
@@ -3798,7 +3793,7 @@ async function sendPetitionViaEmail() {
       bekleyenSil(oncekiNo); oncekiNo = ''; onayli = false;
     } else {
       if (selectedTarget === 'mp' && selectedMP) { try { markMpAsSent(selectedMP.id); filterMps(); updateSentMpNotice(); } catch (e) {} }
-      alert('Bu hedefe dilekçenizi zaten gönderdiniz. Aynı hedefe ikinci dilekçe oluşturulmaz.\n\n' + kalanMetni());
+      sonrakineYonlendir('Bu hedefe dilekçeni zaten gönderdin. Aynı hedefe ikinci dilekçe oluşturulmaz.');
       return;
     }
   }
@@ -3812,7 +3807,7 @@ async function sendPetitionViaEmail() {
       bekleyenSil(oncekiNo); oncekiNo = '';
     } else if (stx && stx.found && stx.confirmed) {
       try { localStorage.setItem(tekrarAnahtar + '_onay', '1'); } catch (e) {}
-      alert('Bu hedefe dilekçen zaten onaylanmış ve sayılıyor.\n\n' + kalanMetni());
+      sonrakineYonlendir('Bu hedefe dilekçen zaten onaylanmış ve sayılıyor.');
       return;
     } else {
       oncekiSor(tekrarAnahtar, oncekiNo);
@@ -3834,7 +3829,8 @@ async function sendPetitionViaEmail() {
       if (mevcut.onay) {
         if (selectedTarget === 'mp' && selectedMP) { try { markMpAsSent(selectedMP.id); filterMps(); updateSentMpNotice(); } catch (e) {} }
         var hedefAd = selectedTarget === 'cb' ? 'Cumhurbaşkanlığı' : selectedTarget === 'mb' ? 'TBMM Başkanlığı' : (selectedMP ? selectedMP.name : 'bu vekil');
-        alert(hedefAd + ' için bu ad-soyadla dilekçe zaten gönderilmiş (' + new Date(mevcut.tarih).toLocaleDateString('tr-TR') + ').\n\nAynı hedefe ikinci dilekçe sayılmaz.\n\n' + kalanMetni());
+        try { localStorage.setItem(tekrarAnahtar, mevcut.no); localStorage.setItem(tekrarAnahtar + '_onay', '1'); } catch (e) {}
+        sonrakineYonlendir(hedefAd + ' için bu ad-soyadla dilekçe zaten gönderilmiş (' + new Date(mevcut.tarih).toLocaleDateString('tr-TR') + '). Aynı hedefe ikinci dilekçe sayılmaz.');
         return;
       }
       try { localStorage.setItem(tekrarAnahtar, mevcut.no); } catch (e) {}
@@ -3897,8 +3893,7 @@ async function sendPetitionViaEmail() {
     if (sDurum && sDurum.found && sDurum.confirmed) {
       try { localStorage.setItem(tekrarAnahtar + '_onay', '1'); } catch (e) {}
       if (selectedTarget === 'mp' && selectedMP) { try { markMpAsSent(selectedMP.id); filterMps(); updateSentMpNotice(); } catch (e) {} }
-      alert('Bu hedefe dilekçen zaten gönderilmiş ve sayılıyor. Aynı hedefe ikinci dilekçe oluşturulmaz.\n\n' + kalanMetni());
-      try { siradakineGec(siradakiHedef()); } catch (e) {}
+      sonrakineYonlendir('Bu hedefe dilekçen zaten gönderilmiş ve sayılıyor. Aynı hedefe ikinci dilekçe oluşturulmaz.');
       return;
     }
     bekleyenEkle(lastPetitionNumber);
@@ -5452,6 +5447,21 @@ function vekilIliniSec() {
 function siradakineGec(t) {
   selectTarget(t);
   if (t === 'mp') vekilIliniSec();
+}
+// Seçilen hedefe zaten gönderilmişse: sıradaki hedef seçilir, kişi oraya götürülür
+function sonrakineYonlendir(neden) {
+  if (selectedTarget === 'mp' && selectedMP) {
+    try { markMpAsSent(selectedMP.id); } catch (e) {}
+    selectedMP = null;
+    var mb = document.getElementById('selected-mp-badge'); if (mb) mb.classList.add('hidden');
+    try { filterMps(); updateSentMpNotice(); updatePetitionPreview(); } catch (e) {}
+  }
+  var t = siradakiHedef();
+  try { siradakineGec(t); } catch (e) {}
+  var ad = t === 'cb' ? 'Cumhurbaşkanlığı' : t === 'mb' ? 'TBMM Başkanlığı' : 'milletvekilleri';
+  alert(neden + '\n\n' + kalanMetni() + '\n\nSıradaki hedef seçildi: ' + ad + '.' + (t === 'mp' ? ' Listeden bir vekil seç, dilekçen hazırlansın.' : ' "E-posta ile dilekçeyi gönder" düğmesine tekrar bas.'));
+  var hedef = t === 'mp' ? document.getElementById('mp-selector-panel') : document.getElementById('petition-send-btn');
+  if (hedef) setTimeout(function () { try { hedef.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {} }, 150);
 }
 function ildeKalanVekil() {
   var il = getPlace().city;
