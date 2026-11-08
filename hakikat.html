@@ -382,6 +382,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
 #vakalar .vk-lg a{color:var(--amb)}
 #vakalar .vk-lt{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer}
 #vakalar .vk-lt.ac{-webkit-line-clamp:unset;display:block}
+#vakalar .vk-x{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px}#vakalar .vk-x a{color:#34d399;font-weight:700}
 #vakalar .vk-a{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:auto;padding-top:8px;border-top:1px solid var(--line)}
 #vakalar .vk-a a{font-size:15px}
 #vakalar .vk-a .btn{padding:7px 14px;font-size:13px}
@@ -755,6 +756,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
     if(l.source_url&&/^https?:\/\//.test(l.source_url)){var a=el('a',null,'📄 Adli kaynak');a.href=l.source_url;a.target='_blank';a.rel='noopener';b.appendChild(a)}
     return b;
   }
+  var EXT={};
   function card(v){
     var c=el('article','vk-c'),m=el('div','vk-m');m.appendChild(el('span','vk-k',v.category||'Vaka'));m.appendChild(el('span',null,[trDate(v.case_date),v.city].filter(Boolean).join(' · ')));
     c.appendChild(m);c.appendChild(el('h4',null,v.title));
@@ -763,7 +765,13 @@ button.btn.dy-ghost{border:1px solid var(--em)}
     var a=el('div','vk-a');
     if(v.source_url&&/^https?:\/\//.test(v.source_url)){var h=el('a',null,'🔗 Haberi oku');h.href=v.source_url;h.target='_blank';h.rel='noopener';a.appendChild(h)}else a.appendChild(el('span'));
     var b=el('button','btn dy-ghost','📤 Paylaş');b.type='button';b.addEventListener('click',function(){openShare(v)});a.appendChild(b);
-    c.appendChild(a);return c;
+    c.appendChild(a);
+    var x=EXT[v.id];
+    if(x&&(x.petition_url||(x.sources||[]).length)){var k=el('div','vk-x');
+      if(x.petition_url&&/^https?:\/\//.test(x.petition_url)){var p=el('a',null,'✍️ İmza kampanyası');p.href=x.petition_url;p.target='_blank';p.rel='noopener';k.appendChild(p)}
+      (x.sources||[]).slice(0,4).forEach(function(u,i){if(!/^https?:\/\//.test(u))return;var q=el('a',null,'🔗 Kaynak '+(i+2));q.href=u;q.target='_blank';q.rel='noopener';k.appendChild(q)});
+      c.appendChild(k)}
+    return c;
   }
   function list(){
     var q=($('vk-q').value||'').toLocaleLowerCase('tr'),ci=$('vk-city').value,ca=$('vk-cat').value,so=$('vk-sort').value;
@@ -790,6 +798,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
     if(!rpc){$('vk-grid').textContent='';$('vk-grid').appendChild(el('p','vk-n','Vakalar şu an yüklenemedi.'));return}
     try{var cs=await rpc('list_almanac_cases');ALL=Array.isArray(cs)?cs:[]}catch(e){ALL=[]}
     try{var lg=await rpc('list_almanac_legal');(lg||[]).forEach(function(x){LEG[x.case_id]=x})}catch(e){}
+    try{var ex=await rpc('list_almanac_extra');(ex||[]).forEach(function(x){EXT[x.id]=x})}catch(e){}
     $('vk-count').textContent=ALL.length;
     var cities={},cats={};ALL.forEach(function(v){if(v.city)cities[v.city]=1;if(v.category)cats[v.category]=1});
     fill($('vk-city'),Object.keys(cities));fill($('vk-cat'),Object.keys(cats));

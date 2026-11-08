@@ -5904,7 +5904,21 @@ async function loadAlmanacAdmin() {
     del.className = 'shrink-0 px-1.5 py-0.5 bg-red-900 hover:bg-red-800 rounded text-red-200';
     del.onclick = function() { deleteAlmanacCase(r.id, r.title); };
 
-    row.appendChild(info); row.appendChild(edit); row.appendChild(del);
+    var pub = document.createElement('button');
+    pub.type = 'button'; pub.textContent = r.published ? 'Gizle' : '✓ Yayınla';
+    pub.className = 'shrink-0 px-1.5 py-0.5 rounded ' + (r.published ? 'bg-zinc-800 text-zinc-300' : 'bg-emerald-700 hover:bg-emerald-600 text-white');
+    pub.onclick = async function () {
+      pub.disabled = true;
+      try {
+        await callRpc('save_almanac_case', { p_pin: adminPinCache, p_id: r.id, p_case_date: r.case_date, p_city: r.city, p_location: r.location || '', p_category: r.category, p_title: r.title, p_description: r.description, p_source_url: r.source_url || '', p_published: !r.published });
+        r.published = !r.published;
+        pub.textContent = r.published ? 'Gizle' : '✓ Yayınla';
+        pub.className = 'shrink-0 px-1.5 py-0.5 rounded ' + (r.published ? 'bg-zinc-800 text-zinc-300' : 'bg-emerald-700 hover:bg-emerald-600 text-white');
+        t.className = 'truncate ' + (r.published ? 'text-zinc-200' : 'text-zinc-500 line-through');
+      } catch (e) { alert(dataErrorText(e)); }
+      pub.disabled = false;
+    };
+    row.appendChild(info); row.appendChild(pub); row.appendChild(edit); row.appendChild(del);
     box.appendChild(row);
   });
 }
