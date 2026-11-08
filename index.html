@@ -147,8 +147,8 @@
   var mVaka = /[?&]vaka=(\d+)/.exec(qs);
   if (mVaka) { window.location.replace('hakikat.html?vaka=' + mVaka[1] + '#vakalar'); return; }
   var mHarita = /[?&]harita=(vol|pet|mp|case)/.exec(qs), goRep = /[?&]vaka=bildir/.test(qs), goRank = /[?&]siralama=1/.test(qs), goHedef = /[?&]hedef=1/.test(qs), goVekil = /[?&]vekil=(\d+)/.exec(qs), goAdim = /[?&]adim=1/.test(qs);
-  var goIl = /[?&]il=([^&#]+)/.exec(qs);
-  if (mHarita || goRep || goRank || goHedef || goVekil || goIl || goAdim) {
+  var goIl = /[?&]il=([^&#]+)/.exec(qs), goIlce = /[?&]ilce=([^&#]+)/.exec(qs), goUlke = /[?&]ulke=([^&#]+)/.exec(qs), goSehir = /[?&]sehir=([^&#]+)/.exec(qs);
+  if (mHarita || goRep || goRank || goHedef || goVekil || goIl || goUlke || goAdim) {
     el.style.display = 'none';
     document.body.style.overflow = '';
     window.addEventListener('load', function () {
@@ -174,8 +174,30 @@
         var ilDene = 0, ilAd = ''; try { ilAd = decodeURIComponent(goIl[1]); } catch (e) {}
         (function ilBekle() {
           var s = document.getElementById('citizen-city'), v = s && Array.prototype.some.call(s.options, function (o) { return o.value === ilAd; });
-          if (v) { try { s.value = ilAd; onCitizenCityChange(); siradakineGec(siradakiHedef()); adim1eGit(); } catch (e) {} }
+          if (v) { try { s.value = ilAd; onCitizenCityChange();
+            if (goIlce) { var dz = document.getElementById('citizen-district'), ic = decodeURIComponent(goIlce[1]); if (dz && Array.prototype.some.call(dz.options, function (o) { return o.value === ic; })) { dz.value = ic; try { updatePetitionPreview(); } catch (e2) {} } }
+            siradakineGec(siradakiHedef()); adim1eGit(); } catch (e) {} }
           else if (++ilDene < 20) setTimeout(ilBekle, 300);
+        })();
+      }
+      if (goUlke) {
+        var ulDene = 0, ulAd = '', shAd = ''; try { ulAd = decodeURIComponent(goUlke[1]); shAd = goSehir ? decodeURIComponent(goSehir[1]) : ''; } catch (e) {}
+        (function ulBekle() {
+          if (typeof setAbroad !== 'function' || typeof WORLD_COUNTRIES === 'undefined') { if (++ulDene < 20) setTimeout(ulBekle, 300); return; }
+          try {
+            setAbroad(true);
+            var cs = document.getElementById('abroad-country'), kod = '';
+            WORLD_COUNTRIES.forEach(function (c) { if (c[1].toLocaleLowerCase('tr') === ulAd.toLocaleLowerCase('tr')) kod = c[0]; });
+            if (kod) cs.value = kod; else { cs.value = '__other'; }
+            onAbroadCountryChange();
+            if (!kod) document.getElementById('abroad-country-other').value = ulAd;
+            if (shAd) {
+              var ct = document.getElementById('abroad-city');
+              if (Array.prototype.some.call(ct.options, function (o) { return o.value === shAd; })) ct.value = shAd;
+              else { ct.value = '__other'; onAbroadCityChange(); document.getElementById('abroad-city-other').value = shAd; }
+            }
+            updatePetitionPreview(); siradakineGec(siradakiHedef()); adim1eGit();
+          } catch (e) {}
         })();
       }
       if (goHedef) setTimeout(function () { var hc = document.getElementById('th-card'); if (hc) hc.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 900);
@@ -491,7 +513,7 @@
             <h2 class="text-xs font-bold text-amber-300 uppercase tracking-wider">🏅 Onur Köşesi · 594 / 594</h2>
             <span class="text-[10px] font-bold text-amber-400/80">CB + TBMM + 592 vekil</span>
           </div>
-          <div id="rk-honor" class="flex flex-wrap gap-2"></div>
+          <div id="rk-honor" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
           <p id="rk-note" class="text-[13px] text-zinc-200 leading-relaxed"></p>
         </div>
         <div class="p-5 space-y-2">
@@ -1075,10 +1097,13 @@ window.addEventListener('load', function () {
       </div>
       <div id="rep-form" class="space-y-2.5">
         <div class="grid grid-cols-2 gap-2">
-          <div><label class="block text-[10px] text-zinc-400 mb-0.5">İl *</label><select id="rep-city" class="w-full bg-zinc-950 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px]"><option value="">Seç...</option></select></div>
+          <div><label class="block text-[10px] text-zinc-400 mb-0.5">İl *</label><select id="rep-city" onchange="ilceDoldur('rep-city', 'rep-district')" class="w-full bg-zinc-950 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px]"><option value="">Seç...</option></select></div>
           <div><label class="block text-[10px] text-zinc-400 mb-0.5">Olay tarihi *</label><input type="date" id="rep-date" class="w-full bg-zinc-950 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px]"></div>
         </div>
-        <div><label class="block text-[10px] text-zinc-400 mb-0.5">İlçe / yer</label><input type="text" id="rep-location" maxlength="200" placeholder="İlçe, mahalle, barınak adı..." class="w-full bg-zinc-950 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px]"></div>
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="block text-[10px] text-zinc-400 mb-0.5">İlçe</label><select id="rep-district" disabled class="w-full bg-zinc-950 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px]"><option value="">Önce il seç</option></select></div>
+          <div><label class="block text-[10px] text-zinc-400 mb-0.5">Yer</label><input type="text" id="rep-location" maxlength="180" placeholder="Mahalle, sokak, barınak..." class="w-full bg-zinc-950 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px]"></div>
+        </div>
         <div><label class="block text-[10px] text-zinc-400 mb-0.5">Kısa başlık *</label><input type="text" id="rep-title" maxlength="200" placeholder="Örn. Mahallede 4 köpek zehirlendi" class="w-full bg-zinc-950 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px]"></div>
         <div><label class="block text-[10px] text-zinc-400 mb-0.5">Ne oldu? *</label><textarea id="rep-desc" rows="4" maxlength="4000" placeholder="Olayı, kimlerin etkilendiğini, bildiklerini yaz." class="w-full bg-zinc-950 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px] leading-relaxed"></textarea></div>
         <div><label class="block text-[10px] text-zinc-400 mb-0.5">Haber ya da kaynak bağlantısı</label><input type="url" id="rep-source" maxlength="500" placeholder="https://..." class="w-full bg-zinc-950 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px]"></div>
@@ -1458,10 +1483,13 @@ window.addEventListener('load', function () {
             <input type="hidden" id="alm-id">
             <div class="grid grid-cols-2 gap-2">
               <div><label class="block text-[10px] text-zinc-400 mb-0.5">Tarih *</label><input type="date" id="alm-date" class="w-full bg-zinc-900 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px] focus:border-emerald-500 focus:outline-none"></div>
-              <div><label class="block text-[10px] text-zinc-400 mb-0.5">Şehir *</label><select id="alm-city" class="w-full bg-zinc-900 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px] focus:border-emerald-500 focus:outline-none"></select></div>
+              <div><label class="block text-[10px] text-zinc-400 mb-0.5">Şehir *</label><select id="alm-city" onchange="ilceDoldur('alm-city', 'alm-district')" class="w-full bg-zinc-900 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px] focus:border-emerald-500 focus:outline-none"></select></div>
             </div>
             <div class="grid grid-cols-2 gap-2">
-              <div><label class="block text-[10px] text-zinc-400 mb-0.5">Yer</label><input type="text" id="alm-location" placeholder="Barınak, barınaj, ilçe..." class="w-full bg-zinc-900 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px] focus:border-emerald-500 focus:outline-none"></div>
+              <div><label class="block text-[10px] text-zinc-400 mb-0.5">İlçe</label><select id="alm-district" disabled class="w-full bg-zinc-900 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px] focus:border-emerald-500 focus:outline-none"><option value="">Önce il seç</option></select></div>
+              <div><label class="block text-[10px] text-zinc-400 mb-0.5">Yer</label><input type="text" id="alm-location" placeholder="Mahalle, barınak..." class="w-full bg-zinc-900 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px] focus:border-emerald-500 focus:outline-none"></div>
+            </div>
+            <div>
               <div>
                 <label class="block text-[10px] text-zinc-400 mb-0.5">Kategori *</label>
                 <select id="alm-category-select" onchange="onAlmCategoryChange()" class="w-full bg-zinc-900 border border-zinc-700 rounded px-2 py-1.5 text-zinc-100 text-[11px] focus:border-emerald-500 focus:outline-none"></select>
@@ -4262,7 +4290,7 @@ function ilpVeri() {
   var p = []; if (v > 0) p.push(v + ' belgelenmiş vaka'); if (g > 0) p.push(g + ' gönüllü');
   var ek = g > 0 ? 'yle' : 'yla';
   var s2 = p.length ? p.join(' ve ') + ek + ' mücadele sürüyor, şimdi sıra senin dilekçende.' : (d > 0 ? 'Şimdi sıra senin dilekçende.' : '');
-  var cagri = "Sen dilekçeni gönder, vekilin Meclis'te imzacı olsun.", lnk = SITE_URL + (tr ? '/?il=' + encodeURIComponent(y) : '/');
+  var cagri = "Sen dilekçeni gönder, vekilin Meclis'te imzacı olsun.", lnk = SITE_URL + (tr ? '/?il=' + encodeURIComponent(y) + (alt ? '&ilce=' + encodeURIComponent(alt) : '') : '/?ulke=' + encodeURIComponent(y) + (alt ? '&sehir=' + encodeURIComponent(alt) : ''));
   function et(x) { return '#' + x.replace(/[^0-9A-Za-zÇĞİÖŞÜçğıöşü]/g, ''); }
   return {
     d: d, v: v, g: g, bas: bas, yurtdisi: !tr, y: y, ig: bas + '\n\n' + s1 + (s2 ? '\n' + s2 : '') + '\n' + cagri + '\n\nDilekçe bağlantısını gönderelim mi?',
@@ -4648,11 +4676,11 @@ async function submitReport() {
   reportStatus('Gönderiliyor...', 'text-zinc-400');
   try {
     await callRpc('submit_almanac_report', {
-      p_case_date: date, p_city: city, p_location: g('rep-location'), p_title: title,
+      p_case_date: date, p_city: city, p_location: yerBirlestir('rep-district', 'rep-location'), p_title: title,
       p_description: desc, p_source_url: g('rep-source'), p_media_urls: g('rep-media'),
       p_name: name, p_phone: phone, p_email: email, p_website: g('rep-website')
     });
-    ['rep-city', 'rep-date', 'rep-location', 'rep-title', 'rep-desc', 'rep-source', 'rep-media', 'rep-name', 'rep-phone', 'rep-email'].forEach(function (i) {
+    ['rep-city', 'rep-district', 'rep-date', 'rep-location', 'rep-title', 'rep-desc', 'rep-source', 'rep-media', 'rep-name', 'rep-phone', 'rep-email'].forEach(function (i) {
       var e = document.getElementById(i); if (e) e.value = '';
     });
     if (ok) ok.checked = false;
@@ -4707,7 +4735,7 @@ async function loadAlmanacReports() {
 function useAlmanacReport(r) {
   clearAlmanacForm();
   var set = function (i, v) { var e = document.getElementById(i); if (e) e.value = v || ''; };
-  set('alm-date', r.case_date); set('alm-city', r.city); set('alm-location', r.location);
+  set('alm-date', r.case_date); set('alm-city', r.city); yerYukle('alm-city', 'alm-district', 'alm-location', r.location);
   set('alm-title', r.title);
   set('alm-desc', r.description + (r.media_urls ? '\n\nGörsel/video: ' + r.media_urls : ''));
   set('alm-source', r.source_url);
@@ -5724,10 +5752,39 @@ function almStatus(msg, cls) {
   if (el) { el.textContent = msg || ''; el.className = 'text-[10px] ' + (cls || 'text-zinc-500'); }
 }
 
+// İlçe listeden seçilir (IL_ILCE), yer ayrıca yazılır; kayıtta "İlçe · yer" olarak birleşir
+function ilceDoldur(ilId, ilceId, secili) {
+  var il = (document.getElementById(ilId) || {}).value || '', s = document.getElementById(ilceId);
+  if (!s) return;
+  var list = IL_ILCE[il] || [];
+  s.innerHTML = '';
+  var o = document.createElement('option'); o.value = ''; o.textContent = list.length ? 'İlçe seç (isteğe bağlı)' : 'Önce il seç'; s.appendChild(o);
+  list.forEach(function (x) { var p = document.createElement('option'); p.value = x; p.textContent = x; s.appendChild(p); });
+  s.disabled = !list.length;
+  if (secili && list.indexOf(secili) !== -1) s.value = secili;
+}
+function yerBirlestir(ilceId, yerId) {
+  var a = ((document.getElementById(ilceId) || {}).value || '').trim(), b = ((document.getElementById(yerId) || {}).value || '').trim();
+  if (a && b.toLocaleLowerCase('tr').indexOf(a.toLocaleLowerCase('tr')) === 0) a = '';   // yer zaten ilçeyle başlıyorsa tekrar etme
+  return [a, b].filter(Boolean).join(' · ');
+}
+// Kayıtlı "İlçe · yer" metnini ilçe listesine ve yer kutusuna ayırır
+function yerYukle(ilId, ilceId, yerId, konum) {
+  var il = (document.getElementById(ilId) || {}).value || '', loc = String(konum || '').trim(), ilce = '';
+  (IL_ILCE[il] || []).slice().sort(function (a, b) { return b.length - a.length; }).some(function (x) {
+    var k = loc.toLocaleLowerCase('tr'), xx = x.toLocaleLowerCase('tr');
+    if (k === xx || (k.indexOf(xx) === 0 && /^[\s·,\-\/]/.test(loc.charAt(x.length)))) { ilce = x; loc = loc.slice(x.length).replace(/^[\s·,\-\/]+/, ''); return true; }
+    return false;
+  });
+  ilceDoldur(ilId, ilceId, ilce);
+  var y = document.getElementById(yerId); if (y) y.value = loc;
+}
+
 function clearAlmanacForm() {
   document.getElementById('alm-id').value = '';
   document.getElementById('alm-date').value = '';
   document.getElementById('alm-city').value = '';
+  ilceDoldur('alm-city', 'alm-district');
   document.getElementById('alm-location').value = '';
   fillAlmCategorySelect('');
   var yeniKat = document.getElementById('alm-category-new');
@@ -5870,7 +5927,7 @@ function editAlmanacCase(id) {
   document.getElementById('alm-id').value = r.id;
   document.getElementById('alm-date').value = r.case_date;
   document.getElementById('alm-city').value = r.city;
-  document.getElementById('alm-location').value = r.location || '';
+  yerYukle('alm-city', 'alm-district', 'alm-location', r.location);
   fillAlmCategorySelect(r.category);
   document.getElementById('alm-title').value = r.title;
   document.getElementById('alm-desc').value = r.description;
@@ -5891,7 +5948,7 @@ async function saveAlmanacCase() {
     p_id: idRaw ? parseInt(idRaw, 10) : null,
     p_case_date: document.getElementById('alm-date').value,
     p_city: document.getElementById('alm-city').value,
-    p_location: document.getElementById('alm-location').value.trim(),
+    p_location: yerBirlestir('alm-district', 'alm-location'),
     p_category: currentAlmCategory(),
     p_title: document.getElementById('alm-title').value.trim(),
     p_description: document.getElementById('alm-desc').value.trim(),
@@ -7026,9 +7083,11 @@ function rkRender() {
   var hb = document.getElementById('rk-honor'), note = document.getElementById('rk-note');
   hb.textContent = '';
   honor.forEach(function (r) {
-    var c = rkEl('span', 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500 text-zinc-950 text-xs font-extrabold shadow');
-    c.appendChild(rkEl('span', null, '🏅 ' + r.etiket));
-    var y = rkYer(r); if (y) c.appendChild(rkEl('span', 'font-semibold opacity-75', '· ' + y));
+    // Mobilde 2'li, geniş ekranda 3'lü sıra; her isim eşit genişlikte
+    var c = rkEl('span', 'flex items-center justify-center gap-1 min-w-0 px-2 py-1.5 rounded-full bg-amber-500 text-zinc-950 text-xs font-extrabold shadow');
+    var y = rkYer(r); c.title = r.etiket + (y ? ' · ' + y : '');
+    c.appendChild(rkEl('span', 'shrink-0 whitespace-nowrap', '🏅 ' + r.etiket));   // ad hep tam görünür, sığmazsa il kısalır
+    if (y) c.appendChild(rkEl('span', 'font-semibold opacity-75 truncate min-w-0', '· ' + y));
     hb.appendChild(c);
   });
   var tek = honor.length === 1;
