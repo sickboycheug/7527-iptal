@@ -148,9 +148,9 @@
   // Vaka paylaşım linki (/vaka/N → /?vaka=N): o vaka, Vakalar sekmesinde açılır
   var mVaka = /[?&]vaka=(\d+)/.exec(qs);
   if (mVaka) { window.location.replace('hakikat.html?vaka=' + mVaka[1] + '#vakalar'); return; }
-  var mHarita = /[?&]harita=(vol|pet|mp|case)/.exec(qs), goRep = /[?&]vaka=bildir/.test(qs), goRank = /[?&]siralama=1/.test(qs), goHedef = /[?&]hedef=1/.test(qs), goVekil = /[?&]vekil=(\d+)/.exec(qs), goAdim = /[?&]adim=1/.test(qs);
+  var mHarita = /[?&]harita=(vol|pet|mp|case)/.exec(qs), goRep = /[?&]vaka=bildir/.test(qs), goRank = /[?&]siralama=1/.test(qs), goHedef = /[?&]hedef=1/.test(qs), goVekil = /[?&]vekil=(\d+)/.exec(qs), goAdim = /[?&]adim=1/.test(qs), goDil = /[?&]dilekce=1/.test(qs);
   var goIl = /[?&]il=([^&#]+)/.exec(qs), goIlce = /[?&]ilce=([^&#]+)/.exec(qs), goUlke = /[?&]ulke=([^&#]+)/.exec(qs), goSehir = /[?&]sehir=([^&#]+)/.exec(qs);
-  if (mHarita || goRep || goRank || goHedef || goVekil || goIl || goUlke || goAdim) {
+  if (mHarita || goRep || goRank || goHedef || goVekil || goIl || goUlke || goAdim || goDil) {
     el.style.display = 'none';
     document.body.style.overflow = '';
     window.addEventListener('load', function () {
@@ -163,6 +163,7 @@
         }
         if (goRep) { try { openReportModal(); } catch (e) {} }
         if (goAdim) { try { openAdimModal(); } catch (e) {} }
+        if (goDil) { try { adim1eGit(); } catch (e) {} }
       }, 400);
       if (goVekil) {
         var vkDene = 0;

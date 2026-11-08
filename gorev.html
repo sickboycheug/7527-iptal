@@ -462,7 +462,7 @@ function siraBoya(pre, cok) {
       <div class="border-t border-zinc-800 pt-3 space-y-2">
         <p id="map-call" class="text-xs font-bold text-amber-300 leading-relaxed"></p>
         <a id="map-cta-case" href="/?vaka=bildir" style="display:none" class="btn block text-center bg-red-700 hover:bg-red-600 text-white">🐾 Vakayı bildir</a>
-        <a id="map-cta-pet" href="/" style="display:none" class="btn block text-center bg-red-600 hover:bg-red-500 text-white">📨 Dilekçeni gönder</a>
+        <a id="map-cta-pet" href="/?dilekce=1" style="display:none" class="btn block text-center bg-red-600 hover:bg-red-500 text-white">📨 Dilekçeni gönder</a>
         <div id="map-davet" class="space-y-2">
         <p class="text-[11px] text-zinc-400 pt-1">Gönüllümüz olmayan illerden gönüllü arıyoruz. Davet metnini paylaş:</p>
         <div class="grid grid-cols-2 gap-2">
@@ -1528,6 +1528,15 @@ async function oturumYukle() {
   if (supabaseClient) {
     try { var s = await supabaseClient.auth.getSession(); authUser = (s.data && s.data.session) ? s.data.session.user : null; } catch (e) {}
   }
+  // Giriş, kişi çıkış yapana kadar açık kalır; bir haftada bir yenilenir
+  if (authUser) {
+    var gt = Number(load('gv_giris_t')) || 0;
+    if (!gt) store('gv_giris_t', String(Date.now()));
+    else if (Date.now() - gt > 7 * 24 * 3600 * 1000) {
+      store('gv_giris_t', null); authUser = null;
+      try { await supabaseClient.auth.signOut(); } catch (e) {}
+    }
+  } else store('gv_giris_t', null);
   if (authUser) {
     try { meInfo = await callRpc('gv_me', {}); } catch (e) { meInfo = null; }
     var kod = load('gv_code');
@@ -2213,7 +2222,7 @@ async function adminLogin() {
 }
 
 // Yonetici oturumu: PIN sekme oturumunda, acilmis (disari alinamaz) ozel anahtar IndexedDB'de 8 saat hatirlanir.
-var ADMIN_TTL = 8 * 3600 * 1000;
+var ADMIN_TTL = 7 * 24 * 3600 * 1000;   // yönetici girişi bir hafta açık kalır, sonra PIN yeniden sorulur
 function adminIdb() {
   return new Promise(function (res, rej) {
     try {
@@ -2226,8 +2235,8 @@ function adminIdb() {
 }
 async function adminIdbSet(v) { try { var db = await adminIdb(); await new Promise(function (r, j) { var t = db.transaction('k', 'readwrite'); if (v == null) t.objectStore('k').delete('key'); else t.objectStore('k').put(v, 'key'); t.oncomplete = r; t.onerror = j; }); } catch (e) {} }
 async function adminIdbGet() { try { var db = await adminIdb(); return await new Promise(function (r, j) { var q = db.transaction('k').objectStore('k').get('key'); q.onsuccess = function () { r(q.result); }; q.onerror = j; }); } catch (e) { return null; } }
-function adminSessionSave(pin) { try { sessionStorage.setItem('gv_admin_pin', JSON.stringify({ p: pin, t: Date.now() })); } catch (e) {} }
-function adminSessionClear() { try { sessionStorage.removeItem('gv_admin_pin'); } catch (e) {} adminIdbSet(null); }
+function adminSessionSave(pin) { try { localStorage.setItem('gv_admin_pin', JSON.stringify({ p: pin, t: Date.now() })); } catch (e) {} }
+function adminSessionClear() { try { localStorage.removeItem('gv_admin_pin'); } catch (e) {} adminIdbSet(null); }
 var taskLogRows = [], admClaims = [];
 async function adminReload() {
   kpYukle(); faYukle(); liveAdminDoldur();
@@ -3760,7 +3769,7 @@ function faDuzenle(r) {
 
 (async function adminRestore() {
   var raw = null;
-  try { raw = JSON.parse(sessionStorage.getItem('gv_admin_pin') || 'null'); } catch (e) {}
+  try { raw = JSON.parse(localStorage.getItem('gv_admin_pin') || 'null'); } catch (e) {}
   if (!raw || !raw.p || Date.now() - raw.t > ADMIN_TTL) { adminSessionClear(); return; }
   try {
     var st = await callRpc('gv_admin_state', { p_pin: raw.p });
