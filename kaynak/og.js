@@ -136,11 +136,19 @@
 
   // ---- genel paylaşım sayfası: /p/k/<anahtar> (kendi başlığı, açıklaması, hedefi ve görseli) ----
   // Link hemen döner; görsel arka planda bir kez kaydedilir.
+  var HAZ = {};
+  // Link paylaşılmadan önce görselin kaydedilmesini bekler (en çok 10 sn); böylece sosyal medya ilk bakışta doğru görseli görür
+  function hazir(url) {
+    var key = String(url || '').split('/p/k/')[1];
+    var p = key && HAZ[key];
+    if (!p) return Promise.resolve();
+    return Promise.race([p, new Promise(function (ok) { setTimeout(ok, 10000); })]);
+  }
   function sayfa(o) {
     var key = anahtar(o.tur, slug(String(o.id)).slice(0, 60) || 'x', o.parcalar || [o.baslik]);
     if (!BOS[key] && o.gorsel) {
       BOS[key] = 1;
-      rpc('gv_og_meta', { p_key: key }).then(function (m) {
+      HAZ[key] = rpc('gv_og_meta', { p_key: key }).then(function (m) {
         if (m && m.target) return;
         return Promise.resolve(typeof o.gorsel === 'function' ? o.gorsel() : o.gorsel).then(kucult).then(function (img) {
           var wh = '', w = o.w || 0, h = o.h || 0;
@@ -231,5 +239,5 @@
 
   window.OG = { ozet: ozet, slug: slug, anahtar: anahtar, kart: kart, kucult: kucult, hazirla: hazirla,
     vaka: vaka, onur: onur, onurLink: onurLink, saha: saha,
-    sayfa: sayfa, vakaEtiket: vakaEtiket, vekilHazirla: vekilHazirla, ek: ek, kopya: kopya, paylas: paylas, menu: menu, gorselPaylas: gorselPaylas, BILGI: BILGI, ETIKET: ETIKET };
+    sayfa: sayfa, hazir: hazir, vakaEtiket: vakaEtiket, vekilHazirla: vekilHazirla, ek: ek, kopya: kopya, paylas: paylas, menu: menu, gorselPaylas: gorselPaylas, BILGI: BILGI, ETIKET: ETIKET };
 })();
