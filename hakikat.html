@@ -380,6 +380,8 @@ button.btn.dy-ghost{border:1px solid var(--em)}
 #vakalar .vk-lg{font-size:14px;border:1px solid #5b4a14;background:#1d1807;border-radius:12px;padding:8px 10px;color:#fde9a3}
 #vakalar .vk-lg b{display:block;color:var(--amb)}
 #vakalar .vk-lg a{color:var(--amb)}
+#vakalar .vk-lt{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer}
+#vakalar .vk-lt.ac{-webkit-line-clamp:unset;display:block}
 #vakalar .vk-a{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:auto;padding-top:8px;border-top:1px solid var(--line)}
 #vakalar .vk-a a{font-size:15px}
 #vakalar .vk-a .btn{padding:7px 14px;font-size:13px}
@@ -485,7 +487,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
 <script src="/kaynak/sbkopru.js?v=1"></script>
-<script src="/kaynak/og.js?v=2" defer></script>
+<script src="/kaynak/og.js?v=3" defer></script>
 <script src="/kaynak/tarayici.js?v=2" defer></script>
 <script>
 (function(){
@@ -748,7 +750,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
   $('vk-sh-ig').addEventListener('click',function(){if(!cur)return;if(!nat())copy(text(cur,false,true),'Metin kopyalandı, Instagram’da yapıştırabilirsin')});
   function legal(id){
     var l=LEG[id];if(!l)return null;var b=el('div','vk-lg');b.appendChild(el('b',null,'⚖️ '+(STAGE[l.stage]||'Adli süreç')));
-    if(l.court)b.appendChild(el('div',null,l.court));if(l.outcome)b.appendChild(el('div',null,l.outcome));
+    if(l.court||l.outcome){var lt=el('div','vk-lt');if(l.court)lt.appendChild(el('div',null,l.court));if(l.outcome)lt.appendChild(el('div',null,l.outcome));lt.title='Tamamını oku';lt.addEventListener('click',function(){lt.classList.toggle('ac')});b.appendChild(lt)}
     if(l.hearing_date)b.appendChild(el('div',null,'Tarih: '+trDate(l.hearing_date)));
     if(l.source_url&&/^https?:\/\//.test(l.source_url)){var a=el('a',null,'📄 Adli kaynak');a.href=l.source_url;a.target='_blank';a.rel='noopener';b.appendChild(a)}
     return b;

@@ -134,6 +134,54 @@
     });
   }
 
+  // ---- genel paylaşım sayfası: /p/k/<anahtar> (kendi başlığı, açıklaması, hedefi ve görseli) ----
+  // Link hemen döner; görsel arka planda bir kez kaydedilir.
+  function sayfa(o) {
+    var key = anahtar(o.tur, slug(String(o.id)).slice(0, 60) || 'x', o.parcalar || [o.baslik]);
+    if (!BOS[key] && o.gorsel) {
+      BOS[key] = 1;
+      rpc('gv_og_meta', { p_key: key }).then(function (m) {
+        if (m && m.target) return;
+        return Promise.resolve(typeof o.gorsel === 'function' ? o.gorsel() : o.gorsel).then(kucult).then(function (img) {
+          var wh = '', w = o.w || 0, h = o.h || 0;
+          if (w && h) { var k = Math.min(1, 1200 / Math.max(w, h)); wh = Math.round(w * k) + 'x' + Math.round(h * k); }
+          return rpc('gv_og_put2', { p_key: key, p_img: img, p_title: String(o.baslik || '').slice(0, 200), p_desc: String(o.aciklama || '').slice(0, 500), p_target: o.hedef || '/', p_wh: wh });
+        });
+      }).catch(function () { delete BOS[key]; });
+    }
+    return 'https://7527iptal.org/p/k/' + key;
+  }
+
+  // ---- ortak paylaşım metni eki: yasa bilgisi ve etiketler ----
+  var BILGI = "7527 sayılı Kanun (30.07.2024) sokak hayvanlarının toplatılıp barınaklara kapatılmasını dayatıyor. Talebimiz: Kanun'un iptali ve 5199'un \"Kısırlaştır, Aşıla, Yerinde Yaşat\" ilkesine dönüş.";
+  var ETIKET = '#7527İptal #7527SayılıKanun #5199 #YerindeYaşat #KısırlaştırAşılaYerindeYaşat #HayvanÖzgürlüğü #SokakHayvanları #TBMM';
+  function ek(metin) {
+    var t = String(metin || '').replace(/\s*#7527İptal\s*$/, '');
+    if (t.indexOf('7527 sayılı Kanun (30.07.2024)') < 0) t += '\n\n' + BILGI;
+    return t + '\n\n' + ETIKET;
+  }
+  function kopya(t) {
+    try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t).catch(function () {}); return; } } catch (e) {}
+    var a = document.createElement('textarea'); a.value = t; a.style.position = 'fixed'; a.style.opacity = '0'; document.body.appendChild(a); a.select();
+    try { document.execCommand('copy'); } catch (e) {} a.remove();
+  }
+  // Tek düğme: telefonun paylaş menüsü (link + metin). Menü yoksa metin ve link kopyalanır.
+  function paylas(o) {
+    var t = ek(o.metin);
+    if (navigator.share) { navigator.share({ title: o.baslik || '7527 İPTAL', text: t, url: o.url }).catch(function () {}); return 'menu'; }
+    kopya(t + '\n\n' + o.url); return 'kopya';
+  }
+  // Instagram gibi görsel isteyen yerler: metin kopyalanır, görsel paylaşılır; olmazsa indirilir
+  function gorselPaylas(o) {
+    var t = ek(o.metin) + (o.url ? '\n\n' + o.url : '');
+    kopya(t);
+    var f = o.blob && new File([o.blob], o.ad || '7527iptal.jpg', { type: o.blob.type || 'image/png' });
+    if (f && navigator.canShare && navigator.canShare({ files: [f] })) { navigator.share({ files: [f], text: t }).catch(function () {}); return 'menu'; }
+    if (f) { var a = document.createElement('a'); a.href = URL.createObjectURL(f); a.download = f.name; document.body.appendChild(a); a.click(); a.remove(); }
+    return 'indir';
+  }
+
   window.OG = { ozet: ozet, slug: slug, anahtar: anahtar, kart: kart, kucult: kucult, hazirla: hazirla,
-    vaka: vaka, onur: onur, onurLink: onurLink, saha: saha };
+    vaka: vaka, onur: onur, onurLink: onurLink, saha: saha,
+    sayfa: sayfa, ek: ek, kopya: kopya, paylas: paylas, gorselPaylas: gorselPaylas, BILGI: BILGI, ETIKET: ETIKET };
 })();

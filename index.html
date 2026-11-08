@@ -22,7 +22,7 @@
 <meta name="twitter:image" content="https://7527iptal.org/gorsel/halk-iradesi.png?v=2">
 <!-- Tailwind: hazır CSS dosyası -->
 <link rel="stylesheet" href="/kaynak/tailwind.css?v=1">
-<script src="/kaynak/og.js?v=2" defer></script>
+<script src="/kaynak/og.js?v=3" defer></script>
 <script src="/kaynak/tarayici.js?v=2" defer></script>
 <!-- QRCode.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -560,13 +560,8 @@
     <div class="flex items-center justify-between"><h3 class="font-bold text-white text-sm">Vekili paylaş</h3><button type="button" class="text-zinc-400 text-xl leading-none" onclick="document.getElementById('vk-modal').style.display='none'">×</button></div>
         <img id="vk-img" alt="" class="w-full rounded-xl border border-zinc-800">
     <div class="grid grid-cols-2 gap-2">
-      <button type="button" id="vk-sh" class="col-span-2 rounded-xl font-bold text-xs py-2.5 px-3 bg-emerald-600 hover:bg-emerald-500 text-white">📲 Görseli paylaş (Instagram ve diğerleri)</button>
-      <button type="button" id="vk-x" class="rounded-xl font-bold text-xs py-2.5 px-3 bg-zinc-800 hover:bg-zinc-700 text-white">𝕏 (Twitter)</button>
-      <button type="button" id="vk-wa" class="rounded-xl font-bold text-xs py-2.5 px-3 bg-emerald-700 hover:bg-emerald-600 text-white">💬 WhatsApp</button>
-      <button type="button" id="vk-tg" class="rounded-xl font-bold text-xs py-2.5 px-3 bg-sky-700 hover:bg-sky-600 text-white">Telegram</button>
-      <button type="button" id="vk-fb" class="rounded-xl font-bold text-xs py-2.5 px-3 bg-blue-800 hover:bg-blue-700 text-white">Facebook</button>
-      <button type="button" id="vk-cp" class="rounded-xl font-bold text-xs py-2.5 px-3 bg-zinc-800 text-zinc-200">📋 Metni kopyala</button>
-      <a id="vk-dl" class="block text-center rounded-xl font-bold text-xs py-2.5 px-3 bg-zinc-800 text-zinc-200">⬇ Görseli indir</a>
+      <button type="button" id="vk-sh" class="col-span-2 rounded-xl font-bold text-xs py-2.5 px-3 bg-red-600 hover:bg-red-500 text-white">📤 Paylaş</button>
+      <button type="button" id="vk-ig" class="col-span-2 rounded-xl font-bold text-[11px] py-2 px-3 bg-zinc-800 text-zinc-200">🖼 Görsel + metin (Instagram için)</button>
     </div>
     <p id="vk-st" class="text-[11px] text-emerald-400 text-center min-h-[16px]"></p>
   </div>
@@ -607,22 +602,14 @@ async function vkGorsel(r) {
   return new Promise(function (ok) { c.toBlob(function (b) { ok(b); }, 'image/png'); });
 }
 async function vkPaylas(r) {
-  var m = document.getElementById('vk-modal'), q = encodeURIComponent, t = vkMetin(r), st = document.getElementById('vk-st');
+  var m = document.getElementById('vk-modal'), t = vkMetin(r), st = document.getElementById('vk-st');
   m.style.display = 'flex'; st.textContent = 'Görsel hazırlanıyor…';
-  var blob = await vkGorsel(r), url = URL.createObjectURL(blob), ad = 'vekil-' + r.id + '.png';
+  var blob = await vkGorsel(r), url = URL.createObjectURL(blob), ad = 'vekil-' + r.id + '.png', q = null;
   document.getElementById('vk-img').src = url; st.textContent = '';
-  var dl = document.getElementById('vk-dl'); dl.href = url; dl.download = ad;
-  function kop() { if (navigator.clipboard) navigator.clipboard.writeText(t).then(function () { st.textContent = '✓ Metin kopyalandı'; }); }
-  document.getElementById('vk-cp').onclick = kop;
-  document.getElementById('vk-x').onclick = function () { window.open('https://twitter.com/intent/tweet?text=' + q(t), '_blank'); };
-  document.getElementById('vk-wa').onclick = function () { window.open('https://api.whatsapp.com/send?text=' + q(t), '_blank'); };
-  document.getElementById('vk-tg').onclick = function () { window.open('https://t.me/share/url?url=' + q('https://7527iptal.org') + '&text=' + q(t), '_blank'); };
-  document.getElementById('vk-fb').onclick = function () { window.open('https://www.facebook.com/sharer/sharer.php?u=' + q('https://7527iptal.org'), '_blank'); };
-  document.getElementById('vk-sh').onclick = function () {
-    kop(); var f = new File([blob], ad, { type: 'image/png' });
-    if (navigator.canShare && navigator.canShare({ files: [f] })) navigator.share({ files: [f], text: t }).catch(function () {});
-    else dl.click();
-  };
+  var link = OG.sayfa({ tur: 'vekil', id: r.id, parcalar: [r.name, r.total, r.vote, window.__vkImza[r.id] ? 1 : 0], baslik: r.name + ' (' + r.party + ' ' + r.city + ' Milletvekili)', aciklama: Number(r.total).toLocaleString('tr-TR') + ' yurttaş dilekçesi aldı. ' + (window.__vkImza[r.id] ? 'İptal teklifine imza attı.' : 'İptal teklifine hâlâ imza atmadı.') + ' Sen de vekiline dilekçeni gönder.', hedef: '/?vekil=' + r.id, gorsel: blob, w: 1080, h: 1350 });
+  var tx = t.replace(/\n*Sen de vekiline dilekçeni gönder: 7527iptal\.org/, '\n\nSen de vekiline dilekçeni gönder.');
+  document.getElementById('vk-sh').onclick = function () { st.textContent = OG.paylas({ baslik: r.name, metin: tx, url: link }) === 'kopya' ? '✓ Metin ve link kopyalandı, istediğin yere yapıştır.' : ''; };
+  document.getElementById('vk-ig').onclick = function () { st.textContent = OG.gorselPaylas({ metin: tx, url: link, blob: blob, ad: ad }) === 'indir' ? '✓ Metin kopyalandı, görsel indirildi.' : '✓ Metin kopyalandı.'; };
 }
 </script>
 <div id="mk-modal" style="display:none;position:fixed;inset:0;z-index:2147483500;background:rgba(0,0,0,.8);align-items:center;justify-content:center;padding:16px" onclick="if(event.target===this)this.style.display='none'">
@@ -632,8 +619,8 @@ async function vkPaylas(r) {
     <div id="mk-dl" class="grid grid-cols-2 gap-2"></div>
     <textarea id="mk-text" rows="6" readonly aria-label="Paylaşım metni" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-2 py-2 text-xs text-zinc-200"></textarea>
     <div class="grid grid-cols-2 gap-2">
-      <button type="button" id="mk-sh" class="col-span-2 rounded-xl font-bold text-xs py-2.5 px-3 bg-red-700 hover:bg-red-600 text-white">📲 Mektubu paylaş</button>
-      <button type="button" id="mk-cp" class="col-span-2 rounded-xl font-bold text-xs py-2.5 px-3 bg-zinc-800 text-zinc-200">📋 Metni kopyala</button>
+      <button type="button" id="mk-sh" class="col-span-2 rounded-xl font-bold text-xs py-2.5 px-3 bg-red-600 hover:bg-red-500 text-white">📤 Mektubu paylaş</button>
+      <button type="button" id="mk-cp" class="col-span-2 rounded-xl font-bold text-[11px] py-2 px-3 bg-zinc-800 text-zinc-200">🖼 Görsel + metin (Instagram için)</button>
       <a id="mk-x" target="_blank" rel="noopener noreferrer" class="block text-center rounded-xl font-bold text-xs py-2.5 px-3 bg-zinc-800 text-white">𝕏 Vekilin hesabı</a>
       <a id="mk-ig" target="_blank" rel="noopener noreferrer" class="block text-center rounded-xl font-bold text-xs py-2.5 px-3 bg-zinc-800 text-white">Instagram</a>
       <a id="mk-fb" target="_blank" rel="noopener noreferrer" class="block text-center rounded-xl font-bold text-xs py-2.5 px-3 bg-zinc-800 text-white">Facebook</a>
@@ -726,14 +713,11 @@ async function vkMektupAc(r) {
   var mb = await vkMektupGorsel(r.vote, r), slug = (r.name + '-' + r.city + '-milletvekili').toLocaleLowerCase('tr').replace(/ç/g, 'c').replace(/ğ/g, 'g').replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ş/g, 's').replace(/ü/g, 'u').replace(/[^a-z0-9]+/g, '-');
   var ad = slug + '-acik-mektup.png', u = URL.createObjectURL(mb), dosya = [new File([mb], ad, { type: 'image/png' })];
   var im = document.createElement('img'); im.src = u; im.alt = r.name + ' ' + r.city + ' Milletvekili açık mektup'; im.className = 'w-full rounded-xl border border-zinc-800'; gal.appendChild(im);
-  var a = document.createElement('a'); a.href = u; a.download = ad; a.textContent = '⬇ Mektubu indir'; a.className = 'col-span-2 block text-center rounded-xl font-bold text-xs py-2.5 px-3 bg-zinc-800 text-zinc-200'; dl.appendChild(a);
+  var link = OG.sayfa({ tur: 'mektup', id: r.id, parcalar: [r.name, r.vote, 'mektup'], baslik: r.name + ' (' + r.city + ' Milletvekili), bu mektup sana', aciklama: '7527 sayılı Kanun\'un iptali için açık mektup. Sen de vekiline dilekçeni gönder.', hedef: '/?vekil=' + r.id, gorsel: mb, w: 1080, h: 1350 });
   function kop() { if (navigator.clipboard) navigator.clipboard.writeText(t).then(function () { st.textContent = '✓ Metin kopyalandı'; }).catch(function () {}); else { tx.select(); } }
-  document.getElementById('mk-cp').onclick = kop;
-  document.getElementById('mk-sh').onclick = function () {
-    kop();
-    if (navigator.canShare && navigator.canShare({ files: dosya })) navigator.share({ files: dosya, text: t }).catch(function () {});
-    else st.textContent = 'Görseli indir, metin kopyalandı.';
-  };
+  var tx = t.replace(/\n*Sen de vekiline dilekçeni gönder: 7527iptal\.org/, '\n\nSen de vekiline dilekçeni gönder.');
+  document.getElementById('mk-sh').onclick = function () { st.textContent = OG.paylas({ baslik: r.name, metin: tx, url: link }) === 'kopya' ? '✓ Metin ve link kopyalandı, istediğin yere yapıştır.' : ''; };
+  document.getElementById('mk-cp').onclick = function () { st.textContent = OG.gorselPaylas({ metin: tx, url: link, blob: mb, ad: ad }) === 'indir' ? '✓ Metin kopyalandı, mektup indirildi.' : '✓ Metin kopyalandı.'; };
   st.textContent = '';
 }
 </script>
@@ -870,11 +854,8 @@ window.addEventListener('load', function () {
             </div>
             <img id="ilp-gorsel" alt="Seçilen yerin harita görseli" class="rounded-lg border border-zinc-800" style="display:none;width:100%;max-width:100%">
             <p id="ilp-metin" class="whitespace-pre-line break-words bg-zinc-950 border border-zinc-800 rounded-lg p-2 text-[11px] text-zinc-200"></p>
-            <button type="button" onclick="ilpPaylas('ig')" class="w-full py-2.5 bg-pink-700 hover:bg-pink-600 text-white rounded-xl font-bold text-[11px]">📤 Paylaş (Instagram mesajı)</button>
-            <div class="grid grid-cols-2 gap-2">
-              <button type="button" onclick="ilpPaylas('link')" class="py-2.5 bg-zinc-800 border border-zinc-600 text-zinc-200 rounded-xl font-bold text-[11px]">🔗 Yanıt gelince: link</button>
-              <button type="button" onclick="ilpPaylas('x')" class="py-2.5 bg-zinc-800 border border-zinc-600 text-white rounded-xl font-bold text-[11px]">𝕏 Gönderi</button>
-            </div>
+            <button type="button" onclick="ilpPaylas('link')" class="w-full py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold text-xs">📤 Paylaş</button>
+            <button type="button" onclick="ilpPaylas('gorsel')" class="w-full py-2 bg-zinc-800 border border-zinc-600 text-zinc-200 rounded-xl font-bold text-[11px]">🖼 Görsel + metin (Instagram için)</button>
             <p id="ilp-durum" class="text-[11px] text-emerald-400 text-center"></p>
           </div>
         </div>
@@ -1688,7 +1669,7 @@ window.addEventListener('load', function () {
       <img id="gc-big" src="/cagri/cagri-tr-ig.jpg?v=6" width="1080" height="1350" loading="lazy" alt="Gurbet çağrısı" style="display:block;width:100%;height:auto;border-radius:14px;border:1px solid #1f2b25">
       <button type="button" id="gc-ac" onclick="var g=document.getElementById('gc-btn');var a=g.style.display==='none';g.style.display=a?'grid':'none';this.setAttribute('aria-expanded',a)" aria-expanded="false" style="display:block;width:100%;margin-top:10px;padding:12px 8px;border-radius:12px;border:1px solid #2b3a33;background:#16201b;color:#f1f5f2;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit">📤 Paylaş</button>
       <div id="gc-btn" style="display:none;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
-        <button type="button" id="gc-sh" style="display:block;width:100%;padding:11px 8px;border-radius:12px;border:1px solid #2b3a33;background:#16201b;color:#f1f5f2;font-weight:700;font-size:14px;text-align:center;text-decoration:none;cursor:pointer;font-family:inherit;grid-column:1/-1;background:#047857;border-color:#047857">📲 Görseli paylaş (Instagram ve diğerleri)</button>
+        <button type="button" id="gc-sh" style="display:block;width:100%;padding:11px 8px;border-radius:12px;border:1px solid #2b3a33;background:#16201b;color:#f1f5f2;font-weight:700;font-size:14px;text-align:center;text-decoration:none;cursor:pointer;font-family:inherit;grid-column:1/-1;background:#047857;border-color:#047857">🖼 Görsel + metin (Instagram için)</button>
         <button type="button" id="gc-x" style="display:block;width:100%;padding:11px 8px;border-radius:12px;border:1px solid #2b3a33;background:#16201b;color:#f1f5f2;font-weight:700;font-size:14px;text-align:center;text-decoration:none;cursor:pointer;font-family:inherit">𝕏 (Twitter)</button>
         <button type="button" id="gc-wa" style="display:block;width:100%;padding:11px 8px;border-radius:12px;border:1px solid #2b3a33;background:#16201b;color:#f1f5f2;font-weight:700;font-size:14px;text-align:center;text-decoration:none;cursor:pointer;font-family:inherit">💬 WhatsApp</button>
         <button type="button" id="gc-tg" style="display:block;width:100%;padding:11px 8px;border-radius:12px;border:1px solid #2b3a33;background:#16201b;color:#f1f5f2;font-weight:700;font-size:14px;text-align:center;text-decoration:none;cursor:pointer;font-family:inherit">Telegram</button>
@@ -1727,6 +1708,11 @@ window.addEventListener('load', function () {
       if (navigator.canShare && navigator.canShare({ files: fs })) return navigator.share({ files: fs, text: d[sec].ig });
       imgs.forEach(function (k) { var a = document.createElement('a'); a.href = '/cagri/cagri-' + k + '-ig.jpg?v=6'; a.download = 'cagri-' + k + '.jpg'; document.body.appendChild(a); a.click(); a.remove(); });
     }); }).catch(function () {});
+  };
+  // Paylaş: o dilin kendi sayfasının linki tek dokunuşla gider (önizleme görseli o sayfadan gelir). Paylaş menüsü yoksa seçenekler açılır.
+  $('gc-ac').onclick = function () {
+    if (navigator.share) { navigator.share({ text: V[sec].x, url: url() }).catch(function () {}); return; }
+    var g = $('gc-btn'), a = g.style.display === 'none'; g.style.display = a ? 'grid' : 'none'; this.setAttribute('aria-expanded', a);
   };
   sec_('tr');
 })();
@@ -4295,7 +4281,9 @@ function ilpVeri() {
   var cagri = "Sen dilekçeni gönder, vekilin Meclis'te imzacı olsun.", lnk = SITE_URL + (tr ? '/?il=' + encodeURIComponent(y) + (alt ? '&ilce=' + encodeURIComponent(alt) : '') : '/?ulke=' + encodeURIComponent(y) + (alt ? '&sehir=' + encodeURIComponent(alt) : ''));
   function et(x) { return '#' + x.replace(/[^0-9A-Za-zÇĞİÖŞÜçğıöşü]/g, ''); }
   return {
-    d: d, v: v, g: g, bas: bas, yurtdisi: !tr, y: y, ig: bas + '\n\n' + s1 + (s2 ? '\n' + s2 : '') + '\n' + cagri + '\n\nDilekçe bağlantısını gönderelim mi?',
+    d: d, v: v, g: g, bas: bas, yurtdisi: !tr, y: y, yol: lnk.replace(SITE_URL, '') || '/', s1: s1,
+    metin: bas + '\n\n' + s1 + (s2 ? '\n' + s2 : '') + '\n' + cagri + '\n\n' + et(y) + (hep ? ' ' + (IL_ILCE[y] || []).map(et).join(' ') : alt ? ' ' + et(alt) : ''),
+    ig: bas + '\n\n' + s1 + (s2 ? '\n' + s2 : '') + '\n' + cagri + '\n\nDilekçe bağlantısını gönderelim mi?',
     link: 'Dilekçeni buradan gönderebilirsin: ' + lnk,
     x: bas + '\n\n' + s1 + (s2 ? '\n' + s2 : '') + '\n\n' + cagri + '\n\n' + lnk + '\n\n' + et(y) + (hep ? ' ' + (IL_ILCE[y] || []).map(et).join(' ') : alt ? ' ' + et(alt) : '') + ' #7527İptal'
   };
@@ -4304,10 +4292,15 @@ function ilpGoster() {
   var m = ilpVeri(); document.getElementById('ilp-metin').textContent = m ? m.ig : 'Önce il veya ülke seç.';
   document.getElementById('ilp-durum').textContent = '';
   var im = document.getElementById('ilp-gorsel'); im.style.display = 'none'; _ilpBlob = null;
-  if (m) ilpGorsel(m).then(function (bl) { _ilpBlob = bl; if (im.src) URL.revokeObjectURL(im.src); im.src = URL.createObjectURL(bl); im.style.display = ''; }).catch(function (e) { if (e) console.log('ilp', e); });
+  _ilpUrl = '';
+  if (m) ilpGorsel(m).then(function (bl) { _ilpBlob = bl; _ilpUrl = ilpLink(m, bl); if (im.src) URL.revokeObjectURL(im.src); im.src = URL.createObjectURL(bl); im.style.display = ''; }).catch(function (e) { if (e) console.log('ilp', e); });
 }
 // Harita gorseli: sitenin harita verisi, renkleri ve yazi tipiyle tarayicida uretilir, sunucuya dosya yuklenmez
-var _ilpBlob = null, _ilpNo = 0;
+var _ilpBlob = null, _ilpNo = 0, _ilpUrl = '';
+function ilpLink(m, bl) {
+  if (!window.OG || !OG.sayfa) return SITE_URL + m.yol;
+  return OG.sayfa({ tur: 'il', id: m.bas, parcalar: [m.bas, m.d, m.v, m.g], baslik: m.bas + " 7527'ye sessiz kalmıyor", aciklama: m.s1 + " Sen de dilekçeni gönder, vekilin Meclis'te imzacı olsun.", hedef: m.yol, gorsel: bl, w: 1080, h: 1350 });
+}
 async function ilpGorsel(m) {
   var no = ++_ilpNo, W = 1080, H = 1350, MY = 190, MH = 690;
   var cv = document.createElement('canvas'); cv.width = W; cv.height = H; var c = cv.getContext('2d');
@@ -4356,24 +4349,17 @@ async function ilpGorsel(m) {
   c.fillStyle = '#fcd34d'; c.font = '700 54px Oswald, sans-serif'; c.fillText('7527iptal.org', W / 2, 1270);
   return new Promise(function (ok, no2) { cv.toBlob(function (b) { b ? ok(b) : no2(); }, 'image/png'); });
 }
-function ilpIndir(bl, ad) { var a = document.createElement('a'); a.href = URL.createObjectURL(bl); a.download = ad; document.body.appendChild(a); a.click(); a.remove(); }
-function ilpKopyala(t) {
-  if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t).catch(function () {}); return; }
-  var a = document.createElement('textarea'); a.value = t; a.style.position = 'fixed'; a.style.opacity = '0'; document.body.appendChild(a); a.select();
-  try { document.execCommand('copy'); } catch (e) {} a.remove();
-}
 function ilpPaylas(tur) {
   var m = ilpVeri(), st = document.getElementById('ilp-durum');
   if (!m) { st.textContent = 'Önce il veya ülke seç.'; return; }
-  if (_hmPet === null) { st.textContent = 'Sayılar yükleniyor, birazdan tekrar dene.'; return; }
-  ilpKopyala(tur === 'x' ? m.x : m[tur]);
-  st.textContent = '✓ Metin kopyalandı. Kişiyi seçip yapıştır.';
-  if (tur === 'link') return;
-  var mobil = /Android|iPhone|iPad/i.test(navigator.userAgent), ad = '7527-' + m.bas.replace(/[^0-9A-Za-zÇĞİÖŞÜçğıöşü]+/g, '-') + '.png';
-  var f = _ilpBlob && new File([_ilpBlob], ad, { type: 'image/png' });
-  if (mobil && f && navigator.canShare && navigator.canShare({ files: [f] })) { navigator.share({ files: [f] }).catch(function () {}); return; }
-  if (f) ilpIndir(f, ad);
-  window.open(tur === 'x' ? 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(m.x) : 'https://www.instagram.com/direct/inbox/', '_blank');
+  if (_hmPet === null || !_ilpBlob) { st.textContent = 'Görsel hazırlanıyor, birazdan tekrar dene.'; return; }
+  var url = _ilpUrl || ilpLink(m, _ilpBlob);
+  if (tur === 'gorsel') {
+    var g = OG.gorselPaylas({ metin: m.metin, url: url, blob: _ilpBlob, ad: '7527-' + OG.slug(m.bas) + '.png' });
+    st.textContent = g === 'indir' ? '✓ Metin kopyalandı, görsel indirildi.' : '✓ Metin kopyalandı, yapıştırabilirsin.';
+    return;
+  }
+  st.textContent = OG.paylas({ baslik: m.bas, metin: m.metin, url: url }) === 'kopya' ? '✓ Metin ve link kopyalandı, istediğin yere yapıştır.' : '';
 }
 function hmLayer(v) { _hmLayer = v; hmRender(); }
 // Harita bulunduğu panele göre yer değiştirir: Vatandaş panelinde Dilekçeler, Vekil panelinde Vekiller önde ve seçili
