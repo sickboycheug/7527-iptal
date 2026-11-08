@@ -153,6 +153,18 @@
   if (mHarita || goRep || goRank || goHedef || goVekil || goIl || goUlke || goAdim || goDil) {
     el.style.display = 'none';
     document.body.style.overflow = '';
+    if (goDil) {
+      // Doğrudan dilekçe adımı: sayfa yüklenmesini beklemeden, anında; geç yüklenen görseller yeri kaydırırsa yeniden hizalar
+      var dilGit = function () { var h = document.getElementById('dilekce-basla'); if (h) h.scrollIntoView({ block: 'start' }); };
+      document.addEventListener('DOMContentLoaded', function () {
+        try { handleGatePanelClick('vatandas'); } catch (e) {}
+        try { if (/[?&]yurtdisi=1/.test(qs) && typeof setAbroad === 'function') setAbroad(true); } catch (e) {}
+        dilGit();
+        var oynadi = false; ['touchstart', 'wheel', 'keydown'].forEach(function (t) { window.addEventListener(t, function () { oynadi = true; }, { once: true, passive: true }); });
+        [300, 900, 1800].forEach(function (ms) { setTimeout(function () { if (!oynadi) dilGit(); }, ms); });
+        window.addEventListener('load', function () { if (!oynadi) dilGit(); });
+      });
+    }
     window.addEventListener('load', function () {
       try { handleGatePanelClick('vatandas'); } catch (e) {}
       setTimeout(function () {
@@ -163,7 +175,6 @@
         }
         if (goRep) { try { openReportModal(); } catch (e) {} }
         if (goAdim) { try { openAdimModal(); } catch (e) {} }
-        if (goDil) { try { adim1eGit(); } catch (e) {} }
       }, 400);
       if (goVekil) {
         var vkDene = 0;
