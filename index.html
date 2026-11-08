@@ -13,16 +13,16 @@
 <meta property="og:title" content="7527 İPTAL! İmzacısı Ol">
 <meta property="og:description" content="Öldüren değil, yaşatan ol. Dilekçeni oluştur, vekiline ilet. 2 dakikanı ayır, canlar için ses ol.">
 <meta property="og:url" content="https://7527iptal.org/">
-<meta property="og:image" content="https://7527iptal.org/halk-iradesi.png?v=2">
+<meta property="og:image" content="https://7527iptal.org/gorsel/halk-iradesi.png?v=2">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="7527 İPTAL! İmzacısı Ol">
 <meta name="twitter:description" content="Öldüren değil, yaşatan ol. Dilekçeni oluştur, vekiline ilet. 2 dakikanı ayır, canlar için ses ol.">
-<meta name="twitter:image" content="https://7527iptal.org/halk-iradesi.png?v=2">
+<meta name="twitter:image" content="https://7527iptal.org/gorsel/halk-iradesi.png?v=2">
 <!-- Tailwind: hazır CSS dosyası -->
-<link rel="stylesheet" href="/tailwind.css?v=1">
-<script src="/og.js?v=1" defer></script>
+<link rel="stylesheet" href="/kaynak/tailwind.css?v=1">
+<script src="/kaynak/og.js?v=1" defer></script>
 <!-- QRCode.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <!-- Supabase JS -->
@@ -119,7 +119,7 @@
   <!-- AÇILIŞ EKRANI: video + dilekçe adımına geç -->
 <div id="acilis-ekran" style="position:fixed;top:0;right:0;bottom:0;left:0;z-index:2147483000;background:#000" class="flex flex-col items-center overflow-hidden" role="dialog" aria-modal="true" aria-label="7527 İptal tanıtım videosu">
   <div class="flex-1 min-h-0 w-full flex items-center justify-center p-2">
-    <img id="acilis-gorsel" src="acilis.jpg" alt="7527 İptal! İmzacısı ol" class="max-h-full max-w-full object-contain rounded-xl">
+    <img id="acilis-gorsel" src="gorsel/acilis.jpg" alt="7527 İptal! İmzacısı ol" class="max-h-full max-w-full object-contain rounded-xl">
   </div>
   <div class="w-full max-w-md px-4 pt-2 pb-4 space-y-2 shrink-0">
     <button type="button" id="acilis-ana" class="w-full py-3.5 rounded-xl font-extrabold text-sm uppercase tracking-wide bg-red-600 hover:bg-red-500 text-white border-2 border-red-500 shadow-xl cursor-pointer"></button>
@@ -675,11 +675,11 @@ async function vkMektupGorsel(oy, r) {
 }
 </script>
 <script>
-// Mektup gonder: vekilin oyuna gore mektup + #ad #il @hesaplar (vekil-hesaplari.txt)
+// Mektup gonder: vekilin oyuna gore mektup + #ad #il @hesaplar (veri/vekil-hesaplari.txt)
 var _vkHesap = null;
 function vkHesapYukle() {
   if (_vkHesap) return _vkHesap;
-  _vkHesap = fetch('/vekil-hesaplari.txt').then(function (r) { return r.ok ? r.text() : ''; }).then(function (t) {
+  _vkHesap = fetch('/veri/vekil-hesaplari.txt').then(function (r) { return r.ok ? r.text() : ''; }).then(function (t) {
     var o = {};
     t.split('\n').forEach(function (l) { var c = l.split('|'); if (c.length >= 6) o[Number(c[0])] = { x: c[3].trim().replace(/^@/, ''), ig: c[4].trim().replace(/^@/, ''), fb: c[5].trim().replace(/^@/, '') }; });
     return o;
@@ -3534,7 +3534,7 @@ function adimMetni() {
   return '📲 Dilekçeni adım adım gönder!\nAnayasa\'nın 74. maddesindeki dilekçe hakkınla 7527\'nin iptalini iste. 6 adımı sırayla izle, hiçbir adımı atlama.\nSen dilekçeni gönder, vekilin Meclis\'te imzacı olsun.';
 }
 function adimPaylas() {
-  var link = SITE_URL + '/paylas-adim.html', ad = 'Dilekçe nasıl gönderilir?';
+  var link = SITE_URL + '/paylas/paylas-adim.html', ad = 'Dilekçe nasıl gönderilir?';
   if (navigator.share) {
     navigator.share({ title: ad, text: adimMetni(), url: link }).catch(function () {});
     return;
@@ -3628,7 +3628,7 @@ async function loadPdfFonts() {
     }
     throw new Error('pdf_font');
   }
-  var res = await Promise.all([get('serif-regular.ttf'), get('serif-bold.ttf')]);
+  var res = await Promise.all([get('kaynak/serif-regular.ttf'), get('kaynak/serif-bold.ttf')]);
   pdfFontCache = { regular: res[0], bold: res[1] };
   return pdfFontCache;
 }
@@ -3640,7 +3640,7 @@ function pdfWithTimeout(promise, ms) {
 }
 async function generatePetitionPdf() {
   await pdfWithTimeout(Promise.all([
-loadScriptOnce('jspdf.umd.min.js', function() { return !!(window.jspdf && window.jspdf.jsPDF); })
+loadScriptOnce('kaynak/jspdf.umd.min.js', function() { return !!(window.jspdf && window.jspdf.jsPDF); })
       .catch(function() { return loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js', function() { return !!(window.jspdf && window.jspdf.jsPDF); }); }),
     loadPdfFonts()
   ]), 20000);
@@ -4206,7 +4206,7 @@ function hmDavetMetni() {
 function hmDavet(how) {
   var m = hmDavetMetni(), t = m.uzun;
   // Her paylasim yalnizca kendi sayfasinin baglantisini tasir (onizleme gorseli o sayfadan gelir)
-  var lnk = SITE_URL + (_hmLayer === 'vol' ? '/paylas-gonullu.html?v=2' : _hmLayer === 'case' ? '/paylas-harita.html?v=2' : '/');
+  var lnk = SITE_URL + (_hmLayer === 'vol' ? '/paylas/paylas-gonullu.html?v=2' : _hmLayer === 'case' ? '/paylas/paylas-harita.html?v=2' : '/');
   var tam = t + '\n\n' + lnk;
   if (how === 'wa') { window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(tam), '_blank'); return; }
   if (how === 'x') { window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(m.kisa) + '&url=' + encodeURIComponent(lnk), '_blank'); return; }
@@ -4725,15 +4725,15 @@ async function deleteAlmanacReport(r) {
 
 // --- VAKA PAYLAŞIMI -------------------------------------------------
 var SITE_URL = 'https://7527iptal.org';
-var VOL_URL = SITE_URL + '/paylas-gonullu.html?v=2';
+var VOL_URL = SITE_URL + '/paylas/paylas-gonullu.html?v=2';
 var shareCase = null;
 
 // Paylasilacak metni kurar. 'short' surumu X'in karakter sinirina gore kisadir.
-function caseLink(item) { return item.adim ? SITE_URL + '/paylas-adim.html' : SITE_URL + '/vaka/' + encodeURIComponent(item.id); }
+function caseLink(item) { return item.adim ? SITE_URL + '/paylas/paylas-adim.html' : SITE_URL + '/vaka/' + encodeURIComponent(item.id); }
 function buildShareText(item, short, withLink) {
   if (item.adim) {
     var ml = short ? 'Dilekçeni adım adım gönder: 6 adımı sırayla izle, hiçbir adımı atlama. #7527İptal' : adimMetni();
-    return withLink ? ml + '\n\n7527iptal.org/paylas-adim.html' : ml;
+    return withLink ? ml + '\n\n7527iptal.org/paylas/paylas-adim.html' : ml;
   }
   var tarih = item.date ? new Date(item.date).toLocaleDateString('tr-TR') : '';
   var yer = [item.city, item.location].filter(Boolean).join(' · ');

@@ -11,15 +11,15 @@
 <meta property="og:title" content="Kendi şehrinde ses ol: gönüllü ağına katıl">
 <meta property="og:description" content="Kampanya sohbetine katıl, görev al, materyal indir. 7527 İptal gönüllü ağı seni bekliyor.">
 <meta property="og:url" content="https://7527iptal.org/gorev.html">
-<meta property="og:image" content="https://7527iptal.org/og-gonullu.png?v=1">
+<meta property="og:image" content="https://7527iptal.org/gorsel/og-gonullu.png?v=1">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Kendi şehrinde ses ol: gönüllü ağına katıl">
 <meta name="twitter:description" content="Kampanya sohbetine katıl, görev al, materyal indir. 7527 İptal gönüllü ağı seni bekliyor.">
-<meta name="twitter:image" content="https://7527iptal.org/og-gonullu.png?v=1">
+<meta name="twitter:image" content="https://7527iptal.org/gorsel/og-gonullu.png?v=1">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="stylesheet" href="/tailwind.css?v=1">
-<script src="/og.js?v=1" defer></script>
+<link rel="stylesheet" href="/kaynak/tailwind.css?v=1">
+<script src="/kaynak/og.js?v=1" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -296,11 +296,11 @@ async function vkMektupGorsel(oy, r) {
 }
 </script>
 <script>
-// Mektup gonder: vekilin oyuna gore mektup + #ad #il @hesaplar (vekil-hesaplari.txt)
+// Mektup gonder: vekilin oyuna gore mektup + #ad #il @hesaplar (veri/vekil-hesaplari.txt)
 var _vkHesap = null;
 function vkHesapYukle() {
   if (_vkHesap) return _vkHesap;
-  _vkHesap = fetch('/vekil-hesaplari.txt').then(function (r) { return r.ok ? r.text() : ''; }).then(function (t) {
+  _vkHesap = fetch('/veri/vekil-hesaplari.txt').then(function (r) { return r.ok ? r.text() : ''; }).then(function (t) {
     var o = {};
     t.split('\n').forEach(function (l) { var c = l.split('|'); if (c.length >= 6) o[Number(c[0])] = { x: c[3].trim().replace(/^@/, ''), ig: c[4].trim().replace(/^@/, ''), fb: c[5].trim().replace(/^@/, '') }; });
     return o;
@@ -401,7 +401,7 @@ function siraBoya(pre, cok) {
     try {
       var res = await Promise.all([
         callRpc('mp_petition_counts', {}),
-        fetch('/vekil-listesi.txt').then(function (r) { if (!r.ok) throw 0; return r.text(); }).catch(function () { return fetch('/index.html').then(function (r) { return r.text(); }); })
+        fetch('/veri/vekil-listesi.txt').then(function (r) { if (!r.ok) throw 0; return r.text(); }).catch(function () { return fetch('/index.html').then(function (r) { return r.text(); }); })
       ]);
       var mps = parseMps(res[1]);
       if (!mps) throw new Error('liste');
@@ -739,10 +739,10 @@ function siraBoya(pre, cok) {
             <p class="text-xs text-zinc-300 leading-relaxed border-l-4 border-amber-500 bg-zinc-950 rounded-r-lg px-4 py-3"><span class="font-bold text-amber-400">Hakkımız, sınırımız:</span> Tüm çalışmalarımız Anayasa’nın 74. maddesindeki dilekçe hakkına ve ifade özgürlüğüne dayanır. Yasal sınırlar içinde, barışçıl ve açık biçimde irade gösteriyoruz. Gönüllülerimizden de bunu bekliyoruz.</p>
       <div class="flex flex-wrap items-center gap-2">
         <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 mr-1">Bu sayfayı paylaş:</span>
-        <a class="bg-zinc-950 border border-emerald-700 text-emerald-300 hover:bg-emerald-700 hover:text-white text-xs font-bold px-3 py-2 rounded-full transition" href="https://wa.me/?text=Kendi%20%C5%9Fehrinde%20ses%20ol%3A%207527%20%C4%B0ptal%20kampanyas%C4%B1na%20kat%C4%B1l.%20Sohbete%20kat%C4%B1l%2C%20g%C3%B6rev%20al%2C%20materyal%20indir%3A%20https%3A%2F%2F7527iptal.org%2Fpaylas-gonullu.html%3Fv%3D2" target="_blank" rel="noopener">WhatsApp</a>
-        <a class="bg-zinc-950 border border-emerald-700 text-emerald-300 hover:bg-emerald-700 hover:text-white text-xs font-bold px-3 py-2 rounded-full transition" href="https://twitter.com/intent/tweet?text=Kendi%20%C5%9Fehrinde%20ses%20ol%3A%207527%20%C4%B0ptal%20kampanyas%C4%B1na%20kat%C4%B1l.%20Sohbete%20kat%C4%B1l%2C%20g%C3%B6rev%20al%2C%20materyal%20indir%3A&url=https%3A%2F%2F7527iptal.org%2Fpaylas-gonullu.html%3Fv%3D2" target="_blank" rel="noopener">X</a>
-        <a class="bg-zinc-950 border border-emerald-700 text-emerald-300 hover:bg-emerald-700 hover:text-white text-xs font-bold px-3 py-2 rounded-full transition" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2F7527iptal.org%2Fpaylas-gonullu.html%3Fv%3D2" target="_blank" rel="noopener">Facebook</a>
-        <a class="bg-zinc-950 border border-emerald-700 text-emerald-300 hover:bg-emerald-700 hover:text-white text-xs font-bold px-3 py-2 rounded-full transition" href="https://t.me/share/url?url=https%3A%2F%2F7527iptal.org%2Fpaylas-gonullu.html%3Fv%3D2&text=Kendi%20%C5%9Fehrinde%20ses%20ol%3A%207527%20%C4%B0ptal%20kampanyas%C4%B1na%20kat%C4%B1l.%20Sohbete%20kat%C4%B1l%2C%20g%C3%B6rev%20al%2C%20materyal%20indir%3A" target="_blank" rel="noopener">Telegram</a>
+        <a class="bg-zinc-950 border border-emerald-700 text-emerald-300 hover:bg-emerald-700 hover:text-white text-xs font-bold px-3 py-2 rounded-full transition" href="https://wa.me/?text=Kendi%20%C5%9Fehrinde%20ses%20ol%3A%207527%20%C4%B0ptal%20kampanyas%C4%B1na%20kat%C4%B1l.%20Sohbete%20kat%C4%B1l%2C%20g%C3%B6rev%20al%2C%20materyal%20indir%3A%20https%3A%2F%2F7527iptal.org%2Fpaylas%2Fpaylas-gonullu.html%3Fv%3D2" target="_blank" rel="noopener">WhatsApp</a>
+        <a class="bg-zinc-950 border border-emerald-700 text-emerald-300 hover:bg-emerald-700 hover:text-white text-xs font-bold px-3 py-2 rounded-full transition" href="https://twitter.com/intent/tweet?text=Kendi%20%C5%9Fehrinde%20ses%20ol%3A%207527%20%C4%B0ptal%20kampanyas%C4%B1na%20kat%C4%B1l.%20Sohbete%20kat%C4%B1l%2C%20g%C3%B6rev%20al%2C%20materyal%20indir%3A&url=https%3A%2F%2F7527iptal.org%2Fpaylas%2Fpaylas-gonullu.html%3Fv%3D2" target="_blank" rel="noopener">X</a>
+        <a class="bg-zinc-950 border border-emerald-700 text-emerald-300 hover:bg-emerald-700 hover:text-white text-xs font-bold px-3 py-2 rounded-full transition" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2F7527iptal.org%2Fpaylas%2Fpaylas-gonullu.html%3Fv%3D2" target="_blank" rel="noopener">Facebook</a>
+        <a class="bg-zinc-950 border border-emerald-700 text-emerald-300 hover:bg-emerald-700 hover:text-white text-xs font-bold px-3 py-2 rounded-full transition" href="https://t.me/share/url?url=https%3A%2F%2F7527iptal.org%2Fpaylas%2Fpaylas-gonullu.html%3Fv%3D2&text=Kendi%20%C5%9Fehrinde%20ses%20ol%3A%207527%20%C4%B0ptal%20kampanyas%C4%B1na%20kat%C4%B1l.%20Sohbete%20kat%C4%B1l%2C%20g%C3%B6rev%20al%2C%20materyal%20indir%3A" target="_blank" rel="noopener">Telegram</a>
         <button type="button" class="bg-zinc-950 border border-emerald-700 text-emerald-300 hover:bg-emerald-700 hover:text-white text-xs font-bold px-3 py-2 rounded-full transition" data-up-native style="display:none">Paylaş…</button>
         <button type="button" class="bg-zinc-950 border border-emerald-700 text-emerald-300 hover:bg-emerald-700 hover:text-white text-xs font-bold px-3 py-2 rounded-full transition" data-up-copy>Bağlantıyı kopyala</button>
       </div>
@@ -750,7 +750,7 @@ function siraBoya(pre, cok) {
 (function(){
   var box=document.getElementById('vol-update');
   if(!box)return;
-  var url="https://7527iptal.org/paylas-gonullu.html?v=2", text="Kendi şehrinde ses ol: 7527 İptal kampanyasına katıl. Sohbete katıl, görev al, materyal indir:";
+  var url="https://7527iptal.org/paylas/paylas-gonullu.html?v=2", text="Kendi şehrinde ses ol: 7527 İptal kampanyasına katıl. Sohbete katıl, görev al, materyal indir:";
   var cp=box.querySelector('[data-up-copy]'), nv=box.querySelector('[data-up-native]');
   if(nv&&navigator.share){nv.style.display='';nv.addEventListener('click',function(){navigator.share({title:document.title,text:text,url:url}).catch(function(){});});}
   if(cp){cp.addEventListener('click',function(){
@@ -2886,7 +2886,7 @@ function ilDavetMetni() {
 function ilDavet(how) {
   var m = ilDavetMetni(), t = m.uzun;
   // Yalnizca gonullu paylasim sayfasinin baglantisi (kendi onizleme gorseliyle)
-  var lnk = 'https://7527iptal.org/paylas-gonullu.html?v=2', tam = t + '\n\n' + lnk, q = encodeURIComponent;
+  var lnk = 'https://7527iptal.org/paylas/paylas-gonullu.html?v=2', tam = t + '\n\n' + lnk, q = encodeURIComponent;
   if (how === 'wa') { window.open('https://api.whatsapp.com/send?text=' + q(tam), '_blank'); return; }
   if (how === 'x') { window.open('https://twitter.com/intent/tweet?text=' + q(m.kisa) + '&url=' + q(lnk), '_blank'); return; }
   if (how === 'fb') { window.open('https://www.facebook.com/sharer/sharer.php?u=' + q(lnk), '_blank'); return; }

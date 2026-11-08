@@ -1,0 +1,23 @@
+# Cloudflare Pages: önbellek ve güvenlik başlıkları
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: SAMEORIGIN
+
+# Görseller, videolar, yazı tipleri, CSS ve JS tarayıcıda 1 gün saklanır (sayfalar her seferinde güncel gelir)
+/gorsel/*
+  Cache-Control: public, max-age=86400
+/slaytlar/*
+  Cache-Control: public, max-age=86400
+/cagri/*.jpg
+  Cache-Control: public, max-age=86400
+/video/*
+  Cache-Control: public, max-age=86400
+/kaynak/*
+  Cache-Control: public, max-age=86400
+
+# Kurulum belgeleri arama motorlarında görünmesin
+/belgeler/*
+  X-Robots-Tag: noindex
+/arsiv/*
+  X-Robots-Tag: noindex
