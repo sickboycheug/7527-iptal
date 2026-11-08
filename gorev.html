@@ -1528,15 +1528,6 @@ async function oturumYukle() {
   if (supabaseClient) {
     try { var s = await supabaseClient.auth.getSession(); authUser = (s.data && s.data.session) ? s.data.session.user : null; } catch (e) {}
   }
-  // Giriş, kişi çıkış yapana kadar açık kalır; bir haftada bir yenilenir
-  if (authUser) {
-    var gt = Number(load('gv_giris_t')) || 0;
-    if (!gt) store('gv_giris_t', String(Date.now()));
-    else if (Date.now() - gt > 7 * 24 * 3600 * 1000) {
-      store('gv_giris_t', null); authUser = null;
-      try { await supabaseClient.auth.signOut(); } catch (e) {}
-    }
-  } else store('gv_giris_t', null);
   if (authUser) {
     try { meInfo = await callRpc('gv_me', {}); } catch (e) { meInfo = null; }
     var kod = load('gv_code');
@@ -2222,7 +2213,7 @@ async function adminLogin() {
 }
 
 // Yonetici oturumu: PIN sekme oturumunda, acilmis (disari alinamaz) ozel anahtar IndexedDB'de 8 saat hatirlanir.
-var ADMIN_TTL = 7 * 24 * 3600 * 1000;   // yönetici girişi bir hafta açık kalır, sonra PIN yeniden sorulur
+var ADMIN_TTL = Infinity;   // yönetici girişi ve özel anahtar, "Çıkış"a basılana kadar açık kalır
 function adminIdb() {
   return new Promise(function (res, rej) {
     try {
