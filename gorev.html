@@ -490,7 +490,7 @@ function siraBoya(pre, cok) {
           <span id="live-title" class="text-xs text-white truncate min-w-0"></span>
         </div>
         <div id="live-frame" class="aspect-video w-full bg-black"></div>
-        <a id="live-open" target="_blank" rel="noopener noreferrer" class="block text-center text-[11px] text-red-200 underline py-1.5">▶ YouTube'da izle</a>
+        <div id="live-open" class="flex flex-wrap justify-center gap-x-4 gap-y-1 py-1.5"></div>
       </div>
       <div id="chat-pins" class="hidden max-h-48 overflow-y-auto overscroll-contain rounded-xl border border-amber-700/70 bg-amber-950/30 p-2 space-y-2 text-sm"></div>
       <div id="chat-list" class="space-y-2 h-[26rem] overflow-y-auto overscroll-contain pr-1 text-sm"><div class="text-[12px] text-zinc-500">Sohbet yükleniyor...</div></div>
@@ -869,8 +869,8 @@ Panele giriş: [LİNK]</textarea>
 
       <div class="space-y-2" data-tab="gorev">
         <h3 class="text-xs font-bold uppercase tracking-wider text-red-400">🔴 Canlı Yayın</h3>
-        <p class="text-[11px] text-zinc-400 leading-relaxed">YouTube'da yayını başlat, yayının "Paylaş" düğmesinden linki kopyala, buraya yapıştırıp "Yayını aç"a bas. Yayın sohbetin üstünde herkese görünür. Bitince "Kapat"a bas.</p>
-        <input type="url" id="adm-live-url" maxlength="300" class="inp" placeholder="https://youtube.com/live/... ya da https://youtu.be/...">
+        <p class="text-[11px] text-zinc-400 leading-relaxed">Yayının linklerini her satıra bir tane yapıştır (YouTube, X, Instagram, TikTok, Facebook), "Yayını aç"a bas. YouTube yayını sohbetin üstünde oynar; diğerleri altında "X'te izle", "Instagram'da izle" gibi düğme olur. Bitince "Kapat"a bas.</p>
+        <textarea id="adm-live-url" rows="4" maxlength="300" class="inp" placeholder="Her satıra bir link: YouTube, X, Instagram, TikTok, Facebook&#10;https://youtube.com/live/...&#10;https://x.com/...&#10;https://instagram.com/..."></textarea>
         <input type="text" id="adm-live-title" maxlength="120" class="inp" placeholder="Başlık (isteğe bağlı, örn. Meclis önünden canlı)">
         <div class="flex flex-wrap gap-2">
           <button type="button" onclick="adminLive(true)" class="btn bg-red-600 hover:bg-red-500 text-white">🔴 Yayını aç</button>
@@ -3317,8 +3317,14 @@ function liveCiz() {
   var fr = $('live-frame'); fr.textContent = '';
   if (!on) return;
   $('live-title').textContent = d.title || '';
-  var a = $('live-open'); a.href = d.url;
-  var id = ytId(d.url);
+  var linkler = String(d.url).split(/\s+/).filter(function (x) { return /^https:\/\//i.test(x); });
+  var a = $('live-open'); a.textContent = '';
+  linkler.forEach(function (u) {
+    var ad = /youtu/i.test(u) ? 'YouTube' : /(x|twitter)\.com/i.test(u) ? 'X' : /instagram/i.test(u) ? 'Instagram' : /tiktok/i.test(u) ? 'TikTok' : /facebook|fb\./i.test(u) ? 'Facebook' : 'Yayın';
+    var l = h('a', 'text-[11px] text-red-200 underline whitespace-nowrap', '▶ ' + ({ YouTube: 'YouTube\'da', X: 'X\'te', Instagram: 'Instagram\'da', TikTok: 'TikTok\'ta', Facebook: 'Facebook\'ta', 'Yayın': 'Yayını' }[ad]) + ' izle');
+    l.href = u; l.target = '_blank'; l.rel = 'noopener noreferrer'; a.appendChild(l);
+  });
+  var id = ''; linkler.some(function (u) { return (id = ytId(u)); });
   fr.classList.toggle('hidden', !id);
   if (id) {
     var f = document.createElement('iframe');
@@ -3332,11 +3338,13 @@ function liveCiz() {
 async function adminLive(on) {
   var st = $('adm-live-st'), url = ($('adm-live-url').value || '').trim(), t = ($('adm-live-title').value || '').trim();
   st.className = 'text-[11px] min-h-[16px] text-zinc-400';
-  if (on && !/^https:\/\//i.test(url)) { st.textContent = 'YouTube linkini https:// ile başlayacak şekilde yapıştır.'; st.className += ' text-red-400'; return; }
+  var satir = url.split(/\s+/).filter(Boolean);
+  if (on && (!satir.length || satir.some(function (x) { return !/^https:\/\//i.test(x); }))) { st.textContent = 'Her link https:// ile başlamalı, her satıra bir link.'; st.className += ' text-red-400'; return; }
+  url = satir.join('\n');
   try {
     liveDurum = await callRpc('gv_admin_live_set', { p_pin: adminPin, p_on: on, p_url: url, p_title: t });
     liveCiz();
-    st.textContent = on ? (ytId(url) ? '✓ Yayın açık: sohbetin üstünde oynuyor.' : '✓ Yayın açık. Bu link sayfaya gömülemedi, "YouTube\'da izle" düğmesiyle açılıyor. youtube.com/live/… biçimindeki linki kullanırsan sayfada oynar.') : '✓ Yayın kapatıldı.';
+    st.textContent = on ? (satir.some(ytId) ? '✓ Yayın açık: YouTube sohbetin üstünde oynuyor, diğer linkler düğme olarak altında.' : '✓ Yayın açık: linkler sohbetin üstünde düğme olarak duruyor. YouTube linki (youtube.com/live/…) eklersen yayın sayfada oynar.') : '✓ Yayın kapatıldı.';
   } catch (e) { st.textContent = errText(e); st.className += ' text-red-400'; }
 }
 function liveAdminDoldur() {
