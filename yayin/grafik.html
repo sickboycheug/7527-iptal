@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>ARA ACTIVISTS · Yayın grafikleri</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0f0d;--kart:#16201b;--cizgi:#2b3a33;--yazi:#f1f5f2;--soluk:#a1b0a8;--kirmizi:#dc2626;--yesil:#10b981;--sari:#fcd34d}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--yazi);font:15px/1.5 Inter,system-ui,sans-serif}
+main{max-width:760px;margin:0 auto;padding:16px}
+h1{font:700 26px Oswald,sans-serif;letter-spacing:.04em;margin:8px 0 2px}p.al{color:var(--soluk);margin:0 0 16px;font-size:13px}
+.kutu{background:var(--kart);border:1px solid var(--cizgi);border-radius:16px;padding:14px;margin-bottom:14px}
+label{display:block;font-size:12px;color:var(--soluk);margin:8px 0 4px}
+input,textarea{width:100%;background:var(--bg);border:1px solid var(--cizgi);border-radius:10px;color:var(--yazi);padding:9px 10px;font:inherit}
+.dg{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-top:12px}
+button{background:var(--kirmizi);color:#fff;border:0;border-radius:12px;padding:11px 10px;font:700 13px Inter,sans-serif;cursor:pointer}
+button.ik{background:#27272a;border:1px solid var(--cizgi)}
+canvas{width:100%;height:auto;border-radius:12px;border:1px solid var(--cizgi);background:repeating-conic-gradient(#1f2a24 0 25%,#141b17 0 50%) 0 0/20px 20px;margin-top:10px}
+.not{font-size:12px;color:var(--soluk);margin-top:8px}
+</style>
+</head>
+<body>
+<main>
+<h1>ARA ACTIVISTS · Yayın grafikleri</h1>
+<p class="al">Bilgileri yaz, görseli indir. Kapaklar YouTube ve duyuru için; bantlar ve logo şeffaf, yayın stüdyosuna (StreamYard vb.) bindirme olarak yüklenir.</p>
+
+<div class="kutu">
+  <label for="baslik">Yayının konusu</label>
+  <input id="baslik" maxlength="90" value="Dava açıldı, sonra ne oldu?">
+  <label for="konuk">Konuk (adı ve unvanı)</label>
+  <input id="konuk" maxlength="70" placeholder="Örn. Av. Ad Soyad · Baro Hayvan Hakları Merkezi">
+  <label for="tarih">Tarih ve saat</label>
+  <input id="tarih" maxlength="40" placeholder="Örn. 11 Kasım Salı · 21.00">
+  <label for="bant">Alt bant yazısı</label>
+  <input id="bant" maxlength="70" value="Dilekçeni gönder · 7527iptal.org">
+</div>
+
+<div class="kutu">
+  <b>Kapak</b>
+  <canvas id="c-kapak" width="1280" height="720"></canvas>
+  <div class="dg">
+    <button onclick="indir('kapak')">⬇ Yatay kapak (YouTube, 1280×720)</button>
+    <button onclick="indir('dikey')">⬇ Dikey kapak (Hikâye/Reels, 1080×1920)</button>
+  </div>
+</div>
+
+<div class="kutu">
+  <b>Yayın bindirmeleri (şeffaf)</b>
+  <canvas id="c-bant" width="1920" height="1080"></canvas>
+  <div class="dg">
+    <button class="ik" onclick="indir('bant')">⬇ Yatay bindirme (1920×1080)</button>
+    <button class="ik" onclick="indir('bantd')">⬇ Dikey bindirme (1080×1920)</button>
+    <button class="ik" onclick="indir('logo')">⬇ Logo (köşe, 600×200)</button>
+  </div>
+  <p class="not">Dikey bindirmede yazılar Instagram ve TikTok'un üst ve alt düğmelerinin altında kalmayacak güvenli alanda durur. Konuk adı bandını stüdyonun kendi isim bandı yapar; marka rengi olarak <b>#DC2626</b> (kırmızı) ve <b>#10B981</b> (yeşil) gir.</p>
+</div>
+</main>
+<script>
+var R = { bg: '#0b0f0d', kart: '#16201b', cizgi: '#2b3a33', yazi: '#f1f5f2', soluk: '#a1b0a8', kirmizi: '#dc2626', yesil: '#10b981', sari: '#fcd34d' };
+function $(i) { return document.getElementById(i); }
+function v(i) { return ($(i).value || '').trim(); }
+function sigdir(x, t, max, boy, min) { do { x.font = '700 ' + boy + 'px Oswald, sans-serif'; boy -= 2; } while (x.measureText(t).width > max && boy > min); return boy + 2; }
+function sar(x, t, max) { var w = t.split(/\s+/), s = [], l = ''; w.forEach(function (k) { var d = l ? l + ' ' + k : k; if (x.measureText(d).width > max && l) { s.push(l); l = k; } else l = d; }); if (l) s.push(l); return s; }
+function logo(x, sx, sy, olcek) {
+  x.save(); x.translate(sx, sy); x.scale(olcek, olcek);
+  x.fillStyle = R.kirmizi; x.fillRect(0, 0, 150, 64);
+  x.fillStyle = '#fff'; x.font = '700 50px Oswald, sans-serif'; x.textBaseline = 'middle'; x.fillText('ARA', 18, 34);
+  x.fillStyle = R.yazi; x.font = '700 40px Oswald, sans-serif'; x.fillText('ACTIVISTS', 166, 34);
+  x.restore();
+}
+function kapak(c, dikey) {
+  var x = c.getContext('2d'), W = c.width, H = c.height;
+  var g = x.createLinearGradient(0, 0, W, H); g.addColorStop(0, '#0f1a15'); g.addColorStop(1, '#1d0b0b');
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+  x.fillStyle = R.kirmizi; x.fillRect(0, 0, dikey ? W : 14, dikey ? 14 : H);
+  var L = dikey ? 80 : 90, M = W - 2 * L, y = dikey ? 300 : 110;
+  logo(x, L, y - (dikey ? 60 : 40), dikey ? 1.6 : 1.3);
+  x.textBaseline = 'alphabetic';
+  x.fillStyle = R.yesil; x.font = '800 ' + (dikey ? 38 : 26) + 'px Inter, sans-serif'; x.fillText('🔴 CANLI YAYIN', L, y + (dikey ? 130 : 90));
+  var t = (v('baslik') || 'Yayının konusu').toLocaleUpperCase('tr'), boy = dikey ? 110 : 88;
+  x.font = '700 ' + boy + 'px Oswald, sans-serif'; var s = sar(x, t, M);
+  while (s.length > (dikey ? 5 : 3) && boy > 40) { boy -= 4; x.font = '700 ' + boy + 'px Oswald, sans-serif'; s = sar(x, t, M); }
+  x.fillStyle = R.yazi; var ty = y + (dikey ? 260 : 190);
+  s.forEach(function (l, i) { x.fillText(l, L, ty + i * boy * 1.08); });
+  ty += s.length * boy * 1.08 + (dikey ? 50 : 24);
+  if (v('konuk')) { x.fillStyle = R.sari; x.font = '600 ' + (dikey ? 46 : 34) + 'px Inter, sans-serif'; sar(x, 'Konuk: ' + v('konuk'), M).forEach(function (l, i) { x.fillText(l, L, ty + i * (dikey ? 58 : 44)); }); }
+  x.fillStyle = R.soluk; x.font = '600 ' + (dikey ? 40 : 30) + 'px Inter, sans-serif';
+  if (v('tarih')) x.fillText(v('tarih'), L, H - (dikey ? 380 : 70));
+  x.fillStyle = R.kirmizi; x.font = '700 ' + (dikey ? 48 : 34) + 'px Oswald, sans-serif';
+  var site = '7527iptal.org'; x.fillText(site, dikey ? L : W - L - x.measureText(site).width, H - (dikey ? 300 : 70));
+}
+function bindirme(c, dikey) {
+  var x = c.getContext('2d'), W = c.width, H = c.height; x.clearRect(0, 0, W, H);
+  logo(x, dikey ? 60 : 50, dikey ? 230 : 40, dikey ? 1.1 : 1);
+  var bh = dikey ? 110 : 90, by = dikey ? H - 520 : H - bh - 40, bx = dikey ? 60 : 50, bw = W - 2 * bx;
+  x.fillStyle = 'rgba(11,15,13,.88)'; x.fillRect(bx, by, bw, bh);
+  x.fillStyle = R.kirmizi; x.fillRect(bx, by, 16, bh);
+  var t = v('bant') || 'Dilekçeni gönder · 7527iptal.org';
+  x.fillStyle = '#fff'; x.textBaseline = 'middle'; sigdir(x, t, bw - 70, dikey ? 56 : 52, 26); x.fillText(t, bx + 40, by + bh / 2 + 2);
+}
+function logoKes() { var c = document.createElement('canvas'); c.width = 600; c.height = 200; logo(c.getContext('2d'), 30, 50, 1.6); return c; }
+function ciz() { kapak($('c-kapak'), false); bindirme($('c-bant'), false); }
+function indir(tur) {
+  var c;
+  if (tur === 'kapak') c = $('c-kapak');
+  else if (tur === 'bant') c = $('c-bant');
+  else if (tur === 'logo') c = logoKes();
+  else { c = document.createElement('canvas'); c.width = 1080; c.height = 1920; tur === 'dikey' ? kapak(c, true) : bindirme(c, true); }
+  var a = document.createElement('a'), jpg = tur === 'kapak' || tur === 'dikey';
+  a.href = c.toDataURL(jpg ? 'image/jpeg' : 'image/png', 0.9);
+  a.download = 'ara-activists-' + tur + (jpg ? '.jpg' : '.png'); document.body.appendChild(a); a.click(); a.remove();
+}
+['baslik', 'konuk', 'tarih', 'bant'].forEach(function (i) { $(i).addEventListener('input', ciz); });
+(document.fonts && document.fonts.ready ? Promise.all([document.fonts.load('700 40px Oswald'), document.fonts.load('600 30px Inter'), document.fonts.load('800 30px Inter')]) : Promise.resolve()).then(ciz, ciz);
+ciz();
+</script>
+</body>
+</html>
