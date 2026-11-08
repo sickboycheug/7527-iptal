@@ -22,7 +22,7 @@
 <meta name="twitter:image" content="https://7527iptal.org/gorsel/halk-iradesi.png?v=2">
 <!-- Tailwind: hazır CSS dosyası -->
 <link rel="stylesheet" href="/kaynak/tailwind.css?v=1">
-<script src="/kaynak/og.js?v=3" defer></script>
+<script src="/kaynak/og.js?v=4" defer></script>
 <script src="/kaynak/tarayici.js?v=2" defer></script>
 <!-- QRCode.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -4422,7 +4422,7 @@ function hmCaseInfo(city, info) {
   else if (pet === 1) info.appendChild(hmEl('div', 'mt-1 font-bold text-orange-400', '⚠️ Bu ilden vekillere yalnızca 1 dilekçe gönderildi' + vk));
   else info.appendChild(hmEl('div', 'mt-1 font-bold text-emerald-400', '📨 Bu ilden ' + pet + ' dilekçe gönderildi' + vk));
   var box = hmEl('div', 'mt-2 space-y-2 text-left');
-  cases.forEach(function (c) {
+  cases.slice(0, 15).forEach(function (c) {
     var row = hmEl('div', 'bg-zinc-900 border border-zinc-800 rounded-lg p-2');
     row.appendChild(hmEl('div', 'text-[10px] text-red-300 font-bold', (c.category || '') + ' · ' + (c.date || '')));
     row.appendChild(hmEl('div', 'text-[11px] text-white font-semibold', c.title || ''));
@@ -4434,6 +4434,7 @@ function hmCaseInfo(city, info) {
     row.appendChild(b);
     box.appendChild(row);
   });
+  if (cases.length > 15) { var tum = hmEl('a', 'block text-center text-[11px] text-emerald-400 underline font-bold py-1', city + "'deki " + cases.length + ' vakanın tümünü gör →'); tum.href = '/hakikat.html?il=' + encodeURIComponent(city) + '#vakalar'; box.appendChild(tum); }
   info.appendChild(box);
 }
 var _abCok = true;
@@ -4774,6 +4775,7 @@ function buildShareText(item, short, withLink) {
 
   satirlar.push('');
   satirlar.push('Biz vakaları ve davaları takip ediyoruz. #7527İptal');
+  try { var vet = window.OG && OG.vakaEtiket(item.city, item.location); if (vet) { satirlar.push(''); satirlar.push(vet); } } catch (e) {}
   // Mesajda yalnizca bu vakanin kendi paylasim adresi olur (kendi onizlemesi icin)
   if (withLink) { satirlar.push(''); satirlar.push(caseLink(item)); }
   return satirlar.join('\n');

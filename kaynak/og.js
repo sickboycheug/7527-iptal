@@ -181,7 +181,27 @@
     return 'indir';
   }
 
+  // ---- vaka paylaşımı: il/ilçe etiketleri ve o ilin vekillerinin hesapları ----
+  var VK = null, VKY = null;
+  function vekilHazirla() {
+    if (!VKY) VKY = fetch('/veri/vekil-hesaplari.txt').then(function (r) { return r.text(); }).then(function (t) {
+      VK = {};
+      t.split('\n').forEach(function (l) { if (!l || l[0] === '#') return; var p = l.split('|'); if (p.length < 4) return; (VK[p[2]] = VK[p[2]] || []).push({ ad: p[1], x: p[3], ig: p[4] }); });
+    }).catch(function () { VKY = null; });
+    return VKY;
+  }
+  function et(s) { return '#' + String(s || '').split(/\s+/).map(function (k) { return k.charAt(0).toLocaleUpperCase('tr') + k.slice(1).toLocaleLowerCase('tr'); }).join('').replace(/[^0-9A-Za-zÇĞİÖŞÜçğıöşü]/g, ''); }
+  function vakaEtiket(il, yer) {
+    if (!il) return '';
+    var ilce = String(yer || '').split(/[·\/,]/)[0].trim(), tags = [];
+    if (ilce && ilce.toLocaleLowerCase('tr') !== il.toLocaleLowerCase('tr') && ilce.length < 30) tags.push(et(ilce));
+    tags.push(et(il), et(il + ' Milletvekilleri'));
+    var v = (VK && VK[il]) || [], h = v.map(function (k) { return k.x ? '@' + k.x : ''; }).filter(Boolean).slice(0, 20);
+    return tags.join(' ') + (h.length ? '\n' + h.join(' ') : '');
+  }
+  try { vekilHazirla(); } catch (e) {}
+
   window.OG = { ozet: ozet, slug: slug, anahtar: anahtar, kart: kart, kucult: kucult, hazirla: hazirla,
     vaka: vaka, onur: onur, onurLink: onurLink, saha: saha,
-    sayfa: sayfa, ek: ek, kopya: kopya, paylas: paylas, gorselPaylas: gorselPaylas, BILGI: BILGI, ETIKET: ETIKET };
+    sayfa: sayfa, vakaEtiket: vakaEtiket, vekilHazirla: vekilHazirla, ek: ek, kopya: kopya, paylas: paylas, gorselPaylas: gorselPaylas, BILGI: BILGI, ETIKET: ETIKET };
 })();

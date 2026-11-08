@@ -382,7 +382,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
 #vakalar .vk-lg a{color:var(--amb)}
 #vakalar .vk-lt{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer}
 #vakalar .vk-lt.ac{-webkit-line-clamp:unset;display:block}
-#vakalar .vk-x{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px}#vakalar .vk-x a{color:#34d399;font-weight:700}
+#vakalar .vk-x{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;font-size:13px}#vakalar .vk-x a{color:#34d399;font-weight:700}
 #vakalar .vk-a{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:auto;padding-top:8px;border-top:1px solid var(--line)}
 #vakalar .vk-a a{font-size:15px}
 #vakalar .vk-a .btn{padding:7px 14px;font-size:13px}
@@ -449,6 +449,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
 #harita .hm-info{min-height:1.6rem;text-align:center;font-size:16px;margin:10px 0}
 #harita .hm-info b{color:var(--tx)}
 #harita .hm-info small{display:block;color:var(--mut)}
+#harita .hm-vk{display:block;width:100%;text-align:left;background:#0d1914;border:1px solid var(--line);border-radius:10px;padding:6px 10px;margin-top:6px;color:var(--tx);font-size:14px;cursor:pointer}
 #harita .hm-list{margin-top:8px;font-size:15px}
 #harita .hm-list summary{cursor:pointer;color:var(--amb);font-weight:700}
 #harita .hm-chips{display:flex;flex-wrap:wrap;gap:6px;padding-top:10px}
@@ -488,7 +489,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
 <script src="/kaynak/sbkopru.js?v=1"></script>
-<script src="/kaynak/og.js?v=3" defer></script>
+<script src="/kaynak/og.js?v=4" defer></script>
 <script src="/kaynak/tarayici.js?v=2" defer></script>
 <script>
 (function(){
@@ -546,7 +547,16 @@ button.btn.dy-ghost{border:1px solid var(--em)}
     var svg=document.createElementNS(NS,'svg');
     function circle(cx,cy,r,f){var c=document.createElementNS(NS,'circle');c.setAttribute('cx',cx.toFixed(1));c.setAttribute('cy',cy.toFixed(1));c.setAttribute('r',r.toFixed(1));c.setAttribute('fill',f);return c}
     function label(cx,cy,t,s){var x=document.createElementNS(NS,'text');x.setAttribute('x',cx.toFixed(1));x.setAttribute('y',(cy+s*0.35).toFixed(1));x.setAttribute('text-anchor','middle');x.setAttribute('font-size',s);x.setAttribute('font-weight','700');x.setAttribute('fill','#fff');x.setAttribute('pointer-events','none');x.textContent=t;return x}
-    function caseSay(city,n){info.textContent='';var b=el('div');b.appendChild(el('b',null,city+' — '+n+' vaka'));info.appendChild(b);(cases||[]).filter(function(x){return x.city===city}).sort(function(a,b){return String(b.case_date||'').localeCompare(String(a.case_date||''))}).forEach(function(x){info.appendChild(el('small',null,(x.case_date||'')+' · '+(x.title||'')))})}
+    function caseSay(city,n){info.textContent='';var b=el('div');b.appendChild(el('b',null,city+' — '+n+' vaka'));info.appendChild(b);
+      var cs=(cases||[]).filter(function(x){return x.city===city}).sort(function(a,b){return String(b.case_date||'').localeCompare(String(a.case_date||''))});
+      var lnk='https://7527iptal.org/hakikat.html?il='+encodeURIComponent(city)+'#vakalar';
+      var sh=el('button','btn','📤 '+city+' vakalarını vekillerine paylaş');sh.type='button';sh.style.margin='8px auto';sh.addEventListener('click',function(){
+        var t=city+"'de belgelenen "+cs.length+' vaka: zehirlenen, işkence gören, toplatılıp barınaklarda ölüme terk edilen canlar. Biz vakaları ve davaları takip ediyoruz.\n\n'+(window.OG?OG.vakaEtiket(city,''):'')+'\n#7527İptal';
+        if(navigator.share){navigator.share({title:city+' vakaları',text:t,url:lnk}).catch(function(){})}else{try{navigator.clipboard.writeText(t+'\n\n'+lnk)}catch(e){}sh.textContent='✓ Metin ve link kopyalandı'}});
+      info.appendChild(sh);
+      cs.slice(0,15).forEach(function(x){var r=el('button','hm-vk',(x.case_date||'')+' · '+(x.title||'')+'  📤');r.type='button';r.title='Bu vakayı paylaş';r.addEventListener('click',function(){if(window.__vkPaylas)window.__vkPaylas(x.id)});info.appendChild(r)});
+      if(cs.length>15){var a=el('a',null,'Tüm '+cs.length+' vakayı gör →');a.href='?il='+encodeURIComponent(city)+'#vakalar';a.style.cssText='display:block;margin-top:6px;color:#34d399;font-weight:700';a.addEventListener('click',function(e){e.preventDefault();if(window.__vkIl)window.__vkIl(city)});info.appendChild(a)}
+    }
     function say(t,n,x){info.textContent='';var b=el('div');b.appendChild(el('b',null,t+' — '+n+' '+W));info.appendChild(b);if(x)info.appendChild(el('small',null,x))}
     if(view==='tr'){
       svg.setAttribute('viewBox','0 0 620 300');borders(svg,'tr');
@@ -721,6 +731,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
     if(yer||t)L.push([yer,t].filter(Boolean).join(' · '));
     if(!short){L.push('');L.push(v.description||'')}
     L.push('');L.push('Biz vakaları ve davaları takip ediyoruz. #7527İptal');
+    try{var ve=window.OG&&OG.vakaEtiket(v.city,v.location);if(ve){L.push('');L.push(ve)}}catch(e){}
     if(withLink){L.push('');L.push(link(v))}
     return L.join('\n');
   }
@@ -741,6 +752,8 @@ button.btn.dy-ghost{border:1px solid var(--em)}
     $('vk-sh-nat').hidden=!navigator.share;
     SH.classList.add('on');document.body.style.overflow='hidden';
   }
+  window.__vkPaylas=function(id){var v=ALL.find(function(x){return x.id===id});if(v)openShare(v)};
+  window.__vkIl=function(c){var se=$('vk-city');if(se){se.value=c;se.dispatchEvent(new Event('change'))}var t=document.querySelector('a.tab[data-go="vakalar"]');if(t)t.click();var g=$('vakalar');if(g)g.scrollIntoView({block:'start'})};
   function closeShare(){SH.classList.remove('on');document.body.style.overflow='';cur=null}
   function nat(){if(!cur||!navigator.share)return false;navigator.share({title:cur.title,text:text(cur,false,false),url:link(cur)}).catch(function(){});return true}
   $('vk-sh-x').addEventListener('click',closeShare);
@@ -768,7 +781,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
     c.appendChild(a);
     var x=EXT[v.id];
     if(x&&(x.petition_url||(x.sources||[]).length)){var k=el('div','vk-x');
-      if(x.petition_url&&/^https?:\/\//.test(x.petition_url)){var p=el('a',null,'✍️ İmza kampanyası');p.href=x.petition_url;p.target='_blank';p.rel='noopener';k.appendChild(p)}
+      if(x.petition_url&&/^https?:\/\//.test(x.petition_url)){var p=el('a','btn dy-ghost','✍️ İmzaya açık: imzala');p.href=x.petition_url;p.target='_blank';p.rel='noopener';k.appendChild(p)}
       (x.sources||[]).slice(0,4).forEach(function(u,i){if(!/^https?:\/\//.test(u))return;var q=el('a',null,'🔗 Kaynak '+(i+2));q.href=u;q.target='_blank';q.rel='noopener';k.appendChild(q)});
       c.appendChild(k)}
     return c;
@@ -802,6 +815,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
     $('vk-count').textContent=ALL.length;
     var cities={},cats={};ALL.forEach(function(v){if(v.city)cities[v.city]=1;if(v.category)cats[v.category]=1});
     fill($('vk-city'),Object.keys(cities));fill($('vk-cat'),Object.keys(cats));
+    try{var qil=new URLSearchParams(location.search).get('il');if(qil&&cities[qil])$('vk-city').value=qil}catch(e){}
     if(!ALL.length){$('vk-grid').textContent='';$('vk-grid').appendChild(el('p','vk-n','Vakalar şu an yüklenemedi.'));return}
     render();
     if(FOCUS){setTimeout(function(){var c=$('vk-grid').firstElementChild;if(c){c.style.outline='3px solid #f87171';c.style.borderRadius='16px';c.scrollIntoView({behavior:'smooth',block:'center'})}},400)}
