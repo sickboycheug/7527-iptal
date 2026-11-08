@@ -484,7 +484,8 @@ button.btn.dy-ghost{border:1px solid var(--em)}
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
-<script src="/kaynak/og.js?v=1" defer></script>
+<script src="/kaynak/sbkopru.js?v=1"></script>
+<script src="/kaynak/og.js?v=2" defer></script>
 <script src="/kaynak/tarayici.js?v=2" defer></script>
 <script>
 (function(){
@@ -496,7 +497,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
   var rows=null,pet=null,mpc=null,cases=null,layer='mp',view='tr',geoP=null,NS='http://www.w3.org/2000/svg';
   function $(i){return document.getElementById(i)}
   function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
-  var sb=(window.supabase&&window.supabase.createClient)?window.supabase.createClient(URL_,KEY):null;
+  var sb=(window.supabase&&window.supabase.createClient)?window.supabase.createClient(URL_,KEY,window.SB_SECENEK||{}):null;
   function rpc(fn){if(!sb)return Promise.reject(new Error('no_client'));return sb.rpc(fn,{}).then(function(r){if(r.error)throw new Error(fn);return r.data})}
   window.__hkRpc=rpc;
   function geo(){if(!geoP)geoP=fetch('https://cdn.jsdelivr.net/gh/johan/world.geo.json@master/countries.geo.json').then(function(r){return r.json()}).catch(function(){return null});return geoP}

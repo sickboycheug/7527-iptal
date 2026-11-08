@@ -22,7 +22,7 @@
   function anahtar(tur, id, parcalar) { return tur + '-' + id + '-' + ozet(parcalar.join('|')); }
 
   function rpc(fn, args) {
-    return fetch(SB + '/rest/v1/rpc/' + fn, {
+    return (window.sbFetch || fetch)(SB + '/rest/v1/rpc/' + fn, {
       method: 'POST',
       headers: { apikey: KEY, Authorization: 'Bearer ' + KEY, 'Content-Type': 'application/json' },
       body: JSON.stringify(args || {})
