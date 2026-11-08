@@ -554,8 +554,8 @@ button.btn.dy-ghost{border:1px solid var(--em)}
         var t=city+"'de belgelenen "+cs.length+' vaka: zehirlenen, işkence gören, toplatılıp barınaklarda ölüme terk edilen canlar. Biz vakaları ve davaları takip ediyoruz.\n\n'+(window.OG?OG.vakaEtiket(city,''):'')+'\n#7527İptal';
         if(window.OG&&OG.paylas){OG.paylas({baslik:city+' vakaları',metin:t,url:lnk,ham:true});return}if(navigator.share){navigator.share({title:city+' vakaları',text:t,url:lnk}).catch(function(){})}else{try{navigator.clipboard.writeText(t+'\n\n'+lnk)}catch(e){}sh.textContent='✓ Metin ve link kopyalandı'}});
       info.appendChild(sh);
-      cs.slice(0,15).forEach(function(x){var r=el('button','hm-vk',(x.case_date||'')+' · '+(x.title||'')+'  📤');r.type='button';r.title='Bu vakayı paylaş';r.addEventListener('click',function(){if(window.__vkPaylas)window.__vkPaylas(x.id)});info.appendChild(r)});
-      if(cs.length>15){var a=el('a',null,'Tüm '+cs.length+' vakayı gör →');a.href='?il='+encodeURIComponent(city)+'#vakalar';a.style.cssText='display:block;margin-top:6px;color:#34d399;font-weight:700';a.addEventListener('click',function(e){e.preventDefault();if(window.__vkIl)window.__vkIl(city)});info.appendChild(a)}
+      cs.slice(0,6).forEach(function(x){var r=el('button','hm-vk',(x.case_date||'')+' · '+(x.title||'')+'  📤');r.type='button';r.title='Bu vakayı paylaş';r.addEventListener('click',function(){if(window.__vkPaylas)window.__vkPaylas(x.id)});info.appendChild(r)});
+      if(cs.length>6){var a=el('a',null,'Tüm '+cs.length+' vakayı gör →');a.href='?il='+encodeURIComponent(city)+'#vakalar';a.style.cssText='display:block;margin-top:6px;color:#34d399;font-weight:700';a.addEventListener('click',function(e){e.preventDefault();if(window.__vkIl)window.__vkIl(city)});info.appendChild(a)}
     }
     function say(t,n,x){info.textContent='';var b=el('div');b.appendChild(el('b',null,t+' — '+n+' '+W));info.appendChild(b);if(x)info.appendChild(el('small',null,x))}
     if(view==='tr'){
