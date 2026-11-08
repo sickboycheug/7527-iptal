@@ -3441,6 +3441,7 @@ async function fpYukle() {
 }
 function fpTurSec(t) { fpTur = t; fpCiz(); }
 function fpSirala() { fpYon = -fpYon; fpCiz(); }
+var fpCizAnah = '';
 function fpCiz() {
   var kb = $('fp-kinds'); kb.textContent = '';
   [['', 'Tümü']].concat(Object.keys(FP_TUR).map(function (k) { return [k, FP_TUR[k].ik + ' ' + FP_TUR[k].ad]; })).forEach(function (t) {
@@ -3450,6 +3451,7 @@ function fpCiz() {
   });
   $('fp-sort').textContent = fpYon < 0 ? '↓ Yeniden eskiye' : '↑ Eskiden yeniye';
   var il = $('fp-f-city').value, box = $('fp-list');
+  if (fpCizAnah !== fpTur + '|' + il) { fpCizAnah = fpTur + '|' + il; fpGoster = 20; }
   var list = fpRows.filter(function (r) { return (!fpTur || r.kind === fpTur) && (!il || (r.country || r.city) === il); });
   list.sort(function (a, b) {
     if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
@@ -3457,8 +3459,10 @@ function fpCiz() {
   });
   box.textContent = '';
   if (!list.length) { box.appendChild(h('p', 'text-[12px] text-zinc-500', fpRows.length ? 'Bu seçimde paylaşım yok.' : 'Henüz paylaşım yok. İlk paylaşımı sen ekle.')); return; }
-  list.forEach(function (r) { box.appendChild(fpKart(r)); });
+  list.slice(0, fpGoster).forEach(function (r) { box.appendChild(fpKart(r)); });
+  if (list.length > fpGoster) box.appendChild(actBtn('Daha fazla göster (' + (list.length - fpGoster) + ')', 'w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs', function () { fpGoster += 20; fpCiz(); }));
 }
+var fpGoster = 20;
 function fpKart(r) {
   var T = FP_TUR[r.kind] || FP_TUR.eylem;
   var c = h('div', 'bg-zinc-950/60 border ' + (r.pinned ? 'border-amber-600' : 'border-zinc-800') + ' rounded-xl p-3 space-y-2'); c.id = 'fp-c-' + r.id;
