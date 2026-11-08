@@ -57,11 +57,11 @@
     var m = document.getElementById('inapp-modal');
     if (!m) {
       m = document.createElement('div'); m.id = 'inapp-modal';
-      m.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:16px';
+      m.style.cssText = 'position:fixed;inset:0;z-index:2147483647;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:16px';
       var k = document.createElement('div');
       k.style.cssText = 'max-width:380px;width:100%;background:#18181b;border:1px solid #f59e0b;border-radius:16px;padding:20px;color:#f4f4f5;font:14px/1.5 Inter,system-ui,sans-serif;text-align:center';
       k.innerHTML = '<div style="font-size:28px">🌐</div><div style="font-weight:800;font-size:16px;margin:6px 0">Tarayıcıda aç, oradan devam et</div>' +
-        '<div style="color:#d4d4d8">' + app + ' kendi içinde PDF indirmeye ve e-posta göndermeye izin vermiyor. Bilgilerin kaybolmaz, tarayıcıda aynı sayfa açılır.</div>';
+        '<div style="color:#d4d4d8">' + app + ' kendi içinde PDF indirmeye ve e-posta göndermeye izin vermiyor, dilekçe buradan gönderilemez. Tarayıcıda aç, dilekçeni orada doldur.</div>';
       var b = document.createElement('button'); b.type = 'button';
       b.style.cssText = btn + ';background:#f59e0b;color:#000;width:100%;margin-top:14px;padding:12px';
       b.textContent = '🌐 Tarayıcıda aç';
@@ -81,4 +81,9 @@
 
   window.INAPP = { app: app, ac: ac, uyar: uyar };
   if (document.body) serit(); else document.addEventListener('DOMContentLoaded', serit);
+  // Dilekçe formuna yazmaya başlayınca bir kez uyar (emek boşa gitmesin)
+  var uyarildi = false;
+  document.addEventListener('focusin', function (e) {
+    if (!uyarildi && e.target && e.target.id === 'citizen-name') { uyarildi = true; uyar(); }
+  });
 })();
