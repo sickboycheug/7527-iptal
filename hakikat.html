@@ -484,6 +484,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
+<script src="/og.js?v=1" defer></script>
 <script>
 (function(){
   var URL_='https://mednnlpprdgupdajmrin.supabase.co',KEY='sb_publishable_4xahmL7yt4C53MAJuorucg_qhImIEwn';
@@ -724,6 +725,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
     if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(s).then(function(){say(msg||'Kopyalandı')},fb);else fb()}
   var SH=$('vk-sh');
   function openShare(v){
+    try{if(window.OG)OG.vaka({id:v.id,title:v.title,city:v.city,location:v.location,date:v.case_date,category:v.category,stage:(LEG[v.id]||{}).stage})}catch(e){}
     cur=v;var q=encodeURIComponent,u=link(v),uzun=text(v,false,false),uzunL=text(v,false,true),kisa=text(v,true,false);
     $('vk-sh-c').textContent=v.title;$('vk-sh-p').textContent=uzunL;
     $('vk-sh-wa').href='https://api.whatsapp.com/send?text='+q(uzunL);

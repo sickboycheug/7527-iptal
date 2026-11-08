@@ -19,6 +19,7 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="stylesheet" href="/tailwind.css?v=1">
+<script src="/og.js?v=1" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -3480,7 +3481,9 @@ function fpPaylas(r) {
     s.push('✍️ ' + r.title);
     s.push('İmzala ve yay. Her imza bir can için. #7527İptal');
   }
-  paylasAc('Paylaş', s.join('\n'), PANO_URL + '?saha=' + r.id);
+  // Linkin önizlemesinde bu kaydın kendi afişi (yoksa kendi bilgilerinden kart) çıksın
+  try { if (window.OG) OG.saha(r, function () { return _fpImg[r.id] || callRpc('gv_fp_image', { p_id: r.id }); }); } catch (e) {}
+  paylasAc('Paylaş', s.join('\n'), 'https://7527iptal.org/p/saha-' + r.id);
 }
 
 // form
