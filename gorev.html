@@ -508,10 +508,14 @@ function siraBoya(pre, cok) {
       <!-- Giriş: 1) e-posta -->
       <div id="auth-mail" class="hidden bg-zinc-950/60 border border-emerald-800/60 rounded-xl p-3 space-y-2">
         <p class="text-xs text-zinc-200 font-semibold">Sohbeti herkes okuyabilir. Yazmak için e-postanla bir kez giriş yap.</p>
-        <p class="text-[11px] text-zinc-400 leading-relaxed">E-postana 6 haneli bir kod gelir, şifre yok. Bir kez girdikten sonra bu cihazda açık kalırsın. E-posta adresin kimseye görünmez.</p>
+        <p class="text-[11px] text-zinc-400 leading-relaxed">İlk girişte e-postana 6 haneli bir kod gelir. Girdikten sonra kendine şifre belirlersen, sonraki girişlerde kod beklemeden şifrenle girersin. Çıkış yapana kadar bu cihazda açık kalırsın. E-posta adresin kimseye görünmez.</p>
         <div class="flex flex-col sm:flex-row gap-2">
           <input type="email" id="auth-email" placeholder="E-posta adresin" maxlength="120" autocomplete="email" inputmode="email" class="inp" onkeydown="if(event.key==='Enter')kodGonder()">
           <button type="button" id="auth-send" onclick="kodGonder()" class="btn bg-emerald-600 hover:bg-emerald-500 text-white whitespace-nowrap">Kod gönder</button>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-2">
+          <input type="password" id="auth-pass" placeholder="Şifren (belirlediysen)" maxlength="72" autocomplete="current-password" class="inp" onkeydown="if(event.key==='Enter')sifreyleGir()">
+          <button type="button" id="auth-pass-btn" onclick="sifreyleGir()" class="btn bg-zinc-800 hover:bg-zinc-700 text-white whitespace-nowrap">Şifreyle gir</button>
         </div>
         <div id="ts-box" class="min-h-[65px]"></div>
         <p id="auth-oldnote" class="hidden text-[11px] text-amber-300 leading-relaxed">Bu cihazda eski gönüllü kodun kayıtlı. E-postanla giriş yaptığında hesabına kendiliğinden bağlanır, görev geçmişin korunur.</p>
@@ -595,7 +599,15 @@ function siraBoya(pre, cok) {
         <span id="auth-in-av"></span>
         <span class="text-zinc-200 font-semibold" id="auth-in-nick"></span>
         <button type="button" onclick="profilAc()" class="text-emerald-400 underline cursor-pointer">Profilim</button>
+        <button type="button" onclick="$('auth-pw').classList.toggle('hidden')" class="text-emerald-400 underline cursor-pointer">Şifre belirle</button>
         <button type="button" onclick="cikis()" class="text-zinc-500 underline cursor-pointer">Çıkış</button>
+        <div id="auth-pw" class="hidden basis-full space-y-1">
+          <div class="flex gap-2">
+            <input type="password" id="auth-pw-new" placeholder="Yeni şifre (en az 8 karakter)" maxlength="72" autocomplete="new-password" class="inp" onkeydown="if(event.key==='Enter')sifreKaydet()">
+            <button type="button" id="auth-pw-btn" onclick="sifreKaydet()" class="btn bg-emerald-600 hover:bg-emerald-500 text-white whitespace-nowrap">Kaydet</button>
+          </div>
+          <p id="auth-pw-msg" class="text-[11px] min-h-[14px]"></p>
+        </div>
         <div id="auth-in-note" class="basis-full leading-relaxed"></div>
       </div>
 
@@ -1428,6 +1440,7 @@ function tsRender() {
 function authGoster() {
   var s = !authUser ? (otpEmail ? 'code' : 'mail') : ((!meInfo || !meInfo.profile || profEdit) ? 'prof' : 'in');
   ['mail', 'code', 'prof', 'in'].forEach(function (k) { $('auth-' + k).classList.toggle('hidden', k !== s); });
+  if (s === 'mail' && !$('auth-email').value) $('auth-email').value = load('gv_email') || '';
   $('chat-compose').classList.toggle('hidden', !(s === 'in' && girisli()));
   $('chat-foto-btn').classList.toggle('hidden', !isMod());
   $('chat-input').placeholder = isMod() ? 'Mesaj, link veya video linki yaz…' : 'Mesajını yaz…';
@@ -1465,7 +1478,7 @@ async function kodGonder() {
   try {
     var r = await supabaseClient.auth.signInWithOtp({ email: em, options: { shouldCreateUser: true, captchaToken: tsToken } });
     if (r.error) throw r.error;
-    otpEmail = em; otpKaydet(em);
+    otpEmail = em; otpKaydet(em); store('gv_email', em);
     $('auth-otp').value = ''; $('auth-msg2').textContent = '';
     authGoster();
     setTimeout(function () { try { $('auth-otp').focus(); } catch (e) {} }, 100);
@@ -1494,6 +1507,40 @@ async function kodDogrula() {
     await oturumYukle();
   } catch (e) { msg.textContent = otpHata(e); }
   finally { b.disabled = false; b.textContent = 'Giriş yap'; }
+}
+async function sifreyleGir() {
+  var em = ($('auth-email').value || '').trim().toLowerCase(), pw = $('auth-pass').value || '', msg = $('auth-msg');
+  msg.textContent = '';
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)) { msg.textContent = 'Önce e-posta adresini yaz.'; return; }
+  if (pw.length < 8) { msg.textContent = 'Şifreni yaz. Henüz şifre belirlemediysen "Kod gönder" ile gir.'; return; }
+  if (!tsToken) { msg.textContent = 'Önce alttaki doğrulama kutusunun tamamlanmasını bekle (gerekirse kutuya dokun).'; return; }
+  var b = $('auth-pass-btn'); b.disabled = true; b.textContent = 'Giriliyor...';
+  try {
+    var r = await supabaseClient.auth.signInWithPassword({ email: em, password: pw, options: { captchaToken: tsToken } });
+    if (r.error) throw r.error;
+    store('gv_email', em); $('auth-pass').value = '';
+    await oturumYukle();
+  } catch (e) {
+    var m = String((e && e.message) || '');
+    msg.textContent = /invalid login|credentials/i.test(m) ? 'E-posta ya da şifre hatalı. Şifreni unuttuysan "Kod gönder" ile gir, sonra yeni şifre belirle.' : otpHata(e);
+    tsRender();
+  } finally { b.disabled = false; b.textContent = 'Şifreyle gir'; }
+}
+async function sifreKaydet() {
+  var pw = $('auth-pw-new').value || '', msg = $('auth-pw-msg');
+  msg.className = 'text-[11px] min-h-[14px] text-red-400';
+  if (pw.length < 8) { msg.textContent = 'Şifre en az 8 karakter olmalı.'; return; }
+  var b = $('auth-pw-btn'); b.disabled = true;
+  try {
+    var r = await supabaseClient.auth.updateUser({ password: pw });
+    if (r.error) throw r.error;
+    $('auth-pw-new').value = '';
+    msg.className = 'text-[11px] min-h-[14px] text-emerald-400';
+    msg.textContent = '✓ Şifren kaydedildi. Bundan sonra e-posta ve şifrenle, kod beklemeden girersin.';
+  } catch (e) {
+    var m = String((e && e.message) || '');
+    msg.textContent = /reauth/i.test(m) ? 'Güvenlik için önce çıkıp e-posta koduyla yeniden gir, sonra şifreni belirle.' : /weak|short|characters/i.test(m) ? 'Şifre çok zayıf. Harf ve rakam karışık, daha uzun bir şifre dene.' : /different|same/i.test(m) ? 'Bu zaten şu anki şifren.' : otpHata(e);
+  } finally { b.disabled = false; }
 }
 function kodGeri() { otpEmail = ''; otpKaydet(null); authGoster(); }
 
