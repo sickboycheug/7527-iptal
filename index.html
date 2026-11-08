@@ -619,7 +619,6 @@ async function vkPaylas(r) {
   document.getElementById('vk-img').src = url; st.textContent = '';
   var link = OG.sayfa({ tur: 'vekil', id: r.id, parcalar: [r.name, r.total, r.vote, window.__vkImza[r.id] ? 1 : 0], baslik: r.name + ' (' + r.party + ' ' + r.city + ' Milletvekili)', aciklama: Number(r.total).toLocaleString('tr-TR') + ' yurttaş dilekçesi aldı. ' + (window.__vkImza[r.id] ? 'İptal teklifine imza attı.' : 'İptal teklifine hâlâ imza atmadı.') + ' Sen de vekiline dilekçeni gönder.', hedef: '/?vekil=' + r.id, gorsel: blob, w: 1080, h: 1350 });
   var tx = t.replace(/\n*Sen de vekiline dilekçeni gönder: 7527iptal\.org/, '\n\nSen de vekiline dilekçeni gönder.');
-  ogBekle(link, ['vk-sh', 'vk-ig']);
   document.getElementById('vk-sh').onclick = function () { st.textContent = OG.paylas({ baslik: r.name, metin: tx, url: link }) === 'kopya' ? '✓ Metin ve link kopyalandı, istediğin yere yapıştır.' : ''; };
   document.getElementById('vk-ig').onclick = function () { st.textContent = OG.gorselPaylas({ metin: tx, url: link, blob: blob, ad: ad }) === 'indir' ? '✓ Metin kopyalandı, görsel indirildi.' : '✓ Metin kopyalandı.'; };
 }
@@ -728,7 +727,6 @@ async function vkMektupAc(r) {
   var link = OG.sayfa({ tur: 'mektup', id: r.id, parcalar: [r.name, r.vote, 'mektup'], baslik: r.name + ' (' + r.city + ' Milletvekili), bu mektup sana', aciklama: '7527 sayılı Kanun\'un iptali için açık mektup. Sen de vekiline dilekçeni gönder.', hedef: '/?vekil=' + r.id, gorsel: mb, w: 1080, h: 1350 });
   function kop() { if (navigator.clipboard) navigator.clipboard.writeText(t).then(function () { st.textContent = '✓ Metin kopyalandı'; }).catch(function () {}); else { tx.select(); } }
   var tx = t.replace(/\n*Sen de vekiline dilekçeni gönder: 7527iptal\.org/, '\n\nSen de vekiline dilekçeni gönder.');
-  ogBekle(link, ['mk-sh', 'mk-cp']);
   document.getElementById('mk-sh').onclick = function () { st.textContent = OG.paylas({ baslik: r.name, metin: tx, url: link }) === 'kopya' ? '✓ Metin ve link kopyalandı, istediğin yere yapıştır.' : ''; };
   document.getElementById('mk-cp').onclick = function () { st.textContent = OG.gorselPaylas({ metin: tx, url: link, blob: mb, ad: ad }) === 'indir' ? '✓ Metin kopyalandı, mektup indirildi.' : '✓ Metin kopyalandı.'; };
   st.textContent = '';
@@ -4303,17 +4301,10 @@ function ilpGoster() {
   document.getElementById('ilp-durum').textContent = '';
   var im = document.getElementById('ilp-gorsel'); im.style.display = 'none'; _ilpBlob = null;
   _ilpUrl = '';
-  if (m) ilpGorsel(m).then(function (bl) { _ilpBlob = bl; _ilpUrl = ilpLink(m, bl); ogBekle(_ilpUrl, ['ilp-sh', 'ilp-ig']); if (im.src) URL.revokeObjectURL(im.src); im.src = URL.createObjectURL(bl); im.style.display = ''; }).catch(function (e) { if (e) console.log('ilp', e); });
+  if (m) ilpGorsel(m).then(function (bl) { _ilpBlob = bl; _ilpUrl = ilpLink(m, bl); if (im.src) URL.revokeObjectURL(im.src); im.src = URL.createObjectURL(bl); im.style.display = ''; }).catch(function (e) { if (e) console.log('ilp', e); });
 }
 // Harita gorseli: sitenin harita verisi, renkleri ve yazi tipiyle tarayicida uretilir, sunucuya dosya yuklenmez
 var _ilpBlob = null, _ilpNo = 0, _ilpUrl = '';
-// Paylaşım görseli kaydedilene kadar düğmeler bekler (sosyal medya linki ilk açtığında doğru görseli görsün)
-function ogBekle(link, ids) {
-  var bs = ids.map(function (i) { return document.getElementById(i); }).filter(Boolean);
-  if (!window.OG || !OG.hazir) return;
-  bs.forEach(function (b) { if (!b.getAttribute('data-ad')) b.setAttribute('data-ad', b.textContent); b.disabled = true; b.style.opacity = '.6'; b.textContent = '⏳ Paylaşım hazırlanıyor...'; });
-  OG.hazir(link).then(function () { bs.forEach(function (b) { b.disabled = false; b.style.opacity = ''; b.textContent = b.getAttribute('data-ad'); }); });
-}
 function ilpLink(m, bl) {
   if (!window.OG || !OG.sayfa) return SITE_URL + m.yol;
   return OG.sayfa({ tur: 'il', id: m.bas, parcalar: [m.bas, m.d, m.v, m.g], baslik: m.bas + " 7527'ye sessiz kalmıyor", aciklama: m.s1 + " Sen de dilekçeni gönder, vekilin Meclis'te imzacı olsun.", hedef: m.yol, gorsel: bl, w: 1080, h: 1350 });
