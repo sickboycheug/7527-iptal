@@ -19,7 +19,7 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="stylesheet" href="/kaynak/tailwind.css?v=1">
-<script src="/kaynak/og.js?v=4" defer></script>
+<script src="/kaynak/og.js?v=5" defer></script>
 <script src="/kaynak/tarayici.js?v=2" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
 <script src="/kaynak/sbkopru.js?v=1"></script>
@@ -3298,8 +3298,8 @@ function kpCsv() {
 
 // ---------- tek "Paylaş": telefonda cihazın paylaşım menüsü, bilgisayarda küçük pencere ----------
 function paylasAc(baslik, metin, url) {
-  if (navigator.share) {
-    navigator.share({ title: baslik, text: metin, url: url }).catch(function () {});
+  if (navigator.share && (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent)))) {
+    navigator.share({ title: baslik, text: metin, url: url }).catch(function (er) { if (!er || er.name !== 'AbortError') { if (window.OG && OG.menu) OG.menu(metin, url, baslik); } });
     return;
   }
   var e = encodeURIComponent, tam = metin + '\n\n' + url;

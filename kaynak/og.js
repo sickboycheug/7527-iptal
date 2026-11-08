@@ -166,10 +166,38 @@
     try { document.execCommand('copy'); } catch (e) {} a.remove();
   }
   // Tek düğme: telefonun paylaş menüsü (link + metin). Menü yoksa metin ve link kopyalanır.
+  var MOBIL = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
+  // Bilgisayarda (paylaş menüsü olmayan ya da çalışmayan tarayıcılarda): küçük seçim kutusu
+  function menu(t, url, baslik) {
+    var e = encodeURIComponent, eski = document.getElementById('og-menu'); if (eski) eski.remove();
+    var m = document.createElement('div'); m.id = 'og-menu';
+    m.style.cssText = 'position:fixed;inset:0;z-index:2147483646;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;padding:16px';
+    var k = document.createElement('div');
+    k.style.cssText = 'background:#18181b;border:1px solid #3f3f46;border-radius:16px;padding:16px;width:100%;max-width:340px;font:600 14px Inter,system-ui,sans-serif;color:#f4f4f5';
+    k.innerHTML = '<div style="font-weight:800;margin-bottom:10px">📤 Paylaş</div>';
+    var hedef = [['💬 WhatsApp', 'https://api.whatsapp.com/send?text=' + e(t + '\n\n' + url)], ['𝕏 X', 'https://twitter.com/intent/tweet?text=' + e(t) + '&url=' + e(url)],
+      ['Facebook', 'https://www.facebook.com/sharer/sharer.php?u=' + e(url)], ['Telegram', 'https://t.me/share/url?url=' + e(url) + '&text=' + e(t)]];
+    var g = document.createElement('div'); g.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:8px';
+    function dg(ad, f, ana) { var b = document.createElement('button'); b.type = 'button'; b.textContent = ad;
+      b.style.cssText = 'padding:11px 8px;border-radius:12px;border:1px solid #3f3f46;background:' + (ana ? '#dc2626' : '#27272a') + ';color:#fff;font:700 13px Inter,system-ui,sans-serif;cursor:pointer' + (ana ? ';grid-column:1/-1' : '');
+      b.onclick = f; g.appendChild(b); return b; }
+    hedef.forEach(function (h) { dg(h[0], function () { window.open(h[1], '_blank', 'noopener'); m.remove(); }); });
+    var kb = dg('📋 Metni ve linki kopyala', function () { kopya(t + '\n\n' + url); kb.textContent = '✓ Kopyalandı, istediğin yere yapıştır'; }, true);
+    k.appendChild(g);
+    var x = document.createElement('button'); x.type = 'button'; x.textContent = 'Kapat';
+    x.style.cssText = 'margin-top:10px;width:100%;background:none;border:0;color:#a1a1aa;text-decoration:underline;cursor:pointer;font-size:12px';
+    x.onclick = function () { m.remove(); }; k.appendChild(x);
+    m.onclick = function (ev) { if (ev.target === m) m.remove(); };
+    m.appendChild(k); document.body.appendChild(m);
+  }
+  // Tek düğme: telefonda telefonun paylaş menüsü; bilgisayarda ya da menü çalışmazsa seçim kutusu
   function paylas(o) {
-    var t = ek(o.metin);
-    if (navigator.share) { navigator.share({ title: o.baslik || '7527 İPTAL', text: t, url: o.url }).catch(function () {}); return 'menu'; }
-    kopya(t + '\n\n' + o.url); return 'kopya';
+    var t = o.ham ? String(o.metin || '') : ek(o.metin);
+    if (MOBIL && navigator.share) {
+      navigator.share({ title: o.baslik || '7527 İPTAL', text: t, url: o.url }).catch(function (err) { if (!err || err.name !== 'AbortError') menu(t, o.url, o.baslik); });
+      return 'menu';
+    }
+    menu(t, o.url, o.baslik); return 'menu';
   }
   // Instagram gibi görsel isteyen yerler: metin kopyalanır, görsel paylaşılır; olmazsa indirilir
   function gorselPaylas(o) {
@@ -203,5 +231,5 @@
 
   window.OG = { ozet: ozet, slug: slug, anahtar: anahtar, kart: kart, kucult: kucult, hazirla: hazirla,
     vaka: vaka, onur: onur, onurLink: onurLink, saha: saha,
-    sayfa: sayfa, vakaEtiket: vakaEtiket, vekilHazirla: vekilHazirla, ek: ek, kopya: kopya, paylas: paylas, gorselPaylas: gorselPaylas, BILGI: BILGI, ETIKET: ETIKET };
+    sayfa: sayfa, vakaEtiket: vakaEtiket, vekilHazirla: vekilHazirla, ek: ek, kopya: kopya, paylas: paylas, menu: menu, gorselPaylas: gorselPaylas, BILGI: BILGI, ETIKET: ETIKET };
 })();

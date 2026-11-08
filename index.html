@@ -22,7 +22,7 @@
 <meta name="twitter:image" content="https://7527iptal.org/gorsel/halk-iradesi.png?v=2">
 <!-- Tailwind: hazır CSS dosyası -->
 <link rel="stylesheet" href="/kaynak/tailwind.css?v=1">
-<script src="/kaynak/og.js?v=4" defer></script>
+<script src="/kaynak/og.js?v=5" defer></script>
 <script src="/kaynak/tarayici.js?v=2" defer></script>
 <!-- QRCode.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -1722,7 +1722,7 @@ window.addEventListener('load', function () {
   };
   // Paylaş: o dilin kendi sayfasının linki tek dokunuşla gider (önizleme görseli o sayfadan gelir). Paylaş menüsü yoksa seçenekler açılır.
   $('gc-ac').onclick = function () {
-    if (navigator.share) { navigator.share({ text: V[sec].x, url: url() }).catch(function () {}); return; }
+    if (window.OG && OG.paylas) { OG.paylas({ metin: V[sec].x, url: url(), ham: true }); return; }
     var g = $('gc-btn'), a = g.style.display === 'none'; g.style.display = a ? 'grid' : 'none'; this.setAttribute('aria-expanded', a);
   };
   sec_('tr');
@@ -3561,10 +3561,7 @@ function adimMetni() {
 }
 function adimPaylas() {
   var link = SITE_URL + '/paylas/paylas-adim.html', ad = 'Dilekçe nasıl gönderilir?';
-  if (navigator.share) {
-    navigator.share({ title: ad, text: adimMetni(), url: link }).catch(function () {});
-    return;
-  }
+  if (window.OG && OG.paylas) { OG.paylas({ baslik: ad, metin: adimMetni(), url: link, ham: true }); return; }
   closeAdimModal();
   var o = { adim: true, id: 0, title: ad }, e = encodeURIComponent, m = buildShareText(o, false, true);
   shareCase = o;
