@@ -23,6 +23,7 @@
 <!-- Tailwind: hazır CSS dosyası -->
 <link rel="stylesheet" href="/kaynak/tailwind.css?v=1">
 <script src="/kaynak/og.js?v=1" defer></script>
+<script src="/kaynak/tarayici.js?v=1" defer></script>
 <!-- QRCode.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <!-- Supabase JS -->
@@ -228,9 +229,7 @@
     <p class="text-xl md:text-3xl font-extrabold text-zinc-100">
       ÖLDÜREN DEĞİL, YAŞATAN OL!
     </p>
-    <p class="text-xs md:text-sm font-bold text-red-500 uppercase tracking-widest">
-      YAŞAM HAKKI İÇİN 🐾 HAYVANLARIMIZ İÇİN 🐾 GELECEĞİMİZ İÇİN
-    </p>
+    <p class="font-bold text-red-500 uppercase whitespace-nowrap" style="font-size:clamp(7px,2.45vw,14px);letter-spacing:.06em">YAŞAM HAKKI İÇİN 🐾 HAYVANLARIMIZ İÇİN 🐾 GELECEĞİMİZ İÇİN</p>
 
     <p id="online-count" class="text-[11px] font-semibold text-emerald-400 min-h-[16px]"></p>
 
@@ -829,7 +828,7 @@ window.addEventListener('load', function () {
         <h2 class="font-impact text-2xl text-white uppercase tracking-wide">🗺️ KAMPANYA HARİTASI</h2>
         <p id="hm-sub" class="text-xs text-zinc-400"></p>
       </div>
-      <div class="flex gap-2 justify-center">
+      <div class="flex flex-wrap gap-2 justify-center">
         <button type="button" id="hm-layer-pet" onclick="hmLayer('pet')" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 text-white">📨 Dilekçeler</button>
         <button type="button" id="hm-layer-mp" onclick="hmLayer('mp')" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-zinc-800 text-zinc-300">🏛 Vekiller</button>
         <button type="button" id="hm-layer-case" onclick="hmLayer('case')" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-zinc-800 text-zinc-300">🐾 Vakalar</button>
@@ -3746,6 +3745,7 @@ var currentTekrarKey = '';
 var _gonderimSuruyor = false;
 async function sendPetitionViaEmail() {
   if (_gonderimSuruyor || petitionBusy) return;
+  if (window.INAPP) { window.INAPP.uyar(); return; }
   var b0 = document.getElementById('petition-send-btn'), h0 = b0 ? b0.innerHTML : '';
   _gonderimSuruyor = true;
   if (b0) { b0.disabled = true; b0.textContent = 'Kontrol ediliyor...'; }

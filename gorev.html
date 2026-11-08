@@ -20,6 +20,7 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="stylesheet" href="/kaynak/tailwind.css?v=1">
 <script src="/kaynak/og.js?v=1" defer></script>
+<script src="/kaynak/tarayici.js?v=1" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -103,10 +104,6 @@
 </style>
 </head>
 <body class="bg-zinc-950 text-zinc-100 antialiased min-h-screen flex flex-col">
-
-<div id="inapp-warning" style="display:none" class="bg-amber-500 text-black text-sm font-semibold text-center px-4 py-3">
-  ⚠️ Sorunsuz çalışması için sayfayı Safari / Chrome'da açın: sağ üstteki ⋯ veya paylaş simgesine dokunup "Tarayıcıda aç" seçin.
-</div>
 
 <header class="border-b border-zinc-800 bg-zinc-950">
   <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
@@ -1318,7 +1315,8 @@ function errText(e) {
   if (m.indexOf('too_many_claims') !== -1)  return 'Aynı anda en fazla 3 görev üstlenebilirsin. Önce birini tamamla ya da bırak.';
   if (m === 'crypto_unavailable')           return 'Güvenli bağlantı gerekiyor. Lütfen sayfayı https:// ile açın.';
   if (m === 'not_installed')                return 'Sunucu servisi kurulu değil.';
-  return 'Bağlantı kurulamadı. Instagram veya Facebook içinden açtıysanız Safari ya da Chrome ile açıp tekrar deneyin. (Hata: ' + (m || 'bilinmiyor').slice(0, 80) + ')';
+  if (window.INAPP) { window.INAPP.uyar(); return 'Bu sayfayı tarayıcıda aç (Safari / Chrome), oradan devam et.'; }
+  return 'Bağlantı kurulamadı. İnternetini kontrol edip tekrar dene.';
 }
 
 async function callRpc(fn, args) {
@@ -1346,11 +1344,6 @@ function load(k) { try { return localStorage.getItem(k); } catch (e) { return nu
 function openKvkkModal()  { var m = $('kvkk-modal'); if (m) m.style.display = 'flex'; }
 function closeKvkkModal() { var m = $('kvkk-modal'); if (m) m.style.display = 'none'; }
 
-// Uygulama ici tarayici uyarisi
-(function () {
-  var ua = navigator.userAgent || '';
-  if (/Instagram|FBAN|FBAV|FB_IAB|musical_ly|Twitter|Line\//i.test(ua)) $('inapp-warning').style.display = 'block';
-})();
 
 // ---------- sehir listesi ----------
 (function () {
