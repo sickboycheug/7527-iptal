@@ -69,3 +69,4 @@
 /p/k/*  /  302
 /meclis  /?meclis=1  302
 /meclis/*  /?meclis=1&vk=:splat  302
+/dilekce  /?dilekce=1  302
