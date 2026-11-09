@@ -6626,7 +6626,8 @@ function tkNorm(contact) {
 // Yoksa aynı kayıt "tekrar" görünür ve kopyasındaki Sil, kişinin tek gerçek dilekçesini siler.
 function tekilDilekce(rows) {
   var gor = {};
-  return rows.filter(function (r) { var k = r.petition_number || ''; if (!k) return true; if (gor[k]) return false; gor[k] = 1; return true; });
+  return rows.filter(function (r) { var k = r.petition_number || ''; if (!k) return true; if (gor[k]) return false; gor[k] = 1; return true; })
+    .sort(function (a, b) { return new Date(b.created_at) - new Date(a.created_at); });   // en yeni üstte, eskisi gibi
 }
 async function tekrarAnaliz() {
   if (tekrarBusy) return;
