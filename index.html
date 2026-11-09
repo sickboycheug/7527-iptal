@@ -118,30 +118,9 @@
 </head>
 <body class="bg-zinc-950 text-zinc-100 antialiased min-h-screen flex flex-col">
 
-  <!-- AÇILIŞ EKRANI: video + dilekçe adımına geç -->
-<div id="acilis-ekran" style="position:fixed;top:0;right:0;bottom:0;left:0;z-index:2147483000;background:#000" class="flex flex-col items-center overflow-hidden" role="dialog" aria-modal="true" aria-label="7527 İptal tanıtım videosu">
-  <div class="flex-1 min-h-0 w-full flex items-center justify-center p-2">
-    <img id="acilis-gorsel" src="gorsel/acilis.jpg" alt="7527 İptal! İmzacısı ol" class="max-h-full max-w-full object-contain rounded-xl">
-  </div>
-  <div class="w-full max-w-md px-4 pt-2 pb-4 space-y-2 shrink-0">
-    <button type="button" id="acilis-ana" class="w-full py-3.5 rounded-xl font-extrabold text-sm uppercase tracking-wide bg-red-600 hover:bg-red-500 text-white border-2 border-red-500 shadow-xl cursor-pointer"></button>
-    <a href="hakikat.html#biz" class="block w-full py-2.5 rounded-xl font-bold text-xs text-center text-zinc-300 bg-zinc-900 border border-zinc-700 hover:text-white no-underline">Biz kimiz</a>
-  </div>
-</div>
 <script>
 (function () {
-  var el = document.getElementById('acilis-ekran');
-  var ana = document.getElementById('acilis-ana');
-  document.body.style.overflow = 'hidden';
-
-  function gec() {
-    el.style.display = 'none';
-    document.body.style.overflow = '';
-    try { handleGatePanelClick('vatandas'); } catch (e) {}
-    try { setTimeout(adim1eGit, 50); } catch (e) {}
-  }
-  ana.textContent = '📨 Dilekçeni Gönder';
-  ana.onclick = gec;
+  // Karşılama ekranı kaldırıldı: sayfa doğrudan açılır; linkle gelen doğrudan ilgili yere gider
 
   // Paylasim baglantisindan gelenler: ?harita=case (haritaya) / ?vaka=bildir (bildirim formuna)
   var qs = window.location.search;
@@ -151,8 +130,6 @@
   var mHarita = /[?&]harita=(vol|pet|mp|case)/.exec(qs), goRep = /[?&]vaka=bildir/.test(qs), goRank = /[?&]siralama=1/.test(qs), goHedef = /[?&]hedef=1/.test(qs), goVekil = /[?&]vekil=(\d+)/.exec(qs), goAdim = /[?&]adim=1/.test(qs), goDil = /[?&]dilekce=1/.test(qs), goMeclis = /[?&]meclis=1/.test(qs), goMeclisVk = /[?&]vk=(\d+)/.exec(qs);
   var goIl = /[?&]il=([^&#]+)/.exec(qs), goIlce = /[?&]ilce=([^&#]+)/.exec(qs), goUlke = /[?&]ulke=([^&#]+)/.exec(qs), goSehir = /[?&]sehir=([^&#]+)/.exec(qs);
   if (mHarita || goRep || goRank || goHedef || goVekil || goIl || goUlke || goAdim || goDil || goMeclis) {
-    el.style.display = 'none';
-    document.body.style.overflow = '';
     if (goMeclis) {
       // Vekile giden mektup/dilekçe linki: doğrudan Meclis Vekil Paneli, imza kartı; vekil numarası varsa adı ve e-postası hazır
       document.addEventListener('DOMContentLoaded', function () {
@@ -285,6 +262,7 @@
     <div class="pt-3 flex flex-wrap justify-center gap-2">
       <button type="button" onclick="scrollToVolunteerForm()" class="px-3 py-1.5 rounded-full border border-emerald-700 text-emerald-300 hover:bg-emerald-900/40 font-bold text-[11px] transition">🤝 Gönüllü ol</button>
       <a href="hakikat.html" class="px-3 py-1.5 rounded-full border border-zinc-600 text-zinc-300 hover:bg-zinc-800 font-bold text-[11px] transition">📢 Duyurular · Vakalar</a>
+      <a href="hakikat.html#biz" class="px-3 py-1.5 rounded-full border border-zinc-600 text-zinc-300 hover:bg-zinc-800 font-bold text-[11px] transition">ℹ️ Biz kimiz</a>
     </div>
     <!-- CANLI SAYAÇLAR (üst) -->
     <div class="mx-auto max-w-lg text-left mt-4">
@@ -1011,15 +989,6 @@ window.addEventListener('load', function () {
     </div>
     <div id="signed-mps-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
       <!-- İmzalayan vekiller burada listelenir -->
-    </div>
-  </div>
-  <div class="bg-zinc-900 border border-zinc-800 p-5 rounded-2xl space-y-3">
-    <h3 class="font-impact text-xl text-white uppercase tracking-wide text-center">Sahadaki tablo</h3>
-    <p class="text-xs text-zinc-400 text-center">Hangi ilden kaç dilekçe geldi, hangi vekil imzacı oldu, sahada hangi vakalar yaşandı.</p>
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-      <a href="/?harita=mp" class="block py-3 rounded-xl font-bold text-xs text-center text-white bg-emerald-700 hover:bg-emerald-600 no-underline">🗺️ Kampanya Haritası</a>
-      <a href="hakikat.html#vakalar" class="block py-3 rounded-xl font-bold text-xs text-center text-white bg-red-700 hover:bg-red-600 no-underline">🐾 Vaka Haritası</a>
-      <a href="hakikat.html#biz" class="block py-3 rounded-xl font-bold text-xs text-center text-zinc-200 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 no-underline">Biz kimiz</a>
     </div>
   </div>
 </div>
@@ -5526,6 +5495,8 @@ function switchTab(tab) {
   }
   var pVatandas = document.getElementById('panel-vatandas');
   var pVekil = document.getElementById('panel-vekil');
+  // Vekil panelinde yabancı dil çağrıları görünmez
+  var gc = document.getElementById('gurbet-cagrisi'); if (gc) gc.style.display = tab === 'vekil' ? 'none' : '';
   var btnVatandas = document.getElementById('tab-btn-vatandas');
   var btnVekil = document.getElementById('tab-btn-vekil');
 
