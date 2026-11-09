@@ -483,7 +483,8 @@ function siraBoya(pre, cok) {
       <div id="live-bar" class="flex items-center gap-2 px-3 py-2 bg-red-950/80">
         <span id="live-dot" class="live-dot" aria-hidden="true"></span>
         <b id="live-lbl" class="text-[11px] text-red-200 uppercase tracking-wider whitespace-nowrap">Canlı yayın</b>
-        <span id="live-title" class="text-xs text-white truncate min-w-0"></span>
+        <span id="live-title" class="text-xs text-white truncate min-w-0 flex-1"></span>
+        <button type="button" onclick="tvPaylas()" class="ml-auto shrink-0 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white text-[11px] font-bold px-2.5 py-1">📤 Paylaş</button>
       </div>
       <div id="live-frame" class="aspect-video w-full bg-black"></div>
       <div id="live-open" class="flex flex-wrap justify-center gap-x-4 gap-y-1 py-1.5"></div>
@@ -2124,7 +2125,12 @@ function duyuruAc() {
   b.textContent = kisa ? 'Devamını oku' : 'Kısalt';
 }
 window.addEventListener('load', function () {
-  try { var p = localStorage.getItem('7527_pano_bolum'); if (p && !/[?&]saha=/.test(location.search)) panoAc(p); } catch (e) {}
+  try { var p = localStorage.getItem('7527_pano_bolum'); if (p && !/[?&](saha|tv)=/.test(location.search)) panoAc(p); } catch (e) {}
+  if (/[?&]tv=1/.test(location.search)) {
+    panoAc('ofis', false);
+    if (!(liveDurum && liveDurum.on && liveDurum.url)) tvOynat();
+    setTimeout(function () { try { $('live-box').scrollIntoView({ block: 'start' }); } catch (e) {} }, 200);
+  }
 });
 
 function taskCard(t, me) {
@@ -3369,6 +3375,37 @@ function tvOynat() {
   var l = h('a', 'text-[11px] text-zinc-300 underline whitespace-nowrap', '▶ Kanala abone ol'); l.href = 'https://www.youtube.com/@ARA-AnimalRightsActivists?sub_confirmation=1'; l.target = '_blank'; l.rel = 'noopener';
   a.appendChild(l);
   return false;
+}
+function tvGorsel() {
+  var f = document.fonts && document.fonts.load ? Promise.all([document.fonts.load('700 64px Oswald'), document.fonts.load('800 30px Inter')]).catch(function () {}) : Promise.resolve();
+  return f.then(function () { return new Promise(function (ok) {
+    var on = !!(liveDurum && liveDurum.on && liveDurum.url), c = document.createElement('canvas'); c.width = 1200; c.height = 630;
+    var x = c.getContext('2d'), g = x.createRadialGradient(600, 300, 40, 600, 315, 700);
+    g.addColorStop(0, '#1f2937'); g.addColorStop(1, '#000'); x.fillStyle = g; x.fillRect(0, 0, 1200, 630);
+    x.fillStyle = on ? '#7f1d1d' : '#18181b'; x.fillRect(0, 0, 1200, 70);
+    x.textBaseline = 'middle'; x.fillStyle = on ? '#fecaca' : '#e4e4e7'; x.font = '800 30px Inter, Arial, sans-serif';
+    x.fillText(on ? '🔴 CANLI YAYIN' : 'ARA ACTIVISTS · LIVE', 36, 36);
+    x.fillStyle = '#dc2626'; x.beginPath(); if (x.roundRect) x.roundRect(530, 190, 140, 100, 28); else x.rect(530, 190, 140, 100); x.fill();
+    x.fillStyle = '#fff'; x.beginPath(); x.moveTo(585, 215); x.lineTo(585, 265); x.lineTo(628, 240); x.closePath(); x.fill();
+    x.textAlign = 'center'; x.font = '700 64px Oswald, Arial, sans-serif';
+    var w1 = x.measureText('ARA ').width, w2 = x.measureText('ACTIVISTS').width, sx = 600 - (w1 + w2) / 2;
+    x.textAlign = 'left'; x.fillStyle = '#dc2626'; x.fillText('ARA ', sx, 370); x.fillStyle = '#fff'; x.fillText('ACTIVISTS', sx + w1, 370);
+    x.textAlign = 'center'; x.fillStyle = '#fcd34d'; x.font = '700 34px Inter, Arial, sans-serif';
+    var alt = on && liveDurum.title ? String(liveDurum.title) : 'Sayfadan izle · 7527iptal.org';
+    while (x.measureText(alt).width > 1080 && alt.length > 10) alt = alt.slice(0, -2);
+    x.fillText(alt, 600, 450);
+    x.fillStyle = '#a1a1aa'; x.font = '600 26px Inter, Arial, sans-serif'; x.fillText('#7527İptal · #YerindeYaşat', 600, 520);
+    c.toBlob(function (b) { ok(b); }, 'image/jpeg', 0.85);
+  }); });
+}
+function tvPaylas() {
+  var on = !!(liveDurum && liveDurum.on && liveDurum.url), t = on ? (liveDurum.title || 'Canlı yayın') : '';
+  var baslik = on ? '🔴 Canlı: ' + t + ' · ARA ACTIVISTS' : 'ARA ACTIVISTS · 7527iptal kanalını izle';
+  var metin = on ? '🔴 Şu an canlı yayındayız: ' + t + '\nSayfadan izle, sohbete katıl:' : 'ARA ACTIVISTS videolarını sayfadan izle, sohbete katıl:';
+  var link = 'https://7527iptal.org/gorev?tv=1';
+  if (window.OG && OG.sayfa) link = OG.sayfa({ tur: 'tv', id: on ? 'canli' : 'kanal', parcalar: [on ? 1 : 0, t], baslik: baslik, aciklama: 'Sayfadan izle, kampanya sohbetine katıl. 7527 sayılı Kanun iptal edilsin.', hedef: '/gorev?tv=1', gorsel: tvGorsel, w: 1200, h: 630 });
+  if (window.OG && OG.paylas) OG.paylas({ baslik: baslik, metin: metin, url: link });
+  else paylasAc(baslik, metin, link);
 }
 function liveCiz() {
   var d = liveDurum || {}, on = !!(d.on && d.url), box = $('live-box'), sm = $('pn-sohbet-sm');
