@@ -693,7 +693,7 @@ function siraBoya(pre, cok) {
     </div>
 
     <p id="fp-thanks" class="hidden text-xs text-emerald-300 font-semibold bg-emerald-950/60 border border-emerald-800 rounded-lg p-2">✓ Teşekkürler! Paylaşımın ekibe ulaştı. Onaylanınca burada yayınlanır.</p>
-    <div id="fp-kinds" class="flex flex-wrap gap-1.5"></div>
+    <div id="fp-kinds" class="grid grid-cols-3 sm:grid-cols-6 gap-1.5"></div>
     <div class="grid grid-cols-2 gap-2">
       <select id="fp-f-city" class="inp" onchange="fpCiz()" aria-label="İle göre süz"><option value="">Tüm iller</option></select>
       <button type="button" id="fp-sort" onclick="fpSirala()" class="btn bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs px-2">↓ Yeniden eskiye</button>
@@ -3452,17 +3452,29 @@ async function fpYukle() {
 function fpTurSec(t) { fpTur = t; fpCiz(); }
 function fpSirala() { fpYon = -fpYon; fpCiz(); }
 var fpCizAnah = '';
+function fpUyar(r, t) {
+  if (t.indexOf('imza:') !== 0) return r.kind === t;
+  if (r.kind !== 'imza') return false;
+  var u = String(r.link || '').toLowerCase(), ch = u.indexOf('change.org') > -1, jv = u.indexOf('jointvoice') > -1;
+  return t === 'imza:ch' ? ch : t === 'imza:jv' ? jv : !ch && !jv;
+}
 function fpCiz() {
   var kb = $('fp-kinds'); kb.textContent = '';
-  [['', 'Tümü']].concat(Object.keys(FP_TUR).map(function (k) { return [k, FP_TUR[k].ik + ' ' + FP_TUR[k].ad]; })).forEach(function (t) {
-    var n = t[0] ? fpRows.filter(function (r) { return r.kind === t[0]; }).length : fpRows.length;
-    var b = actBtn(t[1] + ' (' + n + ')', 'px-2.5 py-1.5 text-[11px] ' + (fpTur === t[0] ? 'bg-emerald-600 text-white' : 'bg-zinc-800 text-zinc-300'), function () { fpTurSec(t[0]); });
+  var turlar = [['', 'Tümü']];
+  Object.keys(FP_TUR).forEach(function (k) {
+    if (k !== 'imza') { turlar.push([k, FP_TUR[k].ik + ' ' + FP_TUR[k].ad]); return; }
+    turlar.push(['imza:ch', 'Change.org'], ['imza:jv', 'JointVoice']);
+    if (fpRows.some(function (r) { return fpUyar(r, 'imza:dg'); })) turlar.push(['imza:dg', '✍️ Diğer imza']);
+  });
+  turlar.forEach(function (t) {
+    var n = t[0] ? fpRows.filter(function (r) { return fpUyar(r, t[0]); }).length : fpRows.length;
+    var b = actBtn(t[1] + '\n' + n, 'px-1 py-1.5 text-[11px] leading-tight whitespace-pre-line ' + (fpTur === t[0] ? 'bg-emerald-600 text-white' : 'bg-zinc-800 text-zinc-300'), function () { fpTurSec(t[0]); });
     b.setAttribute('aria-pressed', String(fpTur === t[0])); kb.appendChild(b);
   });
   $('fp-sort').textContent = fpYon < 0 ? '↓ Yeniden eskiye' : '↑ Eskiden yeniye';
   var il = $('fp-f-city').value, box = $('fp-list');
   if (fpCizAnah !== fpTur + '|' + il) { fpCizAnah = fpTur + '|' + il; fpGoster = 6; }
-  var list = fpRows.filter(function (r) { return (!fpTur || r.kind === fpTur) && (!il || (r.country || r.city) === il); });
+  var list = fpRows.filter(function (r) { return (!fpTur || fpUyar(r, fpTur)) && (!il || (r.country || r.city) === il); });
   list.sort(function (a, b) {
     if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
     return fpYon * (new Date(a.event_at || a.at) - new Date(b.event_at || b.at));
