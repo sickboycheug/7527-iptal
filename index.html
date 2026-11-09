@@ -921,6 +921,7 @@ window.addEventListener('load', function () {
       <p class="text-xs sm:text-sm text-zinc-300 max-w-2xl mx-auto">
         Sayın Milletvekili, 7527 sayılı Kanun'un iptali ve 5199 sayılı Kanun'a dönülmesi için TBMM iradesini göstererek bu tarihi çağrıya imzanızla destek verin.
       </p>
+      <button type="button" onclick="openVekilAdim()" class="w-full max-w-xl mx-auto block py-3 rounded-xl font-extrabold text-sm uppercase tracking-wide text-emerald-300 bg-emerald-950/60 border-2 border-emerald-600 hover:bg-emerald-900/60 cursor-pointer">📲 İmza nasıl atılır? Adım adım gör</button>
       <p id="mp-karsi" class="hidden mx-auto max-w-2xl text-sm text-emerald-200 bg-emerald-950/60 border border-emerald-700 rounded-xl px-4 py-2.5">Sayın Milletvekili, yurttaşların dilekçeleri size ulaştı. Listeden adınızı seçin, Meclis e-postanızı yazın, beyanı okuyup imzalayın; beyanınız adınızla TBMM Başkanlığına gitsin.</p>
     </div>
 
@@ -3571,9 +3572,10 @@ function closeKvkkModal() {
   if (m) m.style.display = 'none';
 }
 // ADIM ADIM DİLEKÇE SLAYTLARI
-var ADIM_SLAYT = 9;
+var ADIM_SLAYT = 9, adimSet = 'dil';
 var adimIdx = 1;
 function adimUrl(i) {
+  if (adimSet === 'vekil') return '/gorsel/vekil-adim/slayt-0' + i + '.jpg';
   return 'https://mednnlpprdgupdajmrin.supabase.co/storage/v1/object/public/AdimAdimDilekce/slayt-' + (i < 10 ? '0' : '') + i + '.png';
 }
 function adimGoster(i) {
@@ -3585,7 +3587,7 @@ function adimGoster(i) {
     im.src = adimUrl(i);
     // Son slayt: "Sıra sende" dokununca dilekçenin 1. adımına götürür
     im.style.cursor = (i === ADIM_SLAYT) ? 'pointer' : '';
-    im.onclick = (i === ADIM_SLAYT) ? function () { closeAdimModal(); adim1eGit(); } : null;
+    im.onclick = (i === ADIM_SLAYT) ? function () { closeAdimModal(); if (adimSet === 'vekil') { var k = document.getElementById('mp-sign-search'); if (k) k.scrollIntoView({ block: 'center' }); } else adim1eGit(); } : null;
   }
   var c = document.getElementById('adim-sayac');
   if (c) c.textContent = i + ' / ' + ADIM_SLAYT;
@@ -3594,8 +3596,12 @@ function adimGoster(i) {
   if (p) p.disabled = (i === 1);
   if (n) n.disabled = (i === ADIM_SLAYT);
 }
-function openAdimModal() {
-  var m = document.getElementById('adim-modal');
+function openAdimModal() { adimAc('dil'); }
+function openVekilAdim() { adimAc('vekil'); }
+function adimAc(set) {
+  adimSet = set; ADIM_SLAYT = set === 'vekil' ? 7 : 9;
+  var m = document.getElementById('adim-modal'), t = m && m.querySelector('h3');
+  if (t) t.textContent = set === 'vekil' ? 'İmza nasıl atılır?' : 'Dilekçe nasıl gönderilir?';
   if (m) { m.style.display = 'flex'; adimGoster(1); }
 }
 // Slayt paylaşımı: tek link gider; açan kişi slaytları sayfada kaydırarak izler
@@ -3603,6 +3609,7 @@ function adimMetni() {
   return '📲 Dilekçeni adım adım gönder!\nAnayasa\'nın 74. maddesindeki dilekçe hakkınla 7527\'nin iptalini iste. 6 adımı sırayla izle, hiçbir adımı atlama.\nSen dilekçeni gönder, vekilin Meclis\'te imzacı olsun.';
 }
 function adimPaylas() {
+  if (adimSet === 'vekil' && window.OG && OG.paylas) { OG.paylas({ baslik: 'Meclis Vekil Paneli: İmza nasıl atılır?', metin: 'Sayın Milletvekili, 7527 sayılı Kanun’un iptal teklifine 2 dakikada imzacı olun: adınızı seçin, beyanı imzalayın, TBMM Başkanlığına gönderin.', url: SITE_URL + '/meclis' }); return; }
   var link = SITE_URL + '/paylas/paylas-adim.html', ad = 'Dilekçe nasıl gönderilir?';
   if (window.OG && OG.paylas) { OG.paylas({ baslik: ad, metin: adimMetni(), url: link, ham: true }); return; }
   closeAdimModal();
