@@ -22,7 +22,7 @@
 <meta name="twitter:image" content="https://7527iptal.org/gorsel/halk-iradesi.png?v=2">
 <!-- Tailwind: hazır CSS dosyası -->
 <link rel="stylesheet" href="/kaynak/tailwind.css?v=1">
-<script src="/kaynak/og.js?v=6" defer></script>
+<script src="/kaynak/og.js?v=7" defer></script>
 <script src="/kaynak/tarayici.js?v=2" defer></script>
 <!-- QRCode.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -4236,7 +4236,7 @@ function hmDavet(how) {
   if (how === 'x') { window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(m.kisa) + '&url=' + encodeURIComponent(lnk), '_blank'); return; }
   if (how === 'fb') { window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(lnk), '_blank'); return; }
   if (how === 'tg') { window.open('https://t.me/share/url?url=' + encodeURIComponent(lnk) + '&text=' + encodeURIComponent(t), '_blank'); return; }
-  if (how === 'native') { if (navigator.share) { navigator.share({ title: '7527 İptal', text: t, url: lnk }).catch(function () {}); } return; }
+  if (how === 'native') { if (navigator.share) { navigator.share({ title: '7527 İptal', text: t + '\n\n' + lnk }).catch(function () {}); } return; }
   var b = document.getElementById('hm-davet-kopya');
   function ok() { if (b) { var o = b.getAttribute('data-o') || b.textContent; b.setAttribute('data-o', o); b.textContent = '✓ Kopyalandı'; setTimeout(function () { b.textContent = o; }, 2000); } }
   function fb() { var a = document.createElement('textarea'); a.value = tam; a.style.position = 'fixed'; a.style.opacity = '0'; document.body.appendChild(a); a.select(); try { document.execCommand('copy'); ok(); } catch (e) {} document.body.removeChild(a); }
@@ -4825,8 +4825,7 @@ async function shareNative() {
   try {
     await navigator.share({
       title: shareCase.title,
-      text: buildShareText(shareCase, false, false),
-      url: caseLink(shareCase)
+      text: buildShareText(shareCase, false, false) + '\n\n' + caseLink(shareCase)
     });
   } catch (e) {
     // Kullanici vazgectiyse sessiz gec

@@ -202,7 +202,9 @@
   function paylas(o) {
     var t = o.ham ? String(o.metin || '') : ek(o.metin);
     if (MOBIL && navigator.share) {
-      navigator.share({ title: o.baslik || '7527 İPTAL', text: t, url: o.url }).catch(function (err) { if (!err || err.name !== 'AbortError') menu(t, o.url, o.baslik); });
+      // Link metnin içinde: X ve Instagram url alanı varken metni atıyor; Facebook metni hiç almıyor, panoya kopyalanır
+      var tam = t + '\n\n' + o.url; kopya(tam);
+      navigator.share({ title: o.baslik || '7527 İPTAL', text: tam }).catch(function (err) { if (!err || err.name !== 'AbortError') menu(t, o.url, o.baslik); });
       return 'menu';
     }
     menu(t, o.url, o.baslik); return 'menu';

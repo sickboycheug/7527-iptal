@@ -19,7 +19,7 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="stylesheet" href="/kaynak/tailwind.css?v=1">
-<script src="/kaynak/og.js?v=6" defer></script>
+<script src="/kaynak/og.js?v=7" defer></script>
 <script src="/kaynak/tarayici.js?v=2" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
 <script src="/kaynak/sbkopru.js?v=1"></script>
@@ -765,7 +765,7 @@ function siraBoya(pre, cok) {
   if(!box)return;
   var url="https://7527iptal.org/paylas/paylas-gonullu.html?v=2", text="Kendi şehrinde ses ol: 7527 İptal kampanyasına katıl. Sohbete katıl, görev al, materyal indir:";
   var cp=box.querySelector('[data-up-copy]'), nv=box.querySelector('[data-up-native]');
-  if(nv&&navigator.share){nv.style.display='';nv.addEventListener('click',function(){navigator.share({title:document.title,text:text,url:url}).catch(function(){});});}
+  if(nv&&navigator.share){nv.style.display='';nv.addEventListener('click',function(){navigator.share({title:document.title,text:text+'\n\n'+url}).catch(function(){});});}
   if(cp){cp.addEventListener('click',function(){
     var done=function(){var o=cp.textContent;cp.textContent='✓ Kopyalandı';setTimeout(function(){cp.textContent=o;},1800);};
     if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(done).catch(function(){prompt('Bağlantıyı kopyala:',url);});}
@@ -2941,7 +2941,7 @@ function ilDavet(how) {
   if (how === 'x') { window.open('https://twitter.com/intent/tweet?text=' + q(m.kisa) + '&url=' + q(lnk), '_blank'); return; }
   if (how === 'fb') { window.open('https://www.facebook.com/sharer/sharer.php?u=' + q(lnk), '_blank'); return; }
   if (how === 'tg') { window.open('https://t.me/share/url?url=' + q(lnk) + '&text=' + q(t), '_blank'); return; }
-  if (how === 'native') { if (navigator.share) navigator.share({ title: '7527 İptal', text: t, url: lnk }).catch(function () {}); return; }
+  if (how === 'native') { if (navigator.share) navigator.share({ title: '7527 İptal', text: t + '\n\n' + lnk }).catch(function () {}); return; }
   var b = $('il-davet-kopya');
   function ok() { if (b) { var o = b.getAttribute('data-o') || b.textContent; b.setAttribute('data-o', o); b.textContent = '✓ Kopyalandı'; setTimeout(function () { b.textContent = o; }, 2000); } }
   function fb() { var a = document.createElement('textarea'); a.value = tam; a.style.position = 'fixed'; a.style.opacity = '0'; document.body.appendChild(a); a.select(); try { document.execCommand('copy'); ok(); } catch (e) {} document.body.removeChild(a); }
@@ -3308,7 +3308,7 @@ function kpCsv() {
 // ---------- tek "Paylaş": telefonda cihazın paylaşım menüsü, bilgisayarda küçük pencere ----------
 function paylasAc(baslik, metin, url) {
   if (navigator.share && (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent)))) {
-    navigator.share({ title: baslik, text: metin, url: url }).catch(function (er) { if (!er || er.name !== 'AbortError') { if (window.OG && OG.menu) OG.menu(metin, url, baslik); } });
+    navigator.share({ title: baslik, text: metin + '\n\n' + url }).catch(function (er) { if (!er || er.name !== 'AbortError') { if (window.OG && OG.menu) OG.menu(metin, url, baslik); } });
     return;
   }
   var e = encodeURIComponent, tam = metin + '\n\n' + url;
@@ -3596,20 +3596,22 @@ function fpPaylas(r) {
     s.push('📣 ' + r.title);
     if (yer || r.place) s.push('📍 ' + [yer, r.place].filter(Boolean).join(' · '));
     if (r.event_at) s.push('🗓 ' + fpTarihMetni(r.event_at, true));
-    s.push('Sen de gel, sesimizi birlikte yükseltelim. #7527İptal');
+    s.push('Sen de gel, sesimizi birlikte yükseltelim.');
   } else if (r.kind === 'dava') {
     s.push('⚖️ ' + r.title); if (yer) s.push('📍 ' + yer);
-    s.push('Davayı takip ediyoruz, cezasızlığa izin yok. #7527İptal');
+    s.push('Davayı takip ediyoruz, cezasızlığa izin yok.');
   } else if (r.kind === 'cimer') {
     s.push('📝 CİMER\'e sen de yaz: ' + r.title);
-    s.push('Başvuru metni hazır: kopyala, yapıştır, gönder. #7527İptal');
+    s.push('Başvuru metni hazır: kopyala, yapıştır, gönder.');
   } else {
     s.push('✍️ ' + r.title);
-    s.push('İmzala ve yay. Her imza bir can için. #7527İptal');
+    s.push('İmzala ve yay. Her imza bir can için.');
   }
   // Linkin önizlemesinde bu kaydın kendi afişi (yoksa kendi bilgilerinden kart) çıksın
   try { if (window.OG) OG.saha(r, function () { return _fpImg[r.id] || callRpc('gv_fp_image', { p_id: r.id }); }); } catch (e) {}
-  paylasAc('Paylaş', s.join('\n'), 'https://7527iptal.org/p/saha-' + r.id);
+  var url = 'https://7527iptal.org/p/saha-' + r.id + '?v=2';
+  if (window.OG && OG.paylas) { var et = ''; try { et = OG.vakaEtiket(r.city, r.district); } catch (e) {} OG.paylas({ baslik: r.title, metin: s.join('\n') + (et ? '\n\n' + et : ''), url: url }); }
+  else paylasAc('Paylaş', s.join('\n'), url);
 }
 
 // form

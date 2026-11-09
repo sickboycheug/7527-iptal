@@ -338,7 +338,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
   if(!box)return;
   var url="https://7527iptal.org/paylas/paylas-guncelleme.html", text="7527 İptal kampanyası güncellendi: 3 adımda dilekçe, vaka haritası, adli takip. Sen de sesini ilet:";
   var cp=box.querySelector('[data-up-copy]'), nv=box.querySelector('[data-up-native]');
-  if(nv&&navigator.share){nv.style.display='';nv.addEventListener('click',function(){navigator.share({title:document.title,text:text,url:url}).catch(function(){});});}
+  if(nv&&navigator.share){nv.style.display='';nv.addEventListener('click',function(){navigator.share({title:document.title,text:text+'\n\n'+url}).catch(function(){});});}
   if(cp){cp.addEventListener('click',function(){
     var done=function(){var o=cp.textContent;cp.textContent='✓ Kopyalandı';setTimeout(function(){cp.textContent=o;},1800);};
     if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(done).catch(function(){prompt('Bağlantıyı kopyala:',url);});}
@@ -489,7 +489,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
 <script src="/kaynak/sbkopru.js?v=1"></script>
-<script src="/kaynak/og.js?v=6" defer></script>
+<script src="/kaynak/og.js?v=7" defer></script>
 <script src="/kaynak/tarayici.js?v=2" defer></script>
 <script>
 (function(){
@@ -552,7 +552,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
       var lnk='https://7527iptal.org/hakikat.html?il='+encodeURIComponent(city)+'#vakalar';
       var sh=el('button','btn','📤 '+city+' vakalarını vekillerine paylaş');sh.type='button';sh.style.margin='8px auto';sh.addEventListener('click',function(){
         var t=city+"'de belgelenen "+cs.length+' vaka: zehirlenen, işkence gören, toplatılıp barınaklarda ölüme terk edilen canlar. Biz vakaları ve davaları takip ediyoruz.\n\n'+(window.OG?OG.vakaEtiket(city,''):'')+'\n#7527İptal';
-        if(window.OG&&OG.paylas){OG.paylas({baslik:city+' vakaları',metin:t,url:lnk,ham:true});return}if(navigator.share){navigator.share({title:city+' vakaları',text:t,url:lnk}).catch(function(){})}else{try{navigator.clipboard.writeText(t+'\n\n'+lnk)}catch(e){}sh.textContent='✓ Metin ve link kopyalandı'}});
+        if(window.OG&&OG.paylas){OG.paylas({baslik:city+' vakaları',metin:t,url:lnk,ham:true});return}if(navigator.share){navigator.share({title:city+' vakaları',text:t+'\n\n'+lnk}).catch(function(){})}else{try{navigator.clipboard.writeText(t+'\n\n'+lnk)}catch(e){}sh.textContent='✓ Metin ve link kopyalandı'}});
       info.appendChild(sh);
       cs.slice(0,6).forEach(function(x){var r=el('button','hm-vk',(x.case_date||'')+' · '+(x.title||'')+'  📤');r.type='button';r.title='Bu vakayı paylaş';r.addEventListener('click',function(){if(window.__vkPaylas)window.__vkPaylas(x.id)});info.appendChild(r)});
       if(cs.length>6){var a=el('a',null,'Tüm '+cs.length+' vakayı gör →');a.href='?il='+encodeURIComponent(city)+'#vakalar';a.style.cssText='display:block;margin-top:6px;color:#34d399;font-weight:700';a.addEventListener('click',function(e){e.preventDefault();if(window.__vkIl)window.__vkIl(city)});info.appendChild(a)}
@@ -606,7 +606,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
     if(how==='x'){window.open('https://twitter.com/intent/tweet?text='+q(m.k)+'&url='+q(lnk),'_blank');return}
     if(how==='fb'){window.open('https://www.facebook.com/sharer/sharer.php?u='+q(lnk),'_blank');return}
     if(how==='tg'){window.open('https://t.me/share/url?url='+q(lnk)+'&text='+q(m.u),'_blank');return}
-    if(how==='native'){if(navigator.share)navigator.share({title:'7527 İptal',text:m.u,url:lnk}).catch(function(){});return}
+    if(how==='native'){if(navigator.share)navigator.share({title:'7527 İptal',text:m.u+'\n\n'+lnk}).catch(function(){});return}
     function ok(){var o=btn.getAttribute('data-o')||btn.textContent;btn.setAttribute('data-o',o);btn.textContent='✓ Kopyalandı';setTimeout(function(){btn.textContent=o},1800)}
     function fb(){var a=document.createElement('textarea');a.value=tam;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();try{document.execCommand('copy');ok()}catch(e){}document.body.removeChild(a)}
     if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(tam).then(ok,fb);else fb();
@@ -755,7 +755,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
   window.__vkPaylas=function(id){var v=ALL.find(function(x){return x.id===id});if(v)openShare(v)};
   window.__vkIl=function(c){var se=$('vk-city');if(se){se.value=c;se.dispatchEvent(new Event('change'))}var t=document.querySelector('a.tab[data-go="vakalar"]');if(t)t.click();var g=$('vakalar');if(g)g.scrollIntoView({block:'start'})};
   function closeShare(){SH.classList.remove('on');document.body.style.overflow='';cur=null}
-  function nat(){if(!cur||!navigator.share)return false;navigator.share({title:cur.title,text:text(cur,false,false),url:link(cur)}).catch(function(){});return true}
+  function nat(){if(!cur||!navigator.share)return false;navigator.share({title:cur.title,text:text(cur,false,false)+'\n\n'+link(cur)}).catch(function(){});return true}
   $('vk-sh-x').addEventListener('click',closeShare);
   SH.addEventListener('click',function(e){if(e.target===SH)closeShare()});
   document.addEventListener('keydown',function(e){if(e.key==='Escape'&&SH.classList.contains('on'))closeShare()});
