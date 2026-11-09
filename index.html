@@ -115,6 +115,7 @@
     display: none !important;
   }
 </style>
+<style>#panel-vekil #hm-alt{display:none !important}</style>
 </head>
 <body class="bg-zinc-950 text-zinc-100 antialiased min-h-screen flex flex-col">
 
@@ -849,7 +850,7 @@ window.addEventListener('load', function () {
       </div>
       <div id="hm-info" class="text-xs text-zinc-300 min-h-[1.5rem] text-center"></div>
       <div id="hm-list"></div>
-      <div class="text-center pt-1">
+      <div id="hm-alt" class="text-center pt-1">
         <p id="hm-call" class="text-sm font-bold text-amber-300 leading-relaxed max-w-xl mx-auto"></p>
         <div class="grid grid-cols-1 gap-2 max-w-xs mx-auto mt-3">
           <button type="button" id="hm-cta-case" onclick="openReportModal()" class="py-3 bg-red-700 hover:bg-red-600 text-white rounded-xl font-bold text-xs uppercase tracking-wide shadow">🐾 Vakayı Bildir</button>
