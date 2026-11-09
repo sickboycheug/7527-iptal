@@ -544,7 +544,8 @@
           <ol id="rk-list" class="space-y-1.5"></ol>
           <p id="rk-empty" class="hidden text-[12px] text-zinc-400">Sıralama ilk dilekçelerle oluşacak. İlk adımı sen at.</p>
           <button type="button" id="rk-more" onclick="rkToggle()" class="hidden w-full mt-1 py-2 rounded-xl border border-zinc-700 text-zinc-200 hover:bg-zinc-800 text-xs font-bold">Tüm sıralamayı gör ▼</button>
-          <p class="text-[10px] text-zinc-500 pt-1">Onaylı dilekçeler sayılır, her hedef bir kez. Adın ve soyadının baş harfi görünür; listede görünmek istemeyen <a href="mailto:iletisim@7527iptal.org" class="underline">iletisim@7527iptal.org</a> adresine yazabilir.</p>
+          <p id="rk-ozet" class="text-[11px] font-semibold text-zinc-300 pt-1"></p>
+          <p class="text-[10px] text-zinc-500 pt-1">Onay bekleyen dilekçeler onaylanınca sayılır; aynı kişinin dilekçeleri tek kişi sayılır. Onaylı dilekçeler sayılır, her hedef bir kez. Adın ve soyadının baş harfi görünür; listede görünmek istemeyen <a href="mailto:iletisim@7527iptal.org" class="underline">iletisim@7527iptal.org</a> adresine yazabilir.</p>
         </div>
       </div>
     </div>
@@ -7274,6 +7275,8 @@ function rkRender() {
   var more = document.getElementById('rk-more');
   more.classList.toggle('hidden', rest.length <= 10);
   more.textContent = _rkOpen ? 'Daralt ▲' : 'Tüm sıralamayı gör (' + rest.length + ' kişi) ▼';
+  var oz = document.getElementById('rk-ozet');
+  if (oz) oz.textContent = 'Dilekçe gönderen ' + (honor.length + rest.length).toLocaleString('tr-TR') + ' kişi: ' + honor.length + '\'i Onur Köşesi\'nde, ' + rest.length.toLocaleString('tr-TR') + '\'ü sıralamada.';
   card.classList.remove('hidden');
 }
 // --- ONUR KÖŞESİ: KİŞİYE ÖZEL GÖRSEL VE PAYLAŞIM -------------------------
