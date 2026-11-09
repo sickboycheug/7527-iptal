@@ -153,7 +153,7 @@
   if (mHarita || goRep || goRank || goHedef || goVekil || goIl || goUlke || goAdim || goDil) {
     el.style.display = 'none';
     document.body.style.overflow = '';
-    if (goDil) {
+    if (goDil || goVekil) {
       // Doğrudan dilekçe adımı: sayfa yüklenmesini beklemeden, anında; geç yüklenen görseller yeri kaydırırsa yeniden hizalar
       var dilGit = function () { var h = document.getElementById('dilekce-basla'); if (h) h.scrollIntoView({ block: 'start' }); };
       document.addEventListener('DOMContentLoaded', function () {
@@ -180,7 +180,13 @@
         var vkDene = 0;
         (function vkBekle() {
           var m = (typeof MP_DATABASE !== 'undefined' ? MP_DATABASE : []).filter(function (x) { return x.id === Number(goVekil[1]); })[0];
-          if (m) { try { thGonder(m); } catch (e) {} }
+          if (m) {
+            try { thGonder(m, true); } catch (e) {}
+            // Liste 592 vekili göstermesin: yalnız seçilen vekil kalsın, sonraki adım hemen altta
+            try { var si = document.getElementById('mp-search-input'); if (si) { si.value = m.name; filterMps(); } } catch (e) {}
+            var k = document.getElementById('dil-karsi');
+            if (k) { k.textContent = '👋 ' + m.name + ' (' + m.city + ' Milletvekili) seçildi. Bilgilerini yaz, sembolik imzanı at; dilekçen vekilin Meclis e-postasına gönderilsin.'; k.classList.remove('hidden'); }
+          }
           else if (++vkDene < 20) setTimeout(vkBekle, 300);
         })();
       }
@@ -320,6 +326,7 @@
   <div id="dilekce-basla" class="max-w-7xl mx-auto px-4 pt-8 w-full text-center" style="scroll-margin-top:12px">
     <h2 class="font-impact text-2xl sm:text-3xl text-white uppercase tracking-wide">✉️ Dilekçeni gönder</h2>
     <p class="text-xs text-zinc-400 mt-1">3 adım: kime gönderilecek · bilgilerin · gönder</p>
+    <p id="dil-karsi" class="hidden mt-3 mx-auto max-w-xl text-sm text-emerald-200 bg-emerald-950/60 border border-emerald-700 rounded-xl px-4 py-2.5"></p>
   </div>
   <main class="max-w-7xl mx-auto px-4 py-8 w-full grid grid-cols-1 lg:grid-cols-12 gap-8">
     
@@ -805,9 +812,10 @@ function thToggle() {
   document.getElementById('th-more').textContent = _thAll ? 'İlk 5 vekile dön' : 'Tümünü gör';
   thRender();
 }
-function thGonder(m) {
+function thGonder(m, sessiz) {
   try { switchTab('vatandas'); } catch (e) {}
   selectTarget('mp'); selectMP(m);
+  if (sessiz) return;
   var hedef = document.getElementById('selected-mp-badge');
   if (hedef) hedef.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
@@ -5437,8 +5445,8 @@ function openThanksModal() {
     }
   }
 
-  var text = encodeURIComponent("7527 say\u0131l\u0131 kanunun iptali i\u00e7in ben de dilekçemi gönderdim! Sen de dilek\u00e7eni olu\u015ftur: 7527iptal.org #7527\u0130ptal");
-  var url = encodeURIComponent("https://7527iptal.org");
+  var text = encodeURIComponent("7527 say\u0131l\u0131 kanunun iptali i\u00e7in ben de dilekçemi gönderdim! Sen de dilek\u00e7eni g\u00f6nder: https://7527iptal.org/?dilekce=1 #7527\u0130ptal");
+  var url = encodeURIComponent("https://7527iptal.org/?dilekce=1");
   var textTg = encodeURIComponent("7527 say\u0131l\u0131 kanunun iptali i\u00e7in ben de dilekçemi gönderdim! Sen de dilek\u00e7eni olu\u015ftur. #7527\u0130ptal");
 
   document.getElementById('share-wa').href = "https://api.whatsapp.com/send?text=" + text;
