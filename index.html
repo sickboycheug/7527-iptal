@@ -1658,8 +1658,47 @@ window.addEventListener('load', function () {
   </div>
 </div>
 
+<!-- Vekil panelinde QR yerine: vekil arkadaşınla paylaş -->
+<section id="vk-arkadas" class="hidden px-4 py-10 bg-zinc-950 border-t border-zinc-800">
+  <div class="mx-auto max-w-lg border border-emerald-800/60 bg-zinc-950/80 p-4 rounded-2xl shadow-xl">
+    <div class="flex flex-col sm:flex-row items-center gap-4">
+      <div id="vka-qr" class="bg-white p-2 rounded-xl shrink-0 flex items-center justify-center"></div>
+      <div class="text-left space-y-2 min-w-0 flex-1 w-full">
+        <p class="font-impact text-lg text-emerald-400 tracking-wide uppercase">Vekil arkadaşınızla paylaşın</p>
+        <p class="text-xs text-zinc-400">Arkadaşınızın adını seçin: link onun adı ve Meclis e-postası hazır açılır.</p>
+        <select id="vka-sec" onchange="vkaCiz()" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-2.5 py-1.5 text-xs text-zinc-200"><option value="">Milletvekili seçin (isteğe bağlı)</option></select>
+        <input id="vka-link" type="text" readonly value="https://7527iptal.org/meclis" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-2.5 py-1.5 text-xs text-zinc-200 font-mono">
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="vkaPaylas()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-1.5 px-3 rounded-lg text-xs transition shadow">📤 Paylaş</button>
+          <button type="button" id="vka-kp" onclick="vkaKopya()" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-semibold py-1.5 px-3 rounded-lg text-xs transition border border-zinc-700">Linki kopyala</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+function vkaLink() { var v = document.getElementById('vka-sec').value; return 'https://7527iptal.org/meclis' + (v ? '/' + v : ''); }
+function vkaCiz() {
+  var sel = document.getElementById('vka-sec');
+  if (sel.options.length < 2 && typeof MP_DATABASE !== 'undefined') {
+    MP_DATABASE.slice().sort(function (a, b) { return a.name.localeCompare(b.name, 'tr'); }).forEach(function (m) {
+      var o = document.createElement('option'); o.value = m.id; o.textContent = m.name + ' (' + m.city + ')'; sel.appendChild(o);
+    });
+  }
+  var l = vkaLink(); document.getElementById('vka-link').value = l;
+  var q = document.getElementById('vka-qr'); q.innerHTML = '';
+  if (typeof QRCode === 'undefined') { q.style.display = 'none'; return; }
+  q.style.display = ''; new QRCode(q, { text: l, width: 80, height: 80, colorDark: '#000000', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
+}
+function vkaMetin() {
+  var v = document.getElementById('vka-sec'), ad = v.value ? v.options[v.selectedIndex].text.replace(/ \(.*$/, '') : '';
+  return (ad ? 'Sayın ' + ad + ', ' : 'Sayın Milletvekili, ') + '7527 sayılı Kanun’un iptal teklifine ben imzacı oldum; sizi de davet ediyorum. Adınızı seçin, beyanı imzalayın, TBMM Başkanlığına gönderin: 2 dakika sürüyor.';
+}
+function vkaPaylas() { if (window.OG && OG.paylas) OG.paylas({ baslik: 'Meclis Vekil Paneli · 7527 İPTAL!', metin: vkaMetin(), url: vkaLink(), ham: true }); }
+function vkaKopya() { var t = vkaMetin() + '\n\n' + vkaLink(), b = document.getElementById('vka-kp'); try { navigator.clipboard.writeText(t).then(function () { b.textContent = '✓ Kopyalandı'; setTimeout(function () { b.textContent = 'Linki kopyala'; }, 1800); }); } catch (e) {} }
+</script>
 <!-- PAYLAŞ MODÜLÜ (QR) - sayfa sonu -->
-<section class="px-4 py-10 bg-zinc-950 border-t border-zinc-800">
+<section id="qr-paylas" class="px-4 py-10 bg-zinc-950 border-t border-zinc-800">
   <div class="mx-auto max-w-lg border border-red-900/50 bg-zinc-950/80 p-4 rounded-2xl shadow-xl">
     <div class="flex flex-col sm:flex-row items-center gap-4">
       <div id="qrcode-box" class="bg-white p-2 rounded-xl shrink-0 flex items-center justify-center"></div>
@@ -5497,6 +5536,9 @@ function switchTab(tab) {
   var pVekil = document.getElementById('panel-vekil');
   // Vekil panelinde yabancı dil çağrıları görünmez
   var gc = document.getElementById('gurbet-cagrisi'); if (gc) gc.style.display = tab === 'vekil' ? 'none' : '';
+  var qp = document.getElementById('qr-paylas'), va = document.getElementById('vk-arkadas');
+  if (qp) qp.classList.toggle('hidden', tab === 'vekil');
+  if (va) { va.classList.toggle('hidden', tab !== 'vekil'); if (tab === 'vekil') try { vkaCiz(); } catch (e) {} }
   var btnVatandas = document.getElementById('tab-btn-vatandas');
   var btnVekil = document.getElementById('tab-btn-vekil');
 
