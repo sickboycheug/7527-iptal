@@ -3491,7 +3491,7 @@ async function fpYukle() {
   sel.value = iller[secili] ? secili : '';
   fpCiz();
   if (fpAcilacak) {
-    var hedef = fpAcilacak; fpAcilacak = 0;
+    var hedef = fpAcilacak; fpAcilacak = 0; fpHedef = String(hedef); fpTur = ''; $('fp-f-city').value = ''; fpCiz();
     panoAc('saha', false);
     setTimeout(function () {
       var c = $('fp-c-' + hedef);
@@ -3501,7 +3501,7 @@ async function fpYukle() {
 }
 function fpTurSec(t) { fpTur = t; fpCiz(); }
 function fpSirala() { fpYon = -fpYon; fpCiz(); }
-var fpCizAnah = '';
+var fpCizAnah = '', fpHedef = '';
 function fpUyar(r, t) {
   if (t.indexOf('imza:') !== 0) return r.kind === t;
   if (r.kind !== 'imza') return false;
@@ -3529,6 +3529,7 @@ function fpCiz() {
     if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
     return fpYon * (new Date(a.event_at || a.at) - new Date(b.event_at || b.at));
   });
+  if (fpHedef) { var hi = list.findIndex(function (r) { return String(r.id) === fpHedef; }); if (hi > 0) list.unshift(list.splice(hi, 1)[0]); }
   box.textContent = '';
   if (!list.length) { box.appendChild(h('p', 'text-[12px] text-zinc-500', fpRows.length ? 'Bu seçimde paylaşım yok.' : 'Henüz paylaşım yok. İlk paylaşımı sen ekle.')); return; }
   list.slice(0, fpGoster).forEach(function (r) { box.appendChild(fpKart(r)); });
