@@ -4704,7 +4704,7 @@ function openReportModal() {
     });
   }
   var d = document.getElementById('rep-date');
-  if (d) d.max = new Date().toISOString().slice(0, 10);
+  if (d) d.max = yerelGun();
   reportStatus('', '');
   document.getElementById('rep-form').style.display = '';
   document.getElementById('rep-done').style.display = 'none';
@@ -6595,7 +6595,7 @@ async function exportEncrypted(kind) {
     var blob = new Blob([buf], {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     });
-    triggerDownload(blob, conf.dosya + '-' + new Date().toISOString().slice(0, 10) + '.xlsx');
+    triggerDownload(blob, conf.dosya + '-' + yerelGun() + '.xlsx');
 
     if (hatali > 0) {
       alert(hatali + ' kay\u0131t \u00e7\u00f6z\u00fclemedi. Farkl\u0131 bir anahtarla \u015fifrelenmi\u015f olabilir.');
@@ -6626,6 +6626,11 @@ function tkNorm(contact) {
 }
 // Sayfalı çekimde aynı dilekçe iki sayfada birden gelebilir (aynı saatli kayıtlar): her dilekçe no yalnız bir kez.
 // Yoksa aynı kayıt "tekrar" görünür ve kopyasındaki Sil, kişinin tek gerçek dilekçesini siler.
+// Bugünün tarihi Türkiye saatine göre (toISOString UTC verir: gece 00-03 arası bir önceki günü yazıyordu)
+function yerelGun() {
+  var d = new Date(), p = function (n) { return (n < 10 ? '0' : '') + n; };
+  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
+}
 function tekilDilekce(rows) {
   var gor = {};
   return rows.filter(function (r) { var k = r.petition_number || ''; if (!k) return true; if (gor[k]) return false; gor[k] = 1; return true; })
