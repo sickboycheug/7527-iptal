@@ -3354,15 +3354,27 @@ function sohbetPaylas() {
 }
 
 // ---------- canlı yayın (sohbetin üstünde) ----------
-var liveDurum = null, liveSon = null;
+var liveDurum = null, liveHam = null, liveOto = null, liveSon = null;
 function ytId(u) {
   var m = /(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:[^#\s]*&)?v=|live\/|embed\/|shorts\/))([\w-]{11})/i.exec(u || '');
   return m ? m[1] : '';
 }
 async function liveYukle() {
   if (liveSon === null) liveCiz();
-  try { liveDurum = await callRpc('gv_live_get', {}); } catch (e) { return; }
+  var r = await Promise.all([
+    callRpc('gv_live_get', {}).catch(function () { return liveHam; }),
+    // YouTube kanalı canlıysa kendiliğinden: Worker kanalın canlı sayfasına bakar (1 dk önbellek)
+    /7527iptal\.org$/.test(location.hostname) ? fetch('/p/tv-canli', { cache: 'no-store' }).then(function (x) { return x.ok ? x.json() : null; }).catch(function () { return null; }) : Promise.resolve(null)
+  ]);
+  liveHam = r[0]; liveOto = r[1] && r[1].on && /^[\w-]{11}$/.test(r[1].id || '') ? r[1] : null;
+  liveDurum = liveBirles();
   liveCiz();
+}
+function liveBirles() {
+  var d = liveHam || {}, el = d.on && d.url ? String(d.url).split(/\s+/).filter(Boolean) : [];
+  if (!liveOto) return d.on && d.url ? d : { on: false };
+  if (!el.some(ytId)) el.unshift('https://www.youtube.com/live/' + liveOto.id);
+  return { on: true, url: el.join('\n'), title: (d.on && d.title) || liveOto.title || '' };
 }
 function tvOynat() {
   var fr = $('live-frame'), f = document.createElement('iframe');
@@ -3427,6 +3439,7 @@ function liveCiz() {
   var linkler = String(d.url).split(/\s+/).filter(function (x) { return /^https:\/\//i.test(x); });
   var a = $('live-open'); a.textContent = '';
   linkler.forEach(function (u) {
+    if (ytId(u)) return;   // YouTube zaten ekranda oynuyor: izleyeni sayfadan çıkaran düğme yok
     var ad = /youtu/i.test(u) ? 'YouTube' : /(x|twitter)\.com/i.test(u) ? 'X' : /instagram/i.test(u) ? 'Instagram' : /tiktok/i.test(u) ? 'TikTok' : /facebook|fb\./i.test(u) ? 'Facebook' : 'Yayın';
     var l = h('a', 'text-[11px] text-red-200 underline whitespace-nowrap', '▶ ' + ({ YouTube: 'YouTube\'da', X: 'X\'te', Instagram: 'Instagram\'da', TikTok: 'TikTok\'ta', Facebook: 'Facebook\'ta', 'Yayın': 'Yayını' }[ad]) + ' izle');
     l.href = u; l.target = '_blank'; l.rel = 'noopener noreferrer'; a.appendChild(l);
@@ -3449,13 +3462,13 @@ async function adminLive(on) {
   if (on && (!satir.length || satir.some(function (x) { return !/^https:\/\//i.test(x); }))) { st.textContent = 'Her link https:// ile başlamalı, her satıra bir link.'; st.className += ' text-red-400'; return; }
   url = satir.join('\n');
   try {
-    liveDurum = await callRpc('gv_admin_live_set', { p_pin: adminPin, p_on: on, p_url: url, p_title: t });
-    liveCiz();
-    st.textContent = on ? (satir.some(ytId) ? '✓ Yayın açık: YouTube sohbetin üstünde oynuyor, diğer linkler düğme olarak altında.' : '✓ Yayın açık: linkler sohbetin üstünde düğme olarak duruyor. YouTube linki (youtube.com/live/…) eklersen yayın sayfada oynar.') : '✓ Yayın kapatıldı.';
+    liveHam = await callRpc('gv_admin_live_set', { p_pin: adminPin, p_on: on, p_url: url, p_title: t });
+    liveDurum = liveBirles(); liveCiz();
+    st.textContent = on ? (satir.some(ytId) ? '✓ Yayın açık: YouTube sohbetin üstünde oynuyor, diğer linkler düğme olarak altında.' : '✓ Yayın açık: linkler sohbetin üstünde düğme olarak duruyor. YouTube kanalında yayın açılınca o da kendiliğinden ekranda oynar.') : '✓ Yayın kapatıldı.';
   } catch (e) { st.textContent = errText(e); st.className += ' text-red-400'; }
 }
 function liveAdminDoldur() {
-  var d = liveDurum || {};
+  var d = liveHam || {};
   if (d.url && !$('adm-live-url').value) $('adm-live-url').value = d.url;
   if (d.title && !$('adm-live-title').value) $('adm-live-title').value = d.title;
   $('adm-live-st').textContent = d.on ? '🔴 Şu an yayın açık.' : '';
