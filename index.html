@@ -148,11 +148,32 @@
   // Vaka paylaşım linki (/vaka/N → /?vaka=N): o vaka, Vakalar sekmesinde açılır
   var mVaka = /[?&]vaka=(\d+)/.exec(qs);
   if (mVaka) { window.location.replace('hakikat.html?vaka=' + mVaka[1] + '#vakalar'); return; }
-  var mHarita = /[?&]harita=(vol|pet|mp|case)/.exec(qs), goRep = /[?&]vaka=bildir/.test(qs), goRank = /[?&]siralama=1/.test(qs), goHedef = /[?&]hedef=1/.test(qs), goVekil = /[?&]vekil=(\d+)/.exec(qs), goAdim = /[?&]adim=1/.test(qs), goDil = /[?&]dilekce=1/.test(qs);
+  var mHarita = /[?&]harita=(vol|pet|mp|case)/.exec(qs), goRep = /[?&]vaka=bildir/.test(qs), goRank = /[?&]siralama=1/.test(qs), goHedef = /[?&]hedef=1/.test(qs), goVekil = /[?&]vekil=(\d+)/.exec(qs), goAdim = /[?&]adim=1/.test(qs), goDil = /[?&]dilekce=1/.test(qs), goMeclis = /[?&]meclis=1/.test(qs), goMeclisVk = /[?&]vk=(\d+)/.exec(qs);
   var goIl = /[?&]il=([^&#]+)/.exec(qs), goIlce = /[?&]ilce=([^&#]+)/.exec(qs), goUlke = /[?&]ulke=([^&#]+)/.exec(qs), goSehir = /[?&]sehir=([^&#]+)/.exec(qs);
-  if (mHarita || goRep || goRank || goHedef || goVekil || goIl || goUlke || goAdim || goDil) {
+  if (mHarita || goRep || goRank || goHedef || goVekil || goIl || goUlke || goAdim || goDil || goMeclis) {
     el.style.display = 'none';
     document.body.style.overflow = '';
+    if (goMeclis) {
+      // Vekile giden mektup/dilekçe linki: doğrudan Meclis Vekil Paneli, imza kartı; vekil numarası varsa adı ve e-postası hazır
+      document.addEventListener('DOMContentLoaded', function () {
+        try { handleGatePanelClick('vekil'); } catch (e) {}
+        var git = function () { var p = document.getElementById('panel-vekil'); if (p) p.scrollIntoView({ block: 'start' }); };
+        git();
+        var oynadi = false; ['touchstart', 'wheel', 'keydown'].forEach(function (t) { window.addEventListener(t, function () { oynadi = true; }, { once: true, passive: true }); });
+        [300, 900, 1800].forEach(function (ms) { setTimeout(function () { if (!oynadi) git(); }, ms); });
+        var dene = 0;
+        (function bekle() {
+          var m = goMeclisVk && typeof MP_DATABASE !== 'undefined' ? MP_DATABASE.filter(function (x) { return x.id === Number(goMeclisVk[1]); })[0] : null;
+          if (goMeclisVk && !m && ++dene < 30) { setTimeout(bekle, 300); return; }
+          var k = document.getElementById('mp-karsi');
+          if (m) {
+            try { var si = document.getElementById('mp-sign-search'); if (si) si.value = m.name; renderMpSignDropdown(m.name); var sl = document.getElementById('mp-sign-select'); if (sl && sl.value !== String(m.id)) { sl.value = m.id; onMpSignSelectChange(); } var em = document.getElementById('mp-sign-email'); if (em) em.value = m.email; } catch (e) {}
+            if (k) k.textContent = 'Sayın ' + m.name + ', yurttaşların dilekçeleri size ulaştı. Adınız ve Meclis e-postanız hazır: beyanı okuyun, imzanızı atın; beyanınız adınızla TBMM Başkanlığına gitsin.';
+          }
+          if (k) k.classList.remove('hidden');
+        })();
+      });
+    }
     if (goDil || goVekil) {
       // Doğrudan dilekçe adımı: sayfa yüklenmesini beklemeden, anında; geç yüklenen görseller yeri kaydırırsa yeniden hizalar
       var dilGit = function () { var h = document.getElementById('dilekce-basla'); if (h) h.scrollIntoView({ block: 'start' }); };
@@ -166,7 +187,7 @@
       });
     }
     window.addEventListener('load', function () {
-      try { handleGatePanelClick('vatandas'); } catch (e) {}
+      try { handleGatePanelClick(goMeclis ? 'vekil' : 'vatandas'); } catch (e) {}
       setTimeout(function () {
         if (mHarita) {
           try { hmLayer(mHarita[1]); } catch (e) {}
@@ -657,6 +678,7 @@ async function vkMektupGorsel(oy, r) {
   function diz(boy) {
     var sat = [];
     VK_MEKTUP[oy].forEach(function (p) {
+      p = p.replace('**7527iptal.org** adresindeki Meclis Vekil Paneli', '**7527iptal.org/meclis/' + r.id + '** adresindeki Meclis Vekil Paneli');
       p.split('\n').forEach(function (q) {
         var kalin = q.indexOf('**7527 İPTAL!**') === 0, cur = [], gen = 0;
         q.split(' ').forEach(function (k) {
@@ -899,6 +921,7 @@ window.addEventListener('load', function () {
       <p class="text-xs sm:text-sm text-zinc-300 max-w-2xl mx-auto">
         Sayın Milletvekili, 7527 sayılı Kanun'un iptali ve 5199 sayılı Kanun'a dönülmesi için TBMM iradesini göstererek bu tarihi çağrıya imzanızla destek verin.
       </p>
+      <p id="mp-karsi" class="hidden mx-auto max-w-2xl text-sm text-emerald-200 bg-emerald-950/60 border border-emerald-700 rounded-xl px-4 py-2.5">Sayın Milletvekili, yurttaşların dilekçeleri size ulaştı. Listeden adınızı seçin, Meclis e-postanızı yazın, beyanı okuyup imzalayın; beyanınız adınızla TBMM Başkanlığına gitsin.</p>
     </div>
 
     <div class="space-y-4 text-xs">
@@ -987,6 +1010,15 @@ window.addEventListener('load', function () {
     </div>
     <div id="signed-mps-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
       <!-- İmzalayan vekiller burada listelenir -->
+    </div>
+  </div>
+  <div class="bg-zinc-900 border border-zinc-800 p-5 rounded-2xl space-y-3">
+    <h3 class="font-impact text-xl text-white uppercase tracking-wide text-center">Sahadaki tablo</h3>
+    <p class="text-xs text-zinc-400 text-center">Hangi ilden kaç dilekçe geldi, hangi vekil imzacı oldu, sahada hangi vakalar yaşandı.</p>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+      <a href="/?harita=mp" class="block py-3 rounded-xl font-bold text-xs text-center text-white bg-emerald-700 hover:bg-emerald-600 no-underline">🗺️ Kampanya Haritası</a>
+      <a href="hakikat.html#vakalar" class="block py-3 rounded-xl font-bold text-xs text-center text-white bg-red-700 hover:bg-red-600 no-underline">🐾 Vaka Haritası</a>
+      <a href="hakikat.html#biz" class="block py-3 rounded-xl font-bold text-xs text-center text-zinc-200 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 no-underline">Biz kimiz</a>
     </div>
   </div>
 </div>
@@ -3437,7 +3469,9 @@ function getTargetEmail() {
 // Mail govdesi, onizlemede ve PDF'te gorunen dilekce metninin AYNISIDIR.
 // Metin sunucudaki sablondan (petition_templates) gelir; eskiden burada
 // ayrica sabit yazilmisti ve sablon degistiginde ikisi birbirini tutmuyordu.
+var mailMod = '';   // 'vekil': onay penceresi vekilin beyanını TBMM Başkanlığına gönderir
 function generateMailtoUrl() {
+  if (mailMod === 'vekil' && window.__mpMail) return 'mailto:' + encodeURIComponent(__mpMail.to) + '?subject=' + encodeURIComponent(__mpMail.subject) + '&body=' + encodeURIComponent(__mpMail.body);
   var email = getTargetEmail();
   var tpl = currentTemplate();
 
@@ -3469,6 +3503,7 @@ function generateMailtoUrl() {
 
   satirlar.push('');
   satirlar.push('Dilekçemin PDF hali ektedir.');
+  if (selectedTarget === 'mp' && selectedMP) { satirlar.push(''); satirlar.push('Sayın Milletvekili, iptal teklifine imzacı olmak için: https://7527iptal.org/meclis/' + selectedMP.id); }
 
   var body = satirlar.join('\n');
 
@@ -3967,6 +4002,12 @@ async function _dilekceGonder() {
 
 async function confirmPetitionSent(didSend) {
   if (!didSend) return;
+  if (mailMod === 'vekil') {
+    document.getElementById('confirm-modal').style.display = 'none';
+    alert('Teşekkürler. Beyanınız TBMM Başkanlığına iletildi ve imzacı vekiller listesinde yer alıyorsunuz.');
+    mailModKapat();
+    return;
+  }
   if (!lastPetitionNumber) {
     document.getElementById('confirm-modal').style.display = 'none';
     openThanksModal();
@@ -4960,6 +5001,7 @@ var mpSignBusy = false;
 
 async function submitMpSignature() {
   if (mpSignBusy) return;
+  if (window.INAPP) { window.INAPP.uyar(); return; }
   var mpSelect = document.getElementById('mp-sign-select');
   var email = document.getElementById('mp-sign-email').value;
   var consent = document.getElementById('mp-consent');
@@ -5006,7 +5048,7 @@ async function submitMpSignature() {
     if (result === 'duplicate') {
       alert('Bu milletvekili ad\u0131na zaten imza kayd\u0131 mevcut.');
     } else {
-      alert('Say\u0131n ' + mp.name + ', 7527 iptal \u00e7a\u011fr\u0131s\u0131na resmi imzan\u0131z ba\u015far\u0131yla kaydedildi!');
+      await mpBeyanGonder(mp);
       if (consent) consent.checked = false;
       clearMpPad();
     }
@@ -5018,6 +5060,65 @@ async function submitMpSignature() {
   } finally {
     mpSignBusy = false;
   }
+}
+
+// İmza kaydolunca: imzalı beyan PDF olarak iner, vekilin e-posta uygulaması TBMM Başkanlığı adresi, konu ve metinle açılır
+async function mpBeyanPdf(mp) {
+  await pdfWithTimeout(Promise.all([
+    loadScriptOnce('kaynak/jspdf.umd.min.js', function () { return !!(window.jspdf && window.jspdf.jsPDF); })
+      .catch(function () { return loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js', function () { return !!(window.jspdf && window.jspdf.jsPDF); }); }),
+    loadPdfFonts()
+  ]), 20000);
+  var fonts = await loadPdfFonts(), tpl = PETITION_TEMPLATES.mp_sign || DEFAULT_TEMPLATES.mp_sign;
+  var pdf = new window.jspdf.jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+  pdf.addFileToVFS('serif-regular.ttf', fonts.regular); pdf.addFont('serif-regular.ttf', 'SerifTR', 'normal');
+  pdf.addFileToVFS('serif-bold.ttf', fonts.bold); pdf.addFont('serif-bold.ttf', 'SerifTR', 'bold');
+  var W = 210, H = 297, M = 20, maxW = W - 2 * M, y = M;
+  function ensure(h) { if (y + h > H - M) { pdf.addPage(); y = M; } }
+  function para(t, size, style, align, gap) {
+    pdf.setFont('SerifTR', style); pdf.setFontSize(size); var lh = size * 0.3528 * 1.55;
+    pdf.splitTextToSize(t, maxW).forEach(function (ln) { ensure(lh); pdf.text(ln, align === 'c' ? W / 2 : align === 'r' ? W - M : M, y, { align: align === 'c' ? 'center' : align === 'r' ? 'right' : 'left', baseline: 'top' }); y += lh; });
+    y += gap;
+  }
+  para(new Date().toLocaleDateString('tr-TR'), 10, 'normal', 'r', 4);
+  para(tpl.header.toLocaleUpperCase('tr-TR'), 13, 'bold', 'c', 8);
+  para('KONU: ' + tpl.konu, 11, 'bold', 'l', 5);
+  para(tpl.body, 11, 'normal', 'l', 8);
+  ensure(55);
+  var ust = y;
+  para('Teklif Sahibi Vekil: ' + mp.name, 11, 'normal', 'l', 1);
+  para('Seçim Çevresi: ' + mp.city, 11, 'normal', 'l', 1);
+  para('Partisi: ' + mp.party, 11, 'normal', 'l', 1);
+  para('E-posta: ' + mp.email, 11, 'normal', 'l', 1);
+  try { if (currentMpSigDataUrl) pdf.addImage(currentMpSigDataUrl, 'PNG', W - M - 55, ust, 55, 22); } catch (e) {}
+  pdf.setDrawColor(0); pdf.line(W - M - 55, ust + 24, W - M, ust + 24);
+  pdf.setFont('SerifTR', 'bold'); pdf.setFontSize(10); pdf.text('TBMM Milletvekili', W - M - 27.5, ust + 26, { align: 'center', baseline: 'top' });
+  return pdf.output('blob');
+}
+async function mpBeyanGonder(mp) {
+  var blob = null, dosya = 'beyan-' + mp.name.replace(/[^\wçğıöşüÇĞİÖŞÜ]+/g, '-') + '.pdf';
+  try { blob = await mpBeyanPdf(mp); } catch (e) { console.error('[beyan pdf]', e); }
+  if (blob) { lastPdfBlob = blob; lastPdfName = dosya; triggerDownload(blob, dosya); }
+  window.__mpMail = {
+    to: 'numan.kurtulmus@tbmm.gov.tr',
+    subject: "7527 Sayılı Kanun'un Yürürlükten Kaldırılmasına Dair Kanun Teklifi - " + mp.name + ' (' + mp.city + ' Milletvekili)',
+    body: 'TÜRKİYE BÜYÜK MİLLET MECLİSİ BAŞKANLIĞINA\n\n7527 sayılı Hayvanları Koruma Kanununda Değişiklik Yapılmasına Dair Kanunun Yürürlükten Kaldırılmasına Dair Kanun Teklifi ve Genel Gerekçesi ekte sunulmuştur.\n\nGereğini arz ederim.\n\n' + mp.name + '\n' + mp.city + ' Milletvekili (' + mp.party + ')'
+  };
+  mailMod = 'vekil';
+  var mo = document.getElementById('confirm-modal');
+  var bas = mo.querySelector('h3'), alt = mo.querySelector('h3 + p');
+  if (bas) { bas.setAttribute('data-eski', bas.textContent); bas.textContent = 'BEYANINIZI MECLİS\'E GÖNDERİN'; }
+  if (alt) { alt.setAttribute('data-eski', alt.textContent); alt.textContent = 'Beyanınız adınızla TBMM Başkanlığına gider; telefonunuzdaki hangi e-posta hesabından gönderdiğiniz fark etmez.'; }
+  var fn = document.getElementById('confirm-file-name'); if (fn) fn.textContent = blob ? dosya : '(PDF hazırlanamadı: aşağıdan tekrar deneyin)';
+  try { alanDoldur(); } catch (x) {}
+  try { var ob = document.getElementById('mail-onay-btn'); if (ob) { ob.disabled = true; ob.setAttribute('data-eski', ob.textContent); ob.textContent = '✓ Gönderdim'; } } catch (x) {}
+  mo.style.display = 'flex';
+  setTimeout(function () { try { epostaAc(); } catch (x) {} }, 800);
+}
+function mailModKapat() {
+  mailMod = '';
+  var mo = document.getElementById('confirm-modal');
+  mo.querySelectorAll('[data-eski]').forEach(function (e) { e.textContent = e.getAttribute('data-eski'); e.removeAttribute('data-eski'); });
 }
 
 async function renderSignedMpsList() {

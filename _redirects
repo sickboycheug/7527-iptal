@@ -67,3 +67,5 @@
 /vekil-hesaplari.txt /veri/vekil-hesaplari.txt 301
 /vekil-listesi.txt /veri/vekil-listesi.txt 301
 /p/k/*  /  302
+/meclis  /?meclis=1  302
+/meclis/*  /?meclis=1&vk=:splat  302
