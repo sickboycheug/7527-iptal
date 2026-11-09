@@ -39,7 +39,7 @@
   #view-board > * { grid-column: 1 / -1; margin-top: 0 !important; }
   #col-l, #r-top { display: contents; }
   #view-board > div:first-child { order: 1; }
-  #view-board > #announce-box { order: 3; }
+  #view-board > #announce-box { display:none !important; }
   #view-board > #pano-nav { order: 2; }
   #view-board:not([data-p="gorevler"]) #r-top > div:has(#prog-label) { display:none; }
   #view-board > #stats-box { order: 5; }
@@ -50,7 +50,7 @@
   .pn-hedef { background:#450a0a; border-color:#991b1b; }
   .pn-hedef small { color:#fca5a5; }
   #view-board[data-p="gorevler"] .pn-b[data-p="gorevler"], #view-board[data-p="veriler"] .pn-b[data-p="veriler"], #view-board[data-p="harita"] .pn-b[data-p="harita"], #view-board[data-p="ofis"] .pn-b[data-p="ofis"], #view-board[data-p="materyal"] .pn-b[data-p="materyal"], #view-board[data-p="hedef"] .pn-b[data-p="hedef"], #view-board[data-p="saha"] .pn-b[data-p="saha"] { background:#064e3b; border-color:#10b981; color:#fff; }
-  #view-board:not([data-p="gorevler"]) > #task-list, #view-board:not([data-p="veriler"]) > #stats-box, #view-board:not([data-p="harita"]) > #map-box, #view-board:not([data-p="materyal"]) > #mat-box, #view-board:not([data-p="ofis"]) #col-l, #view-board:not([data-p="hedef"]) > #mp-rank-card, #view-board:not([data-p="saha"]) > #fp-box { display:none !important; }
+  #view-board:not([data-p="gorevler"]) > #task-list, #view-board:not([data-p="veriler"]) > #stats-box, #view-board:not([data-p="harita"]) > #map-box, #view-board:not([data-p="gorevler"]) > #mat-box, #view-board:not([data-p="ofis"]) #col-l, #view-board:not([data-p="hedef"]) > #mp-rank-card, #view-board:not([data-p="saha"]) > #fp-box { display:none !important; }
   #view-board > #fp-box { order: 5; }
   .pn-b.pn-saha { grid-column:1 / -1; flex-direction:row; gap:.5rem; background:#1c1917; border-color:#b45309; }
   .pn-b.pn-saha small { color:#fcd34d; }
@@ -142,13 +142,12 @@
     </div>
 
     <nav id="pano-nav" aria-label="Pano bölümleri">
-      <button type="button" class="pn-b pn-saha" data-p="saha" onclick="panoAc('saha', true)"><i>📣</i>Sahadan Paylaş<small id="pn-saha-sm">Eylem · dava · CİMER · imza</small></button>
+      <button type="button" class="pn-b pn-saha" data-p="saha" onclick="panoAc('saha', true)"><i>📣</i>Sahadan Paylaş<small id="pn-saha-sm">Vaka · imza · dava</small></button>
       <button type="button" class="pn-b" data-p="ofis" onclick="panoAc('ofis', true)"><i>💬</i>Sohbet<small id="pn-sohbet-sm">Herkese açık</small></button>
       <button type="button" class="pn-b" data-p="gorevler" onclick="panoAc('gorevler', true)"><i>📋</i>Görevler<small id="pn-gorev">—</small></button>
       <button type="button" class="pn-b pn-hedef" data-p="hedef" onclick="panoAc('hedef', true)"><i>🎯</i>Bugünün Hedefi<small>Vekiller</small></button>
       <button type="button" class="pn-b" data-p="veriler" onclick="panoAc('veriler', true)"><i>📊</i>Veriler<small>Canlı</small></button>
       <button type="button" class="pn-b" data-p="harita" onclick="panoAc('harita', true)"><i>🗺️</i>Harita<small>İller</small></button>
-      <button type="button" class="pn-b" data-p="materyal" onclick="panoAc('materyal', true)"><i>📦</i>Materyal<small>İndir</small></button>
       <a class="pn-b pn-saha" href="https://www.youtube.com/@ARA-AnimalRightsActivists" target="_blank" rel="noopener" style="text-decoration:none;border-color:#dc2626"><i>📺</i>ARA ACTIVISTS · YouTube<small>Canlı yayınlar ve videolar</small></a>
     </nav>
 
@@ -2107,6 +2106,7 @@ function taskModalSync(tasks, me) {
   if (t) taskModalOpen(t, me); else taskModalClose();
 }
 function panoAc(p, git) {
+  if (p === 'materyal') p = 'gorevler';
   $('view-board').setAttribute('data-p', p);
   try { localStorage.setItem('7527_pano_bolum', p); } catch (e) {}
   if (p === 'harita') { try { mapLayer(_mapLayer); } catch (e) {} }
@@ -3421,7 +3421,7 @@ function fpTarihMetni(v, saatli) {
 function fpVakaNo(ref) { var m = /(\d+)\D*$/.exec(ref || ''); return m ? m[1] : ''; }
 async function fpYukle() {
   try { fpRows = (await callRpc('gv_fp_public', {})) || []; } catch (e) { $('fp-list').textContent = 'Paylaşımlar yüklenemedi.'; return; }
-  var sm = $('pn-saha-sm'); if (sm) sm.textContent = fpRows.length ? fpRows.length + ' paylaşım' : 'Eylem · dava · imza';
+  var sm = $('pn-saha-sm'); if (sm) sm.textContent = fpRows.length ? fpRows.length + ' kayıt · vaka · imza · dava' : 'Vaka · imza · dava';
   var sel = $('fp-f-city'), secili = sel.value, iller = {};
   fpRows.forEach(function (r) { var y = r.country || r.city; if (y) iller[y] = 1; });
   sel.textContent = '';
