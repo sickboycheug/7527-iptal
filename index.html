@@ -5512,6 +5512,8 @@ function saveCountersToStorage() {
 }
 
 function updateCountersUI() {
+  // Yönetici paneli açıksa sayaç kutusu da canlı güncellensin (onay/silme sonrası artış görünsün)
+  try { var ac = document.getElementById('admin-count-cit'); if (ac && document.activeElement !== ac) ac.value = counters.citizen; } catch (e) {}
   document.getElementById('citizen-counter').textContent = counters.citizen.toLocaleString('tr-TR') + ' / 3.000.000';
   document.getElementById('citizen-progress').style.width = Math.min((counters.citizen / 3000000) * 100, 100) + '%';
 
@@ -6540,6 +6542,7 @@ async function exportEncrypted(kind) {
         if (btn) btn.textContent = 'Kayıtlar alınıyor (' + rows.length + ')...';
         if (part.length < 100) break;
       }
+      rows = tekilDilekce(rows);
     } else {
       rows = await callRpc(conf.rpc, { p_pin: adminPinCache }) || [];
     }
@@ -6619,6 +6622,12 @@ function tkNorm(contact) {
   if (yd.length >= 8 && yd.length <= 15 && (/^\s*\+/.test(c) || d.indexOf('00') === 0 || yd.length >= 11)) return { kind: 'phone', key: yd, value: yd };
   return { kind: '', key: '', value: '' };
 }
+// Sayfalı çekimde aynı dilekçe iki sayfada birden gelebilir (aynı saatli kayıtlar): her dilekçe no yalnız bir kez.
+// Yoksa aynı kayıt "tekrar" görünür ve kopyasındaki Sil, kişinin tek gerçek dilekçesini siler.
+function tekilDilekce(rows) {
+  var gor = {};
+  return rows.filter(function (r) { var k = r.petition_number || ''; if (!k) return true; if (gor[k]) return false; gor[k] = 1; return true; });
+}
 async function tekrarAnaliz() {
   if (tekrarBusy) return;
   if (!adminPinCache) { alert('Oturum düşmüş. Lütfen yönetici PIN’ini tekrar girin.'); return; }
@@ -6637,6 +6646,7 @@ async function tekrarAnaliz() {
       if (btn) btn.textContent = 'Kayıtlar alınıyor (' + rows.length + ')...';
       if (part.length < 100) break;
     }
+    rows = tekilDilekce(rows);
     if (!rows.length) { alert('Henüz kayıt yok.'); return; }
     var marked = {};
     try { (await callRpc('admin_tekrar_numbers', { p_pin: adminPinCache }) || []).forEach(function (no) { marked[no] = 1; }); } catch (e) {}
@@ -7163,6 +7173,7 @@ async function backfillPetitionPlaces() {
       if (btn) btn.textContent = 'Kayıtlar alınıyor (' + rows.length + ')...';
       if (part.length < 100) break;
     }
+    rows = tekilDilekce(rows);
     if (!rows.length) { alert('Henüz kayıt yok.'); return; }
     var items = [], hatali = 0;
     for (var i = 0; i < rows.length; i++) {
@@ -7414,6 +7425,7 @@ async function rkBackfill() {
       if (btn) btn.textContent = 'Kayıtlar alınıyor (' + rows.length + ')...';
       if (part.length < 100) break;
     }
+    rows = tekilDilekce(rows);
     if (!rows.length) { alert('Henüz kayıt yok.'); return; }
     // Aynı kişi: adı aynı yazılmış YA DA aynı telefon/e-postayı kullanmış dilekçeler tek kişide birleşir.
     // Böylece adı bir dilekçede farklı yazan ya da soyadını unutan kişinin dilekçesi ayrı kişiye düşmez.
