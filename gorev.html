@@ -90,7 +90,10 @@
   @media (min-width: 640px) { .st-grid { grid-template-columns:repeat(4,minmax(0,1fr)); } }
   @media (min-width: 1024px) { .st-cols { grid-template-columns:repeat(3,minmax(0,1fr)); } }
   #col-l > *, #r-top > * { grid-column: 1 / -1; }
-  #col-l > div:has(#chat-list) { order: 5; }
+  #col-l > div:has(#chat-list), #col-l > #live-box { order: 5; }
+  #live-open:empty { display:none; }
+  #col-l > #live-box { margin-bottom:-1rem !important; border-bottom-left-radius:0; border-bottom-right-radius:0; }
+  #col-l > div:has(#chat-list) { border-top-left-radius:0; border-top-right-radius:0; }
   #r-top > div:has(#prog-label) { order: 4; }
   #r-top > #me-box { order: 4; }
   #r-top > p:not(#board-msg) { order: 4; }
@@ -142,13 +145,12 @@
     </div>
 
     <nav id="pano-nav" aria-label="Pano bölümleri">
-      <button type="button" class="pn-b pn-saha" data-p="saha" onclick="panoAc('saha', true)"><i>📣</i>Sahadan Paylaş<small id="pn-saha-sm">Vaka · imza · dava</small></button>
       <button type="button" class="pn-b" data-p="ofis" onclick="panoAc('ofis', true)"><i>💬</i>Sohbet<small id="pn-sohbet-sm">Herkese açık</small></button>
       <button type="button" class="pn-b" data-p="gorevler" onclick="panoAc('gorevler', true)"><i>📋</i>Görevler<small id="pn-gorev">—</small></button>
       <button type="button" class="pn-b pn-hedef" data-p="hedef" onclick="panoAc('hedef', true)"><i>🎯</i>Bugünün Hedefi<small>Vekiller</small></button>
       <button type="button" class="pn-b" data-p="veriler" onclick="panoAc('veriler', true)"><i>📊</i>Veriler<small>Canlı</small></button>
       <button type="button" class="pn-b" data-p="harita" onclick="panoAc('harita', true)"><i>🗺️</i>Harita<small>İller</small></button>
-      <a class="pn-b pn-saha" href="https://www.youtube.com/@ARA-AnimalRightsActivists" target="_blank" rel="noopener" style="text-decoration:none;border-color:#dc2626"><i>📺</i>ARA ACTIVISTS · YouTube<small>Canlı yayınlar ve videolar</small></a>
+      <button type="button" class="pn-b" data-p="saha" onclick="panoAc('saha', true)"><i>📣</i>Sahadan Paylaş<small id="pn-saha-sm">Vaka · imza · dava</small></button>
     </nav>
 
     <div id="vk-modal" style="display:none;position:fixed;inset:0;z-index:2147483500;background:rgba(0,0,0,.8);align-items:center;justify-content:center;padding:16px" onclick="if(event.target===this)this.style.display='none'">
@@ -477,21 +479,21 @@ function siraBoya(pre, cok) {
       </div>
     </div>
     <div id="col-l">
+    <div id="live-box" class="rounded-2xl overflow-hidden border border-zinc-800 bg-black">
+      <div id="live-bar" class="flex items-center gap-2 px-3 py-2 bg-red-950/80">
+        <span id="live-dot" class="live-dot" aria-hidden="true"></span>
+        <b id="live-lbl" class="text-[11px] text-red-200 uppercase tracking-wider whitespace-nowrap">Canlı yayın</b>
+        <span id="live-title" class="text-xs text-white truncate min-w-0"></span>
+      </div>
+      <div id="live-frame" class="aspect-video w-full bg-black"></div>
+      <div id="live-open" class="flex flex-wrap justify-center gap-x-4 gap-y-1 py-1.5"></div>
+    </div>
     <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-3">
       <div class="flex items-center justify-between gap-2">
         <h3 class="text-sm font-bold text-white">💬 Kampanya Sohbeti</h3>
         <button type="button" onclick="sohbetPaylas()" class="btn bg-emerald-700 hover:bg-emerald-600 text-white px-3 py-1.5 whitespace-nowrap">📤 Sohbete davet et</button>
       </div>
       <p class="text-[11px] text-zinc-500 -mt-1">Mesajlar 24 saat sonra silinir · sabitlenenler kalır</p>
-      <div id="live-box" class="hidden rounded-xl overflow-hidden border border-red-700 bg-black">
-        <div class="flex items-center gap-2 px-3 py-2 bg-red-950/80">
-          <span class="live-dot" aria-hidden="true"></span>
-          <b class="text-[11px] text-red-200 uppercase tracking-wider whitespace-nowrap">Canlı yayın</b>
-          <span id="live-title" class="text-xs text-white truncate min-w-0"></span>
-        </div>
-        <div id="live-frame" class="aspect-video w-full bg-black"></div>
-        <div id="live-open" class="flex flex-wrap justify-center gap-x-4 gap-y-1 py-1.5"></div>
-      </div>
       <div id="chat-pins" class="hidden max-h-48 overflow-y-auto overscroll-contain rounded-xl border border-amber-700/70 bg-amber-950/30 p-2 space-y-2 text-sm"></div>
       <div id="chat-list" class="space-y-2 h-[26rem] overflow-y-auto overscroll-contain pr-1 text-sm"><div class="text-[12px] text-zinc-500">Sohbet yükleniyor...</div></div>
 
@@ -3346,24 +3348,31 @@ function sohbetPaylas() {
 }
 
 // ---------- canlı yayın (sohbetin üstünde) ----------
-var liveDurum = null, liveSon = '';
+var liveDurum = null, liveSon = null;
 function ytId(u) {
   var m = /(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:[^#\s]*&)?v=|live\/|embed\/|shorts\/))([\w-]{11})/i.exec(u || '');
   return m ? m[1] : '';
 }
 async function liveYukle() {
+  if (liveSon === null) liveCiz();
   try { liveDurum = await callRpc('gv_live_get', {}); } catch (e) { return; }
   liveCiz();
 }
 function liveCiz() {
   var d = liveDurum || {}, on = !!(d.on && d.url), box = $('live-box'), sm = $('pn-sohbet-sm');
-  box.classList.toggle('hidden', !on);
+  $('live-dot').style.display = on ? '' : 'none';
+  $('live-lbl').textContent = on ? 'Canlı yayın' : 'ARA ACTIVISTS TV';
+  $('live-bar').className = 'flex items-center gap-2 px-3 py-2 ' + (on ? 'bg-red-950/80' : 'bg-zinc-900');
   if (sm) { sm.textContent = on ? '🔴 Canlı yayın' : 'Herkese açık'; sm.style.color = on ? '#fca5a5' : ''; }
   var imza = on ? d.url + '|' + (d.title || '') : '';
   if (imza === liveSon) return;
   liveSon = imza;
   var fr = $('live-frame'); fr.textContent = '';
-  if (!on) return;
+  if (!on) {
+    $('live-title').textContent = ''; $('live-open').textContent = '';
+    fr.innerHTML = '<a href="https://www.youtube.com/@ARA-AnimalRightsActivists" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:100%;height:100%;text-decoration:none;background:radial-gradient(circle at 50% 45%,#1f2937 0%,#000 75%)"><span style="display:flex;align-items:center;justify-content:center;width:68px;height:48px;border-radius:14px;background:#dc2626"><span style="width:0;height:0;border-left:18px solid #fff;border-top:11px solid transparent;border-bottom:11px solid transparent;margin-left:4px"></span></span><b style="color:#fff;font-size:15px;letter-spacing:1px"><span style="color:#dc2626">ARA</span> ACTIVISTS</b><small style="color:#a1a1aa;font-size:11px">Videolar ve canlı yayınlar · YouTube</small></a>';
+    return;
+  }
   $('live-title').textContent = d.title || '';
   var linkler = String(d.url).split(/\s+/).filter(function (x) { return /^https:\/\//i.test(x); });
   var a = $('live-open'); a.textContent = '';
