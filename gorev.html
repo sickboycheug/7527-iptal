@@ -3361,7 +3361,7 @@ async function liveYukle() {
 function liveCiz() {
   var d = liveDurum || {}, on = !!(d.on && d.url), box = $('live-box'), sm = $('pn-sohbet-sm');
   $('live-dot').style.display = on ? '' : 'none';
-  $('live-lbl').textContent = on ? 'Canlı yayın' : 'ARA ACTIVISTS TV';
+  $('live-lbl').textContent = on ? 'Canlı yayın' : 'ARA ACTIVISTS · LIVE';
   $('live-bar').className = 'flex items-center gap-2 px-3 py-2 ' + (on ? 'bg-red-950/80' : 'bg-zinc-900');
   if (sm) { sm.textContent = on ? '🔴 Canlı yayın' : 'Herkese açık'; sm.style.color = on ? '#fca5a5' : ''; }
   var imza = on ? d.url + '|' + (d.title || '') : '';
