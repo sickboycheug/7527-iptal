@@ -4003,7 +4003,9 @@ async function _dilekceGonder() {
 async function confirmPetitionSent(didSend) {
   if (!didSend) return;
   if (mailMod === 'vekil') {
+    try { if (window.__mpMail && __mpMail.id) await callRpc('confirm_mp_sent', { p_mp_id: __mpMail.id }); } catch (e) { console.error('[vekil gönderdi]', e); }
     document.getElementById('confirm-modal').style.display = 'none';
+    try { renderSignedMpsList(); } catch (e) {}
     alert('Teşekkürler. Beyanınız TBMM Başkanlığına iletildi ve imzacı vekiller listesinde yer alıyorsunuz.');
     mailModKapat();
     return;
@@ -5046,7 +5048,8 @@ async function submitMpSignature() {
     });
 
     if (result === 'duplicate') {
-      alert('Bu milletvekili ad\u0131na zaten imza kayd\u0131 mevcut.');
+      alert('Bu milletvekili ad\u0131na zaten imza kayd\u0131 mevcut. Beyan\u0131n\u0131z\u0131 Meclis\'e g\u00f6ndermediyseniz \u015fimdi g\u00f6nderebilirsiniz.');
+      await mpBeyanGonder(mp);
     } else {
       await mpBeyanGonder(mp);
       if (consent) consent.checked = false;
@@ -5100,6 +5103,7 @@ async function mpBeyanGonder(mp) {
   try { blob = await mpBeyanPdf(mp); } catch (e) { console.error('[beyan pdf]', e); }
   if (blob) { lastPdfBlob = blob; lastPdfName = dosya; triggerDownload(blob, dosya); }
   window.__mpMail = {
+    id: mp.id,
     to: 'numan.kurtulmus@tbmm.gov.tr',
     subject: "7527 Sayılı Kanun'un Yürürlükten Kaldırılmasına Dair Kanun Teklifi - " + mp.name + ' (' + mp.city + ' Milletvekili)',
     body: 'TÜRKİYE BÜYÜK MİLLET MECLİSİ BAŞKANLIĞINA\n\n7527 sayılı Hayvanları Koruma Kanununda Değişiklik Yapılmasına Dair Kanunun Yürürlükten Kaldırılmasına Dair Kanun Teklifi ve Genel Gerekçesi ekte sunulmuştur.\n\nGereğini arz ederim.\n\n' + mp.name + '\n' + mp.city + ' Milletvekili (' + mp.party + ')'
@@ -5126,12 +5130,13 @@ async function renderSignedMpsList() {
   var countEl = document.getElementById('signed-mps-count');
   if (!container) return;
 
-  var rows = [];
+  var rows = [], gitti = {};
   try {
     rows = await callRpc('list_signed_mps', {}) || [];
   } catch (e) {
     console.error('[vekil listesi]', e);
   }
+  try { ((await callRpc('list_mp_sent', {})) || []).forEach(function (x) { gitti[x.mp_id] = x.sent_at; }); } catch (e) {}
 
   if (countEl) countEl.textContent = rows.length;
   container.innerHTML = '';
@@ -5154,7 +5159,7 @@ async function renderSignedMpsList() {
       '<p class="text-[10px] text-zinc-500 mt-0.5"></p>';
     card.children[0].textContent = name;
     card.children[1].textContent = detail;
-    card.children[2].textContent = when;
+    card.children[2].textContent = when + (gitti[r.mp_id] ? ' · ✉ Meclis\'e gönderdi' : '');
     container.appendChild(card);
   });
 }
