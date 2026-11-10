@@ -7464,7 +7464,7 @@ async function rkLoad() {
     var rows = await callRpcTum('public_petition_ranking', {});
     // Adı henüz sıralamaya işlenmemiş kayıtlar herkese açık listede gösterilmez
     // Adı henüz işlenmemiş kişiler de gerçek dilekçe sahibi: sayıma ve listeye girer ("İsimsiz · il" olarak)
-    _rkRows = (Array.isArray(rows) ? rows : []).map(function (r) { if (!String(r.etiket || '').trim()) r.etiket = 'İsimsiz'; return r; });
+    _rkRows = (Array.isArray(rows) ? rows : []).map(function (r) { var e = String(r.etiket || '').trim(); if (!e || e === 'İsimsiz') r.etiket = 'Yurttaş'; return r; });
     rkRender();
   } catch (e) { /* servis kurulu degilse kart gizli kalir */ }
 }
