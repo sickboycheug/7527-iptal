@@ -1335,6 +1335,19 @@ function errText(e) {
   return 'Bağlantı kurulamadı. İnternetini kontrol edip tekrar dene.';
 }
 
+// Sunucu tek seferde en çok 1000 satır döndürür: listeyi 1000'erli sayfalarla sonuna kadar çek
+async function callRpcTum(fn, args) {
+  if (!supabaseClient) throw new Error('no_client');
+  var hepsi = [];
+  for (var bas = 0; bas < 100000; bas += 1000) {
+    var res = await supabaseClient.rpc(fn, args || {}).range(bas, bas + 999);
+    if (res.error) { console.error('[rpc:' + fn + ']', res.error); throw new Error(res.error.message || 'rpc_error'); }
+    var d = Array.isArray(res.data) ? res.data : (res.data ? [res.data] : []);
+    hepsi = hepsi.concat(d);
+    if (d.length < 1000) break;
+  }
+  return hepsi;
+}
 async function callRpc(fn, args) {
   if (!supabaseClient) throw new Error('no_client');
   var res = await supabaseClient.rpc(fn, args);
@@ -1735,7 +1748,7 @@ function fmtN(n) { return Number(n || 0).toLocaleString('tr-TR'); }
 // Güncelleme kartı: bütün sayılar her açılışta canlı veriden doldurulur
 async function guncellemeDoldur() {
   function yaz(k, v) { Array.prototype.forEach.call(document.querySelectorAll('.g-' + k), function (e) { e.textContent = v; }); }
-  async function al(fn) { try { var r = await callRpc(fn, {}); return Array.isArray(r) ? r : (r ? [r] : []); } catch (e) { return null; } }
+  async function al(fn) { try { var r = await (fn === 'public_petition_ranking' ? callRpcTum(fn, {}) : callRpc(fn, {})); return Array.isArray(r) ? r : (r ? [r] : []); } catch (e) { return null; } }
   try {
     var bugun = new Date(), t = bugun.toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' }).split('-'), b = CAMPAIGN_START.split('-');
     yaz('gun', String(Math.floor((Date.UTC(+t[0], +t[1] - 1, +t[2]) - Date.UTC(+b[0], +b[1] - 1, +b[2])) / 86400000) + 1));
@@ -1777,7 +1790,7 @@ function stSira(cok) { _stCok = cok; siraBoya('st-s', cok); if (_stIl) _stIl(); 
 async function statsLoad() {
   if (Date.now() - _statsAt < 60000) return;
   _statsAt = Date.now();
-  async function al(fn) { try { var r = await callRpc(fn, {}); return Array.isArray(r) ? r : (r ? [r] : []); } catch (e) { return null; } }
+  async function al(fn) { try { var r = await (fn === 'public_petition_ranking' ? callRpcTum(fn, {}) : callRpc(fn, {})); return Array.isArray(r) ? r : (r ? [r] : []); } catch (e) { return null; } }
   var res = await Promise.all([al('campaign_counts'), al('petition_public_map'), al('mp_petition_counts'), al('public_petition_ranking')]);
   var cc = res[0] && res[0][0], pm = res[1], mp = res[2], rk = res[3];
   if (!cc) { _statsAt = 0; return; }

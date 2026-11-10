@@ -1929,6 +1929,19 @@ function dataErrorText(e) {
 }
 
 // Supabase RPC sarmalayici: hata kodlarini normallestirir
+// Sunucu tek seferde en çok 1000 satır döndürür: listeyi 1000'erli sayfalarla sonuna kadar çek
+async function callRpcTum(fn, args) {
+  if (!supabaseClient) throw new Error('no_client');
+  var hepsi = [];
+  for (var bas = 0; bas < 100000; bas += 1000) {
+    var res = await supabaseClient.rpc(fn, args || {}).range(bas, bas + 999);
+    if (res.error) { console.error('[rpc:' + fn + ']', res.error); throw new Error(res.error.message || 'rpc_error'); }
+    var d = Array.isArray(res.data) ? res.data : (res.data ? [res.data] : []);
+    hepsi = hepsi.concat(d);
+    if (d.length < 1000) break;
+  }
+  return hepsi;
+}
 async function callRpc(fn, args) {
   if (!supabaseClient) throw new Error('no_client');
   var res = await supabaseClient.rpc(fn, args);
@@ -7409,7 +7422,7 @@ function rkToggle() { _rkOpen = !_rkOpen; rkRender(); if (!_rkOpen) { var c = do
 async function rkLoad() {
   if (!supabaseClient) return;
   try {
-    var rows = await callRpc('public_petition_ranking', {});
+    var rows = await callRpcTum('public_petition_ranking', {});
     // Adı henüz sıralamaya işlenmemiş kayıtlar herkese açık listede gösterilmez
     _rkRows = (Array.isArray(rows) ? rows : []).filter(function (r) { var e = String(r.etiket || '').trim(); return e && e !== 'İsimsiz'; });
     rkRender();
