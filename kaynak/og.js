@@ -136,7 +136,7 @@
 
   // ---- genel paylaşım sayfası: /p/k/<anahtar> (kendi başlığı, açıklaması, hedefi ve görseli) ----
   // Link hemen döner; görsel arka planda bir kez kaydedilir.
-  var HAZ = {};
+  var HAZ = {}, HAZD = {};
   // Link paylaşılmadan önce görselin kaydedilmesini bekler (en çok 10 sn); böylece sosyal medya ilk bakışta doğru görseli görür
   function hazir(url) {
     var key = String(url || '').split('/p/k/')[1];
@@ -155,7 +155,7 @@
           if (w && h) { var k = Math.min(1, 1200 / Math.max(w, h)); wh = Math.round(w * k) + 'x' + Math.round(h * k); }
           return rpc('gv_og_put2', { p_key: key, p_img: img, p_title: String(o.baslik || '').slice(0, 200), p_desc: String(o.aciklama || '').slice(0, 500), p_target: o.hedef || '/', p_wh: wh });
         });
-      }).catch(function () { delete BOS[key]; });
+      }).catch(function () { delete BOS[key]; }).then(function () { HAZD[key] = 1; });
     }
     return 'https://7527iptal.org/p/k/' + key;
   }
@@ -176,7 +176,7 @@
   // Tek düğme: telefonun paylaş menüsü (link + metin). Menü yoksa metin ve link kopyalanır.
   var MOBIL = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
   // Bilgisayarda (paylaş menüsü olmayan ya da çalışmayan tarayıcılarda): küçük seçim kutusu
-  function menu(t, url, baslik, xt) {
+  function menu(t, url, baslik, xt, bekle) {
     var e = encodeURIComponent, eski = document.getElementById('og-menu'); if (eski) eski.remove();
     var m = document.createElement('div'); m.id = 'og-menu';
     m.style.cssText = 'position:fixed;inset:0;z-index:2147483646;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;padding:16px';
@@ -189,9 +189,18 @@
     function dg(ad, f, ana) { var b = document.createElement('button'); b.type = 'button'; b.textContent = ad;
       b.style.cssText = 'padding:11px 8px;border-radius:12px;border:1px solid #3f3f46;background:' + (ana ? '#dc2626' : '#27272a') + ';color:#fff;font:700 13px Inter,system-ui,sans-serif;cursor:pointer' + (ana ? ';grid-column:1/-1' : '');
       b.onclick = f; g.appendChild(b); return b; }
-    hedef.forEach(function (h) { dg(h[0], function () { window.open(h[1], '_blank', 'noopener'); m.remove(); }); });
+    var dgl = hedef.map(function (h) { return dg(h[0], function () { window.open(h[1], '_blank', 'noopener'); m.remove(); }); });
+    if (MOBIL && navigator.share) dgl.push(dg('📱 Telefonun paylaş menüsü', function () { var tam = t + '\n\n' + url; kopya(tam); navigator.share({ title: baslik || '7527 İPTAL', text: tam }).catch(function () {}); m.remove(); }, true));
     var kb = dg('📋 Metni ve linki kopyala', function () { kopya(t + '\n\n' + url); kb.textContent = '✓ Kopyalandı, istediğin yere yapıştır'; }, true);
+    dgl.push(kb);
     k.appendChild(g);
+    // Önizleme görseli henüz yüklenmediyse düğmeler bekler: erken paylaşılan link görselsiz kalır (X/WA önizlemeyi bir kez alıp saklar)
+    if (bekle) {
+      var not = document.createElement('div'); not.textContent = '⏳ Önizleme görseli hazırlanıyor…'; not.style.cssText = 'font-size:12px;color:#fcd34d;margin:-4px 0 10px';
+      k.insertBefore(not, g);
+      dgl.forEach(function (b) { b.disabled = true; b.style.opacity = '.45'; });
+      hazir(url).then(function () { not.remove(); dgl.forEach(function (b) { b.disabled = false; b.style.opacity = ''; }); });
+    }
     var x = document.createElement('button'); x.type = 'button'; x.textContent = 'Kapat';
     x.style.cssText = 'margin-top:10px;width:100%;background:none;border:0;color:#a1a1aa;text-decoration:underline;cursor:pointer;font-size:12px';
     x.onclick = function () { m.remove(); }; k.appendChild(x);
@@ -201,6 +210,8 @@
   // Tek düğme: telefonda telefonun paylaş menüsü; bilgisayarda ya da menü çalışmazsa seçim kutusu
   function paylas(o) {
     var t = o.ham ? String(o.metin || '') : ek(o.metin);
+    var key = String(o.url || '').split('/p/k/')[1];
+    if (key && HAZ[key] && !HAZD[key]) { menu(t, o.url, o.baslik, o.x, true); return 'menu'; }
     if (MOBIL && navigator.share) {
       // Link metnin içinde: X ve Instagram url alanı varken metni atıyor; Facebook metni hiç almıyor, panoya kopyalanır
       var tam = t + '\n\n' + o.url; kopya(tam);
