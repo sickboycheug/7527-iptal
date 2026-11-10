@@ -501,18 +501,14 @@ function siraBoya(pre, cok) {
 
       <!-- Giriş: 1) e-posta -->
       <div id="auth-mail" class="hidden bg-zinc-950/60 border border-emerald-800/60 rounded-xl p-3 space-y-2">
-        <p class="text-xs text-zinc-200 font-semibold">Sohbeti herkes okuyabilir. Yazmak için e-postanla bir kez giriş yap.</p>
-        <p class="text-[11px] text-zinc-400 leading-relaxed">İlk girişte e-postana 6 haneli bir kod gelir. Girdikten sonra kendine şifre belirlersen, sonraki girişlerde kod beklemeden şifrenle girersin. Çıkış yapana kadar bu cihazda açık kalırsın. E-posta adresin kimseye görünmez.</p>
-        <div class="flex flex-col sm:flex-row gap-2">
-          <input type="email" id="auth-email" placeholder="E-posta adresin" maxlength="120" autocomplete="email" inputmode="email" class="inp" onkeydown="if(event.key==='Enter')kodGonder()">
-          <button type="button" id="auth-send" onclick="kodGonder()" class="btn bg-emerald-600 hover:bg-emerald-500 text-white whitespace-nowrap">Kod gönder</button>
-        </div>
-        <div class="flex flex-col sm:flex-row gap-2">
-          <input type="password" id="auth-pass" placeholder="Şifren (belirlediysen)" maxlength="72" autocomplete="current-password" class="inp" onkeydown="if(event.key==='Enter')sifreyleGir()">
-          <button type="button" id="auth-pass-btn" onclick="sifreyleGir()" class="btn bg-zinc-800 hover:bg-zinc-700 text-white whitespace-nowrap">Şifreyle gir</button>
-        </div>
-        <div id="ts-box" class="min-h-[65px]"></div>
-        <p id="auth-oldnote" class="hidden text-[11px] text-amber-300 leading-relaxed">Bu cihazda eski gönüllü kodun kayıtlı. E-postanla giriş yaptığında hesabına kendiliğinden bağlanır, görev geçmişin korunur.</p>
+        <p class="text-xs text-zinc-200 font-semibold">Sohbeti herkes okuyabilir. Yazmak için bir kez giriş yap.</p>
+        <p class="text-[11px] text-zinc-400 leading-relaxed">E-postanı ya da eski gönüllü kodunu yaz. Şifren varsa onu da yaz; yoksa e-postana tek kullanımlık kod gelir. Çıkış yapana kadar bu cihazda açık kalırsın. E-postan kimseye görünmez.</p>
+        <input type="text" id="auth-email" placeholder="E-posta adresin ya da gönüllü kodun" maxlength="120" autocomplete="username" autocapitalize="off" spellcheck="false" class="inp" onkeydown="if(event.key==='Enter')girisYap()">
+        <input type="password" id="auth-pass" placeholder="Şifren (varsa)" maxlength="72" autocomplete="current-password" class="inp" onkeydown="if(event.key==='Enter')girisYap()">
+        <button type="button" id="auth-go" onclick="girisYap()" class="btn w-full bg-emerald-600 hover:bg-emerald-500 text-white">Giriş yap</button>
+        <button type="button" id="auth-send" class="hidden"></button><button type="button" id="auth-pass-btn" class="hidden"></button>
+        <div id="ts-box"></div>
+        <p id="auth-oldnote" class="hidden text-[11px] text-amber-300 leading-relaxed">Bu cihazda eski gönüllü kodun kayıtlı ve kutuya yazıldı. "Giriş yap"a basman yeterli; görev geçmişin korunur.</p>
         <p id="auth-msg" class="text-xs text-red-400 min-h-[16px]"></p>
       </div>
 
@@ -593,7 +589,7 @@ function siraBoya(pre, cok) {
         <span id="auth-in-av"></span>
         <span class="text-zinc-200 font-semibold" id="auth-in-nick"></span>
         <button type="button" onclick="profilAc()" class="text-emerald-400 underline cursor-pointer">Profilim</button>
-        <button type="button" onclick="$('auth-pw').classList.toggle('hidden')" class="text-emerald-400 underline cursor-pointer">Şifre belirle</button>
+        <button type="button" id="auth-pw-ac" onclick="$('auth-pw').classList.toggle('hidden')" class="text-emerald-400 underline cursor-pointer">Şifre belirle</button>
         <button type="button" onclick="cikis()" class="text-zinc-500 underline cursor-pointer">Çıkış</button>
         <div id="auth-pw" class="hidden basis-full space-y-1">
           <div class="flex gap-2">
@@ -1435,7 +1431,7 @@ function tsRender() {
   if (!window.turnstile) { if (tsTry++ < 60) setTimeout(tsRender, 500); return; }
   try {
     tsWidget = window.turnstile.render(box, {
-      sitekey: TURNSTILE_SITE_KEY, theme: 'dark', language: 'tr',
+      sitekey: TURNSTILE_SITE_KEY, theme: 'dark', language: 'tr', appearance: 'interaction-only',
       callback: function (t) { tsToken = t; },
       'expired-callback': function () { tsToken = ''; },
       'error-callback': function () { tsToken = ''; }
@@ -1459,6 +1455,7 @@ function authGoster() {
   if (s === 'in') {
     $('auth-in-nick').textContent = meInfo.nick + (meInfo.city ? ' · ' + (meInfo.country || meInfo.city) : '');
     var av = $('auth-in-av'); av.textContent = ''; av.appendChild(avatarEl({ avatar: meInfo.avatar && meInfo.avatar.indexOf('p:') === 0 ? meInfo.avatar : null, has_avatar: !!(meInfo.avatar && meInfo.avatar.indexOf('data:') === 0), mid: meInfo.id, nick: meInfo.nick }, 24, meInfo.avatar));
+    $('auth-pw-ac').classList.toggle('hidden', !meInfo.email); if (!meInfo.email) $('auth-pw').classList.add('hidden');
     var n = $('auth-in-note'); n.textContent = '';
     if (authNot) { n.appendChild(h('div', 'text-emerald-300 font-semibold', authNot)); authNot = ''; }
     if (meInfo.blocked) n.appendChild(h('div', 'text-red-300', 'Hesabın sohbete yazmaya kapalı. Bir yanlışlık olduğunu düşünüyorsan iletisim@7527iptal.org adresine yaz.'));
@@ -1469,19 +1466,56 @@ function authGoster() {
       var a = h('button', 'text-amber-300 underline cursor-pointer text-left', '📍 İlinde stand / toplantı yapmak ister misin? Aktif gönüllü ol');
       a.type = 'button'; a.onclick = function () { profilAc(); }; n.appendChild(a);
     }
-    if (!meInfo.linked) {
+    if (!meInfo.linked && meInfo.email) {
       var o = h('button', 'block text-zinc-500 underline cursor-pointer', 'Eski gönüllü kodun varsa bağla');
       o.type = 'button'; o.onclick = function () { profilAc(true); }; n.appendChild(o);
     }
   }
 }
 
+// Tek giriş: e-posta (şifreyle ya da e-posta koduyla) veya eski gönüllü kodu (e-postasız, anonim oturum)
+function kodMu(v) { return /^[0-9A-F]{12}$/i.test(String(v || '').replace(/[^0-9A-Za-z]/g, '')) && !/@/.test(v); }
+async function girisYap() {
+  var v = ($('auth-email').value || '').trim(), pw = $('auth-pass').value || '', msg = $('auth-msg');
+  msg.textContent = '';
+  if (!v) { msg.textContent = 'E-postanı ya da gönüllü kodunu yaz.'; return; }
+  if (kodMu(v)) return kodlaGir(v);
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) { msg.textContent = 'Geçerli bir e-posta adresi ya da gönüllü kodu yaz (ör. ABCD-1234-EF56).'; return; }
+  return pw ? sifreyleGir() : kodGonder();
+}
+async function kodlaGir(kod) {
+  var msg = $('auth-msg'), b = $('auth-go');
+  if (!tsToken) { msg.textContent = 'Bir saniye bekle, güvenlik kontrolü tamamlanıyor; sonra tekrar bas.'; tsRender(); return; }
+  b.disabled = true; b.textContent = 'Giriliyor...';
+  try {
+    var r = await supabaseClient.auth.signInAnonymously({ options: { captchaToken: tsToken } });
+    if (r.error) throw r.error;
+    var sonuc = await callRpc('gv_code_login', { p_code: kod });
+    if (sonuc && sonuc.ok) {
+      store('gv_code', null); $('auth-email').value = ''; $('auth-pass').value = '';
+      authNot = '✓ Gönüllü kodunla girdin. Çıkış yapana kadar bu cihazda açık kalırsın.';
+      await oturumYukle(); return;
+    }
+    try { await supabaseClient.auth.signOut(); } catch (e2) {}
+    if (sonuc && sonuc.email) {
+      $('auth-email').value = sonuc.email; store('gv_email', sonuc.email);
+      msg.textContent = 'Bu kod ' + sonuc.email + ' hesabına bağlı. Şifren varsa yazıp "Giriş yap"a bas; yoksa doğrudan bas, e-postana kod gelsin.';
+    } else msg.textContent = 'Giriş tamamlanamadı, tekrar dene.';
+  } catch (e) {
+    try { if (authUser === null) await supabaseClient.auth.signOut(); } catch (e3) {}
+    var m = String((e && (e.message || e.code)) || '');
+    if (/unauthorized/.test(m)) msg.textContent = 'Bu gönüllü kodu bulunamadı ya da hesap pasif. Kodu kontrol et ya da e-postanla gir.';
+    else if (/rate_limited/.test(m)) msg.textContent = 'Çok fazla deneme yapıldı. Bir saat sonra tekrar dene ya da e-postanla gir.';
+    else if (/anonymous|disabled|not enabled/i.test(m)) msg.textContent = 'Kodla giriş şu an kapalı. E-postanla gir.';
+    else msg.textContent = otpHata(e);
+  } finally { b.disabled = false; b.textContent = 'Giriş yap'; tsRender(); }
+}
 async function kodGonder() {
   var em = ($('auth-email').value || '').trim().toLowerCase(), msg = $('auth-msg');
   msg.textContent = '';
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)) { msg.textContent = 'Geçerli bir e-posta adresi yaz.'; return; }
-  if (!tsToken) { msg.textContent = 'Önce alttaki doğrulama kutusunun tamamlanmasını bekle (gerekirse kutuya dokun).'; return; }
-  var b = $('auth-send'); b.disabled = true; b.textContent = 'Gönderiliyor...';
+  if (!tsToken) { msg.textContent = 'Bir saniye bekle, güvenlik kontrolü tamamlanıyor; sonra tekrar bas. Bir kutu çıkarsa ona dokun.'; return; }
+  var b = $('auth-go'); b.disabled = true; b.textContent = 'Kod gönderiliyor...';
   try {
     var r = await supabaseClient.auth.signInWithOtp({ email: em, options: { shouldCreateUser: true, captchaToken: tsToken } });
     if (r.error) throw r.error;
@@ -1492,7 +1526,7 @@ async function kodGonder() {
   } catch (e) {
     msg.textContent = otpHata(e);
     tsRender();
-  } finally { b.disabled = false; b.textContent = 'Kod gönder'; }
+  } finally { b.disabled = false; b.textContent = 'Giriş yap'; }
 }
 function otpHata(e) {
   var m = String((e && (e.message || e.code)) || '');
@@ -1511,7 +1545,9 @@ async function kodDogrula() {
     var r = await supabaseClient.auth.verifyOtp({ email: otpEmail, token: t, type: 'email' });
     if (r.error) throw r.error;
     otpEmail = ''; otpKaydet(null);
+    authNot = '✓ Girdin. Bir daha e-posta kodu beklememek için aşağıdan kendine bir şifre belirle.';
     await oturumYukle();
+    try { $('auth-pw').classList.remove('hidden'); } catch (e2) {}
   } catch (e) { msg.textContent = otpHata(e); }
   finally { b.disabled = false; b.textContent = 'Giriş yap'; }
 }
@@ -1519,9 +1555,9 @@ async function sifreyleGir() {
   var em = ($('auth-email').value || '').trim().toLowerCase(), pw = $('auth-pass').value || '', msg = $('auth-msg');
   msg.textContent = '';
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)) { msg.textContent = 'Önce e-posta adresini yaz.'; return; }
-  if (pw.length < 8) { msg.textContent = 'Şifreni yaz. Henüz şifre belirlemediysen "Kod gönder" ile gir.'; return; }
-  if (!tsToken) { msg.textContent = 'Önce alttaki doğrulama kutusunun tamamlanmasını bekle (gerekirse kutuya dokun).'; return; }
-  var b = $('auth-pass-btn'); b.disabled = true; b.textContent = 'Giriliyor...';
+  if (pw.length < 8) { msg.textContent = 'Şifre en az 8 karakter. Şifren yoksa şifre kutusunu boş bırakıp "Giriş yap"a bas, e-postana kod gelsin.'; return; }
+  if (!tsToken) { msg.textContent = 'Bir saniye bekle, güvenlik kontrolü tamamlanıyor; sonra tekrar bas. Bir kutu çıkarsa ona dokun.'; return; }
+  var b = $('auth-go'); b.disabled = true; b.textContent = 'Giriliyor...';
   try {
     var r = await supabaseClient.auth.signInWithPassword({ email: em, password: pw, options: { captchaToken: tsToken } });
     if (r.error) throw r.error;
@@ -1529,9 +1565,9 @@ async function sifreyleGir() {
     await oturumYukle();
   } catch (e) {
     var m = String((e && e.message) || '');
-    msg.textContent = /invalid login|credentials/i.test(m) ? 'E-posta ya da şifre hatalı. Şifreni unuttuysan "Kod gönder" ile gir, sonra yeni şifre belirle.' : otpHata(e);
+    msg.textContent = /invalid login|credentials/i.test(m) ? 'E-posta ya da şifre hatalı. Şifreni unuttuysan şifre kutusunu boşaltıp "Giriş yap"a bas; e-postana kod gelir, sonra yeni şifre belirlersin.' : otpHata(e);
     tsRender();
-  } finally { b.disabled = false; b.textContent = 'Şifreyle gir'; }
+  } finally { b.disabled = false; b.textContent = 'Giriş yap'; }
 }
 async function sifreKaydet() {
   var pw = $('auth-pw-new').value || '', msg = $('auth-pw-msg');
@@ -3881,7 +3917,9 @@ function faDuzenle(r) {
   refreshBoard(); refreshChat(true); loadMaterials(); loadMap(); refreshOnline(); liveYukle(); fpYukle();
   setInterval(function () { if (document.visibilityState === 'visible') liveYukle(); }, 60000);
   await oturumYukle();
-  $('auth-oldnote').classList.toggle('hidden', !load('gv_code'));
+  var eskiKod = load('gv_code');
+  if (eskiKod && !authUser && !$('auth-email').value) $('auth-email').value = eskiKod;
+  $('auth-oldnote').classList.toggle('hidden', !eskiKod || !!authUser);
   boardTimer = setInterval(function () { if (document.visibilityState === 'visible') refreshBoard(); }, 60000);
   setInterval(function () { if (document.visibilityState === 'visible') refreshOnline(); }, 60000);
   if (supabaseClient) supabaseClient.auth.onAuthStateChange(function (ev) {
