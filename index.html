@@ -7431,7 +7431,8 @@ async function rkLoad() {
   try {
     var rows = await callRpcTum('public_petition_ranking', {});
     // Adı henüz sıralamaya işlenmemiş kayıtlar herkese açık listede gösterilmez
-    _rkRows = (Array.isArray(rows) ? rows : []).filter(function (r) { var e = String(r.etiket || '').trim(); return e && e !== 'İsimsiz'; });
+    // Adı henüz işlenmemiş kişiler de gerçek dilekçe sahibi: sayıma ve listeye girer ("İsimsiz · il" olarak)
+    _rkRows = (Array.isArray(rows) ? rows : []).map(function (r) { if (!String(r.etiket || '').trim()) r.etiket = 'İsimsiz'; return r; });
     rkRender();
   } catch (e) { /* servis kurulu degilse kart gizli kalir */ }
 }
