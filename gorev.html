@@ -1484,10 +1484,24 @@ async function girisYap() {
   return pw ? sifreyleGir() : kodGonder();
 }
 async function kodlaGir(kod) {
-  var msg = $('auth-msg'), b = $('auth-go');
+  var msg = $('auth-msg'), b = $('auth-go'), duz = String(kod).replace(/[^0-9A-Za-z]/g, '').toUpperCase();
   if (!tsToken) { msg.textContent = 'Bir saniye bekle, güvenlik kontrolü tamamlanıyor; sonra tekrar bas.'; tsRender(); return; }
   b.disabled = true; b.textContent = 'Giriliyor...';
   try {
+    // 1) Kod hangi hesaba ait? E-posta hesabına bağlıysa kod o hesabın şifresidir (hesabın kendi şifresi yoksa)
+    var chk = null; try { chk = await callRpc('gv_code_check', { p_code: kod }); } catch (e0) { if (!/not_installed/.test(e0.message || '')) throw e0; }
+    if (chk && chk.mode === 'email') {
+      var r1 = await supabaseClient.auth.signInWithPassword({ email: chk.email, password: duz, options: { captchaToken: tsToken } });
+      if (!r1.error) {
+        store('gv_code', null); store('gv_email', chk.email); $('auth-email').value = ''; $('auth-pass').value = '';
+        authNot = '✓ Gönüllü kodunla girdin. Çıkış yapana kadar bu cihazda açık kalırsın.';
+        await oturumYukle(); return;
+      }
+      $('auth-email').value = chk.email; $('auth-pass').value = ''; store('gv_email', chk.email);
+      msg.textContent = 'Bu kod ' + chk.email + ' hesabına bağlı ve hesabın kendi şifresi var. Şifreni yazıp "Giriş yap"a bas; şifreni hatırlamıyorsan şifre kutusunu boş bırakıp bas, e-postana kod gelsin.';
+      return;
+    }
+    // 2) Hiçbir e-postaya bağlı olmayan kod: e-postasız (anonim) oturum açılır, kod o oturuma bağlanır
     var r = await supabaseClient.auth.signInAnonymously({ options: { captchaToken: tsToken } });
     if (r.error) throw r.error;
     var sonuc = await callRpc('gv_code_login', { p_code: kod });
@@ -1497,12 +1511,9 @@ async function kodlaGir(kod) {
       await oturumYukle(); return;
     }
     try { await supabaseClient.auth.signOut(); } catch (e2) {}
-    if (sonuc && sonuc.email) {
-      $('auth-email').value = sonuc.email; store('gv_email', sonuc.email);
-      msg.textContent = 'Bu kod ' + sonuc.email + ' hesabına bağlı. Şifren varsa yazıp "Giriş yap"a bas; yoksa doğrudan bas, e-postana kod gelsin.';
-    } else msg.textContent = 'Giriş tamamlanamadı, tekrar dene.';
+    msg.textContent = 'Giriş tamamlanamadı, tekrar dene.';
   } catch (e) {
-    try { if (authUser === null) await supabaseClient.auth.signOut(); } catch (e3) {}
+    try { var ss = await supabaseClient.auth.getSession(); var u = ss.data && ss.data.session && ss.data.session.user; if (u && u.is_anonymous) await supabaseClient.auth.signOut(); } catch (e3) {}
     var m = String((e && (e.message || e.code)) || '');
     if (/unauthorized/.test(m)) msg.textContent = 'Bu gönüllü kodu bulunamadı ya da hesap pasif. Kodu kontrol et ya da e-postanla gir.';
     else if (/rate_limited/.test(m)) msg.textContent = 'Çok fazla deneme yapıldı. Bir saat sonra tekrar dene ya da e-postanla gir.';
