@@ -22,7 +22,7 @@
 <meta name="twitter:image" content="https://7527iptal.org/gorsel/halk-iradesi.png?v=2">
 <!-- Tailwind: hazır CSS dosyası -->
 <link rel="stylesheet" href="/kaynak/tailwind.css?v=1">
-<script src="/kaynak/og.js?v=10" defer></script>
+<script src="/kaynak/og.js?v=11" defer></script>
 <script src="/kaynak/tarayici.js?v=2" defer></script>
 <!-- QRCode.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -191,7 +191,11 @@ try { if (new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' }
             // Liste 592 vekili göstermesin: yalnız seçilen vekil kalsın, sonraki adım hemen altta
             try { var si = document.getElementById('mp-search-input'); if (si) { si.value = m.name; filterMps(); } } catch (e) {}
             var k = document.getElementById('dil-karsi');
-            if (k) { k.textContent = '👋 ' + m.name + ' (' + m.city + ' Milletvekili) seçildi. Bilgilerini yaz, sembolik imzanı at; dilekçen vekilin Meclis e-postasına gönderilsin.'; k.classList.remove('hidden'); }
+            var gitti = false; try { gitti = getSentMpIds().indexOf(m.id) !== -1; } catch (e) {}
+            if (k) { k.textContent = gitti
+              ? '✓ ' + m.name + ' (' + m.city + ' Milletvekili) için dilekçeni zaten göndermişsin, teşekkürler. Başka bir vekil seçip ona da gönderebilirsin.'
+              : '👋 ' + m.name + ' (' + m.city + ' Milletvekili) seçildi. Bilgilerini yaz; dilekçen kendi e-postandan vekilin Meclis adresine gitsin.'; k.classList.remove('hidden'); }
+            if (gitti) { try { var si2 = document.getElementById('mp-search-input'); if (si2) { si2.value = ''; filterMps(); } } catch (e) {} }
           }
           else if (++vkDene < 20) setTimeout(vkBekle, 300);
         })();

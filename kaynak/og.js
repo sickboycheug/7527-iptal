@@ -142,20 +142,26 @@
     var key = String(url || '').split('/p/k/')[1];
     var p = key && HAZ[key];
     if (!p) return Promise.resolve();
-    return Promise.race([p, new Promise(function (ok) { setTimeout(ok, 10000); })]);
+    return Promise.race([p, new Promise(function (ok) { setTimeout(ok, 20000); })]);
   }
   function sayfa(o) {
     var key = anahtar(o.tur, slug(String(o.id)).slice(0, 60) || 'x', o.parcalar || [o.baslik]);
     if (!BOS[key] && o.gorsel) {
       BOS[key] = 1;
-      HAZ[key] = rpc('gv_og_meta', { p_key: key }).then(function (m) {
-        if (m && m.target) return;
-        return Promise.resolve(typeof o.gorsel === 'function' ? o.gorsel() : o.gorsel).then(kucult).then(function (img) {
-          var wh = '', w = o.w || 0, h = o.h || 0;
-          if (w && h) { var k = Math.min(1, 1200 / Math.max(w, h)); wh = Math.round(w * k) + 'x' + Math.round(h * k); }
-          return rpc('gv_og_put2', { p_key: key, p_img: img, p_title: String(o.baslik || '').slice(0, 200), p_desc: String(o.aciklama || '').slice(0, 500), p_target: o.hedef || '/', p_wh: wh });
+      // Bağlantı kesilirse 3 kez yeniden dener; yine olmazsa HATA işaretlenir, paylaşım penceresi uyarır
+      var is = function () {
+        return rpc('gv_og_meta', { p_key: key }).then(function (m) {
+          if (m && m.target) return;
+          return Promise.resolve(typeof o.gorsel === 'function' ? o.gorsel() : o.gorsel).then(kucult).then(function (img) {
+            var wh = '', w = o.w || 0, h = o.h || 0;
+            if (w && h) { var k = Math.min(1, 1200 / Math.max(w, h)); wh = Math.round(w * k) + 'x' + Math.round(h * k); }
+            return rpc('gv_og_put2', { p_key: key, p_img: img, p_title: String(o.baslik || '').slice(0, 200), p_desc: String(o.aciklama || '').slice(0, 500), p_target: o.hedef || '/', p_wh: wh })
+              .then(function (ok) { if (ok !== true) throw new Error('og_kayit'); });
+          });
         });
-      }).catch(function () { delete BOS[key]; }).then(function () { HAZD[key] = 1; });
+      };
+      var dene = function (n) { return is().catch(function (e) { if (n <= 0) throw e; return new Promise(function (ok) { setTimeout(ok, 1500); }).then(function () { return dene(n - 1); }); }); };
+      HAZ[key] = dene(3).then(function () { HAZD[key] = 1; }, function () { delete BOS[key]; HAZD[key] = 'hata'; });
     }
     return 'https://7527iptal.org/p/k/' + key;
   }
@@ -199,7 +205,11 @@
       var not = document.createElement('div'); not.textContent = '⏳ Önizleme görseli hazırlanıyor…'; not.style.cssText = 'font-size:12px;color:#fcd34d;margin:-4px 0 10px';
       k.insertBefore(not, g);
       dgl.forEach(function (b) { b.disabled = true; b.style.opacity = '.45'; });
-      hazir(url).then(function () { not.remove(); dgl.forEach(function (b) { b.disabled = false; b.style.opacity = ''; }); });
+      hazir(url).then(function () {
+        var anahtar2 = String(url).split('/p/k/')[1];
+        if (HAZD[anahtar2] === 1) not.remove(); else not.textContent = '⚠️ Önizleme görseli yüklenemedi (bağlantı sorunu). Bu pencereyi kapat, paylaşımı yeniden aç.';
+        dgl.forEach(function (b) { b.disabled = false; b.style.opacity = ''; });
+      });
     }
     var x = document.createElement('button'); x.type = 'button'; x.textContent = 'Kapat';
     x.style.cssText = 'margin-top:10px;width:100%;background:none;border:0;color:#a1a1aa;text-decoration:underline;cursor:pointer;font-size:12px';
@@ -211,7 +221,7 @@
   function paylas(o) {
     var t = o.ham ? String(o.metin || '') : ek(o.metin);
     var key = String(o.url || '').split('/p/k/')[1];
-    if (key && HAZ[key] && !HAZD[key]) { menu(t, o.url, o.baslik, o.x, true); return 'menu'; }
+    if (key && HAZ[key] && HAZD[key] !== 1) { menu(t, o.url, o.baslik, o.x, true); return 'menu'; }
     if (MOBIL && navigator.share) {
       // Link metnin içinde: X ve Instagram url alanı varken metni atıyor; Facebook metni hiç almıyor, panoya kopyalanır
       var tam = t + '\n\n' + o.url; kopya(tam);
