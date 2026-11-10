@@ -220,6 +220,14 @@
     }
     menu(t, o.url, o.baslik, o.x); return 'menu';
   }
+  // Ayrı ayrı: yoruma görsel eklemek, metni başka yere yapıştırmak için
+  function sadeceGorsel(blob, ad) {
+    var f = blob && new File([blob], ad || '7527iptal.png', { type: blob.type || 'image/png' });
+    if (!f) return '';
+    if (MOBIL && navigator.canShare && navigator.canShare({ files: [f] })) { navigator.share({ files: [f] }).catch(function () {}); return 'menu'; }
+    var a = document.createElement('a'); a.href = URL.createObjectURL(f); a.download = f.name; document.body.appendChild(a); a.click(); a.remove(); return 'indir';
+  }
+  function sadeceMetin(metin, url) { kopya(ek(metin) + (url ? '\n\n' + url : '')); return 'kopya'; }
   // Instagram gibi görsel isteyen yerler: metin kopyalanır, görsel paylaşılır; olmazsa indirilir
   function gorselPaylas(o) {
     var t = ek(o.metin) + (o.url ? '\n\n' + o.url : '');
@@ -350,6 +358,6 @@
 
   window.OG = { ozet: ozet, slug: slug, anahtar: anahtar, kart: kart, kucult: kucult, hazirla: hazirla,
     vaka: vaka, onur: onur, onurLink: onurLink, saha: saha,
-    sayfa: sayfa, hazir: hazir, vakaEtiket: vakaEtiket, vekilHazirla: vekilHazirla, ek: ek, kopya: kopya, paylas: paylas, menu: menu, gorselPaylas: gorselPaylas, BILGI: BILGI, ETIKET: ETIKET,
+    sayfa: sayfa, hazir: hazir, vakaEtiket: vakaEtiket, vekilHazirla: vekilHazirla, ek: ek, kopya: kopya, paylas: paylas, menu: menu, gorselPaylas: gorselPaylas, sadeceGorsel: sadeceGorsel, sadeceMetin: sadeceMetin, BILGI: BILGI, ETIKET: ETIKET,
     haritaVeri: haritaVeri, haritaLink: haritaLink, haritaPaylas: haritaPaylas, haritaGorsel: haritaGorsel, et: et };
 })();
