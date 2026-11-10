@@ -6651,6 +6651,17 @@ function yerelGun() {
   var d = new Date(), p = function (n) { return (n < 10 ? '0' : '') + n; };
   return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
 }
+// Sayıya Türkçe iyelik eki: 5'i, 1.002'si, 30'u, 1.000'i
+function trSahip(n) {
+  var t = Number(n) || 0, ek;
+  var bir = ['', 'i', 'si', 'ü', 'ü', 'i', 'sı', 'si', 'i', 'u'][t % 10];
+  if (bir) ek = bir;
+  else if (t % 100) ek = ['', 'u', 'si', 'u', 'ı', 'si', 'ı', 'i', 'i', 'ı'][(t % 100) / 10];
+  else if (t % 1000) ek = 'ü';
+  else if (t % 1000000) ek = 'i';
+  else ek = 'u';
+  return t.toLocaleString('tr-TR') + '\'' + ek;
+}
 function tekilDilekce(rows) {
   var gor = {};
   return rows.filter(function (r) { var k = r.petition_number || ''; if (!k) return true; if (gor[k]) return false; gor[k] = 1; return true; })
@@ -7302,7 +7313,7 @@ function rkRender() {
   more.classList.toggle('hidden', rest.length <= 10);
   more.textContent = _rkOpen ? 'Daralt ▲' : 'Tüm sıralamayı gör (' + rest.length + ' kişi) ▼';
   var oz = document.getElementById('rk-ozet');
-  if (oz) oz.textContent = 'Dilekçe gönderen ' + (honor.length + rest.length).toLocaleString('tr-TR') + ' kişi: ' + honor.length + '\'i Onur Köşesi\'nde, ' + rest.length.toLocaleString('tr-TR') + '\'ü sıralamada.';
+  if (oz) oz.textContent = 'Dilekçe gönderen ' + (honor.length + rest.length).toLocaleString('tr-TR') + ' kişi: ' + trSahip(honor.length) + ' Onur Köşesi\'nde, ' + trSahip(rest.length) + ' sıralamada.';
   card.classList.remove('hidden');
 }
 // --- ONUR KÖŞESİ: KİŞİYE ÖZEL GÖRSEL VE PAYLAŞIM -------------------------
