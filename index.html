@@ -118,6 +118,13 @@
 <style>#panel-vekil #hm-alt{display:none !important}</style>
 </head>
 <body class="bg-zinc-950 text-zinc-100 antialiased min-h-screen flex flex-col">
+<!-- Anma günleri şeridi: yalnız o gün (Türkiye saati) görünür, sonra kendiliğinden kalkar -->
+<div id="anma" class="hidden w-full bg-black border-b-2 border-red-600 px-4 py-2.5 text-center">
+  <p class="text-[13px] sm:text-sm text-zinc-100 leading-snug"><b class="font-impact tracking-wide text-white">10 KASIM</b> · Saygıyla, minnetle anıyoruz. <span class="text-zinc-300">Egemenlik kayıtsız şartsız milletindir.</span> <a href="/gorev?tv=1" class="text-red-400 hover:text-red-300 font-bold whitespace-nowrap">▶ İzle</a></p>
+</div>
+<script>
+try { if (new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' }) === '2026-11-10') document.getElementById('anma').classList.remove('hidden'); } catch (e) {}
+</script>
 
 <script>
 (function () {
