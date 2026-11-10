@@ -477,20 +477,14 @@ button.btn.dy-ghost{border:1px solid var(--em)}
 <div class="hm-info" id="hm-info"></div>
 <div class="hm-list" id="hm-list"></div>
 <p class="hm-call" id="hm-call"></p>
-<div class="hm-cta"><a class="btn hm-red" id="hm-cta-case" href="https://7527iptal.org/?vaka=bildir">🐾 Vakayı bildir</a><a class="btn" id="hm-cta-pet" href="https://7527iptal.org/?dilekce=1">Dilekçeni gönder</a><a class="btn dy-ghost" id="hm-cta-vol" href="https://7527iptal.org/gorev.html">İl gönüllüsü ol</a></div>
-<div class="up-share"><b>Haritayı paylaş:</b>
-<button type="button" class="btn dy-ghost" data-hs="wa">WhatsApp</button>
-<button type="button" class="btn dy-ghost" data-hs="x">X</button>
-<button type="button" class="btn dy-ghost" data-hs="fb">Facebook</button>
-<button type="button" class="btn dy-ghost" data-hs="tg">Telegram</button>
-<button type="button" class="btn dy-ghost" data-hs="native" style="display:none">Paylaş… (Instagram ve diğerleri)</button>
-<button type="button" class="btn dy-ghost" data-hs="copy">Metni kopyala</button></div>
+<div class="hm-cta"><a class="btn hm-red" id="hm-cta-case" href="https://7527iptal.org/?vaka=bildir">🐾 Vakayı bildir</a><a class="btn" id="hm-cta-pet" href="https://7527iptal.org/?dilekce=1">Dilekçeni gönder</a><a class="btn dy-ghost" id="hm-cta-vol" href="https://7527iptal.org/gorev.html">İl gönüllüsü ol</a><button type="button" class="btn dy-ghost" id="hm-paylas">📤 Haritayı paylaş</button></div>
+
 <p class="hm-note">Haritada isim gösterilmez, sadece il bazında sayı gösterilir.</p>
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
 <script src="/kaynak/sbkopru.js?v=1"></script>
-<script src="/kaynak/og.js?v=7" defer></script>
+<script src="/kaynak/og.js?v=8" defer></script>
 <script src="/kaynak/tarayici.js?v=2" defer></script>
 <script>
 (function(){
@@ -583,38 +577,13 @@ button.btn.dy-ghost{border:1px solid var(--em)}
   }
   $('hm-l-vol').onclick=function(){layer='vol';render()};$('hm-l-pet').onclick=function(){layer='pet';render()};$('hm-l-mp').onclick=function(){layer='mp';render()};$('hm-l-case').onclick=function(){layer='case';render()};
   $('hm-t-tr').onclick=function(){view='tr';render()};$('hm-t-world').onclick=function(){view='world';render()};
-  // Harita paylasimi: metin katmana gore, baglanti yalnizca kendi paylasim sayfasi
-  function hsText(){
-    function cnt(src){var m={};(src||[]).forEach(function(r){if(!r.country&&r.city)m[r.city]=(m[r.city]||0)+Number(r.n)});return m}
-    if(layer==='case'){var il=Object.keys(cnt(caseRows())).length,n=(cases||[]).length,ek=81-il;
-      return{u:'7527 sonrası Türkiye\'de '+il+' ilde '+n+' vaka belgelendi: zehirlenen, vurulan, barınaklarda ölüme terk edilen canlar. '+ek+' ilde ise henüz kayıt yok; bu, orada yaşanmadığı anlamına gelmiyor.\n\nŞehrindeki eski-yeni her şiddet, ihmal ve barınak vakasını bildir. Belgeleyelim, davasının takipçisi olalım. #7527İptal',
-        k:il+' ilde '+n+' vaka belgelendi, '+ek+' ilde kayıt yok. Şehrindeki eski-yeni vakayı bildir. Belgeleyelim, takipçisi olalım. #7527İptal'}}
-    if(layer==='mp'){var st=mpStats(),bos=Object.keys(st).filter(function(c){return st[c].n===0}).sort(function(a,b){return st[b].vekil-st[a].vekil}),al=Object.keys(st).length-bos.length;
-      bos=bos.slice().sort(function(a,b){return a.localeCompare(b,'tr')});
-      return{u:'7527 sayılı yasanın iptali için vekillere dilekçe gönderiyoruz: '+al+' ilin vekillerine dilekçe ulaştı.'+(bos.length?'\n\nVekillerine henüz dilekçe gitmeyen iller ('+bos.length+'): '+bos.join(', ')+'.':'')+'\n\nKendi ilinin vekillerine dilekçeni gönder. Her vekile giden dilekçe, Meclis\'te iptal için bir ses daha. #7527İptal',
-        k:al+' ilin vekillerine dilekçe ulaştı. Kendi ilinin vekillerine sen de dilekçeni gönder. #7527İptal'}}
-    var m=cnt(layer==='pet'?pet:rows),il2=Object.keys(TR_XY).map(function(c){return{c:c,n:m[c]||0}}).sort(function(a,b){return a.c.localeCompare(b.c,'tr')});
-    var dolu=il2.filter(function(x){return x.n>0}).length,sifir=il2.filter(function(x){return x.n===0}).map(function(x){return x.c});
-    if(layer==='pet')return{u:'7527 sayılı yasanın iptali için dilekçe kampanyası sürüyor: '+dolu+' ilden dilekçe geldi, '+sifir.length+' ilden henüz ses yok.\n\nHenüz hiç dilekçe gelmeyen iller ('+sifir.length+'): '+sifir.join(', ')+'.\n\nBu illerdensen ya da tanıdığın varsa 1 dakikanı ayır, dilekçeni gönder. #7527İptal',
-      k:dolu+' ilden dilekçe geldi, '+sifir.length+' ilden henüz ses yok. Senin ilinden ses ver, dilekçeni gönder. #7527İptal'};
-    return{u:'7527 sayılı yasanın iptali için il il örgütleniyoruz: '+dolu+' ilde gönüllümüz var.\n\nHenüz gönüllümüz olmayan iller ('+sifir.length+'): '+sifir.join(', ')+'.\n\nİlinde kampanyanın sesi ol, gönüllü ol. #7527İptal',
-      k:dolu+' ilde gönüllümüz var, '+sifir.length+' ilde seni arıyoruz. İlinde kampanyanın sesi ol. #7527İptal'};
-  }
-  function hsShare(how,btn){
-    if(rows===null)return;
-    var m=hsText(),lnk='https://7527iptal.org/'+(layer==='vol'?'paylas/paylas-gonullu.html?v=2':layer==='case'?'paylas/paylas-harita.html?v=2':''),tam=m.u+'\n\n'+lnk,q=encodeURIComponent;
-    if(how==='wa'){window.open('https://api.whatsapp.com/send?text='+q(tam),'_blank');return}
-    if(how==='x'){window.open('https://twitter.com/intent/tweet?text='+q(m.k)+'&url='+q(lnk),'_blank');return}
-    if(how==='fb'){window.open('https://www.facebook.com/sharer/sharer.php?u='+q(lnk),'_blank');return}
-    if(how==='tg'){window.open('https://t.me/share/url?url='+q(lnk)+'&text='+q(m.u),'_blank');return}
-    if(how==='native'){if(navigator.share)navigator.share({title:'7527 İptal',text:m.u+'\n\n'+lnk}).catch(function(){});return}
-    function ok(){var o=btn.getAttribute('data-o')||btn.textContent;btn.setAttribute('data-o',o);btn.textContent='✓ Kopyalandı';setTimeout(function(){btn.textContent=o},1800)}
-    function fb(){var a=document.createElement('textarea');a.value=tam;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();try{document.execCommand('copy');ok()}catch(e){}document.body.removeChild(a)}
-    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(tam).then(ok,fb);else fb();
-  }
-  Array.prototype.forEach.call(document.querySelectorAll('#harita [data-hs]'),function(b){
-    if(b.getAttribute('data-hs')==='native'&&navigator.share)b.style.display='';
-    b.addEventListener('click',function(){hsShare(b.getAttribute('data-hs'),b)});
+  // Harita paylasimi: onizleme gorseli haritanin kendisi (og.js), bos iller #etiket, muhatap @TBMMresmi
+  $('hm-paylas').addEventListener('click',function(){
+    if(rows===null||!window.OG||!OG.haritaPaylas)return;
+    var m={},src=layer==='case'?caseRows():layer==='pet'?(pet||[]):layer==='mp'?[]:rows;
+    if(layer==='mp'){var st=mpStats();Object.keys(st).forEach(function(c){m[c]=st[c].n})}
+    src.forEach(function(r){if(!r.country&&r.city)m[r.city]=(m[r.city]||0)+Number(r.n)});
+    OG.haritaPaylas({katman:layer,sayim:m,xy:TR_XY},this);
   });
   async function load(){
     var box=$('hm-map');

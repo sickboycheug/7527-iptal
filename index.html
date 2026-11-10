@@ -22,7 +22,7 @@
 <meta name="twitter:image" content="https://7527iptal.org/gorsel/halk-iradesi.png?v=2">
 <!-- Tailwind: hazır CSS dosyası -->
 <link rel="stylesheet" href="/kaynak/tailwind.css?v=1">
-<script src="/kaynak/og.js?v=7" defer></script>
+<script src="/kaynak/og.js?v=8" defer></script>
 <script src="/kaynak/tarayici.js?v=2" defer></script>
 <!-- QRCode.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -865,13 +865,8 @@ window.addEventListener('load', function () {
           <button type="button" id="hm-cta-pet" onclick="switchTab('vatandas'); adim1eGit()" class="py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold text-xs uppercase tracking-wide shadow">📨 Dilekçeni Gönder</button>
           <a id="hm-cta-vol" href="/gorev.html" class="block py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs uppercase tracking-wide shadow">🤝 İl Gönüllüsü Ol</a>
         </div>
-        <div class="grid grid-cols-2 gap-2 max-w-sm mx-auto mt-2">
-          <button type="button" onclick="hmDavet('wa')" class="py-2.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded-xl font-bold text-[11px]">📣 WhatsApp</button>
-          <button type="button" onclick="hmDavet('x')" class="py-2.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-white rounded-xl font-bold text-[11px]">𝕏 (Twitter)</button>
-          <button type="button" onclick="hmDavet('fb')" class="py-2.5 bg-blue-800 hover:bg-blue-700 text-white rounded-xl font-bold text-[11px]">Facebook</button>
-          <button type="button" onclick="hmDavet('tg')" class="py-2.5 bg-sky-700 hover:bg-sky-600 text-white rounded-xl font-bold text-[11px]">Telegram</button>
-          <button type="button" id="hm-davet-native" onclick="hmDavet('native')" class="hidden col-span-2 py-2.5 bg-red-800 hover:bg-red-700 text-white rounded-xl font-bold text-[11px]">📲 Diğer uygulamalar (Instagram, e-posta…)</button>
-          <button type="button" id="hm-davet-kopya" onclick="hmDavet('copy')" class="col-span-2 py-2.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-zinc-200 rounded-xl font-bold text-[11px]">📋 Metni kopyala</button>
+        <div class="max-w-sm mx-auto mt-2">
+          <button type="button" onclick="hmPaylas(this)" class="w-full py-2.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-white rounded-xl font-bold text-[11px]">📤 Haritayı paylaş</button>
         </div>
         <div class="max-w-sm mx-auto mt-2">
           <button type="button" onclick="ilpAc()" class="w-full py-2.5 bg-pink-700 hover:bg-pink-600 text-white rounded-xl font-bold text-[11px]">📍 İl / Ülke Seç ve Paylaş</button>
@@ -4272,64 +4267,15 @@ async function hmLoad() {
   } catch (e) { box.textContent = 'Harita şu an yüklenemedi.'; }
 }
 function hmTab(v) { _hmView = v; hmRender(); }
-function hmDavetMetni() {
-  if (_hmLayer === 'case') {
-    var cm = {}; ALMANAC_DATA.forEach(function (x) { if (x.city) cm[x.city] = 1; });
-    var il = Object.keys(cm).length, eksikV = 81 - il;
-    return {
-      uzun: '7527 sonrası Türkiye\'de ' + il + ' ilde ' + ALMANAC_DATA.length + ' vaka belgelendi: zehirlenen, vurulan, barınaklarda ölüme terk edilen canlar. ' +
-        eksikV + ' ilde ise henüz kayıt yok; bu, orada yaşanmadığı anlamına gelmiyor.\n\n' +
-        'Şehrindeki eski-yeni her şiddet, ihmal ve barınak vakasını bildir. Belgeleyelim, davasının takipçisi olalım. #7527İptal',
-      kisa: il + ' ilde ' + ALMANAC_DATA.length + ' vaka belgelendi, ' + eksikV + ' ilde kayıt yok. Şehrindeki eski-yeni vakayı bildir. Belgeleyelim, takipçisi olalım. #7527İptal'
-    };
-  }
-  var map = {};
-  var src = _hmLayer === 'pet' ? (_hmPet || []) : (_hmRows || []);
-  src.forEach(function (r) { if (!r.country && r.city) map[r.city] = (map[r.city] || 0) + Number(r.n); });
-  var iller = Object.keys(TR_XY).map(function (c) { return { c: c, n: map[c] || 0 }; });
-  iller.sort(function (a, b) { return a.n - b.n || a.c.localeCompare(b.c, 'tr'); });
-  var dolu = iller.filter(function (x) { return x.n > 0; }).length;
-  var sifir = iller.filter(function (x) { return x.n === 0; }).map(function (x) { return x.c; });
-  if (_hmLayer === 'mp') {
-    var st = hmMpStats();
-    var bos = Object.keys(st).filter(function (c) { return st[c].n === 0; }).sort(function (a, b) { return a.localeCompare(b, 'tr'); });
-    var alan = Object.keys(st).filter(function (c) { return st[c].n > 0; }).length;
-    return {
-      uzun: '7527 sayılı yasanın iptali için vekillere dilekçe gönderiyoruz: ' + alan + ' ilin vekillerine dilekçe ulaştı.' +
-        (bos.length ? '\n\nVekillerine henüz dilekçe gitmeyen iller (' + bos.length + '): ' + bos.join(', ') + '.' : '') +
-        '\n\nKendi ilinin vekillerine dilekçeni gönder. Her vekile giden dilekçe, Meclis\'te iptal için bir ses daha. #7527İptal',
-      kisa: alan + ' ilin vekillerine dilekçe ulaştı. Kendi ilinin vekillerine sen de dilekçeni gönder. #7527İptal'
-    };
-  }
-  if (_hmLayer === 'pet') {
-    return {
-      uzun: '7527 sayılı yasanın iptali için dilekçe kampanyası sürüyor: ' + dolu + ' ilden dilekçe geldi, ' + sifir.length + ' ilden henüz ses yok.\n\n' +
-        'Henüz hiç dilekçe gelmeyen iller (' + sifir.length + '): ' + sifir.join(', ') + '.\n\n' +
-        'Bu illerdensen ya da tanıdığın varsa 1 dakikanı ayır, dilekçeni gönder. #7527İptal',
-      kisa: dolu + ' ilden dilekçe geldi, ' + sifir.length + ' ilden henüz ses yok. Senin ilinden ses ver, dilekçeni gönder. #7527İptal'
-    };
-  }
-  return {
-    uzun: '7527 sayılı yasanın iptali için il il örgütleniyoruz: ' + dolu + ' ilde gönüllümüz var.\n\n' +
-      'Henüz gönüllümüz olmayan iller (' + sifir.length + '): ' + sifir.join(', ') + '.\n\n' +
-      'İlinde kampanyanın sesi ol, gönüllü ol. #7527İptal',
-    kisa: dolu + ' ilde gönüllümüz var, ' + sifir.length + ' ilde seni arıyoruz. İlinde kampanyanın sesi ol. #7527İptal'
-  };
+// Harita paylasimi: onizleme gorseli haritanin kendisi (og.js), bos iller #etiket, muhatap @TBMMresmi
+function hmSayim() {
+  var src = _hmLayer === 'case' ? hmCaseRows() : _hmLayer === 'mp' ? hmMpRows() : _hmLayer === 'pet' ? (_hmPet || []) : (_hmRows || []), m = {};
+  src.forEach(function (r) { if (!r.country && r.city) m[r.city] = (m[r.city] || 0) + Number(r.n); });
+  return m;
 }
-function hmDavet(how) {
-  var m = hmDavetMetni(), t = m.uzun;
-  // Her paylasim yalnizca kendi sayfasinin baglantisini tasir (onizleme gorseli o sayfadan gelir)
-  var lnk = SITE_URL + (_hmLayer === 'vol' ? '/paylas/paylas-gonullu.html?v=2' : _hmLayer === 'case' ? '/paylas/paylas-harita.html?v=2' : '/');
-  var tam = t + '\n\n' + lnk;
-  if (how === 'wa') { window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(tam), '_blank'); return; }
-  if (how === 'x') { window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(m.kisa) + '&url=' + encodeURIComponent(lnk), '_blank'); return; }
-  if (how === 'fb') { window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(lnk), '_blank'); return; }
-  if (how === 'tg') { window.open('https://t.me/share/url?url=' + encodeURIComponent(lnk) + '&text=' + encodeURIComponent(t), '_blank'); return; }
-  if (how === 'native') { if (navigator.share) { navigator.share({ title: '7527 İptal', text: t + '\n\n' + lnk }).catch(function () {}); } return; }
-  var b = document.getElementById('hm-davet-kopya');
-  function ok() { if (b) { var o = b.getAttribute('data-o') || b.textContent; b.setAttribute('data-o', o); b.textContent = '✓ Kopyalandı'; setTimeout(function () { b.textContent = o; }, 2000); } }
-  function fb() { var a = document.createElement('textarea'); a.value = tam; a.style.position = 'fixed'; a.style.opacity = '0'; document.body.appendChild(a); a.select(); try { document.execCommand('copy'); ok(); } catch (e) {} document.body.removeChild(a); }
-  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(tam).then(ok, fb); else fb();
+function hmPaylas(b) {
+  if (!window.OG || !OG.haritaPaylas || _hmRows === null || (_hmLayer === 'pet' && _hmPet === null)) return;
+  OG.haritaPaylas({ katman: _hmLayer, sayim: hmSayim(), xy: TR_XY }, b);
 }
 // Genis ekranda dilekce paneli sag kolonla birlikte kayar, altinda bos alan kalmaz
 (function () {
@@ -4471,7 +4417,6 @@ function hmPanel(tab) {
   if (kutu) (vk ? ['mp', 'pet', 'case', 'vol'] : ['pet', 'mp', 'case', 'vol']).forEach(function (v) { var b = document.getElementById('hm-layer-' + v); if (b) kutu.appendChild(b); });
   hmLayer(vk ? 'mp' : 'pet');
 }
-(function () { var n = document.getElementById('hm-davet-native'); if (n && navigator.share) n.classList.remove('hidden'); })();
 // Vekil katmani: her ilin vekillerine giden (onayli) dilekce sayisi
 function hmMpStats() {
   var st = {};

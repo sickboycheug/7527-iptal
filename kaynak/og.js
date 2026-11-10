@@ -176,14 +176,14 @@
   // Tek düğme: telefonun paylaş menüsü (link + metin). Menü yoksa metin ve link kopyalanır.
   var MOBIL = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
   // Bilgisayarda (paylaş menüsü olmayan ya da çalışmayan tarayıcılarda): küçük seçim kutusu
-  function menu(t, url, baslik) {
+  function menu(t, url, baslik, xt) {
     var e = encodeURIComponent, eski = document.getElementById('og-menu'); if (eski) eski.remove();
     var m = document.createElement('div'); m.id = 'og-menu';
     m.style.cssText = 'position:fixed;inset:0;z-index:2147483646;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;padding:16px';
     var k = document.createElement('div');
     k.style.cssText = 'background:#18181b;border:1px solid #3f3f46;border-radius:16px;padding:16px;width:100%;max-width:340px;font:600 14px Inter,system-ui,sans-serif;color:#f4f4f5';
     k.innerHTML = '<div style="font-weight:800;margin-bottom:10px">📤 Paylaş</div>';
-    var hedef = [['💬 WhatsApp', 'https://api.whatsapp.com/send?text=' + e(t + '\n\n' + url)], ['𝕏 X', 'https://twitter.com/intent/tweet?text=' + e(t) + '&url=' + e(url)],
+    var hedef = [['💬 WhatsApp', 'https://api.whatsapp.com/send?text=' + e(t + '\n\n' + url)], ['𝕏 X', 'https://twitter.com/intent/tweet?text=' + e(xt || t) + '&url=' + e(url)],
       ['Facebook', 'https://www.facebook.com/sharer/sharer.php?u=' + e(url)], ['Telegram', 'https://t.me/share/url?url=' + e(url) + '&text=' + e(t)]];
     var g = document.createElement('div'); g.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:8px';
     function dg(ad, f, ana) { var b = document.createElement('button'); b.type = 'button'; b.textContent = ad;
@@ -204,10 +204,10 @@
     if (MOBIL && navigator.share) {
       // Link metnin içinde: X ve Instagram url alanı varken metni atıyor; Facebook metni hiç almıyor, panoya kopyalanır
       var tam = t + '\n\n' + o.url; kopya(tam);
-      navigator.share({ title: o.baslik || '7527 İPTAL', text: tam }).catch(function (err) { if (!err || err.name !== 'AbortError') menu(t, o.url, o.baslik); });
+      navigator.share({ title: o.baslik || '7527 İPTAL', text: tam }).catch(function (err) { if (!err || err.name !== 'AbortError') menu(t, o.url, o.baslik, o.x); });
       return 'menu';
     }
-    menu(t, o.url, o.baslik); return 'menu';
+    menu(t, o.url, o.baslik, o.x); return 'menu';
   }
   // Instagram gibi görsel isteyen yerler: metin kopyalanır, görsel paylaşılır; olmazsa indirilir
   function gorselPaylas(o) {
@@ -239,7 +239,106 @@
   }
   try { vekilHazirla(); } catch (e) {}
 
+  // ---- harita paylaşımı (ana sayfa, pano, hakikat aynı kodu kullanır) ----
+  // o: { katman: 'pet'|'mp'|'case'|'vol', sayim: { il: sayı }, xy: TR_XY }
+  // Önizleme görseli haritanın kendisidir; metinde boş iller #etiket, muhatap @TBMMresmi
+  var GEO = null;
+  function geo() { if (!GEO) GEO = fetch('https://cdn.jsdelivr.net/gh/johan/world.geo.json@master/countries.geo.json').then(function (r) { return r.json(); }).catch(function () { GEO = null; return null; }); return GEO; }
+  var MUHATAP = '@TBMMresmi';
+  function haritaVeri(o) {
+    var k = o.katman, xy = o.xy || {}, say = o.sayim || {}, iller = Object.keys(xy);
+    var dolu = iller.filter(function (c) { return Number(say[c] || 0) > 0; });
+    var bos = iller.filter(function (c) { return !(Number(say[c] || 0) > 0); }).sort(function (a, b) { return a.localeCompare(b, 'tr'); });
+    var top = dolu.reduce(function (s, c) { return s + Number(say[c]); }, 0), d = dolu.length, b = bos.length;
+    var T = {
+      pet: [d + ' İLDEN DİLEKÇE GELDİ', b + ' İLDEN HENÜZ SES YOK', 'DİLEKÇENİ GÖNDER',
+        '7527 sayılı yasanın iptali için dilekçe kampanyası sürüyor: ' + d + ' ilden dilekçe geldi, ' + b + ' ilden henüz ses yok.',
+        'Henüz hiç dilekçe gelmeyen iller', 'Bu illerdensen ya da tanıdığın varsa 1 dakikanı ayır, dilekçeni gönder.',
+        d + ' ilden dilekçe geldi, ' + b + ' ilden henüz ses yok. Senin ilinden ses ver, dilekçeni gönder.', '/?dilekce=1'],
+      mp: [d + ' İLİN VEKİLLERİNE DİLEKÇE ULAŞTI', b + ' İLİN VEKİLLERİNE HENÜZ GİTMEDİ', 'VEKİLİNE DİLEKÇENİ GÖNDER',
+        '7527 sayılı yasanın iptali için vekillere dilekçe gönderiyoruz: ' + d + ' ilin vekillerine ' + top + ' dilekçe ulaştı.',
+        'Vekillerine henüz dilekçe gitmeyen iller', "Kendi ilinin vekillerine dilekçeni gönder. Her vekile giden dilekçe, Meclis'te iptal için bir ses daha.",
+        d + ' ilin vekillerine dilekçe ulaştı, ' + b + ' ilin vekillerine henüz gitmedi. Vekiline sen de dilekçeni gönder.', '/?dilekce=1'],
+      case: [top + ' VAKA, ' + d + ' İLDE BELGELENDİ', b + ' İLDE HENÜZ KAYIT YOK', 'VAKAYI BİLDİR',
+        "7527 sonrası Türkiye'de " + d + ' ilde ' + top + ' vaka belgelendi: zehirlenen, vurulan, barınaklarda ölüme terk edilen canlar. ' + b + ' ilde ise henüz kayıt yok; bu, orada yaşanmadığı anlamına gelmiyor.',
+        'Henüz vaka kaydı olmayan iller', 'Şehrindeki eski-yeni her şiddet, ihmal ve barınak vakasını bildir. Belgeleyelim, davasının takipçisi olalım.',
+        d + ' ilde ' + top + ' vaka belgelendi, ' + b + ' ilde kayıt yok. Şehrindeki vakayı bildir, takipçisi olalım.', '/hakikat.html#harita'],
+      vol: [d + ' İLDE GÖNÜLLÜMÜZ VAR', b + ' İLDE SENİ ARIYORUZ', 'GÖNÜLLÜ OL',
+        '7527 sayılı yasanın iptali için il il örgütleniyoruz: ' + d + ' ilde gönüllümüz var.',
+        'Henüz gönüllümüz olmayan iller', 'İlinde kampanyanın sesi ol, gönüllü ol.',
+        d + ' ilde gönüllümüz var, ' + b + ' ilde seni arıyoruz. İlinde kampanyanın sesi ol.', '/gorev.html']
+    }[k] || [];
+    var etiketler = bos.map(et), mu = k === 'vol' ? '' : MUHATAP;
+    var metin = T[3] + (b ? '\n\n' + T[4] + ' (' + b + '):\n' + etiketler.join(' ') : '') + '\n\n' + T[5] + (mu ? '\n\n' + mu : '');
+    // X: 280 karakter (link 23 sayılır); sığdığı kadar il etiketi
+    var x = T[6] + (mu ? ' ' + mu : '') + ' #7527İptal', kalan = 280 - 24 - x.length - 1, ek2 = [];
+    for (var i = 0; i < etiketler.length; i++) { if (etiketler[i].length + 1 > kalan) break; ek2.push(etiketler[i]); kalan -= etiketler[i].length + 1; }
+    if (ek2.length) x += '\n' + ek2.join(' ');
+    return { k: k, say: say, xy: xy, d: d, b: b, top: top, bos: bos, b1: T[0], b2: T[1], cta: T[2], metin: metin, x: x, hedef: T[7] };
+  }
+  function haritaGorsel(v) {
+    return function () {
+      return Promise.resolve(document.fonts && document.fonts.load ? document.fonts.load('700 50px Oswald', 'İĞŞÇÖÜığşçöü0→').catch(function () {}) : 0).then(geo).then(function (gj) {
+        var W = 1200, H = 630, c = document.createElement('canvas'); c.width = W; c.height = H;
+        var x = c.getContext('2d'), O = 'Oswald, "Arial Narrow", sans-serif', RENK = v.k === 'case' ? '#dc2626' : '#10b981';
+        var S = 59, X0 = 150, Y0 = 186;
+        function px(lat, lon) { return [X0 + (lon - 25.5) * 0.777 * S, Y0 + (42.3 - lat) * S]; }
+        x.fillStyle = '#09090b'; x.fillRect(0, 0, W, H);
+        x.save(); x.beginPath(); x.rect(0, 168, W, 400); x.clip();
+        ((gj && gj.features) || []).forEach(function (f) {
+          if (f.id === 'ATA') return;
+          var ps = f.geometry.type === 'Polygon' ? [f.geometry.coordinates] : f.geometry.coordinates;
+          x.beginPath();
+          ps.forEach(function (po) { po.forEach(function (r) {
+            if (!r.some(function (q) { return q[0] > 18 && q[0] < 53 && q[1] > 30 && q[1] < 47; })) return;
+            r.forEach(function (q, i) { var t = px(q[1], q[0]); if (i === 0) x.moveTo(t[0], t[1]); else x.lineTo(t[0], t[1]); });
+            x.closePath();
+          }); });
+          x.fillStyle = f.id === 'TUR' ? '#3f3f46' : '#1c1c1f'; x.fill(); x.strokeStyle = '#71717a'; x.lineWidth = 1; x.stroke();
+        });
+        var iller = Object.keys(v.xy).sort(function (a, b) { return Number(v.say[b] || 0) - Number(v.say[a] || 0); });
+        x.textAlign = 'center'; x.textBaseline = 'middle';
+        iller.forEach(function (il) {
+          var n = Number(v.say[il] || 0), t = px(v.xy[il][0], v.xy[il][1]);
+          x.beginPath();
+          if (n > 0) {
+            var r = (7 + Math.min(n, 20) * 0.7) * S / 40;
+            x.arc(t[0], t[1], r, 0, 7); x.globalAlpha = 0.88; x.fillStyle = RENK; x.fill(); x.globalAlpha = 1;
+            x.strokeStyle = '#ecfdf5'; x.lineWidth = 1.5; x.stroke();
+            x.fillStyle = '#fff'; x.font = '700 ' + (n > 99 ? 15 : 17) + 'px ' + O; x.fillText(String(n), t[0], t[1] + 1);
+          } else { x.arc(t[0], t[1], 5.5, 0, 7); x.fillStyle = '#71717a'; x.fill(); x.strokeStyle = '#d4d4d8'; x.lineWidth = 1; x.stroke(); }
+        });
+        x.restore();
+        x.textBaseline = 'alphabetic'; x.textAlign = 'left';
+        x.font = '700 30px ' + O; var et1 = '7527 İPTAL!', ew = x.measureText(et1).width;
+        x.fillStyle = '#dc2626'; x.fillRect(40, 34, ew + 28, 48); x.fillStyle = '#fff'; x.fillText(et1, 54, 70);
+        function sigdir(t, boy, maxw) { do { x.font = '700 ' + boy + 'px ' + O; boy -= 2; } while (x.measureText(t).width > maxw && boy > 22); }
+        x.fillStyle = '#fff'; sigdir(v.b1, 58, W - ew - 120); x.fillText(v.b1, ew + 92, 78);
+        x.fillStyle = '#fcd34d'; sigdir(v.b2, 40, W - 80); x.fillText(v.b2, 40, 140);
+        x.fillStyle = '#dc2626'; x.fillRect(0, H - 62, W, 62);
+        x.fillStyle = '#fff'; x.font = '700 30px ' + O; x.fillText(v.cta + ' →', 40, H - 20);
+        x.textAlign = 'right'; x.fillText('7527iptal.org', W - 40, H - 20);
+        return c;
+      });
+    };
+  }
+  function haritaLink(o) {
+    var v = haritaVeri(o), parca = [v.k].concat(Object.keys(v.say).filter(function (c) { return Number(v.say[c]) > 0; }).sort().map(function (c) { return c + ':' + v.say[c]; }));
+    v.url = sayfa({ tur: 'harita', id: v.k, parcalar: parca, baslik: v.b1 + ' · ' + v.b2, aciklama: v.metin.split('\n')[0].slice(0, 300), hedef: v.hedef, gorsel: haritaGorsel(v), w: 1200, h: 630 });
+    return v;
+  }
+  // Tek düğme: görsel hazırlanır (en çok 10 sn), sonra paylaş menüsü
+  function haritaPaylas(o, dugme) {
+    var v = haritaLink(o), eski = dugme && dugme.textContent;
+    if (dugme) { dugme.disabled = true; dugme.textContent = 'Harita görseli hazırlanıyor…'; }
+    return hazir(v.url).then(function () {
+      if (dugme) { dugme.disabled = false; dugme.textContent = eski; }
+      paylas({ baslik: v.b1, metin: v.metin, url: v.url, x: v.x });
+    });
+  }
+
   window.OG = { ozet: ozet, slug: slug, anahtar: anahtar, kart: kart, kucult: kucult, hazirla: hazirla,
     vaka: vaka, onur: onur, onurLink: onurLink, saha: saha,
-    sayfa: sayfa, hazir: hazir, vakaEtiket: vakaEtiket, vekilHazirla: vekilHazirla, ek: ek, kopya: kopya, paylas: paylas, menu: menu, gorselPaylas: gorselPaylas, BILGI: BILGI, ETIKET: ETIKET };
+    sayfa: sayfa, hazir: hazir, vakaEtiket: vakaEtiket, vekilHazirla: vekilHazirla, ek: ek, kopya: kopya, paylas: paylas, menu: menu, gorselPaylas: gorselPaylas, BILGI: BILGI, ETIKET: ETIKET,
+    haritaVeri: haritaVeri, haritaLink: haritaLink, haritaPaylas: haritaPaylas, haritaGorsel: haritaGorsel, et: et };
 })();
