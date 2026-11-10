@@ -4018,7 +4018,7 @@ async function _dilekceGonder() {
       return;
     }
     bekleyenEkle(lastPetitionNumber);
-    rkTag(lastPetitionNumber, name);
+    try { await Promise.race([rkTag(lastPetitionNumber, name), new Promise(function (ok) { setTimeout(ok, 3000); })]); } catch (e) {}
     // Dilekceyi olusturan herkes imzaci sayilir; sayac burada guncellenir.
     // Onay adimi ('Evet, gonderdim') yalnizca bilgi amacli kaydedilir.
     refreshCounters();
@@ -4073,6 +4073,7 @@ async function confirmPetitionSent(didSend) {
   if (okBtn) { okBtn.disabled = true; okBtn.textContent = 'Kaydediliyor...'; }
   try {
     await callRpc('confirm_petition', { p_petition_number: lastPetitionNumber });
+    try { rkTag(lastPetitionNumber, (document.getElementById('citizen-name') || {}).value || ''); } catch (eT) {}
   } catch (e) {
     console.error('[onay]', e);
     if (okBtn) { okBtn.disabled = false; okBtn.innerHTML = okHtml; }
@@ -4160,6 +4161,7 @@ async function linkKontrol() {
     ok.disabled = true; ok.textContent = 'Kaydediliyor...';
     try { await callRpc('confirm_petition', { p_petition_number: no }); }
     catch (e) { ok.disabled = false; ok.textContent = '✓ Gönderdim'; alert('Bağlantı hatası, tekrar dene.'); return; }
+    try { rkTag(no, (document.getElementById('citizen-name') || {}).value || ''); } catch (eT) {}
     lkTemizle(no);
     try { await refreshCounters(); } catch (e) {}
     box.style.display = 'none';
@@ -7282,8 +7284,9 @@ function rkLabel(name) {
   return w.length === 1 ? cap(w[0]) : cap(w[0]) + ' ' + w[w.length - 1].charAt(0).toLocaleUpperCase('tr') + '.';
 }
 function rkTag(no, name) {
-  // Dilekçe akışını beklemez; başarısız olursa sessizce geçer (panelden sonradan tamamlanır)
-  rkHash(name).then(function (h) {
+  // Sıralamadaki ad etiketi (Ad S.). Kişi e-posta uygulamasına geçince istek yarıda kalmasın diye
+  // gönderimde en çok 3 sn beklenir; "Gönderdim" onayında bir kez daha yazılır (aynı değer, zararsız).
+  return rkHash(name).then(function (h) {
     if (!h || !no) return;
     return callRpc('tag_petition', { p_petition_number: no, p_hash: h, p_label: rkLabel(name) });
   }).catch(function () {});
