@@ -2929,7 +2929,7 @@ async function loadMap() {
 function mapPaylas(b) {
   var rows = _mapLayer === 'vol' ? _mapRows : (_mapPub && _mapPub[_mapLayer]);
   if (!window.OG || !OG.haritaPaylas || !rows) return;
-  var m = {}; rows.forEach(function (r) { if (!r.country && r.city) m[r.city] = (m[r.city] || 0) + Number(r.n); });
+  var m = {}; rows.forEach(function (r) { if ((!r.country || r.country === 'Türkiye') && r.city) m[r.city] = (m[r.city] || 0) + Number(r.n); });
   OG.haritaPaylas({ katman: _mapLayer, sayim: m, xy: TR_XY }, b);
 }
 function mapTab(v) { _mapView = v; renderMap(); }

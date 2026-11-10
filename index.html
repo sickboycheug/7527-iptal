@@ -881,12 +881,13 @@ window.addEventListener('load', function () {
           <button type="button" onclick="hmPaylas(this)" class="w-full py-2.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-white rounded-xl font-bold text-[11px]">📤 Haritayı paylaş</button>
         </div>
         <div class="max-w-sm mx-auto mt-2">
-          <button type="button" onclick="ilpAc()" class="w-full py-2.5 bg-pink-700 hover:bg-pink-600 text-white rounded-xl font-bold text-[11px]">📍 İl / Ülke Seç ve Paylaş</button>
+          <button type="button" onclick="ilpAc()" class="w-full py-2.5 bg-pink-700 hover:bg-pink-600 text-white rounded-xl font-bold text-[11px]">📍 Ülke / İl / İlçe Seç ve Paylaş</button>
           <div id="ilp-kutu" style="display:none" class="mt-2 text-left space-y-2">
             <div class="grid grid-cols-2 gap-2">
-              <select id="ilp-yer" onchange="ilpYerDegisti()" aria-label="İl veya ülke" class="w-full min-w-0 bg-zinc-950 border border-zinc-700 rounded-lg px-2 py-2 text-zinc-100 text-xs"></select>
-              <select id="ilp-alt" onchange="ilpGoster()" aria-label="İlçe veya şehir" class="w-full min-w-0 bg-zinc-950 border border-zinc-700 rounded-lg px-2 py-2 text-zinc-100 text-xs"></select>
+              <select id="ilp-ulke" onchange="ilpUlkeDegisti()" aria-label="Ülke" class="w-full min-w-0 bg-zinc-950 border border-zinc-700 rounded-lg px-2 py-2 text-zinc-100 text-xs"></select>
+              <select id="ilp-yer" onchange="ilpYerDegisti()" aria-label="İl veya şehir" class="w-full min-w-0 bg-zinc-950 border border-zinc-700 rounded-lg px-2 py-2 text-zinc-100 text-xs"></select>
             </div>
+            <select id="ilp-alt" onchange="ilpGoster()" aria-label="İlçe" style="display:none" class="w-full min-w-0 bg-zinc-950 border border-zinc-700 rounded-lg px-2 py-2 text-zinc-100 text-xs"></select>
             <img id="ilp-gorsel" alt="Seçilen yerin harita görseli" class="rounded-lg border border-zinc-800" style="display:none;width:100%;max-width:100%">
             <p id="ilp-metin" class="whitespace-pre-line break-words bg-zinc-950 border border-zinc-800 rounded-lg p-2 text-[11px] text-zinc-200"></p>
             <button type="button" id="ilp-sh" onclick="ilpPaylas('link')" class="w-full py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold text-xs">📤 Paylaş</button>
@@ -4289,7 +4290,7 @@ function hmTab(v) { _hmView = v; hmRender(); }
 // Harita paylasimi: onizleme gorseli haritanin kendisi (og.js), bos iller #etiket, muhatap @TBMMresmi
 function hmSayim() {
   var src = _hmLayer === 'case' ? hmCaseRows() : _hmLayer === 'mp' ? hmMpRows() : _hmLayer === 'pet' ? (_hmPet || []) : (_hmRows || []), m = {};
-  src.forEach(function (r) { if (!r.country && r.city) m[r.city] = (m[r.city] || 0) + Number(r.n); });
+  src.forEach(function (r) { if ((!r.country || r.country === 'Türkiye') && r.city) m[r.city] = (m[r.city] || 0) + Number(r.n); });
   return m;
 }
 function hmPaylas(b) {
@@ -4306,52 +4307,64 @@ function hmPaylas(b) {
 })();
 // IL / ULKE PAYLASIMI: sayilar haritanin zaten okudugu canli veriden gelir
 function ilpSec(el, ilk, liste) {
-  el.textContent = ''; var o = document.createElement('option'); o.value = ''; o.textContent = ilk; el.appendChild(o);
+  el.textContent = ''; if (ilk !== null) { var o = document.createElement('option'); o.value = ''; o.textContent = ilk; el.appendChild(o); }
   liste.forEach(function (x) { var p = document.createElement('option'); p.value = x; p.textContent = x; el.appendChild(p); });
 }
+// Ülke → İl (Türkiye) ya da Şehir (yurtdışı) → İlçe. "Türkiye" yazılmış kayıtlar Türkiye sayılır, ülke listesine düşmez.
+function ilpTr(r) { return !r.country || r.country === 'Türkiye'; }
 function ilpAc() {
-  var k = document.getElementById('ilp-kutu'), y = document.getElementById('ilp-yer');
-  if (k.style.display === 'none') {
-    var u = {}; (_hmPet || []).concat(_hmRows || []).forEach(function (r) { if (r.country) u[r.country] = 1; });
-    var v = y.value; ilpSec(y, 'İl / ülke seç', CITIES.concat(Object.keys(u).sort(function (a, b) { return a.localeCompare(b, 'tr'); })));
-    y.value = v; k.style.display = ''; if (!v) ilpYerDegisti();
-  } else k.style.display = 'none';
+  var k = document.getElementById('ilp-kutu'), u = document.getElementById('ilp-ulke');
+  if (k.style.display !== 'none') { k.style.display = 'none'; return; }
+  var d = {}; (_hmPet || []).concat(_hmRows || []).forEach(function (r) { if (!ilpTr(r)) d[r.country] = 1; });
+  var v = u.value || 'Türkiye';
+  ilpSec(u, null, ['Türkiye'].concat(Object.keys(d).sort(function (a, b) { return a.localeCompare(b, 'tr'); })));
+  u.value = v; k.style.display = ''; ilpUlkeDegisti();
+}
+function ilpUlkeDegisti() {
+  var ul = document.getElementById('ilp-ulke').value, y = document.getElementById('ilp-yer'), m = {};
+  if (ul === 'Türkiye') ilpSec(y, 'Tüm Türkiye', CITIES.slice());
+  else {
+    (_hmPet || []).concat(_hmRows || []).forEach(function (r) { if (r.country === ul && r.city) m[r.city] = 1; });
+    ilpSec(y, 'Tüm ülke', Object.keys(m).sort(function (x, z) { return x.localeCompare(z, 'tr'); }));
+  }
+  ilpYerDegisti();
 }
 function ilpYerDegisti() {
-  var y = document.getElementById('ilp-yer').value, a = document.getElementById('ilp-alt'), m = {};
-  if (y && CITIES.indexOf(y) >= 0) ilpSec(a, 'İlçe seç', ['Tüm ilçeler'].concat(IL_ILCE[y] || []));
-  else {
-    (_hmPet || []).concat(_hmRows || []).forEach(function (r) { if (r.country === y && r.city) m[r.city] = 1; });
-    ilpSec(a, y ? 'Tüm ülke' : 'İlçe / şehir', Object.keys(m).sort(function (x, z) { return x.localeCompare(z, 'tr'); }));
-  }
+  var ul = document.getElementById('ilp-ulke').value, y = document.getElementById('ilp-yer').value, a = document.getElementById('ilp-alt');
+  var ilce = ul === 'Türkiye' && y && (IL_ILCE[y] || []).length;
+  if (ilce) ilpSec(a, 'Tüm ilçeler', IL_ILCE[y]); else ilpSec(a, '', []);
+  a.style.display = ilce ? '' : 'none';
   ilpGoster();
 }
 function ilpVeri() {
-  var y = document.getElementById('ilp-yer').value, alt = document.getElementById('ilp-alt').value;
-  if (!y) return null;
-  var hep = alt === 'Tüm ilçeler'; if (hep) alt = '';
-  var tr = CITIES.indexOf(y) >= 0, d = 0, g = 0, v = 0;
-  function tut(r) { return tr ? (!r.country && r.city === y) : (r.country === y && (!alt || r.city === alt)); }
-  (_hmPet || []).forEach(function (r) { if (tut(r)) d += Number(r.n); });
+  var ul = document.getElementById('ilp-ulke').value, y = document.getElementById('ilp-yer').value, alt = document.getElementById('ilp-alt').value;
+  if (!ul) return null;
+  var tr = ul === 'Türkiye', d = 0, g = 0, v = 0, iller = {};
+  // Sayılar il düzeyinde tutulur; ilçe seçilse de il sayısı yazılır, ilçe yalnız başlık, etiket ve bağlantıda kullanılır
+  function tut(r) { return tr ? (ilpTr(r) && (!y || r.city === y)) : (r.country === ul && (!y || r.city === y)); }
+  (_hmPet || []).forEach(function (r) { if (tut(r)) { d += Number(r.n); if (tr && r.city) iller[r.city] = 1; } });
   (_hmRows || []).forEach(function (r) { if (tut(r)) g += Number(r.n); });
-  if (tr) (typeof ALMANAC_DATA !== 'undefined' ? ALMANAC_DATA : []).forEach(function (x) { if (x.city === y) v++; });
-  var ad = tr ? y : (alt || y), bas = (y + (alt ? ' / ' + alt : '')).toLocaleUpperCase('tr');
-  var s1 = d > 0 ? ad + " 7527'ye sessiz kalmıyor: iptal için " + d + ' dilekçe gönderildi.' : ad + ' için ilk dilekçe senden gelsin.';
-  var p = []; if (v > 0) p.push(v + ' belgelenmiş vaka'); if (g > 0) p.push(g + ' gönüllü');
+  if (tr) (typeof ALMANAC_DATA !== 'undefined' ? ALMANAC_DATA : []).forEach(function (x) { if (!y || x.city === y) v++; });
+  var nf = function (n) { return Number(n).toLocaleString('tr-TR'); };
+  var ad = tr ? (y || 'Türkiye') : (y || ul), bas = (tr ? (y ? y + (alt ? ' / ' + alt : '') : 'Türkiye') : ul + (y ? ' / ' + y : '')).toLocaleUpperCase('tr');
+  var s1 = d > 0 ? (tr && !y ? "Türkiye 7527'ye sessiz kalmıyor: " + Object.keys(iller).length + ' ilden ' + nf(d) + ' dilekçe gönderildi.' : ad + " 7527'ye sessiz kalmıyor: iptal için " + nf(d) + ' dilekçe gönderildi.') : ad + ' için ilk dilekçe senden gelsin.';
+  var p = []; if (v > 0) p.push(nf(v) + ' belgelenmiş vaka'); if (g > 0) p.push(nf(g) + ' gönüllü');
   var ek = g > 0 ? 'yle' : 'yla';
   var s2 = p.length ? p.join(' ve ') + ek + ' mücadele sürüyor, şimdi sıra senin dilekçende.' : (d > 0 ? 'Şimdi sıra senin dilekçende.' : '');
-  var cagri = "Sen dilekçeni gönder, vekilin Meclis'te imzacı olsun.", lnk = SITE_URL + (tr ? '/?il=' + encodeURIComponent(y) + (alt ? '&ilce=' + encodeURIComponent(alt) : '') : '/?ulke=' + encodeURIComponent(y) + (alt ? '&sehir=' + encodeURIComponent(alt) : ''));
+  var cagri = "Sen dilekçeni gönder, vekilin Meclis'te imzacı olsun.";
+  var lnk = SITE_URL + (tr ? (y ? '/?il=' + encodeURIComponent(y) + (alt ? '&ilce=' + encodeURIComponent(alt) : '') : '/?dilekce=1') : '/?ulke=' + encodeURIComponent(ul) + (y ? '&sehir=' + encodeURIComponent(y) : ''));
   function et(x) { return '#' + x.replace(/[^0-9A-Za-zÇĞİÖŞÜçğıöşü]/g, ''); }
+  var etiket = tr ? (y ? et(y) + (alt ? ' ' + et(alt) : '') : '#Türkiye') : et(ul) + (y ? ' ' + et(y) : '');
   return {
-    d: d, v: v, g: g, bas: bas, yurtdisi: !tr, y: y, yol: lnk.replace(SITE_URL, '') || '/', s1: s1,
-    metin: bas + '\n\n' + s1 + (s2 ? '\n' + s2 : '') + '\n' + cagri + '\n\n' + et(y) + (hep ? ' ' + (IL_ILCE[y] || []).map(et).join(' ') : alt ? ' ' + et(alt) : ''),
-    ig: bas + '\n\n' + s1 + (s2 ? '\n' + s2 : '') + '\n' + cagri + '\n\nDilekçe bağlantısını gönderelim mi?',
+    d: d, v: v, g: g, bas: bas, yurtdisi: !tr, tumTr: tr && !y, y: tr ? y : ul, yol: lnk.replace(SITE_URL, '') || '/', s1: s1,
+    metin: bas + '\n\n' + s1 + (s2 ? '\n' + s2 : '') + '\n' + cagri + '\n\n' + etiket,
+    ig: bas + '\n\n' + s1 + (s2 ? '\n' + s2 : '') + '\n' + cagri,
     link: 'Dilekçeni buradan gönderebilirsin: ' + lnk,
-    x: bas + '\n\n' + s1 + (s2 ? '\n' + s2 : '') + '\n\n' + cagri + '\n\n' + lnk + '\n\n' + et(y) + (hep ? ' ' + (IL_ILCE[y] || []).map(et).join(' ') : alt ? ' ' + et(alt) : '') + ' #7527İptal'
+    x: bas + '\n\n' + s1 + (s2 ? '\n' + s2 : '') + '\n\n' + cagri + '\n\n' + lnk + '\n\n' + etiket + ' #7527İptal'
   };
 }
 function ilpGoster() {
-  var m = ilpVeri(); document.getElementById('ilp-metin').textContent = m ? m.ig : 'Önce il veya ülke seç.';
+  var m = ilpVeri(); document.getElementById('ilp-metin').textContent = m ? m.ig : 'Önce ülke seç.';
   document.getElementById('ilp-durum').textContent = '';
   var im = document.getElementById('ilp-gorsel'); im.style.display = 'none'; _ilpBlob = null;
   _ilpUrl = '';
@@ -4386,7 +4399,7 @@ async function ilpGorsel(m) {
   var hedef = null;
   if (!dunya) {
     (_hmPet || []).forEach(function (r) { var l = !r.country && TR_XY[r.city]; if (!l) return; var t = px(l[0], l[1]); c.beginPath(); c.arc(t[0], t[1], 6 + Math.min(Number(r.n), 20) * 0.5, 0, 7); c.fillStyle = 'rgba(16,185,129,.75)'; c.fill(); });
-    if (TR_XY[m.y]) hedef = px(TR_XY[m.y][0], TR_XY[m.y][1]);
+    if (m.y && TR_XY[m.y]) hedef = px(TR_XY[m.y][0], TR_XY[m.y][1]);
   } else {
     var kod = (WORLD_COUNTRIES.filter(function (u) { return u[1] === m.y; })[0] || [])[0], ll = WORLD_XY[kod]; if (ll) hedef = px(ll[0], ll[1]);
   }
@@ -4402,7 +4415,7 @@ async function ilpGorsel(m) {
   var k = [[m.d, 'DİLEKÇE', '#dc2626']]; if (!m.yurtdisi) k.push([m.v, 'VAKA', '#a1a1aa']); k.push([m.g, 'GÖNÜLLÜ', '#10b981']);
   k.forEach(function (x, i) {
     var cx = W * (i + 0.5) / k.length;
-    c.fillStyle = x[2]; c.font = '700 ' + (i ? 92 : 120) + 'px Oswald, sans-serif'; c.fillText(String(x[0]), cx, 1020);
+    c.fillStyle = x[2]; c.font = '700 ' + (i ? 92 : 120) + 'px Oswald, sans-serif'; c.fillText(Number(x[0]).toLocaleString('tr-TR'), cx, 1020);
     c.fillStyle = '#e4e4e7'; c.font = '700 34px Oswald, sans-serif'; c.fillText(x[1], cx, 1070);
   });
   c.fillStyle = '#fff'; var ca = "Sen dilekçeni gönder, vekilin Meclis'te imzacı olsun."; fs = 50;
@@ -4413,7 +4426,7 @@ async function ilpGorsel(m) {
 }
 function ilpPaylas(tur) {
   var m = ilpVeri(), st = document.getElementById('ilp-durum');
-  if (!m) { st.textContent = 'Önce il veya ülke seç.'; return; }
+  if (!m) { st.textContent = 'Önce ülke seç.'; return; }
   if (_hmPet === null || !_ilpBlob) { st.textContent = 'Görsel hazırlanıyor, birazdan tekrar dene.'; return; }
   var url = _ilpUrl || ilpLink(m, _ilpBlob);
   if (tur === 'sg') { st.textContent = OG.sadeceGorsel(_ilpBlob, '7527-' + OG.slug(m.bas) + '.png') === 'indir' ? '✓ Görsel indirildi.' : ''; return; }

@@ -582,7 +582,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
     if(rows===null||!window.OG||!OG.haritaPaylas)return;
     var m={},src=layer==='case'?caseRows():layer==='pet'?(pet||[]):layer==='mp'?[]:rows;
     if(layer==='mp'){var st=mpStats();Object.keys(st).forEach(function(c){m[c]=st[c].n})}
-    src.forEach(function(r){if(!r.country&&r.city)m[r.city]=(m[r.city]||0)+Number(r.n)});
+    src.forEach(function(r){if((!r.country||r.country==='Türkiye')&&r.city)m[r.city]=(m[r.city]||0)+Number(r.n)});
     OG.haritaPaylas({katman:layer,sayim:m,xy:TR_XY},this);
   });
   async function load(){
