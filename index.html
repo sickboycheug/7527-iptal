@@ -3999,6 +3999,7 @@ async function _dilekceGonder() {
     });
 
     step('Kaydediliyor...');
+    window.__sonMpId = (selectedTarget === 'mp' && selectedMP) ? selectedMP.id : null;
     lastPetitionNumber = await callRpc('submit_petition', {
       p_recipient_type: selectedTarget,
       p_recipient_id: selectedTarget === 'mp' && selectedMP ? selectedMP.id : null,
@@ -4087,9 +4088,9 @@ async function confirmPetitionSent(didSend) {
   try { await refreshCounters(); } catch (e) {}
   try { rkLoad(); } catch (e) {}
   // Bu vekile gönderim yapıldı: listeden çıkar
-  if (selectedTarget === 'mp' && selectedMP) {
+  if (selectedTarget === 'mp' && (window.__sonMpId || selectedMP)) {
     try {
-      markMpAsSent(selectedMP.id);
+      markMpAsSent(window.__sonMpId || selectedMP.id); window.__sonMpId = null;
       selectedMP = null;
       var mpBadge = document.getElementById('selected-mp-badge');
       if (mpBadge) mpBadge.classList.add('hidden');
@@ -5693,6 +5694,11 @@ async function gonderilenSenkron(name) {
   var rows = null;
   try { rows = await callRpc('petition_sent_targets', { p_hash: kh }); } catch (e) { rows = null; }
   if (Array.isArray(rows)) {
+    // Sunucu esas alınır: cihazda "gönderildi" görünüp sunucuda onaylı dilekçesi olmayan vekil listeye geri döner
+    try {
+      var sunucu = rows.filter(function (r) { return r.recipient_type === 'mp'; }).map(function (r) { return parseInt(r.recipient_id, 10); }).filter(Boolean);
+      localStorage.setItem(SENT_MPS_KEY, JSON.stringify(sunucu));
+    } catch (eS) {}
     rows.forEach(function (r) {
       if (r.recipient_type === 'mp') { var id = parseInt(r.recipient_id, 10); if (id) markMpAsSent(id); }
       else if (r.recipient_type === 'cb' || r.recipient_type === 'mb') {
