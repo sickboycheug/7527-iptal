@@ -3855,8 +3855,9 @@ async function _dilekceGonder() {
   var name = (document.getElementById('citizen-name').value || '').trim();
   var consent = document.getElementById('petition-consent');
 
- if (name.split(/\s+/).filter(function (p) { return p.length >= 2; }).length < 2) {
-    alert('Lütfen adınızı ve soyadınızı girin.');
+ // Ad ve soyad: en az iki kelime, her biri en az 2 harf (nokta sayılmaz: "M. Çelik" geçmez)
+ if (name.split(/\s+/).filter(function (p) { return p.replace(/[^\p{L}]/gu, '').length >= 2; }).length < 2) {
+    alert('Lütfen adınızı ve soyadınızı kısaltmadan, tam yazın.');
     document.getElementById('citizen-name').focus();
     return;
   }
