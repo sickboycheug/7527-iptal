@@ -6699,6 +6699,7 @@ function tekilDilekce(rows) {
 }
 async function tekrarAnaliz() {
   if (tekrarBusy) return;
+  if (admKutuKapat('tekrar-sonuc')) return;
   if (!adminPinCache) { alert('Oturum düşmüş. Lütfen yönetici PIN’ini tekrar girin.'); return; }
   if (!cryptoAvailable()) { alert(dataErrorText(new Error('crypto_unavailable'))); return; }
   var btn = document.getElementById('exp-tekrar'), box = document.getElementById('tekrar-sonuc');
@@ -6816,7 +6817,7 @@ function tkDuzenleEkle(x, r) {
         var n = Number(await callRpc('admin_update_petition', { p_pin: adminPinCache, p_number: x.no, p_payload_enc: env, p_country: yeni.country, p_city: yeni.city }) || 0);
         if (n < 1) throw new Error('kayit_yok');
         x.raw = yeni; x.name = yeni.name; x.contact = yeni.contact; x.n = tkNorm(yeni.contact);
-        msg.textContent = '✔ Kaydedildi. Düğmelerin yenilenmesi için "Tekrarları bul"a tekrar bas.';
+        msg.textContent = '✔ Kaydedildi. Düğmelerin yenilenmesi için listeyi kapatıp "Tekrarları bul"la yeniden aç.';
         msg.className = 'text-[11px] text-emerald-400 font-bold';
         kb.remove(); ib.textContent = 'Kapat';
         try { await refreshCounters(); } catch (e) {}
@@ -6895,7 +6896,7 @@ function tkKisiDuzenle(p, r) {
         if (n < 1) { hata++; continue; }
         x.raw = yeni; x.name = yeni.name; x.contact = yeni.contact; x.n = tkNorm(yeni.contact);
       }
-      msg.textContent = hata ? ('⚠ ' + hata + ' kayıt güncellenemedi.') : '✔ Kaydedildi. Listenin yenilenmesi için "Tekrarları bul"a tekrar bas.';
+      msg.textContent = hata ? ('⚠ ' + hata + ' kayıt güncellenemedi.') : '✔ Kaydedildi. Listenin yenilenmesi için listeyi kapatıp "Tekrarları bul"la yeniden aç.';
       msg.className = 'text-[11px] font-bold ' + (hata ? 'text-red-400' : 'text-emerald-400');
       kb.remove(); ib.textContent = 'Kapat';
       try { await refreshCounters(); } catch (e) {}
@@ -7225,6 +7226,7 @@ async function tekrarTekSil(x, rowEl, btn) {
 
 // --- Silinenler kutusu: silinen her dilekçe burada; aynı numarasıyla geri getirilir ---
 async function silinenleriGoster() {
+  if (admKutuKapat('silinen-sonuc')) return;
   var kutu = document.getElementById('silinen-sonuc');
   var btn = document.getElementById('exp-silinen');
   if (!adminPinCache) { alert('Oturum düşmüş. Lütfen yönetici PIN’ini tekrar girin.'); return; }
@@ -7594,27 +7596,69 @@ async function rkBackfill() {
   }
 }
 // Yönetici: sıralamadaki herkes, gizle / göster
-async function rkAdminList() {
+// Yönetici panelindeki açılır listeler: düğmeye ikinci basış kapatır
+function admKutuKapat(boxId) {
+  var box = document.getElementById(boxId);
+  if (box && box.childNodes.length) { box.textContent = ''; return true; }
+  return false;
+}
+var RK_ADM = { rows: [], q: '', azdan: false, n: 10 };
+async function rkAdminList(yenile) {
   if (!adminPinCache) { alert('Oturum düşmüş. Lütfen yönetici PIN’ini tekrar girin.'); return; }
   var box = document.getElementById('rk-admin'); if (!box) return;
+  if (!yenile && admKutuKapat('rk-admin')) return;
+  if (!yenile) { RK_ADM.q = ''; RK_ADM.azdan = false; RK_ADM.n = 10; }
   box.textContent = 'Yükleniyor...';
   try {
-    var rows = await callRpc('admin_petition_ranking', { p_pin: adminPinCache }) || [];
-    box.textContent = '';
-    if (!rows.length) { box.appendChild(rkEl('p', 'text-[11px] text-zinc-400', 'Sıralamada henüz kimse yok. Önce "Sıralamayı güncelle"ye bas.')); return; }
-    rows.forEach(function (r) {
+    RK_ADM.rows = await callRpc('admin_petition_ranking', { p_pin: adminPinCache }) || [];
+    rkAdminCiz();
+  } catch (e) { box.textContent = ''; alert(dataErrorText(e)); }
+}
+function rkAdminCiz() {
+  var box = document.getElementById('rk-admin'); if (!box) return;
+  box.textContent = '';
+  var hepsi = RK_ADM.rows;
+  if (!hepsi.length) { box.appendChild(rkEl('p', 'text-[11px] text-zinc-400', 'Sıralamada henüz kimse yok. Önce "Sıralamayı güncelle"ye bas.')); return; }
+  var ust = rkEl('div', 'flex items-center gap-1.5');
+  var ara = rkEl('input', 'flex-1 min-w-0 bg-zinc-950 border border-zinc-700 rounded px-2 py-1 text-[11px] text-zinc-100');
+  ara.type = 'search'; ara.placeholder = 'Ad ya da il ara (' + hepsi.length + ' kişi)'; ara.value = RK_ADM.q;
+  ara.oninput = function () { RK_ADM.q = ara.value; RK_ADM.n = 10; rkAdminSatirlar(liste); };
+  var sir = rkEl('button', 'shrink-0 px-2 py-1 rounded bg-zinc-700 text-zinc-100 text-[11px] font-bold', RK_ADM.azdan ? '↑ Azdan çoğa' : '↓ Çoktan aza');
+  sir.type = 'button';
+  sir.onclick = function () { RK_ADM.azdan = !RK_ADM.azdan; RK_ADM.n = 10; sir.textContent = RK_ADM.azdan ? '↑ Azdan çoğa' : '↓ Çoktan aza'; rkAdminSatirlar(liste); };
+  var kap = rkEl('button', 'shrink-0 px-2 py-1 rounded bg-zinc-800 text-zinc-300 text-[11px] font-bold', '✕ Kapat');
+  kap.type = 'button'; kap.onclick = function () { box.textContent = ''; };
+  ust.appendChild(ara); ust.appendChild(sir); ust.appendChild(kap);
+  box.appendChild(ust);
+  var liste = rkEl('div', 'space-y-1');
+  box.appendChild(liste);
+  rkAdminSatirlar(liste);
+}
+function rkAdminSatirlar(liste) {
+  liste.textContent = '';
+  var q = (RK_ADM.q || '').toLocaleLowerCase('tr').trim();
+  var rows = RK_ADM.rows.filter(function (r) {
+    return !q || ((r.etiket || '') + ' ' + (r.il || '')).toLocaleLowerCase('tr').indexOf(q) >= 0;
+  }).slice().sort(function (a, b) { return RK_ADM.azdan ? (a.toplam - b.toplam) : (b.toplam - a.toplam); });
+  if (!rows.length) { liste.appendChild(rkEl('p', 'text-[11px] text-zinc-400', 'Eşleşen kişi yok.')); return; }
+  rows.slice(0, RK_ADM.n).forEach(function (r) {
       var row = rkEl('div', 'flex items-center justify-between gap-2 text-[11px] bg-zinc-950 border border-zinc-800 rounded-lg px-2 py-1.5' + (r.gizli ? ' opacity-60' : ''));
       row.appendChild(rkEl('span', 'min-w-0 truncate text-zinc-200', (r.etiket || 'İsimsiz') + (r.il ? ' · ' + r.il : '') + ' — ' + r.toplam + ' / ' + RK_TOPLAM));
       var b = rkEl('button', 'shrink-0 px-2 py-1 rounded font-bold ' + (r.gizli ? 'bg-emerald-700 text-white' : 'bg-zinc-700 text-zinc-100'), r.gizli ? 'Göster' : 'Gizle');
       b.type = 'button';
       b.onclick = async function () {
         b.disabled = true;
-        try { await callRpc('admin_rank_hide', { p_pin: adminPinCache, p_hash: r.citizen_hash, p_hidden: !r.gizli }); rkAdminList(); rkLoad(); }
+        try { await callRpc('admin_rank_hide', { p_pin: adminPinCache, p_hash: r.citizen_hash, p_hidden: !r.gizli }); r.gizli = !r.gizli; rkAdminSatirlar(liste); rkLoad(); }
         catch (e) { b.disabled = false; alert(dataErrorText(e)); }
       };
-      row.appendChild(b); box.appendChild(row);
-    });
-  } catch (e) { box.textContent = ''; alert(dataErrorText(e)); }
+      row.appendChild(b); liste.appendChild(row);
+  });
+  if (rows.length > RK_ADM.n) {
+    var d = rkEl('button', 'w-full py-1.5 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-[11px] font-bold', 'Daha fazla (' + (rows.length - RK_ADM.n) + ' kişi daha)');
+    d.type = 'button';
+    d.onclick = function () { RK_ADM.n += 20; rkAdminSatirlar(liste); };
+    liste.appendChild(d);
+  }
 }
 
 // --- VİDEO REHBER SEKME DEĞİŞTİRİCİSİ ---
