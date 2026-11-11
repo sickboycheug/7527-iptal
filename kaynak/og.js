@@ -213,6 +213,7 @@
     }
     var x = document.createElement('button'); x.type = 'button'; x.textContent = 'Kapat';
     x.style.cssText = 'margin-top:10px;width:100%;background:none;border:0;color:#a1a1aa;text-decoration:underline;cursor:pointer;font-size:12px';
+    k.appendChild(takip());
     x.onclick = function () { m.remove(); }; k.appendChild(x);
     m.onclick = function (ev) { if (ev.target === m) m.remove(); };
     m.appendChild(k); document.body.appendChild(m);
@@ -366,7 +367,27 @@
     });
   }
 
-  window.OG = { ozet: ozet, slug: slug, anahtar: anahtar, kart: kart, kucult: kucult, hazirla: hazirla,
+  // ---- Bizi takip et: X, Instagram, YouTube (paylaş penceresinde ve her sayfanın altında) ----
+  var TAKIP = [['𝕏 X', 'https://x.com/7527iptal'], ['Instagram', 'https://www.instagram.com/7527iptal.org.official/'], ['▶ YouTube', 'https://www.youtube.com/@ARA-AnimalRightsActivists?sub_confirmation=1']];
+  function takip() {
+    var d = document.createElement('div');
+    d.className = 'og-takip';
+    d.style.cssText = 'display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;margin-top:12px;font:600 12px Inter,system-ui,sans-serif;color:#a1a1aa';
+    var s = document.createElement('span'); s.textContent = 'Bizi takip et:'; d.appendChild(s);
+    TAKIP.forEach(function (t) {
+      var a = document.createElement('a'); a.href = t[1]; a.target = '_blank'; a.rel = 'noopener'; a.textContent = t[0];
+      a.style.cssText = 'padding:6px 10px;border-radius:999px;border:1px solid #3f3f46;background:#27272a;color:#f4f4f5;text-decoration:none;white-space:nowrap';
+      d.appendChild(a);
+    });
+    return d;
+  }
+  function takipAltlara() {
+    var f = document.querySelector('footer');
+    if (f && !f.querySelector('.og-takip')) f.appendChild(takip());
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', takipAltlara); else takipAltlara();
+
+  window.OG = { ozet: ozet, takip: takip, slug: slug, anahtar: anahtar, kart: kart, kucult: kucult, hazirla: hazirla,
     vaka: vaka, onur: onur, onurLink: onurLink, saha: saha,
     sayfa: sayfa, hazir: hazir, vakaEtiket: vakaEtiket, vekilHazirla: vekilHazirla, ek: ek, kopya: kopya, paylas: paylas, menu: menu, gorselPaylas: gorselPaylas, sadeceGorsel: sadeceGorsel, sadeceMetin: sadeceMetin, BILGI: BILGI, ETIKET: ETIKET,
     haritaVeri: haritaVeri, haritaLink: haritaLink, haritaPaylas: haritaPaylas, haritaGorsel: haritaGorsel, et: et };
