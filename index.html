@@ -1445,6 +1445,10 @@ window.addEventListener('load', function () {
             <span>🧹</span> Tekrarları bul / onaysızları gör
           </button>
           <div id="tekrar-sonuc" class="space-y-2"></div>
+          <button id="exp-silinen" onclick="silinenleriGoster()" class="py-2 bg-zinc-700 hover:bg-zinc-600 rounded font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-50">
+            <span>♻️</span> Silinenler (geri getir)
+          </button>
+          <div id="silinen-sonuc" class="space-y-1"></div>
           <button id="exp-volunteers" onclick="exportEncrypted('volunteers')" class="py-2 bg-emerald-800 hover:bg-emerald-700 rounded font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed">
             <span>🤝</span> Gönüllüler (Excel)
           </button>
@@ -1603,9 +1607,9 @@ window.addEventListener('load', function () {
         </summary>
         <div class="pt-3 space-y-2">
           <p class="text-[10px] text-red-400 bg-red-950/40 border border-red-900 rounded p-2 leading-relaxed">
-            Bu işlemler <strong>geri alınamaz</strong>. Silmeden önce ilgili listeyi
-            Excel olarak dışa aktarmanızı öneririm — şifreli kayıtlar özel anahtarsız
-            geri getirilemez.
+            Silinen dilekçeler yok olmaz: "Silinenler" kutusuna gider ve yönetici panelindeki
+            <strong>♻️ Silinenler (geri getir)</strong> düğmesiyle aynı numarasıyla geri getirilir.
+            Yine de silmeden önce listeyi Excel olarak dışa aktarmanızı öneririm.
           </p>
 
           <div class="bg-zinc-950 border border-zinc-800 rounded p-2 space-y-1.5">
@@ -6987,7 +6991,7 @@ function tkKisiler(tum) {
       bt.appendChild(dl);
       var hs = tkEl('button', 'px-2 py-1 bg-red-900 hover:bg-red-800 rounded text-[10px] text-white font-bold', '🗑 Kişiyi sil (' + p.toplam + ' dilekçe)'); hs.type = 'button';
       hs.onclick = async function () {
-        if (!confirm((p.name || 'Bu kişi') + ' — ' + p.toplam + ' dilekçenin HEPSİ SİLİNECEK. Geri alınamaz. Devam edilsin mi?')) return;
+        if (!confirm((p.name || 'Bu kişi') + ' — ' + p.toplam + ' dilekçenin HEPSİ SİLİNECEK. (Silinenler kutusuna gider, oradan geri getirilebilir.) Devam edilsin mi?')) return;
         hs.disabled = true; hs.textContent = '...';
         try {
           var nums = p.recs.map(function (x) { return x.no; }), sil = 0;
@@ -7207,7 +7211,7 @@ async function tekrarOnayla(x, rowEl, btn) {
   } catch (e) { btn.disabled = false; btn.textContent = '✓ Onaylandı'; alert(dataErrorText(e)); }
 }
 async function tekrarTekSil(x, rowEl, btn) {
-  if (!confirm((x.name || 'Bu kişi') + ' — ' + x.no + '\nBu tek dilekçe SİLİNECEK. Geri alınamaz. Devam edilsin mi?')) return;
+  if (!confirm((x.name || 'Bu kişi') + ' — ' + x.no + '\nBu tek dilekçe SİLİNECEK. (Silinenler kutusuna gider, oradan geri getirilebilir.) Devam edilsin mi?')) return;
   btn.disabled = true; btn.textContent = '...';
   try {
     var n = Number(await callRpc('admin_delete_petitions_by_number', { p_pin: adminPinCache, p_numbers: [x.no] }) || 0);
@@ -7217,6 +7221,53 @@ async function tekrarTekSil(x, rowEl, btn) {
     try { lkTemizle(x.no); } catch (e) {}
     try { await refreshCounters(); } catch (e) {}
   } catch (e) { btn.disabled = false; btn.textContent = '🗑 Sil'; alert(dataErrorText(e)); }
+}
+
+// --- Silinenler kutusu: silinen her dilekçe burada; aynı numarasıyla geri getirilir ---
+async function silinenleriGoster() {
+  var kutu = document.getElementById('silinen-sonuc');
+  var btn = document.getElementById('exp-silinen');
+  if (!adminPinCache) { alert('Oturum düşmüş. Lütfen yönetici PIN’ini tekrar girin.'); return; }
+  btn.disabled = true;
+  kutu.textContent = 'Yükleniyor...';
+  try {
+    var liste = await callRpc('admin_silinen_dilekceler', { p_pin: adminPinCache });
+    if (typeof liste === 'string') liste = JSON.parse(liste);
+    liste = Array.isArray(liste) ? liste : [];
+    kutu.textContent = '';
+    var bekleyen = liste.filter(function (x) { return !x.var; });
+    kutu.appendChild(tkEl('div', 'text-[11px] text-zinc-400', 'Silinen: ' + liste.length + ' · geri getirilebilir: ' + bekleyen.length));
+    var hedefAd = function (x) {
+      if (x.type === 'cb') return 'Cumhurbaşkanlığı';
+      if (x.type === 'mb') return 'TBMM Başkanlığı';
+      var m = (typeof MP_DATABASE !== 'undefined' && Array.isArray(MP_DATABASE)) ? MP_DATABASE.find(function (v) { return String(v.id) === String(x.target); }) : null;
+      return m ? (m.name + ' (' + m.city + ')') : ('vekil no ' + x.target);
+    };
+    var tarih = function (t) { try { return new Date(t).toLocaleString('tr-TR'); } catch (e) { return t || ''; } };
+    bekleyen.slice(0, 300).forEach(function (x) {
+      var row = tkEl('div', 'flex items-center justify-between gap-2 bg-zinc-950 border border-zinc-800 rounded p-1.5 text-[11px]');
+      var sol = tkEl('div', 'min-w-0');
+      sol.appendChild(tkEl('div', 'text-zinc-200 truncate', (x.label || 'Yurttaş') + ' → ' + hedefAd(x)));
+      sol.appendChild(tkEl('div', 'text-zinc-500 truncate', x.no + ' · gönderim ' + tarih(x.at) + ' · silinme ' + tarih(x.silinme)));
+      row.appendChild(sol);
+      var b = tkEl('button', 'shrink-0 px-2 py-1 bg-emerald-700 hover:bg-emerald-600 rounded font-semibold text-white', '♻️ Geri getir');
+      b.onclick = async function () {
+        b.disabled = true; b.textContent = '...';
+        try {
+          var n = Number(await callRpc('admin_dilekce_geri', { p_pin: adminPinCache, p_number: x.no }) || 0);
+          row.textContent = '';
+          row.appendChild(tkEl('span', n > 0 ? 'text-emerald-400 font-bold' : 'text-zinc-400', n > 0 ? ('✓ geri geldi: ' + x.no) : ('zaten listede: ' + x.no)));
+          try { await refreshCounters(); } catch (e) {}
+        } catch (e) { b.disabled = false; b.textContent = '♻️ Geri getir'; alert(dataErrorText(e)); }
+      };
+      row.appendChild(b);
+      kutu.appendChild(row);
+    });
+    if (bekleyen.length > 300) kutu.appendChild(tkEl('div', 'text-[11px] text-zinc-500', 'İlk 300 gösteriliyor.'));
+  } catch (e) {
+    kutu.textContent = '';
+    kutu.appendChild(tkEl('div', 'text-[11px] text-red-400', 'Silinenler okunamadı: ' + dataErrorText(e)));
+  } finally { btn.disabled = false; }
 }
 
 var backfillBusy = false;
