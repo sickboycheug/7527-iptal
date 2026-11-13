@@ -316,7 +316,7 @@ async function vkMektupAc(r) {
   m.style.display = 'flex'; document.getElementById('mk-title').textContent = 'Mektup gönder: ' + r.name; gal.textContent = ''; dl.textContent = ''; tx.value = ''; st.textContent = 'Mektup hazırlanıyor…';
   var h = (await vkHesapYukle())[r.id] || {}, et = [vkEtiket(r.name), vkEtiket(r.city), vkEtiket(r.city + ' Milletvekili'), vkEtiket(r.name + ' Milletvekili')];
   [h.x, h.ig, h.fb].forEach(function (a) { if (a && et.indexOf('@' + a) === -1) et.push('@' + a); });
-  var t = r.name + ' (' + r.party + ' ' + r.city + ' Milletvekili), bu mektup sana.\n\n' + et.join(' ') + '\n\nSen de vekiline dilekçeni gönder: https://7527iptal.org\n#7527İptal';
+  var t = r.name + ' (' + r.party + ' ' + r.city + ' Milletvekili), bu mektup size.\n\n' + et.join(' ') + '\n\nSen de vekiline dilekçeni gönder: https://7527iptal.org\n#7527İptal';
   tx.value = t;
   [['mk-x', h.x, 'https://x.com/'], ['mk-ig', h.ig, 'https://www.instagram.com/'], ['mk-fb', h.fb, 'https://www.facebook.com/']].forEach(function (b) {
     var a = document.getElementById(b[0]); a.style.display = b[1] ? 'block' : 'none'; if (b[1]) a.href = b[2] + encodeURIComponent(b[1]);
