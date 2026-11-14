@@ -3029,7 +3029,7 @@ function renderMap() {
   var abArr = Object.keys(abroad).map(function (k) { return abroad[k]; }).sort(function (a, b) { return b.n - a.n; });
   var trTotal = trRows.reduce(function (s, r) { return s + Number(r.n); }, 0);
   var abTotal = abArr.reduce(function (s, a) { return s + a.n; }, 0);
-  var byCity = {}; trRows.forEach(function (r) { byCity[r.city] = r; });
+  var byCity = {}; trRows.forEach(function (r) { var o = byCity[r.city]; if (o) { o.n = Number(o.n) + Number(r.n); (r.nicks || []).forEach(function (k) { if (o.nicks.indexOf(k) === -1) o.nicks.push(k); }); } else byCity[r.city] = { city: r.city, country: '', n: Number(r.n), nicks: (r.nicks || []).slice() }; });
   var allCities = Object.keys(TR_XY);
   var withVol = allCities.filter(function (c) { return byCity[c] && Number(byCity[c].n) > 0; });
   var without = allCities.filter(function (c) { return !(byCity[c] && Number(byCity[c].n) > 0); });

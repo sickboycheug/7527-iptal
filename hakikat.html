@@ -535,7 +535,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
     SRC.forEach(function(r){if(r.country&&r.country!=='Türkiye'){var a=ab[r.country]||(ab[r.country]={country:r.country,n:0,cities:[]});a.n+=Number(r.n);a.cities.push(r.city)}else trRows.push(r)});
     var abArr=Object.keys(ab).map(function(k){return ab[k]}).sort(function(a,b){return b.n-a.n});
     var trTotal=trRows.reduce(function(s,r){return s+Number(r.n)},0),abTotal=abArr.reduce(function(s,a){return s+a.n},0);
-    var byCity={};trRows.forEach(function(r){byCity[r.city]=r});
+    var byCity={};trRows.forEach(function(r){var o=byCity[r.city];if(o)o.n=Number(o.n)+Number(r.n);else byCity[r.city]={city:r.city,country:'',n:Number(r.n)}});
     var all=Object.keys(TR_XY),withV=all.filter(function(c){return byCity[c]&&Number(byCity[c].n)>0}),without=all.filter(function(c){return !(byCity[c]&&Number(byCity[c].n)>0)});
     sum.textContent='Türkiye: '+withV.length+' / '+all.length+' ilde '+trTotal+' '+W+'  ·  Yurtdışı: '+abArr.length+' ülkede '+abTotal+' '+W;
     $('hm-call').textContent=CASE?without.length+' ilde henüz kayıtlı vaka yok. Bu, orada yaşanmadığı anlamına gelmiyor. Şehrindeki eski-yeni vakayı bildir.':MPL?'Kendi ilinin vekillerine dilekçeni gönder. Her vekile giden dilekçe, Meclis\'te iptal için bir ses daha.':PET?without.length+' ilden henüz dilekçe gelmedi. Senin ilinden ses ver, dilekçeni gönder.':without.length+' ilde il gönüllüsü arıyoruz. İlinde kampanyanın sesi ol.';
