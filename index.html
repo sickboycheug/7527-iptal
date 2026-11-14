@@ -4400,7 +4400,7 @@ async function ilpGorsel(m) {
   });
   var hedef = null;
   if (!dunya) {
-    (_hmPet || []).forEach(function (r) { var l = !r.country && TR_XY[r.city]; if (!l) return; var t = px(l[0], l[1]); c.beginPath(); c.arc(t[0], t[1], 6 + Math.min(Number(r.n), 20) * 0.5, 0, 7); c.fillStyle = 'rgba(16,185,129,.75)'; c.fill(); });
+    (_hmPet || []).forEach(function (r) { var l = (!r.country || r.country === 'Türkiye') && TR_XY[r.city]; if (!l) return; var t = px(l[0], l[1]); c.beginPath(); c.arc(t[0], t[1], 6 + Math.min(Number(r.n), 20) * 0.5, 0, 7); c.fillStyle = 'rgba(16,185,129,.75)'; c.fill(); });
     if (m.y && TR_XY[m.y]) hedef = px(TR_XY[m.y][0], TR_XY[m.y][1]);
   } else {
     var kod = (WORLD_COUNTRIES.filter(function (u) { return u[1] === m.y; })[0] || [])[0], ll = WORLD_XY[kod]; if (ll) hedef = px(ll[0], ll[1]);
@@ -4478,8 +4478,8 @@ function hmCaseInfo(city, info) {
   var cases = (typeof ALMANAC_DATA !== 'undefined' ? ALMANAC_DATA : []).filter(function (x) { return x.city === city; });
   cases.sort(function (a, b) { return new Date(b.date) - new Date(a.date); });
   var pet = 0, vol = 0, st = null;
-  (_hmPet || []).forEach(function (r) { if (!r.country && r.city === city) pet += Number(r.n); });
-  (_hmRows || []).forEach(function (r) { if (!r.country && r.city === city) vol += Number(r.n); });
+  (_hmPet || []).forEach(function (r) { if ((!r.country || r.country === 'Türkiye') && r.city === city) pet += Number(r.n); });
+  (_hmRows || []).forEach(function (r) { if ((!r.country || r.country === 'Türkiye') && r.city === city) vol += Number(r.n); });
   try { st = hmMpStats()[city]; } catch (e) {}
   info.textContent = '';
   info.appendChild(hmEl('div', 'font-bold text-white', city + ' — ' + cases.length + ' vaka'));
@@ -4542,7 +4542,7 @@ function hmRender() {
   info.textContent = ''; list.textContent = '';
   var trRows = [], abroad = {};
   SRC.forEach(function (r) {
-    if (r.country) {
+    if (r.country && r.country !== 'Türkiye') {
       var a = abroad[r.country] || (abroad[r.country] = { country: r.country, n: 0, cities: [] });
       a.n += Number(r.n); a.cities.push(r.city);
     } else trRows.push(r);

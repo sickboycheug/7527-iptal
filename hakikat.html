@@ -532,7 +532,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
     $('hm-sub').innerHTML=CASE?'Kırmızı daireler: haberlere ve resmi kayıtlara yansıyan vakaların yaşandığı iller. Bir daireye dokun, vakaları gör. Gri noktalar: <b>vakası henüz kayda geçmemiş iller.</b>':MPL?'Yeşil daireler: o ilin vekillerine giden dilekçe sayısı. Gri noktalar: <b>vekillerine henüz dilekçe gitmeyen iller.</b>':PET?'Yeşil daireler: dilekçe gelen iller. Gri noktalar: <b>henüz dilekçe gelmeyen iller.</b>':'Yeşil daireler: gönüllümüz olan iller. Gri noktalar: <b>il gönüllüsü arıyoruz.</b>';
     info.textContent='';list.textContent='';
     var trRows=[],ab={};
-    SRC.forEach(function(r){if(r.country){var a=ab[r.country]||(ab[r.country]={country:r.country,n:0,cities:[]});a.n+=Number(r.n);a.cities.push(r.city)}else trRows.push(r)});
+    SRC.forEach(function(r){if(r.country&&r.country!=='Türkiye'){var a=ab[r.country]||(ab[r.country]={country:r.country,n:0,cities:[]});a.n+=Number(r.n);a.cities.push(r.city)}else trRows.push(r)});
     var abArr=Object.keys(ab).map(function(k){return ab[k]}).sort(function(a,b){return b.n-a.n});
     var trTotal=trRows.reduce(function(s,r){return s+Number(r.n)},0),abTotal=abArr.reduce(function(s,a){return s+a.n},0);
     var byCity={};trRows.forEach(function(r){byCity[r.city]=r});

@@ -3020,7 +3020,7 @@ function renderMap() {
   var rows = VOL ? _mapRows : ((_mapPub && _mapPub[_mapLayer]) || []);
   var trRows = [], abroad = {};
   rows.forEach(function (r) {
-    if (r.country) {
+    if (r.country && r.country !== 'Türkiye') {
       var a = abroad[r.country] || (abroad[r.country] = { country: r.country, n: 0, nicks: [], cities: [] });
       a.n += Number(r.n); a.cities.push(r);
       (r.nicks || []).forEach(function (k) { if (a.nicks.indexOf(k) === -1) a.nicks.push(k); });
