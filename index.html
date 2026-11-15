@@ -7434,8 +7434,11 @@ async function rkOnurGorsel(r) {
 }
 function rkOnurMetin(r) {
   var yer = rkYer(r);
+  // Yer etiketi: Türkiye'de #İl, yurtdışında #Ülke #Şehir (il paylaşımındaki kuralla aynı)
+  function et(x) { x = String(x || '').replace(/[^0-9A-Za-zÇĞİÖŞÜçğıöşü]/g, ''); return x ? ' #' + x : ''; }
+  var yerEt = r.ulke && r.ulke !== 'Türkiye' ? et(r.ulke) + et(r.il) : et(r.il);
   return '🏅 ' + r.etiket + (yer ? ' (' + yer + ')' : '') + ', 594 dilekçenin tamamını gönderdi: Cumhurbaşkanlığı’na, TBMM Başkanlığı’na ve 592 milletvekilinin her birine, tek tek.\n\n' +
-    'Milyonlarca canın geleceği senin ellerinde. 594 dilekçe gönder, geleceğe hayat ver. #7527İptal\n\n' +
+    'Milyonlarca canın geleceği senin ellerinde. 594 dilekçe gönder, geleceğe hayat ver. #7527İptal' + yerEt + '\n\n' +
     (window.OG ? OG.onurLink(r) : SITE_URL + '/?siralama=1');
 }
 // İsme dokununca: telefonda cihazın paylaşım menüsü (görsel + metin),
