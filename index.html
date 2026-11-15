@@ -1428,7 +1428,7 @@ window.addEventListener('load', function () {
             <span>🗺️</span> Eski dilekçeleri haritaya işle
           </button>
           <button id="exp-rank" onclick="rkBackfill()" class="py-2 bg-amber-600 hover:bg-amber-500 rounded font-semibold text-zinc-950 flex items-center justify-center gap-1.5 disabled:opacity-50">
-            <span>🏅</span> Sıralamayı güncelle (eski dilekçeler)
+            <span>🏅</span> Sıralamayı güncelle
           </button>
           <button id="exp-rank-list" onclick="rkAdminList()" class="py-2 bg-zinc-700 hover:bg-zinc-600 rounded font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-50">
             <span>👁️</span> Sıralama listesi (gizle / göster)
@@ -7384,6 +7384,9 @@ function rkRender() {
     fill.style.width = Math.max(1.5, Math.min(100, Number(r.toplam) / RK_TOPLAM * 100)) + '%';
     bar.appendChild(fill); li.appendChild(top); li.appendChild(bar); ol.appendChild(li);
   });
+  // Liste açıkken sayfayı aşağı uzatmaz: kendi kutusunda kayar, "Daralt" düğmesi hemen altında kalır
+  ol.style.maxHeight = _rkOpen ? '60vh' : ''; ol.style.overflowY = _rkOpen ? 'auto' : ''; ol.style.overscrollBehavior = _rkOpen ? 'contain' : '';
+  if (!_rkOpen) ol.scrollTop = 0;
   document.getElementById('rk-empty').classList.toggle('hidden', rest.length > 0);
   var more = document.getElementById('rk-more');
   more.classList.toggle('hidden', rest.length <= 10);
