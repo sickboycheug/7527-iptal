@@ -7472,6 +7472,11 @@ function rkOnurPencere(r, blob, dosyaAdi, metin) {
     '<button type="button" data-k="cp" class="py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 text-sm font-extrabold"></button>' +
     '<button type="button" data-k="dl" class="py-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white text-sm font-extrabold">⬇ Görseli indir</button>' +
     '</div>' +
+    '<div data-k="eg" class="hidden space-y-2">' +
+    '<p data-k="eb" class="text-[11px] text-amber-300 font-bold uppercase tracking-wide"></p>' +
+    '<pre data-k="et" class="text-[12px] text-zinc-200 whitespace-pre-wrap break-words bg-zinc-950 border border-zinc-800 rounded-lg p-3 select-all font-sans"></pre>' +
+    '<button type="button" data-k="ec" class="w-full py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white text-sm font-extrabold">📋 Etiketleri kopyala</button>' +
+    '</div>' +
     '<p data-k="st" class="text-[12px] text-zinc-300 text-center leading-relaxed">Paylaştığın link WhatsApp, X, Facebook ve Telegram’da bu madalya görseliyle açılır. Instagram için görseli indir, metni yapıştır.</p>' +
     '</div>';
   m.querySelector('img').src = url;
@@ -7499,6 +7504,26 @@ function rkOnurPencere(r, blob, dosyaAdi, metin) {
   m.querySelector('[data-k="x"]').onclick = kapat;
   m.addEventListener('click', function (e) { if (e.target === m) kapat(); });
   document.body.appendChild(m);
+  // O ilin (yurtdışında ülkenin) Instagram grup etiketleri: veri/etiketler.json. Liste yoksa bölüm hiç görünmez.
+  rkEtiketler().then(function (d) {
+    var yurt = r.ulke && r.ulke !== 'Türkiye', yerAd = String((yurt ? r.ulke : r.il) || '').trim();
+    var l = ((yurt ? d.ulke : d.il) || {})[yerAd] || [];
+    if (!l.length || !m.isConnected) return;
+    var et = l.slice(0, 10).map(function (h) { return '@' + h; }).join(' ');
+    m.querySelector('[data-k="eb"]').textContent = 'Instagram etiketleri · ' + yerAd;
+    m.querySelector('[data-k="et"]').textContent = et;
+    m.querySelector('[data-k="ec"]').onclick = async function () {
+      var ok = false;
+      try { await navigator.clipboard.writeText(et); ok = true; } catch (e) {}
+      st.textContent = ok ? '✓ Etiketler kopyalandı. Instagram gönderisinin açıklamasına ya da yorumuna yapıştır.' : 'Kopyalanamadı. Etiketlere uzun basıp kopyala.';
+    };
+    m.querySelector('[data-k="eg"]').classList.remove('hidden');
+  });
+}
+var _rkEtiket = null;
+function rkEtiketler() {
+  if (!_rkEtiket) _rkEtiket = fetch('/veri/etiketler.json').then(function (x) { return x.ok ? x.json() : {}; }).catch(function () { return {}; });
+  return _rkEtiket;
 }
 // Onur Köşesi her çizildiğinde: isimler dokunulabilir olur
 var _rkRenderAsil = rkRender;
