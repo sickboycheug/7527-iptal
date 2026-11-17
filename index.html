@@ -22,7 +22,7 @@
 <meta name="twitter:image" content="https://7527iptal.org/gorsel/halk-iradesi.png?v=2">
 <!-- Tailwind: hazır CSS dosyası -->
 <link rel="stylesheet" href="/kaynak/tailwind.css?v=1">
-<script src="/kaynak/og.js?v=12" defer></script>
+<script src="/kaynak/og.js?v=13" defer></script>
 <script src="/kaynak/tarayici.js?v=2" defer></script>
 <!-- QRCode.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -634,7 +634,7 @@ async function vkPaylas(r) {
   var link = OG.sayfa({ tur: 'vekil', id: r.id, parcalar: [r.name, r.total, r.vote, window.__vkImza[r.id] ? 1 : 0], baslik: r.name + ' (' + r.party + ' ' + r.city + ' Milletvekili)', aciklama: Number(r.total).toLocaleString('tr-TR') + ' yurttaş dilekçesi aldı. ' + (window.__vkImza[r.id] ? 'İptal teklifine imza attı.' : 'İptal teklifine hâlâ imza atmadı.') + ' Sen de vekiline dilekçeni gönder.', hedef: '/?vekil=' + r.id, gorsel: blob, w: 1080, h: 1350 });
   var tx = t.replace(/\n*Sen de vekiline dilekçeni gönder: 7527iptal\.org/, '\n\nSen de vekiline dilekçeni gönder.');
   document.getElementById('vk-sh').onclick = function () { st.textContent = OG.paylas({ baslik: r.name, metin: tx, url: link }) === 'kopya' ? '✓ Metin ve link kopyalandı, istediğin yere yapıştır.' : ''; };
-  document.getElementById('vk-ig').onclick = function () { st.textContent = OG.gorselPaylas({ metin: tx, url: link, blob: blob, ad: ad }) === 'indir' ? '✓ Metin kopyalandı, görsel indirildi.' : '✓ Metin kopyalandı.'; };
+  document.getElementById('vk-ig').onclick = function () { OG.gorselPaylas({ metin: tx, url: link, blob: blob, ad: ad }); st.textContent = ''; };
   document.getElementById('vk-gi').onclick = function () { st.textContent = OG.sadeceGorsel(blob, ad) === 'indir' ? '✓ Görsel indirildi.' : ''; };
   document.getElementById('vk-mt').onclick = function () { OG.sadeceMetin(tx, link); st.textContent = '✓ Metin ve link kopyalandı.'; };
 }
@@ -747,7 +747,7 @@ async function vkMektupAc(r) {
   function kop() { if (navigator.clipboard) navigator.clipboard.writeText(t).then(function () { st.textContent = '✓ Metin kopyalandı'; }).catch(function () {}); else { tx.select(); } }
   var tx = t.replace(/\n*Sen de vekiline dilekçeni gönder: 7527iptal\.org/, '\n\nSen de vekiline dilekçeni gönder.');
   document.getElementById('mk-sh').onclick = function () { st.textContent = OG.paylas({ baslik: r.name, metin: tx, url: link }) === 'kopya' ? '✓ Metin ve link kopyalandı, istediğin yere yapıştır.' : ''; };
-  document.getElementById('mk-cp').onclick = function () { st.textContent = OG.gorselPaylas({ metin: tx, url: link, blob: mb, ad: ad }) === 'indir' ? '✓ Metin kopyalandı, mektup indirildi.' : '✓ Metin kopyalandı.'; };
+  document.getElementById('mk-cp').onclick = function () { OG.gorselPaylas({ metin: tx, url: link, blob: mb, ad: ad }); st.textContent = ''; };
   document.getElementById('mk-gi').onclick = function () { st.textContent = OG.sadeceGorsel(mb, ad) === 'indir' ? '✓ Mektup görseli indirildi.' : ''; };
   document.getElementById('mk-mt').onclick = function () { OG.sadeceMetin(tx, link); st.textContent = '✓ Metin ve link kopyalandı.'; };
   st.textContent = '';
@@ -4313,19 +4313,96 @@ function ilpSec(el, ilk, liste) {
   liste.forEach(function (x) { var p = document.createElement('option'); p.value = x; p.textContent = x; el.appendChild(p); });
 }
 // Ülke → İl (Türkiye) ya da Şehir (yurtdışı) → İlçe. "Türkiye" yazılmış kayıtlar Türkiye sayılır, ülke listesine düşmez.
+// En üstte "Tüm Dünya". Yurtdışı metin ve görsel o ülkenin dilinde, altında Türkçe; etiketler ve hesaplar yerine göre.
 function ilpTr(r) { return !r.country || r.country === 'Türkiye'; }
+var ILP_DUNYA = '__dunya';
+var ILP_SEHIR = {
+  'Almanya': ['Berlin', 'Hamburg', 'München', 'Köln', 'Frankfurt', 'Stuttgart', 'Düsseldorf', 'Dortmund', 'Essen', 'Duisburg', 'Bochum', 'Gelsenkirchen', 'Wuppertal', 'Bielefeld', 'Bonn', 'Mannheim', 'Nürnberg', 'Hannover', 'Bremen', 'Leipzig', 'Dresden', 'Augsburg', 'Karlsruhe', 'Heilbronn', 'Pforzheim', 'Offenbach', 'Ludwigshafen', 'Kiel'],
+  'Avusturya': ['Wien', 'Linz', 'Salzburg', 'Graz', 'Innsbruck', 'Bregenz', 'Dornbirn'],
+  'İsviçre': ['Zürich', 'Basel', 'Bern', 'Genève', 'Lausanne', 'Winterthur', 'St. Gallen', 'Luzern'],
+  'Hollanda': ['Amsterdam', 'Rotterdam', 'Den Haag', 'Utrecht', 'Eindhoven', 'Enschede', 'Arnhem', 'Nijmegen', 'Zaandam', 'Deventer', 'Tilburg', 'Breda', 'Groningen'],
+  'Belçika': ['Bruxelles', 'Antwerpen', 'Gent', 'Genk', 'Liège', 'Charleroi', 'Beringen'],
+  'Fransa': ['Paris', 'Lyon', 'Marseille', 'Strasbourg', 'Toulouse', 'Bordeaux', 'Lille', 'Nantes', 'Montpellier', 'Nice', 'Mulhouse', 'Metz', 'Grenoble'],
+  'Birleşik Krallık': ['London', 'Manchester', 'Birmingham', 'Liverpool', 'Leeds', 'Glasgow', 'Edinburgh', 'Bristol', 'Cardiff'],
+  'Amerika Birleşik Devletleri': ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Washington', 'Boston', 'San Francisco', 'Miami', 'Paterson', 'Seattle'],
+  'Kanada': ['Toronto', 'Montréal', 'Vancouver', 'Ottawa', 'Calgary'],
+  'Avustralya': ['Sydney', 'Melbourne', 'Brisbane', 'Perth', 'Adelaide'],
+  'İsveç': ['Stockholm', 'Göteborg', 'Malmö', 'Uppsala'],
+  'Danimarka': ['København', 'Aarhus', 'Odense'],
+  'Norveç': ['Oslo', 'Bergen', 'Drammen'],
+  'İtalya': ['Roma', 'Milano', 'Napoli', 'Torino', 'Bologna', 'Firenze'],
+  'İspanya': ['Madrid', 'Barcelona', 'Valencia', 'Sevilla', 'Málaga'],
+  'Kuzey Kıbrıs Türk Cumhuriyeti (KKTC)': ['Lefkoşa', 'Girne', 'Gazimağusa', 'Güzelyurt', 'İskele', 'Lefke']
+};
+var ILP_DILKOD = { DE: 'de', AT: 'de', CH: 'de', LI: 'de', FR: 'fr', BE: 'fr', LU: 'fr', MC: 'fr', NL: 'nl', SE: 'sv', DK: 'da', NO: 'nb', IT: 'it', SM: 'it', ES: 'es', KK: 'tr', AZ: 'tr' };
+// {y} = yer, {n} = sayı. sus: görseldeki ikinci satır
+var ILP_DIL = {
+  en: { sus: 'is not silent on Law 7527', s1: '{y} is not silent on Law 7527: {n} petitions sent for its repeal.', s0: 'Let the first petition from {y} come from you.', s2: '{n} volunteers are in the fight. Now your petition counts.',
+    cagri: 'Send your petition so that MPs in the Turkish Parliament sign for repeal.', bilgi: "Türkiye's Law No. 7527 (30.07.2024) forces street animals to be rounded up and locked in shelters. Our demand: repeal the law and return to the \"Neuter, Vaccinate, Return\" principle of Law 5199.",
+    yurt: 'Turkish citizens can petition from abroad too: tick "Yurtdışında yaşıyorum" on the form. Know people from Türkiye? Pass this on to them.', lbl: ['PETITIONS', 'CASES', 'VOLUNTEERS'], dunya: 'The world',
+    et: ['#Turkey', '#Türkiye', '#AnimalRights', '#StrayDogs', '#MassacreLaw', '#SaveTurkishStrays'] },
+  de: { sus: 'schweigt nicht zu 7527', s1: '{y} schweigt nicht zu 7527: {n} Petitionen für die Aufhebung gesendet.', s0: 'Die erste Petition aus {y} kann von dir kommen.', s2: '{n} Freiwillige sind dabei. Jetzt zählt deine Petition.',
+    cagri: 'Sende deine Petition, damit die Abgeordneten im türkischen Parlament unterschreiben.', bilgi: 'Das türkische Gesetz Nr. 7527 (30.07.2024) zwingt dazu, Straßentiere einzufangen und in Tierheime zu sperren. Unsere Forderung: Aufhebung des Gesetzes und Rückkehr zum Grundsatz „Kastrieren, impfen, am Ort leben lassen“ des Gesetzes 5199.',
+    yurt: 'Türkische Staatsbürger*innen können auch aus dem Ausland senden: im Formular „Yurtdışında yaşıyorum“ ankreuzen. Du kennst Menschen aus der Türkei? Leite es an sie weiter.', lbl: ['PETITIONEN', 'FÄLLE', 'FREIWILLIGE'],
+    et: ['#Türkei', '#Tierschutz', '#TierschutzTürkei', '#Straßenhunde', '#Straßentiere'] },
+  fr: { sus: 'ne se tait pas face à la loi 7527', s1: '{y} ne se tait pas face à la loi 7527 : {n} pétitions envoyées pour son abrogation.', s0: 'Que la première pétition de {y} vienne de toi.', s2: '{n} bénévoles sont mobilisés. Maintenant, ta pétition compte.',
+    cagri: "Envoie ta pétition pour que les députés du Parlement turc signent l'abrogation.", bilgi: "La loi turque n° 7527 (30.07.2024) impose la capture des animaux des rues et leur enfermement en refuge. Notre demande : l'abrogation de la loi et le retour au principe « stériliser, vacciner, relâcher sur place » de la loi 5199.",
+    yurt: "Les citoyens turcs peuvent aussi l'envoyer depuis l'étranger : cocher « Yurtdışında yaşıyorum » dans le formulaire. Tu connais des personnes de Turquie ? Transmets-leur ce message.", lbl: ['PÉTITIONS', 'CAS', 'BÉNÉVOLES'],
+    et: ['#Turquie', '#ProtectionAnimale', '#CauseAnimale', '#ChiensErrants'] },
+  nl: { sus: 'zwijgt niet over wet 7527', s1: '{y} zwijgt niet over wet 7527: {n} petities verstuurd voor de intrekking.', s0: 'Laat de eerste petitie uit {y} van jou komen.', s2: '{n} vrijwilligers doen mee. Nu telt jouw petitie.',
+    cagri: 'Stuur je petitie, zodat de parlementsleden in het Turkse parlement tekenen.', bilgi: "De Turkse wet nr. 7527 (30.07.2024) dwingt om zwerfdieren te vangen en op te sluiten in asielen. Onze eis: intrekking van de wet en terug naar het principe 'Steriliseren, vaccineren, ter plaatse laten leven' van wet 5199.",
+    yurt: "Turkse staatsburgers kunnen ook vanuit het buitenland sturen: vink 'Yurtdışında yaşıyorum' aan in het formulier. Ken je mensen uit Turkije? Stuur het naar hen door.", lbl: ['PETITIES', 'GEVALLEN', 'VRIJWILLIGERS'],
+    et: ['#Turkije', '#Dierenwelzijn', '#Dierenrechten', '#Zwerfdieren'] },
+  sv: { sus: 'tiger inte om lag 7527', s1: '{y} tiger inte om lag 7527: {n} petitioner skickade för att upphäva den.', s0: 'Låt den första petitionen från {y} komma från dig.', s2: '{n} volontärer är med. Nu räknas din petition.',
+    cagri: 'Skicka din petition så att ledamöterna i Turkiets parlament skriver under.', bilgi: 'Turkiets lag nr 7527 (30.07.2024) tvingar fram att gatudjur fångas in och spärras in på härbärgen. Vårt krav: upphäv lagen och återgå till principen ”kastrera, vaccinera, låt leva på plats” i lag 5199.',
+    yurt: 'Turkiska medborgare kan skicka även från utlandet: kryssa i ”Yurtdışında yaşıyorum” i formuläret. Känner du folk från Turkiet? Skicka det vidare till dem.', lbl: ['PETITIONER', 'FALL', 'VOLONTÄRER'],
+    et: ['#Turkiet', '#Djurskydd', '#Djurrätt', '#Gatuhundar'] },
+  da: { sus: 'tier ikke om lov 7527', s1: '{y} tier ikke om lov 7527: {n} andragender sendt for at ophæve den.', s0: 'Lad det første andragende fra {y} komme fra dig.', s2: '{n} frivillige er med. Nu tæller dit andragende.',
+    cagri: 'Send dit andragende, så parlamentsmedlemmerne i Tyrkiets parlament skriver under.', bilgi: 'Tyrkiets lov nr. 7527 (30.07.2024) tvinger gadedyr til at blive indfanget og spærret inde på internater. Vores krav: ophæv loven og vend tilbage til princippet »kastrér, vaccinér, lad dem leve på stedet« i lov 5199.',
+    yurt: 'Tyrkiske statsborgere kan også sende fra udlandet: sæt kryds ved »Yurtdışında yaşıyorum« i formularen. Kender du folk fra Tyrkiet? Send det videre til dem.', lbl: ['ANDRAGENDER', 'SAGER', 'FRIVILLIGE'],
+    et: ['#Tyrkiet', '#Dyrevelfærd', '#Dyrerettigheder', '#Gadehunde'] },
+  nb: { sus: 'tier ikke om lov 7527', s1: '{y} tier ikke om lov 7527: {n} petisjoner sendt for å oppheve den.', s0: 'La den første petisjonen fra {y} komme fra deg.', s2: '{n} frivillige er med. Nå teller din petisjon.',
+    cagri: 'Send petisjonen din, så parlamentsmedlemmene i Tyrkias parlament skriver under.', bilgi: 'Tyrkias lov nr. 7527 (30.07.2024) tvinger fram innfanging av gatedyr og innesperring på dyrehjem. Vårt krav: opphev loven og gå tilbake til prinsippet «kastrer, vaksiner, la dem leve der de er» i lov 5199.',
+    yurt: 'Tyrkiske statsborgere kan også sende fra utlandet: kryss av for «Yurtdışında yaşıyorum» i skjemaet. Kjenner du folk fra Tyrkia? Send det videre til dem.', lbl: ['PETISJONER', 'SAKER', 'FRIVILLIGE'],
+    et: ['#Tyrkia', '#Dyrevelferd', '#Dyrerettigheter', '#Gatehunder'] },
+  it: { sus: 'non tace sulla legge 7527', s1: '{y} non tace sulla legge 7527: {n} petizioni inviate per abrogarla.', s0: 'Che la prima petizione da {y} parta da te.', s2: '{n} volontari sono in campo. Ora conta la tua petizione.',
+    cagri: "Invia la tua petizione perché i deputati del Parlamento turco firmino l'abrogazione.", bilgi: 'La legge turca n. 7527 (30.07.2024) impone la cattura degli animali di strada e la loro reclusione nei canili. La nostra richiesta: abrogare la legge e tornare al principio «sterilizza, vaccina, lascia vivere sul posto» della legge 5199.',
+    yurt: "I cittadini turchi possono inviarla anche dall'estero: nel modulo spunta «Yurtdışında yaşıyorum». Conosci persone dalla Turchia? Inoltra loro questo messaggio.", lbl: ['PETIZIONI', 'CASI', 'VOLONTARI'],
+    et: ['#Turchia', '#DirittiAnimali', '#CaniRandagi', '#Randagismo'] },
+  es: { sus: 'no calla ante la ley 7527', s1: '{y} no calla ante la ley 7527: {n} peticiones enviadas para derogarla.', s0: 'Que la primera petición desde {y} salga de ti.', s2: '{n} voluntarios están en la lucha. Ahora cuenta tu petición.',
+    cagri: 'Envía tu petición para que los diputados del Parlamento turco firmen la derogación.', bilgi: 'La ley turca n.º 7527 (30.07.2024) impone capturar a los animales callejeros y encerrarlos en refugios. Nuestra demanda: derogar la ley y volver al principio «esterilizar, vacunar, dejar vivir en su lugar» de la ley 5199.',
+    yurt: 'Los ciudadanos turcos también pueden enviarla desde el extranjero: marca «Yurtdışında yaşıyorum» en el formulario. ¿Conoces a personas de Turquía? Reenvíaselo.', lbl: ['PETICIONES', 'CASOS', 'VOLUNTARIOS'],
+    et: ['#Turquía', '#DerechosAnimales', '#PerrosCallejeros', '#ProtecciónAnimal'] }
+};
+function ilpKod(ul) { return (WORLD_COUNTRIES.filter(function (u) { return u[1] === ul; })[0] || [])[0] || ''; }
+function ilpDil(ul) { return ul === 'Türkiye' ? 'tr' : ul === ILP_DUNYA ? 'en' : (ILP_DILKOD[ilpKod(ul)] || 'en'); }
+function ilpYerelAd(ul, L) {
+  var kod = ilpKod(ul); if (L === 'tr' || !kod || kod === 'KK') return ul;
+  try { return new Intl.DisplayNames([L], { type: 'region' }).of(kod) || ul; } catch (e) { return ul; }
+}
+var _ilpEt = null;
+function ilpEtiketler() { if (!_ilpEt) _ilpEt = (typeof rkEtiketler === 'function' ? rkEtiketler() : Promise.resolve({})).then(function (d) { _ilpEt = d || {}; return _ilpEt; }); return _ilpEt; }
 function ilpAc() {
   var k = document.getElementById('ilp-kutu'), u = document.getElementById('ilp-ulke');
   if (k.style.display !== 'none') { k.style.display = 'none'; return; }
-  var d = {}; (_hmPet || []).concat(_hmRows || []).forEach(function (r) { if (!ilpTr(r)) d[r.country] = 1; });
+  ilpEtiketler();
+  var d = {}; (_hmPet || []).concat(_hmRows || []).forEach(function (r) { if (!ilpTr(r)) d[r.country] = (d[r.country] || 0) + Number(r.n); });
+  var var_ = Object.keys(d).sort(function (a, b) { return d[b] - d[a]; });
+  var diger = WORLD_COUNTRIES.map(function (x) { return x[1]; }).filter(function (x) { return !d[x]; }).sort(function (a, b) { return a.localeCompare(b, 'tr'); });
   var v = u.value || 'Türkiye';
-  ilpSec(u, null, ['Türkiye'].concat(Object.keys(d).sort(function (a, b) { return a.localeCompare(b, 'tr'); })));
+  u.textContent = '';
+  [[ILP_DUNYA, '🌍 Tüm Dünya'], ['Türkiye', 'Türkiye']].concat(var_.map(function (x) { return [x, x]; })).forEach(function (x) { var o = document.createElement('option'); o.value = x[0]; o.textContent = x[1]; u.appendChild(o); });
+  var ay = document.createElement('option'); ay.disabled = true; ay.textContent = '── Tüm ülkeler ──'; u.appendChild(ay);
+  diger.forEach(function (x) { var o = document.createElement('option'); o.value = x; o.textContent = x; u.appendChild(o); });
   u.value = v; k.style.display = ''; ilpUlkeDegisti();
 }
 function ilpUlkeDegisti() {
   var ul = document.getElementById('ilp-ulke').value, y = document.getElementById('ilp-yer'), m = {};
-  if (ul === 'Türkiye') ilpSec(y, 'Tüm Türkiye', CITIES.slice());
+  y.style.display = ul === ILP_DUNYA ? 'none' : '';
+  if (ul === ILP_DUNYA) ilpSec(y, '', []);
+  else if (ul === 'Türkiye') ilpSec(y, 'Tüm Türkiye', CITIES.slice());
   else {
+    (ILP_SEHIR[ul] || []).forEach(function (c) { m[c] = 1; });
     (_hmPet || []).concat(_hmRows || []).forEach(function (r) { if (r.country === ul && r.city) m[r.city] = 1; });
     ilpSec(y, 'Tüm ülke', Object.keys(m).sort(function (x, z) { return x.localeCompare(z, 'tr'); }));
   }
@@ -4341,45 +4418,81 @@ function ilpYerDegisti() {
 function ilpVeri() {
   var ul = document.getElementById('ilp-ulke').value, y = document.getElementById('ilp-yer').value, alt = document.getElementById('ilp-alt').value;
   if (!ul) return null;
-  var tr = ul === 'Türkiye', d = 0, g = 0, v = 0, iller = {};
+  var dn = ul === ILP_DUNYA, tr = ul === 'Türkiye', L = ilpDil(ul), D = ILP_DIL[L], d = 0, g = 0, v = 0, iller = {}, ulkeler = {};
+  if (dn) y = '';
   // Sayılar il düzeyinde tutulur; ilçe seçilse de il sayısı yazılır, ilçe yalnız başlık, etiket ve bağlantıda kullanılır
-  function tut(r) { return tr ? (ilpTr(r) && (!y || r.city === y)) : (r.country === ul && (!y || r.city === y)); }
-  (_hmPet || []).forEach(function (r) { if (tut(r)) { d += Number(r.n); if (tr && r.city) iller[r.city] = 1; } });
+  function tut(r) { return dn ? true : tr ? (ilpTr(r) && (!y || r.city === y)) : (r.country === ul && (!y || r.city === y)); }
+  (_hmPet || []).forEach(function (r) { if (tut(r)) { d += Number(r.n); if (tr && r.city) iller[r.city] = 1; ulkeler[ilpTr(r) ? 'Türkiye' : r.country] = 1; } });
   (_hmRows || []).forEach(function (r) { if (tut(r)) g += Number(r.n); });
-  if (tr) (typeof ALMANAC_DATA !== 'undefined' ? ALMANAC_DATA : []).forEach(function (x) { if (!y || x.city === y) v++; });
+  if (tr || dn) (typeof ALMANAC_DATA !== 'undefined' ? ALMANAC_DATA : []).forEach(function (x) { if (dn || !y || x.city === y) v++; });
   var nf = function (n) { return Number(n).toLocaleString('tr-TR'); };
-  var ad = tr ? (y || 'Türkiye') : (y || ul), bas = (tr ? (y ? y + (alt ? ' / ' + alt : '') : 'Türkiye') : ul + (y ? ' / ' + y : '')).toLocaleUpperCase('tr');
-  var s1 = d > 0 ? (tr && !y ? "Türkiye 7527'ye sessiz kalmıyor: " + Object.keys(iller).length + ' ilden ' + nf(d) + ' dilekçe gönderildi.' : ad + " 7527'ye sessiz kalmıyor: iptal için " + nf(d) + ' dilekçe gönderildi.') : ad + ' için ilk dilekçe senden gelsin.';
+  var ad = dn ? 'Dünya' : tr ? (y || 'Türkiye') : (y || ul);
+  var bas = (dn ? 'Tüm Dünya' : tr ? (y ? y + (alt ? ' / ' + alt : '') : 'Türkiye') : ul + (y ? ' / ' + y : '')).toLocaleUpperCase('tr');
+  var s1 = d > 0 ? (dn ? "Dünya 7527'ye sessiz kalmıyor: " + Object.keys(ulkeler).length + ' ülkeden ' + nf(d) + ' dilekçe gönderildi.' : tr && !y ? "Türkiye 7527'ye sessiz kalmıyor: " + Object.keys(iller).length + ' ilden ' + nf(d) + ' dilekçe gönderildi.' : ad + " 7527'ye sessiz kalmıyor: iptal için " + nf(d) + ' dilekçe gönderildi.') : ad + ' için ilk dilekçe senden gelsin.';
   var p = []; if (v > 0) p.push(nf(v) + ' belgelenmiş vaka'); if (g > 0) p.push(nf(g) + ' gönüllü');
   var ek = g > 0 ? 'yle' : 'yla';
   var s2 = p.length ? p.join(' ve ') + ek + ' mücadele sürüyor, şimdi sıra senin dilekçende.' : (d > 0 ? 'Şimdi sıra senin dilekçende.' : '');
   var cagri = "Sen dilekçeni gönder, vekilin Meclis'te imzacı olsun.";
-  var lnk = SITE_URL + (tr ? (y ? '/?il=' + encodeURIComponent(y) + (alt ? '&ilce=' + encodeURIComponent(alt) : '') : '/?dilekce=1') : '/?ulke=' + encodeURIComponent(ul) + (y ? '&sehir=' + encodeURIComponent(y) : ''));
-  function et(x) { return '#' + x.replace(/[^0-9A-Za-zÇĞİÖŞÜçğıöşü]/g, ''); }
-  var etiket = tr ? (y ? et(y) + (alt ? ' ' + et(alt) : '') : '#Türkiye') : et(ul) + (y ? ' ' + et(y) : '');
-  return {
-    d: d, v: v, g: g, bas: bas, yurtdisi: !tr, tumTr: tr && !y, y: tr ? y : ul, yol: lnk.replace(SITE_URL, '') || '/', s1: s1,
-    metin: bas + '\n\n' + s1 + (s2 ? '\n' + s2 : '') + '\n' + cagri + '\n\n' + etiket,
-    ig: bas + '\n\n' + s1 + (s2 ? '\n' + s2 : '') + '\n' + cagri,
-    link: 'Dilekçeni buradan gönderebilirsin: ' + lnk,
-    x: bas + '\n\n' + s1 + (s2 ? '\n' + s2 : '') + '\n\n' + cagri + '\n\n' + lnk + '\n\n' + etiket + ' #7527İptal'
-  };
+  var lnk = SITE_URL + (dn ? '/?dilekce=1' : tr ? (y ? '/?il=' + encodeURIComponent(y) + (alt ? '&ilce=' + encodeURIComponent(alt) : '') : '/?dilekce=1') : '/?ulke=' + encodeURIComponent(ul) + (y ? '&sehir=' + encodeURIComponent(y) : ''));
+  function et(x) { return '#' + String(x).split(/\s+/).map(function (k) { return k.charAt(0).toLocaleUpperCase('tr') + k.slice(1); }).join('').replace(/[^0-9A-Za-zÀ-ÖØ-öø-ÿÇĞİÖŞÜçğıöşüŁłŒœ]/g, ''); }
+  // Etiketler ve hesaplar: yerin kendi etiketleri, o ilin vekilleri (X/Instagram), o il/ülkenin Instagram grupları
+  var EJ = _ilpEt && _ilpEt.then ? {} : (_ilpEt || {}), etk = [], hX = [], hIG = [];
+  if (tr) {
+    if (y) {
+      if (alt) etk.push(et(alt));
+      etk.push(et(y), et(y + ' Sokak Hayvanları'), et(y + ' Milletvekilleri'));
+      var vk = (window.OG && OG.vekiller) ? OG.vekiller(y) : [];
+      vk.forEach(function (k) { if (k.x) hX.push('@' + k.x); if (k.ig) hIG.push('@' + k.ig); });
+      ((EJ.il || {})[y] || []).forEach(function (h) { hIG.unshift('@' + h); });
+    } else { etk.push('#Türkiye', '#TBMM'); hX.push('@TBMMresmi'); }
+  } else {
+    var yad = dn ? D.dunya : ilpYerelAd(ul, L);
+    if (!dn) { etk.push(et(yad)); if (yad !== ul) etk.push(et(ul.replace(/\s*\(.*\)/, ''))); }
+    if (y) etk.push(et(y));
+    etk = etk.concat(D ? D.et : []);
+    ((EJ.ulke || {})[ul] || []).forEach(function (h) { hIG.push('@' + h); });
+  }
+  hX = hX.slice(0, 20);
+  var ETK = '#7527İptal ' + etk.filter(function (x, i, a) { return x.length > 2 && a.indexOf(x) === i; }).join(' ') + ' ' + window.OG.ETIKET.replace('#7527İptal ', '');
+  var R = { d: d, v: v, g: g, bas: bas, yurtdisi: !tr, dunya: dn, tumTr: tr && !y, y: tr ? y : ul, yol: lnk.replace(SITE_URL, '') || '/', s1: s1, L: L, link: lnk };
+  var trBlok = bas + '\n\n' + s1 + (s2 ? '\n' + s2 : '') + '\n' + cagri;
+  if (L === 'tr') {
+    R.govde = trBlok + '\n\n' + window.OG.BILGI;
+    R.ust = "7527'YE SESSİZ KALMIYOR"; R.cagriG = cagri; R.lbl = ['DİLEKÇE', 'VAKA', 'GÖNÜLLÜ']; R.basG = bas;
+    R.wa = trBlok + '\n\n' + window.OG.BILGI + '\n\n' + ETK;
+  } else {
+    var yerL = dn ? D.dunya : (y || ilpYerelAd(ul, L)), f = function (s, n) { return s.replace('{y}', yerL).replace('{n}', nf(n)); };
+    var s1L = d > 0 ? f(D.s1, d) : f(D.s0, 0), s2L = g > 0 ? f(D.s2, g) : '';
+    var basL = (dn ? D.dunya : ilpYerelAd(ul, L) + (y ? ' / ' + y : '')).toLocaleUpperCase(L);
+    var yerelBlok = basL + '\n\n' + s1L + (s2L ? '\n' + s2L : '') + '\n' + D.cagri;
+    var trK = s1 + (s2 ? '\n' + s2 : '') + '\n' + cagri + '\nYurtdışındaysan formda "Yurtdışında yaşıyorum"u işaretle.';
+    R.govde = yerelBlok + '\n\n' + D.yurt + '\n\n' + D.bilgi + '\n\n———\n🇹🇷 ' + bas + '\n\n' + trK + '\n\n' + window.OG.BILGI;
+    R.wa = yerelBlok + '\n\n' + D.yurt + '\n\n🇹🇷 ' + trK + '\n\n' + ETK;
+    R.basG = basL; R.ust = D.sus.toLocaleUpperCase(L); R.cagriG = D.cagri; R.lbl = D.lbl; R.s1L = s1L;
+    R.trUst = dn ? "DÜNYA 7527'YE SESSİZ KALMIYOR" : bas + " 7527'YE SESSİZ KALMIYOR";
+  }
+  R.metin = R.govde + '\n\n' + ETK;
+  R.xUzun = R.metin + (hX.length ? '\n\n' + hX.join(' ') : '');
+  R.ig = R.metin + (hIG.length ? '\n\n' + hIG.join(' ') : '');
+  return R;
 }
 function ilpGoster() {
   var m = ilpVeri(); document.getElementById('ilp-metin').textContent = m ? m.ig : 'Önce ülke seç.';
   document.getElementById('ilp-durum').textContent = '';
   var im = document.getElementById('ilp-gorsel'); im.style.display = 'none'; _ilpBlob = null;
   _ilpUrl = '';
+  if (_ilpEt && _ilpEt.then) _ilpEt.then(function () { var m2 = ilpVeri(); if (m2) document.getElementById('ilp-metin').textContent = m2.ig; });
   if (m) ilpGorsel(m).then(function (bl) { _ilpBlob = bl; _ilpUrl = ilpLink(m, bl); if (im.src) URL.revokeObjectURL(im.src); im.src = URL.createObjectURL(bl); im.style.display = ''; }).catch(function (e) { if (e) console.log('ilp', e); });
 }
 // Harita gorseli: sitenin harita verisi, renkleri ve yazi tipiyle tarayicida uretilir, sunucuya dosya yuklenmez
 var _ilpBlob = null, _ilpNo = 0, _ilpUrl = '';
 function ilpLink(m, bl) {
   if (!window.OG || !OG.sayfa) return SITE_URL + m.yol;
-  return OG.sayfa({ tur: 'il', id: m.bas, parcalar: [m.bas, m.d, m.v, m.g], baslik: m.bas + " 7527'ye sessiz kalmıyor", aciklama: m.s1 + " Sen de dilekçeni gönder, vekilin Meclis'te imzacı olsun.", hedef: m.yol, gorsel: bl, w: 1080, h: 1350 });
+  var yb = m.L !== 'tr';
+  return OG.sayfa({ tur: 'il', id: m.bas + (yb ? '-' + m.L : ''), parcalar: [m.bas, m.d, m.v, m.g, m.L], baslik: yb ? m.basG + ' ' + ILP_DIL[m.L].sus : m.bas + " 7527'ye sessiz kalmıyor", aciklama: yb ? m.s1L + ' ' + m.cagriG : m.s1 + " Sen de dilekçeni gönder, vekilin Meclis'te imzacı olsun.", hedef: m.yol, gorsel: bl, w: 1080, h: 1350 });
 }
 async function ilpGorsel(m) {
-  var no = ++_ilpNo, W = 1080, H = 1350, MY = 190, MH = 690;
+  var no = ++_ilpNo, W = 1080, H = 1350, MY = 200, MH = 680, yb = m.L !== 'tr';
   var cv = document.createElement('canvas'); cv.width = W; cv.height = H; var c = cv.getContext('2d');
   try { await document.fonts.load('700 72px Oswald'); } catch (e) {}
   var gj = await hmGeo(); if (no !== _ilpNo) throw 0;
@@ -4399,46 +4512,49 @@ async function ilpGorsel(m) {
     c.fillStyle = f.id === 'TUR' ? '#3f3f46' : '#27272a'; c.fill(); c.strokeStyle = '#71717a'; c.lineWidth = 1; c.stroke();
   });
   var hedef = null;
-  if (!dunya) {
+  if (m.dunya) {
+    // Tüm Dünya: dilekçe gelen her ülke (Türkiye dahil) yeşil nokta
+    var uk = {}; (_hmPet || []).forEach(function (r) { var k = ilpTr(r) ? 'TR' : ilpKod(r.country); if (k) uk[k] = (uk[k] || 0) + Number(r.n); });
+    Object.keys(uk).forEach(function (k) { var ll = k === 'TR' ? [39, 35] : WORLD_XY[k]; if (!ll) return; var t = px(ll[0], ll[1]); c.beginPath(); c.arc(t[0], t[1], 6 + Math.min(uk[k], 40) * 0.4, 0, 7); c.fillStyle = 'rgba(16,185,129,.8)'; c.fill(); });
+  } else if (!dunya) {
     (_hmPet || []).forEach(function (r) { var l = (!r.country || r.country === 'Türkiye') && TR_XY[r.city]; if (!l) return; var t = px(l[0], l[1]); c.beginPath(); c.arc(t[0], t[1], 6 + Math.min(Number(r.n), 20) * 0.5, 0, 7); c.fillStyle = 'rgba(16,185,129,.75)'; c.fill(); });
     if (m.y && TR_XY[m.y]) hedef = px(TR_XY[m.y][0], TR_XY[m.y][1]);
   } else {
-    var kod = (WORLD_COUNTRIES.filter(function (u) { return u[1] === m.y; })[0] || [])[0], ll = WORLD_XY[kod]; if (ll) hedef = px(ll[0], ll[1]);
+    var ll2 = WORLD_XY[ilpKod(m.y)]; if (ll2) hedef = px(ll2[0], ll2[1]);
   }
   if (hedef) {
     [34, 22].forEach(function (r, i) { c.beginPath(); c.arc(hedef[0], hedef[1], r, 0, 7); c.fillStyle = i ? '#dc2626' : 'rgba(220,38,38,.3)'; c.fill(); });
     c.beginPath(); c.arc(hedef[0], hedef[1], 22, 0, 7); c.strokeStyle = '#fff'; c.lineWidth = 4; c.stroke();
   }
   c.restore();
-  c.textAlign = 'center'; c.fillStyle = '#fff'; var fs = 84;
-  do { c.font = '700 ' + fs + 'px Oswald, sans-serif'; fs -= 4; } while (c.measureText(m.bas).width > W - 90 && fs > 36);
-  c.fillText(m.bas, W / 2, 125);
-  c.font = '700 40px Oswald, sans-serif'; c.fillStyle = '#fcd34d'; c.fillText("7527'YE SESSİZ KALMIYOR", W / 2, 175);
-  var k = [[m.d, 'DİLEKÇE', '#dc2626']]; if (!m.yurtdisi) k.push([m.v, 'VAKA', '#a1a1aa']); k.push([m.g, 'GÖNÜLLÜ', '#10b981']);
+  function sig(t, boy, maxw, min) { do { c.font = '700 ' + boy + 'px Oswald, sans-serif'; boy -= 2; } while (c.measureText(t).width > maxw && boy > (min || 22)); }
+  c.textAlign = 'center'; c.fillStyle = '#fff';
+  sig(m.basG, 84, W - 90, 36); c.fillText(m.basG, W / 2, yb ? 105 : 125);
+  c.fillStyle = '#fcd34d'; sig(m.ust, 40, W - 90); c.fillText(m.ust, W / 2, yb ? 152 : 175);
+  if (yb) { c.fillStyle = '#a1a1aa'; sig(m.trUst, 26, W - 90, 18); c.fillText(m.trUst, W / 2, 188); }
+  var trL = ['DİLEKÇE', 'VAKA', 'GÖNÜLLÜ'];
+  var k = [[m.d, 0, '#dc2626']]; if (!m.yurtdisi || m.dunya) k.push([m.v, 1, '#a1a1aa']); k.push([m.g, 2, '#10b981']);
   k.forEach(function (x, i) {
     var cx = W * (i + 0.5) / k.length;
-    c.fillStyle = x[2]; c.font = '700 ' + (i ? 92 : 120) + 'px Oswald, sans-serif'; c.fillText(Number(x[0]).toLocaleString('tr-TR'), cx, 1020);
-    c.fillStyle = '#e4e4e7'; c.font = '700 34px Oswald, sans-serif'; c.fillText(x[1], cx, 1070);
+    c.fillStyle = x[2]; c.font = '700 ' + (i ? 92 : 120) + 'px Oswald, sans-serif'; c.fillText(Number(x[0]).toLocaleString('tr-TR'), cx, 1010);
+    c.fillStyle = '#e4e4e7'; sig(m.lbl[x[1]], 34, W / k.length - 20); c.fillText(m.lbl[x[1]], cx, 1055);
+    if (yb) { c.fillStyle = '#a1a1aa'; c.font = '700 22px Oswald, sans-serif'; c.fillText(trL[x[1]], cx, 1084); }
   });
-  c.fillStyle = '#fff'; var ca = "Sen dilekçeni gönder, vekilin Meclis'te imzacı olsun."; fs = 50;
-  do { c.font = '700 ' + fs + 'px Oswald, sans-serif'; fs -= 2; } while (c.measureText(ca).width > W - 90 && fs > 30);
-  c.fillText(ca, W / 2, 1180);
-  c.fillStyle = '#fcd34d'; c.font = '700 54px Oswald, sans-serif'; c.fillText('7527iptal.org', W / 2, 1270);
+  c.fillStyle = '#fff'; sig(m.cagriG, 50, W - 90, 26); c.fillText(m.cagriG, W / 2, yb ? 1160 : 1180);
+  if (yb) { c.fillStyle = '#a1a1aa'; var ca = "Sen dilekçeni gönder, vekilin Meclis'te imzacı olsun."; sig(ca, 30, W - 90, 18); c.fillText(ca, W / 2, 1205); }
+  c.fillStyle = '#fcd34d'; c.font = '700 54px Oswald, sans-serif'; c.fillText('7527iptal.org', W / 2, 1275);
   return new Promise(function (ok, no2) { cv.toBlob(function (b) { b ? ok(b) : no2(); }, 'image/png'); });
 }
 function ilpPaylas(tur) {
   var m = ilpVeri(), st = document.getElementById('ilp-durum');
   if (!m) { st.textContent = 'Önce ülke seç.'; return; }
   if (_hmPet === null || !_ilpBlob) { st.textContent = 'Görsel hazırlanıyor, birazdan tekrar dene.'; return; }
-  var url = _ilpUrl || ilpLink(m, _ilpBlob);
-  if (tur === 'sg') { st.textContent = OG.sadeceGorsel(_ilpBlob, '7527-' + OG.slug(m.bas) + '.png') === 'indir' ? '✓ Görsel indirildi.' : ''; return; }
-  if (tur === 'sm') { OG.sadeceMetin(m.metin, url); st.textContent = '✓ Metin ve link kopyalandı.'; return; }
-  if (tur === 'gorsel') {
-    var g = OG.gorselPaylas({ metin: m.metin, url: url, blob: _ilpBlob, ad: '7527-' + OG.slug(m.bas) + '.png' });
-    st.textContent = g === 'indir' ? '✓ Metin kopyalandı, görsel indirildi.' : '✓ Metin kopyalandı, yapıştırabilirsin.';
-    return;
-  }
-  st.textContent = OG.paylas({ baslik: m.bas, metin: m.metin, url: url }) === 'kopya' ? '✓ Metin ve link kopyalandı, istediğin yere yapıştır.' : '';
+  var url = _ilpUrl || ilpLink(m, _ilpBlob), ad = '7527-' + OG.slug(m.bas) + (m.L !== 'tr' ? '-' + m.L : '') + '.png';
+  if (tur === 'sg') { st.textContent = OG.sadeceGorsel(_ilpBlob, ad) === 'indir' ? '✓ Görsel indirildi.' : ''; return; }
+  if (tur === 'sm') { OG.sadeceMetin(m.ig, url, true); st.textContent = '✓ Metin ve link kopyalandı.'; return; }
+  if (tur === 'gorsel') { OG.gorselPaylas({ metin: m.ig, url: url, blob: _ilpBlob, ad: ad, ham: true }); st.textContent = ''; return; }
+  OG.paylas({ baslik: m.bas, metin: m.metin, url: url, ham: true, wa: m.wa, xUzun: m.xUzun });
+  st.textContent = '';
 }
 function hmLayer(v) { _hmLayer = v; hmRender(); }
 // Harita bulunduğu panele göre yer değiştirir: Vatandaş panelinde Dilekçeler, Vekil panelinde Vekiller önde ve seçili
