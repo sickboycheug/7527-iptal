@@ -467,12 +467,21 @@
       u.searchParams.set('text', waKisalt(t, '')); return u.toString();
     } catch (e) { return href; }
   }
+  // Telefonda WhatsApp/X/Telegram/Facebook yeni sekmede açılınca uygulamaya geçer, arkada boş (about:blank) sekme kalır:
+  // telefonda bu bağlantılar aynı sekmeden açılır, uygulama doğrudan açılır, boş sekme oluşmaz
+  var UYG = /(^|\.)(api\.whatsapp\.com|wa\.me|whatsapp\.com|twitter\.com|x\.com|t\.me|telegram\.me|facebook\.com|instagram\.com|tiktok\.com|youtube\.com|youtu\.be)$/;
+  function uygulamaMi(href) { try { return UYG.test(new URL(href, location.href).hostname); } catch (e) { return false; } }
   document.addEventListener('click', function (ev) {
     var a = ev.target && ev.target.closest && ev.target.closest('a[href]'); if (!a) return;
     var h = waDuzelt(a.href); if (h !== a.href) a.href = h;
+    if (MOBIL && a.target === '_blank' && uygulamaMi(a.href)) a.removeAttribute('target');
   }, true);
   var acAsil = window.open;
-  window.open = function (u) { var a = [].slice.call(arguments); if (typeof u === 'string') a[0] = waDuzelt(u); return acAsil.apply(window, a); };
+  window.open = function (u) {
+    var a = [].slice.call(arguments); if (typeof u === 'string') a[0] = waDuzelt(u);
+    if (MOBIL && typeof a[0] === 'string' && uygulamaMi(a[0])) { location.href = a[0]; return null; }
+    return acAsil.apply(window, a);
+  };
 
   window.OG = { ozet: ozet, takip: takip, slug: slug, anahtar: anahtar, kart: kart, kucult: kucult, hazirla: hazirla,
     vaka: vaka, onur: onur, onurLink: onurLink, saha: saha,
