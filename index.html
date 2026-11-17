@@ -4114,16 +4114,19 @@ function lkTemizle(no) {
   } catch (e) {}
   bekleyenSil(no);
 }
-// Kişinin gönderdiği dilekçe sayısı: bu cihazdaki kayıt ve Dilekçe Sıralaması'ndaki (adıyla eşleşen) toplamın büyüğü
+// Kişinin gönderdiği dilekçe sayısı: ad-soyadıyla sunucudan (petition_sent_targets) alınır, her tarayıcıda aynı sonuç
 async function kisiSayim() {
   var ad = ''; try { ad = localStorage.getItem('rk_ad') || ''; } catch (e) {}
-  var n = (hedefGonderildi('cb') ? 1 : 0) + (hedefGonderildi('mb') ? 1 : 0) + getSentMpIds().length, satir = null;
-  if (ad) {
+  if (ad) { try { _senkAd = ''; await gonderilenSenkron(ad); } catch (e) {} }
+  var n = Math.min(gonderilenSayisi(), RK_TOPLAM), satir = null;
+  if (ad && n >= RK_TOPLAM) {
     try { if (!_rkRows.length) await rkLoad(); } catch (e) {}
-    var lb = rkLabel(ad), es = _rkRows.filter(function (r) { return r.etiket === lb; });
-    if (es.length === 1) { satir = es[0]; n = Math.max(n, Number(satir.toplam) || 0); }
+    var lb = rkLabel(ad), il = ''; try { il = getPlace().city || ''; } catch (e) {}
+    var es = _rkRows.filter(function (r) { return r.etiket === lb && Number(r.toplam) >= RK_TOPLAM; });
+    if (es.length > 1 && il) es = es.filter(function (r) { return r.il === il; });
+    satir = es[0] || null;
   }
-  return { ad: ad ? rkLabel(ad).split(' ')[0] : '', n: Math.min(n, RK_TOPLAM), satir: satir };
+  return { ad: ad ? rkLabel(ad).split(' ')[0] : '', n: n, satir: satir };
 }
 // Paylaşım linkiyle ya da artık olmayan bir dilekçe numarasıyla gelen kişiyi karşılar: sesini sayar, teşekkür eder, kalanına yönlendirir
 async function kisiKarsila(eskiNo) {
