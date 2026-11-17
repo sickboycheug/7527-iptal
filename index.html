@@ -4114,11 +4114,55 @@ function lkTemizle(no) {
   } catch (e) {}
   bekleyenSil(no);
 }
+// Kişinin gönderdiği dilekçe sayısı: bu cihazdaki kayıt ve Dilekçe Sıralaması'ndaki (adıyla eşleşen) toplamın büyüğü
+async function kisiSayim() {
+  var ad = ''; try { ad = localStorage.getItem('rk_ad') || ''; } catch (e) {}
+  var n = (hedefGonderildi('cb') ? 1 : 0) + (hedefGonderildi('mb') ? 1 : 0) + getSentMpIds().length, satir = null;
+  if (ad) {
+    try { if (!_rkRows.length) await rkLoad(); } catch (e) {}
+    var lb = rkLabel(ad), es = _rkRows.filter(function (r) { return r.etiket === lb; });
+    if (es.length === 1) { satir = es[0]; n = Math.max(n, Number(satir.toplam) || 0); }
+  }
+  return { ad: ad ? rkLabel(ad).split(' ')[0] : '', n: Math.min(n, RK_TOPLAM), satir: satir };
+}
+// Paylaşım linkiyle ya da artık olmayan bir dilekçe numarasıyla gelen kişiyi karşılar: sesini sayar, teşekkür eder, kalanına yönlendirir
+async function kisiKarsila(eskiNo) {
+  var box = document.getElementById('link-modal'), bas = document.getElementById('lk-baslik'), bilgi = document.getElementById('lk-bilgi'), eylem = document.getElementById('lk-eylem');
+  if (!box) return;
+  var k = await kisiSayim(), kalan = RK_TOPLAM - k.n, selam = k.ad ? k.ad + ', ' : '';
+  if (!k.n && !eskiNo) return;
+  bilgi.textContent = ''; eylem.textContent = '';
+  if (eskiNo) bilgi.appendChild(lkEl('p', 'text-zinc-400', 'Bu bağlantıdaki ' + eskiNo + ' numaralı kayıt, tekrar eden kayıtlar birleştirilirken kaldırıldı. Gönderip onayladığın dilekçelerin hepsi sayılıyor; hiçbiri kaybolmadı.'));
+  function dugme(yazi, renk, f) { var b = lkEl('button', 'w-full py-3 ' + renk + ' text-white rounded-xl font-bold text-xs uppercase', yazi); b.type = 'button'; b.onclick = f; eylem.appendChild(b); }
+  function devam() { box.style.display = 'none'; try { switchTab('vatandas'); } catch (e) {} try { siradakineGec(siradakiHedef()); } catch (e) {} try { adim1eGit(); } catch (e) {} }
+  if (k.n >= RK_TOPLAM) {
+    bas.textContent = 'SESİN 594 KAPIYA ULAŞTI';
+    bilgi.appendChild(lkEl('p', 'text-white font-bold', selam + '594 dilekçenin hepsini gönderdin: Cumhurbaşkanlığı’na, TBMM Başkanlığı’na ve 592 vekilin her birine.'));
+    bilgi.appendChild(lkEl('p', '', 'Binlerce canın sesi oldun. Bu vahşetin durması için yükselttiğin çığlık Meclis’in kapısından dünyanın her yanına ulaştı. Teşekkür ederiz.'));
+    bilgi.appendChild(lkEl('p', 'text-amber-300', 'Şimdi bu sesi çoğaltma zamanı: Onur Köşesi’ndeki görselini paylaş, tanıdıklarını da 594’e çağır.'));
+    if (k.satir && typeof rkOnurPaylas === 'function') dugme('🏅 Onur görselimi paylaş', 'bg-amber-600 hover:bg-amber-500', function () { box.style.display = 'none'; rkOnurPaylas(k.satir); });
+    dugme('📨 Dilekçe sayfasına git', 'bg-emerald-600 hover:bg-emerald-500', devam);
+  } else if (k.n > 0) {
+    bas.textContent = 'SESİN SAYILIYOR';
+    bilgi.appendChild(lkEl('p', 'text-white font-bold', selam + 'bugüne kadar ' + k.n + ' dilekçe gönderdin. Her biri, sesini çıkaramayan bir canın Meclis’e ulaşan çığlığı.'));
+    bilgi.appendChild(lkEl('p', '', 'Hedefe ' + kalan + ' dilekçe kaldı. Her yeni dilekçe bir vekilin önüne konan, görmezden gelinemeyen bir karar çağrısı. Bilgilerin hazır; kaldığın yerden birkaç dokunuşla devam edebilirsin.'));
+    try { bilgi.appendChild(lkEl('p', 'text-amber-300', cekirdekMetni())); } catch (e) {}
+    dugme('📨 Kalan ' + kalan + ' dilekçeme devam et', 'bg-red-600 hover:bg-red-500', devam);
+  } else {
+    bas.textContent = 'DİLEKÇENİ HAZIRLA';
+    bilgi.appendChild(lkEl('p', 'text-white font-bold', 'Dilekçeni birkaç dokunuşla yeniden hazırlayabilirsin.'));
+    bilgi.appendChild(lkEl('p', '', 'Önce Cumhurbaşkanlığı, sonra TBMM Başkanlığı, ardından ilinin vekilleri. Her dilekçe, 7527’nin iptali için Meclis’e ulaşan bir ses.'));
+    dugme('📨 Dilekçemi hazırla', 'bg-red-600 hover:bg-red-500', devam);
+  }
+  box.style.display = 'flex';
+}
 async function linkKontrol() {
   var m = /[?&]dilekce=([^&#]+)/.exec(window.location.search);
   if (!m) return;
   var no = decodeURIComponent(m[1]).trim();
   var box = document.getElementById('link-modal'); if (!box) return;
+  // ?dilekce=1 paylaşım linkidir (dilekçe numarası değil): yeni gelen doğrudan forma gider; daha önce gönderen karşılanır
+  if (no === '1') { try { if (!sessionStorage.getItem('7527_karsilandi')) { sessionStorage.setItem('7527_karsilandi', '1'); await kisiKarsila(''); } } catch (e) { await kisiKarsila(''); } return; }
   var bas = document.getElementById('lk-baslik'), bilgi = document.getElementById('lk-bilgi'), eylem = document.getElementById('lk-eylem');
   bilgi.textContent = ''; eylem.textContent = '';
   var st = null;
@@ -4127,8 +4171,8 @@ async function linkKontrol() {
   if (!st) { bas.textContent = 'BAĞLANTI HATASI'; bilgi.appendChild(lkEl('p', '', 'Dilekçe bilgisi alınamadı. İnternetini kontrol edip sayfayı yenile.')); return; }
   if (!st.found) {
     lkTemizle(no);
-    bas.textContent = 'DİLEKÇE İPTAL EDİLMİŞ';
-    bilgi.appendChild(lkEl('p', '', 'Bu numaralı dilekçe sistemde yok; tekrar eden kayıt olarak iptal edilmiş olabilir. Sorun değil: yeni bir dilekçe oluşturabilirsin. Kapat düğmesine bas, sayfadaki adımları izle.'));
+    box.style.display = 'none';
+    await kisiKarsila(no);
     return;
   }
   if (st.confirmed) {
