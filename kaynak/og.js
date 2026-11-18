@@ -124,8 +124,35 @@
   var FP = { eylem: ['📣 EYLEM', '#dc2626'], dava: ['⚖️ DAVA', '#b45309'], cimer: ['📝 CİMER BAŞVURUSU', '#0369a1'], imza: ['✍️ İMZA KAMPANYASI', '#047857'] };
   // Kayıt değişince (tarih, saat, başlık, yer, afiş) link de değişir: sosyal medya eski önizlemeyi göstermez
   function sahaUrl(r) { return 'https://7527iptal.org/p/saha-' + r.id + '?v=' + ozet([r.title, r.kind, r.city, r.district, r.place, r.event_at, r.has_image ? 1 : 0].join('|')); }
+  function sahaKey(r) { return anahtar('saha', r.id, [r.title, r.kind, r.city, r.district, r.place, r.event_at, r.has_image ? 1 : 0]); }
+  // Instagram için dikey (1080x1350) görsel: kaydın kendi görseli ortada, üstünde başlık satırları, altında site adı
+  function igDikey(blob, ust) {
+    return new Promise(function (ok, no) {
+      var im = new Image(), u = URL.createObjectURL(blob);
+      im.onload = function () {
+        var W = 1080, H = 1350, c = document.createElement('canvas'); c.width = W; c.height = H; var x = c.getContext('2d');
+        x.fillStyle = '#09090b'; x.fillRect(0, 0, W, H);
+        var k = Math.min(W / im.width, 900 / im.height), w = im.width * k, h = im.height * k, y0 = (H - h) / 2 + 40;
+        x.drawImage(im, (W - w) / 2, y0, w, h); URL.revokeObjectURL(u);
+        x.textAlign = 'center';
+        (ust || []).forEach(function (s, i) {
+          var boy = i ? 40 : 68; x.fillStyle = i ? '#fcd34d' : '#ffffff';
+          do { x.font = '700 ' + boy + 'px Oswald, sans-serif'; boy -= 2; } while (x.measureText(s).width > W - 80 && boy > 20);
+          x.fillText(s, W / 2, 110 + i * 62);
+        });
+        x.fillStyle = '#fcd34d'; x.font = '700 54px Oswald, sans-serif'; x.fillText('7527iptal.org', W / 2, H - 60);
+        c.toBlob(function (b) { b ? ok(b) : no(); }, 'image/jpeg', 0.9);
+      };
+      im.onerror = function () { URL.revokeObjectURL(u); no(); };
+      im.src = u;
+    });
+  }
+  // Kaydın sunucuda duran kendi paylaşım görseli (Instagram için dikeye çevrilir)
+  function sahaGorsel(r, ust) {
+    return fetch('https://7527iptal.org/p/img/' + sahaKey(r) + '.jpg').then(function (x) { if (!x.ok) throw 0; return x.blob(); }).then(function (b) { return igDikey(b, ust); });
+  }
   function saha(r, gorselAl) {
-    var key = anahtar('saha', r.id, [r.title, r.kind, r.city, r.district, r.place, r.event_at, r.has_image ? 1 : 0]);
+    var key = sahaKey(r);
     return hazirla(key, function () {
       if (r.has_image && gorselAl) return gorselAl();
       var t = FP[r.kind] || FP.eylem, yer = [r.city, r.district].filter(Boolean).join(' / ') || r.country || '', tarih = '';
@@ -259,6 +286,14 @@
     if (MOBIL && navigator.share) dgl.push(dg('📱 Telefonun paylaş menüsü', function () { var tam = t + '\n\n' + url; kopya(tam); navigator.share({ title: baslik || '7527 İPTAL', text: tam }).catch(function () {}); m.remove(); }, true));
     var kb = dg('📋 Metni ve linki kopyala', function () { kopya(t + '\n\n' + url); kb.textContent = '✓ Kopyalandı, istediğin yere yapıştır'; }, true);
     dgl.push(kb);
+    // Görselli paylaşım (Instagram gönderi/hikâye): görsel + metin tek pencerede, ayrıca yalnız görsel
+    if (o2.gorsel) {
+      var gb = null, ad = o2.gorselAd || '7527iptal.jpg', gp = Promise.resolve().then(o2.gorsel).then(function (b) { gb = b; return b; }).catch(function () { return null; });
+      var b1 = dg('📸 Instagram · görsel + metin', function () { gp.then(function (b) { if (!b) { b1.textContent = '⚠️ Görsel alınamadı'; return; } m.remove(); gorselPaylas({ metin: o2.ig || t, url: url, blob: b, ad: ad, ham: true }); }); }, true);
+      var b2 = dg('🖼 Sadece görsel', function () { gp.then(function (b) { if (b) { sadeceGorsel(b, ad); b2.textContent = '✓ Görsel hazır'; } else b2.textContent = '⚠️ Görsel alınamadı'; }); });
+      var b3 = dg('📝 Sadece metin', function () { kopya(t + '\n\n' + url); b3.textContent = '✓ Kopyalandı'; });
+      dgl.push(b1, b2, b3);
+    }
     k.appendChild(g);
     // Önizleme görseli henüz yüklenmediyse düğmeler bekler: erken paylaşılan link görselsiz kalır (X/WA önizlemeyi bir kez alıp saklar)
     if (bekle) {
@@ -504,6 +539,6 @@
 
   window.OG = { ozet: ozet, takip: takip, slug: slug, anahtar: anahtar, kart: kart, kucult: kucult, hazirla: hazirla,
     vaka: vaka, onur: onur, onurLink: onurLink, saha: saha,
-    sayfa: sayfa, hazir: hazir, vakaEtiket: vakaEtiket, vekilHazirla: vekilHazirla, ek: ek, kopya: kopya, paylas: paylas, menu: menu, gorselPaylas: gorselPaylas, sadeceGorsel: sadeceGorsel, sadeceMetin: sadeceMetin, BILGI: BILGI, ETIKET: ETIKET, waKisalt: waKisalt, sahaUrl: sahaUrl, vekiller: function (il) { return (VK && VK[il]) || []; }, xKisa: xKisa, igMetin: igMetin,
+    sayfa: sayfa, hazir: hazir, vakaEtiket: vakaEtiket, vekilHazirla: vekilHazirla, ek: ek, kopya: kopya, paylas: paylas, menu: menu, gorselPaylas: gorselPaylas, sadeceGorsel: sadeceGorsel, sadeceMetin: sadeceMetin, BILGI: BILGI, ETIKET: ETIKET, waKisalt: waKisalt, sahaUrl: sahaUrl, sahaGorsel: sahaGorsel, vekiller: function (il) { return (VK && VK[il]) || []; }, xKisa: xKisa, igMetin: igMetin,
     haritaVeri: haritaVeri, haritaLink: haritaLink, haritaPaylas: haritaPaylas, haritaGorsel: haritaGorsel, et: et };
 })();

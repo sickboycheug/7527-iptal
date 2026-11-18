@@ -19,7 +19,7 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="stylesheet" href="/kaynak/tailwind.css?v=1">
-<script src="/kaynak/og.js?v=17" defer></script>
+<script src="/kaynak/og.js?v=18" defer></script>
 <script src="/kaynak/tarayici.js?v=2" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
 <script src="/kaynak/sbkopru.js?v=1"></script>
@@ -3671,7 +3671,9 @@ function fpPaylas(r) {
   var hz = null; try { if (window.OG) hz = OG.saha(r, function () { return _fpImg[r.id] || callRpc('gv_fp_image', { p_id: r.id }); }); } catch (e) {}
   var url = (window.OG && OG.sahaUrl) ? OG.sahaUrl(r) : 'https://7527iptal.org/p/saha-' + r.id + '?v=2';
   var ac = function () {
-    if (window.OG && OG.paylas) { var et = ''; try { et = OG.vakaEtiket(r.city, r.district); } catch (e) {} OG.paylas({ baslik: r.title, metin: s.join('\n') + (et ? '\n\n' + et : ''), url: url }); }
+    if (window.OG && OG.paylas) { var et = ''; try { et = OG.vakaEtiket(r.city, r.district); } catch (e) {} OG.paylas({ baslik: r.title, metin: s.join('\n') + (et ? '\n\n' + et : ''), url: url,
+      gorsel: OG.sahaGorsel ? function () { return OG.sahaGorsel(r, durusma ? ['DURUŞMAYA GEL', fpTarihMetni(r.event_at, true), r.place || ''] : [(FP_TUR[r.kind] || FP_TUR.eylem).ad.toLocaleUpperCase('tr')]); } : null,
+      gorselAd: '7527-saha-' + r.id + '.jpg' }); }
     else paylasAc('Paylaş', s.join('\n'), url);
   };
   if (!hz) { ac(); return; }
