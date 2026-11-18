@@ -3638,13 +3638,25 @@ function fpBuyut(src, r) {
 function fpPaylas(r) {
   var yer = [r.city, r.district].filter(Boolean).join(' / ') || r.country || '';
   var s = [];
-  if (r.kind === 'eylem') {
+  // Yaklaşan duruşma/eylem: davet en başta (tarih, saat, yer), vaka altında
+  var gelecek = r.event_at && new Date(r.event_at).getTime() > Date.now() - 864e5;
+  var durusma = gelecek && (r.kind === 'dava' || (r.kind === 'eylem' && /duruşma/i.test(r.title + ' ' + (r.place || ''))));
+  if (durusma) {
+    s.push('⚖️ DURUŞMAYA GEL: ' + fpTarihMetni(r.event_at, true));
+    s.push('📍 ' + [r.place, yer].filter(Boolean).join(' · '));
+    s.push('Salon ne kadar doluysa cezasızlığa göz yummak o kadar zorlaşır. Orada ol, hâkim bu davanın takip edildiğini görsün.');
+    s.push('');
+    s.push('🐾 ' + r.title.replace(/^Duruşma takibi:\s*/i, ''));
+    s.push('');
+    s.push('Gelemiyorsan paylaş ve ' + (r.city || 'ilinin') + (r.city ? ' vekillerine' : ' vekillerine') + ' dilekçeni gönder.');
+  } else if (r.kind === 'eylem') {
     s.push('📣 ' + r.title);
     if (yer || r.place) s.push('📍 ' + [yer, r.place].filter(Boolean).join(' · '));
     if (r.event_at) s.push('🗓 ' + fpTarihMetni(r.event_at, true));
     s.push('Sen de gel, sesimizi birlikte yükseltelim.');
   } else if (r.kind === 'dava') {
-    s.push('⚖️ ' + r.title); if (yer) s.push('📍 ' + yer);
+    s.push('⚖️ ' + r.title); if (yer || r.place) s.push('📍 ' + [r.place, yer].filter(Boolean).join(' · '));
+    if (r.event_at) s.push('🗓 ' + fpTarihMetni(r.event_at, true));
     s.push('Davayı takip ediyoruz, cezasızlığa izin yok.');
   } else if (r.kind === 'cimer') {
     s.push('📝 CİMER\'e sen de yaz: ' + r.title);
