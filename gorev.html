@@ -3779,7 +3779,7 @@ async function fpGonder() {
 }
 
 // ---------- yönetici: Sahadan Paylaş kayıtları ----------
-var faRows = [], faF = 'pending';
+var faRows = [], faF = 'all';
 async function faYukle() {
   if (!adminPin) return;
   try { faRows = (await callRpc('gv_admin_fp_list', { p_pin: adminPin })) || []; faCiz(); }
