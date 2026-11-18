@@ -4483,24 +4483,29 @@ function ilpVeri() {
   var lnk = SITE_URL + (dn ? '/?dilekce=1' : tr ? (y ? '/?il=' + encodeURIComponent(y) + (alt ? '&ilce=' + encodeURIComponent(alt) : '') : '/?dilekce=1') : '/?ulke=' + encodeURIComponent(ul) + (y ? '&sehir=' + encodeURIComponent(y) : ''));
   function et(x) { return '#' + String(x).split(/\s+/).map(function (k) { return k.charAt(0).toLocaleUpperCase('tr') + k.slice(1); }).join('').replace(/[^0-9A-Za-zÀ-ÖØ-öø-ÿÇĞİÖŞÜçğıöşüŁłŒœ]/g, ''); }
   // Etiketler ve hesaplar: yerin kendi etiketleri, o ilin vekilleri (X/Instagram), o il/ülkenin Instagram grupları
+  // Etiketler: yalnız #7527İptal + yerin kendisi (il ve ilçeleri / ülke ve şehirleri). Hesaplar: o yerin grupları ve vekilleri.
   var EJ = _ilpEt && _ilpEt.then ? {} : (_ilpEt || {}), etk = [], hX = [], hIG = [];
+  function ilceEt(il, ic) { return /^merkez$/i.test(ic) ? et(il + ' Merkez') : et(ic); }
   if (tr) {
     if (y) {
-      if (alt) etk.push(et(alt));
-      etk.push(et(y), et(y + ' Sokak Hayvanları'), et(y + ' Milletvekilleri'));
+      etk.push(et(y));
+      if (alt) etk.push(ilceEt(y, alt));
+      (IL_ILCE[y] || []).forEach(function (ic) { etk.push(ilceEt(y, ic)); });
+      ((EJ.il || {})[y] || []).forEach(function (h) { hIG.push('@' + h); });
       var vk = (window.OG && OG.vekiller) ? OG.vekiller(y) : [];
       vk.forEach(function (k) { if (k.x) hX.push('@' + k.x); if (k.ig) hIG.push('@' + k.ig); });
-      ((EJ.il || {})[y] || []).forEach(function (h) { hIG.unshift('@' + h); });
-    } else { etk.push('#Türkiye', '#TBMM'); hX.push('@TBMMresmi'); }
-  } else {
-    var yad = dn ? D.dunya : ilpYerelAd(ul, L);
-    if (!dn) { etk.push(et(yad)); if (yad !== ul) etk.push(et(ul.replace(/\s*\(.*\)/, ''))); }
+    } else {
+      etk.push('#Türkiye'); CITIES.forEach(function (il) { etk.push(et(il)); }); hX.push('@TBMMresmi');
+    }
+  } else if (!dn) {
+    var yad = ilpYerelAd(ul, L), ulTr = ul.replace(/\s*\(.*\)/, '');
+    etk.push(et(ulTr)); if (yad !== ul) etk.push(et(yad));
     if (y) etk.push(et(y));
-    etk = etk.concat(D ? D.et : []);
+    (ILP_SEHIR[ul] || []).forEach(function (c) { etk.push(et(c)); });
     ((EJ.ulke || {})[ul] || []).forEach(function (h) { hIG.push('@' + h); });
   }
   hX = hX.slice(0, 20);
-  var ETK = '#7527İptal ' + etk.filter(function (x, i, a) { return x.length > 2 && a.indexOf(x) === i; }).join(' ') + ' ' + window.OG.ETIKET.replace('#7527İptal ', '');
+  var ETK = ['#7527İptal'].concat(etk).filter(function (x, i, a) { return x.length > 2 && a.indexOf(x) === i; }).join(' ');
   var R = { d: d, v: v, g: g, bas: bas, yurtdisi: !tr, dunya: dn, tumTr: tr && !y, y: tr ? y : ul, yol: lnk.replace(SITE_URL, '') || '/', s1: s1, L: L, link: lnk };
   var trBlok = bas + '\n\n' + s1 + (s2 ? '\n' + s2 : '') + '\n' + cagri;
   if (L === 'tr') {
