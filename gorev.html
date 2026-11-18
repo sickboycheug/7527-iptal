@@ -3666,10 +3666,19 @@ function fpPaylas(r) {
     s.push('İmzala ve yay. Her imza bir can için.');
   }
   // Linkin önizlemesinde bu kaydın kendi afişi (yoksa kendi bilgilerinden kart) çıksın
-  try { if (window.OG) OG.saha(r, function () { return _fpImg[r.id] || callRpc('gv_fp_image', { p_id: r.id }); }); } catch (e) {}
+  // Paylaşım penceresi, kaydın kendi görseli sunucuya kaydedildikten sonra açılır (en çok 12 sn);
+  // yoksa sosyal medya linki ilk okuduğunda genel sayfa görselini gösteriyordu
+  var hz = null; try { if (window.OG) hz = OG.saha(r, function () { return _fpImg[r.id] || callRpc('gv_fp_image', { p_id: r.id }); }); } catch (e) {}
   var url = (window.OG && OG.sahaUrl) ? OG.sahaUrl(r) : 'https://7527iptal.org/p/saha-' + r.id + '?v=2';
-  if (window.OG && OG.paylas) { var et = ''; try { et = OG.vakaEtiket(r.city, r.district); } catch (e) {} OG.paylas({ baslik: r.title, metin: s.join('\n') + (et ? '\n\n' + et : ''), url: url }); }
-  else paylasAc('Paylaş', s.join('\n'), url);
+  var ac = function () {
+    if (window.OG && OG.paylas) { var et = ''; try { et = OG.vakaEtiket(r.city, r.district); } catch (e) {} OG.paylas({ baslik: r.title, metin: s.join('\n') + (et ? '\n\n' + et : ''), url: url }); }
+    else paylasAc('Paylaş', s.join('\n'), url);
+  };
+  if (!hz) { ac(); return; }
+  var bk = document.createElement('div'); bk.textContent = 'Paylaşım görseli hazırlanıyor…';
+  bk.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:2147483646;background:#18181b;border:1px solid #3f3f46;color:#f4f4f5;padding:10px 16px;border-radius:12px;font:600 13px Inter,system-ui,sans-serif';
+  document.body.appendChild(bk);
+  Promise.race([Promise.resolve(hz).catch(function () {}), new Promise(function (ok) { setTimeout(ok, 12000); })]).then(function () { bk.remove(); ac(); });
 }
 
 // form
