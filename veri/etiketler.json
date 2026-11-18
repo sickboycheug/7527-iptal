@@ -161,7 +161,14 @@
   "Kocaeli": [
    "kocaelider41",
    "umuttepepatileri2",
-   "kouhayvandostlari"
+   "kouhayvandostlari",
+   "kohayder41",
+   "kohayder_yuva",
+   "dogahayvankorumakolektifi",
+   "avkubraoktay",
+   "kocaelibarosuhayvanhaklari",
+   "kocaelibarosu",
+   "tarcanumutcan"
   ],
   "Konya": [
    "konyakedisahiplendirme1"
@@ -481,6 +488,14 @@
   ],
   "Tokat": [
    "tokathayvanhaklar"
+  ],
+  "Kocaeli": [
+   "KOHAYDER41"
+  ]
+ },
+ "il_x": {
+  "Kocaeli": [
+   "KOHAYDER"
   ]
  }
 }

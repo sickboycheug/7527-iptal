@@ -389,7 +389,7 @@
     ((ILCE || {})[il] || []).forEach(function (x) { ekle(/^merkez$/i.test(x) ? et(il + ' Merkez') : et(x)); });
     var v = (VK && VK[il]) || [];
     var ig = ((ETJ.il || {})[il] || []).map(function (h) { return '@' + h; });
-    var x = v.map(function (k) { return k.x ? '@' + k.x : ''; }).filter(Boolean).slice(0, 20);
+    var x = ((ETJ.il_x || {})[il] || []).map(function (h) { return '@' + h; }).concat(v.map(function (k) { return k.x ? '@' + k.x : ''; }).filter(Boolean)).slice(0, 25);
     return [tags.join(' '), ig.join(' '), x.join(' ')].filter(Boolean).join('\n\n');
   }
   try { vekilHazirla(); } catch (e) {}
