@@ -4493,6 +4493,7 @@ function ilpVeri() {
       if (alt) etk.push(ilceEt(y, alt));
       (IL_ILCE[y] || []).forEach(function (ic) { etk.push(ilceEt(y, ic)); });
       ((EJ.il || {})[y] || []).forEach(function (h) { hIG.push('@' + h); });
+      ((EJ.il_x || {})[y] || []).forEach(function (h) { hX.push('@' + h); });
       var vk = (window.OG && OG.vekiller) ? OG.vekiller(y) : [];
       vk.forEach(function (k) { if (k.x) hX.push('@' + k.x); if (k.ig) hIG.push('@' + k.ig); });
     } else {

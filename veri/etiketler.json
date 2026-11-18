@@ -47,7 +47,8 @@
    "efelercanlari"
   ],
   "Ağrı": [
-   "agrihaycanlardernegi"
+   "agrihaycanlardernegi",
+   "agriegitimsen"
   ],
   "Balıkesir": [
    "balikesirbarosuhayvanhaklari"
@@ -58,21 +59,25 @@
   ],
   "Batman": [
    "batmancevrevehayvanhaklari",
-   "batmanhayvanseverler72"
+   "batmanhayvanseverler72",
+   "batmankadinhareketi",
+   "batmanhayvanseverler_"
   ],
   "Bilecik": [
    "bilecikbeslemevesahiplendirme",
    "bilecikhayvanseverler"
   ],
   "Bitlis": [
-   "bitlishayvanplatformu"
+   "bitlishayvanplatformu",
+   "bitlis_egitim_sen"
   ],
   "Burdur": [
    "burdur_cander",
    "burdurhayvansahiplendirme",
    "golhisar_canlari",
    "burdurbarosuhayvanhaklari",
-   "burdurvegan"
+   "burdurvegan",
+   "patili_kalpler"
   ],
   "Bursa": [
    "bursahayvanhaklaribirligi",
@@ -96,7 +101,9 @@
   "Erzincan": [
    "erzincan_hayvanlar_icin_elele",
    "erzincanhayvansahiplendirme",
-   "suleyman7675_erzincan"
+   "suleyman7675_erzincan",
+   "canyuva24",
+   "ajanserzincan"
   ],
   "Erzurum": [
    "atauni_hsk"
@@ -107,7 +114,9 @@
    "eskisehirbarosuhayvanhaklari"
   ],
   "Gümüşhane": [
-   "gumushanehayvanseverler1"
+   "gumushanehayvanseverler1",
+   "gumus_patiler29",
+   "patican_dostlar29"
   ],
   "Hakkari": [
    "semdinli_patileri",
@@ -128,7 +137,8 @@
    "k.marashayvandostlari",
    "marasdepremzedepatiler",
    "marasminikpatiler",
-   "marassahiplendirme"
+   "marassahiplendirme",
+   "marasablasi"
   ],
   "Karaman": [
    "karaman_pati_birlik",
@@ -182,7 +192,8 @@
   ],
   "Nevşehir": [
    "nevsehirhayvankoruma",
-   "nevuhaykor"
+   "nevuhaykor",
+   "strays_of_cappadocia"
   ],
   "Ordu": [
    "kumrusokakhayvanlari",
@@ -259,7 +270,8 @@
   ],
   "Çankırı": [
    "cankiri.patili.dostlar",
-   "cankiri_patili_cocuklar_"
+   "cankiri_patili_cocuklar_",
+   "patileringucu_adina"
   ],
   "Çorum": [
    "corumbarosuhayvanhaklarikom"
@@ -293,6 +305,9 @@
   ],
   "Şırnak": [
    "cizreli_pati_dostu"
+  ],
+  "Muş": [
+   "musbilicantv"
   ]
  },
  "ulke": {
@@ -439,6 +454,33 @@
    "#Yozgat",
    "#YozgatHayvanSeverler",
    "#YozgatPatileri"
+  ]
+ },
+ "il_fb": {
+  "Adıyaman": [
+   "AdiyamanSokakHayvanlariYardimlasmaGonulluleri",
+   "adiyamanhayvanhaklaridayanisma"
+  ],
+  "Ağrı": [
+   "Agrisokakhayvanlari"
+  ],
+  "Amasya": [
+   "Amasya-Doğal-Hayatı-ve-Hayvan-Haklarını-Koruma-Derneği"
+  ],
+  "Batman": [
+   "Batman-Sokak-Hayvanları-Koruma-Derneği"
+  ],
+  "Bilecik": [
+   "BilecikHayvanhaklaridayanismagrubu"
+  ],
+  "Burdur": [
+   "BurdurHayvanDostlariDernegi"
+  ],
+  "Kars": [
+   "karshayvanhaklari"
+  ],
+  "Tokat": [
+   "tokathayvanhaklar"
   ]
  }
 }
