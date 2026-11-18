@@ -122,12 +122,16 @@
   }
   // r: Sahadan Paylaş kaydı; gorselAl: kaydın kendi görselini (data URL) getiren fonksiyon
   var FP = { eylem: ['📣 EYLEM', '#dc2626'], dava: ['⚖️ DAVA', '#b45309'], cimer: ['📝 CİMER BAŞVURUSU', '#0369a1'], imza: ['✍️ İMZA KAMPANYASI', '#047857'] };
+  // Kayıt değişince (tarih, saat, başlık, yer, afiş) link de değişir: sosyal medya eski önizlemeyi göstermez
+  function sahaUrl(r) { return 'https://7527iptal.org/p/saha-' + r.id + '?v=' + ozet([r.title, r.kind, r.city, r.district, r.place, r.event_at, r.has_image ? 1 : 0].join('|')); }
   function saha(r, gorselAl) {
     var key = anahtar('saha', r.id, [r.title, r.kind, r.city, r.district, r.place, r.event_at, r.has_image ? 1 : 0]);
     return hazirla(key, function () {
       if (r.has_image && gorselAl) return gorselAl();
       var t = FP[r.kind] || FP.eylem, yer = [r.city, r.district].filter(Boolean).join(' / ') || r.country || '', tarih = '';
-      if (r.event_at) { try { tarih = new Date(r.event_at).toLocaleString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }); } catch (e) {} }
+      if (r.event_at) { try { var dt = new Date(r.event_at), sy = dt.getUTCHours() === 0 && dt.getUTCMinutes() === 0;
+        tarih = dt.toLocaleDateString('tr-TR', { timeZone: sy ? 'UTC' : 'Europe/Istanbul', day: 'numeric', month: 'long', year: 'numeric', weekday: 'long' }) +
+          (sy ? '' : ' · saat ' + dt.toLocaleTimeString('tr-TR', { timeZone: 'Europe/Istanbul', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })); } catch (e) {} }
       return kart({ ust: 'SAHADAN PAYLAŞ  ·  7527 İPTAL', etiket: t[0], renk: t[1], baslik: r.title,
         satirlar: [[yer, r.place].filter(Boolean).length ? '📍 ' + [yer, r.place].filter(Boolean).join(' · ') : '', tarih ? '🗓 ' + tarih : '', String(r.body || '').replace(/\s+/g, ' ').slice(0, 120)],
         alt: r.kind === 'imza' ? 'İmzala ve yay.' : r.kind === 'cimer' ? 'Sen de başvur: metin hazır.' : 'Sesimizi birlikte yükseltelim.' });
@@ -168,11 +172,15 @@
 
   // ---- ortak paylaşım metni eki: yasa bilgisi ve etiketler ----
   var BILGI = "7527 sayılı Kanun (30.07.2024) sokak hayvanlarının toplatılıp barınaklara kapatılmasını dayatıyor. Talebimiz: Kanun'un iptali ve 5199'un \"Kısırlaştır, Aşıla, Yerinde Yaşat\" ilkesine dönüş.";
-  var ETIKET = '#7527İptal #7527SayılıKanun #5199 #YerindeYaşat #KısırlaştırAşılaYerindeYaşat #HayvanÖzgürlüğü #SokakHayvanları #TBMM';
+  // Genel etiket yalnız #7527İptal; geri kalanı yerin kendisi (il, ilçeler) ve oranın hesapları
+  var ETIKET = '#7527İptal';
   function ek(metin) {
-    var t = String(metin || '').replace(/\s*#7527İptal\s*$/, '');
+    var p = String(metin || '').split(/\n{2,}/), son = [];
+    while (p.length && etiketSatiri(p[p.length - 1])) son.unshift(p.pop().trim());
+    var t = p.join('\n\n');
     if (t.indexOf('7527 sayılı Kanun (30.07.2024)') < 0) t += '\n\n' + BILGI;
-    return t + '\n\n' + ETIKET;
+    if (!son.length || son[0].indexOf('#7527İptal') < 0) son.unshift(ETIKET);
+    return t + '\n\n' + son.join('\n\n');
   }
   function kopya(t) {
     try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t).catch(function () {}); return; } } catch (e) {}
@@ -332,15 +340,22 @@
   }
   function et(s) { return '#' + String(s || '').split(/\s+/).map(function (k) { return k.charAt(0).toLocaleUpperCase('tr') + k.slice(1).toLocaleLowerCase('tr'); }).join('').replace(/[^0-9A-Za-zÇĞİÖŞÜçğıöşü]/g, ''); }
   // Yerel etiket/hesap listesi (veri/etiketler.json): il hashtag'leri vaka paylaşımlarına da girer
+  var ILCE = window.IL_ILCE || null;
+  if (!ILCE) try { fetch('/veri/il_ilce.json').then(function (r) { return r.ok ? r.json() : null; }).then(function (d) { if (d) ILCE = d; }).catch(function () {}); } catch (e) {}
   var ETJ = {}; try { fetch('/veri/etiketler.json').then(function (r) { return r.ok ? r.json() : {}; }).then(function (d) { ETJ = d || {}; }).catch(function () {}); } catch (e) {}
+  // Bütün yer paylaşımlarında aynı etiket: #7527İptal, ilçe, il, ilin hashtag'leri, ilin bütün ilçeleri;
+  // altında o ilin yerel hesapları (Instagram) ve vekillerinin X hesapları
   function vakaEtiket(il, yer) {
     if (!il) return '';
-    var ilce = String(yer || '').split(/[·\/,]/)[0].trim(), tags = [];
-    if (ilce && ilce.toLocaleLowerCase('tr') !== il.toLocaleLowerCase('tr') && ilce.length < 30) tags.push(et(ilce));
-    tags.push(et(il));
-    ((ETJ.il_hashtag || {})[il] || []).forEach(function (h) { if (tags.indexOf(h) < 0) tags.push(h); });
-    var v = (VK && VK[il]) || [], h = v.map(function (k) { return k.x ? '@' + k.x : ''; }).filter(Boolean).slice(0, 20);
-    return tags.join(' ') + (h.length ? '\n' + h.join(' ') : '');
+    var ilce = String(yer || '').split(/[·\/,]/)[0].trim(), tags = ['#7527İptal'], ekle = function (h) { if (h && h.length > 2 && tags.indexOf(h) < 0) tags.push(h); };
+    if (ilce && ilce.toLocaleLowerCase('tr') !== il.toLocaleLowerCase('tr') && ilce.length < 30) ekle(et(ilce));
+    ekle(et(il));
+    ((ETJ.il_hashtag || {})[il] || []).forEach(ekle);
+    ((ILCE || {})[il] || []).forEach(function (x) { ekle(/^merkez$/i.test(x) ? et(il + ' Merkez') : et(x)); });
+    var v = (VK && VK[il]) || [];
+    var ig = ((ETJ.il || {})[il] || []).map(function (h) { return '@' + h; });
+    var x = v.map(function (k) { return k.x ? '@' + k.x : ''; }).filter(Boolean).slice(0, 20);
+    return [tags.join(' '), ig.join(' '), x.join(' ')].filter(Boolean).join('\n\n');
   }
   try { vekilHazirla(); } catch (e) {}
 
@@ -489,6 +504,6 @@
 
   window.OG = { ozet: ozet, takip: takip, slug: slug, anahtar: anahtar, kart: kart, kucult: kucult, hazirla: hazirla,
     vaka: vaka, onur: onur, onurLink: onurLink, saha: saha,
-    sayfa: sayfa, hazir: hazir, vakaEtiket: vakaEtiket, vekilHazirla: vekilHazirla, ek: ek, kopya: kopya, paylas: paylas, menu: menu, gorselPaylas: gorselPaylas, sadeceGorsel: sadeceGorsel, sadeceMetin: sadeceMetin, BILGI: BILGI, ETIKET: ETIKET, waKisalt: waKisalt, vekiller: function (il) { return (VK && VK[il]) || []; }, xKisa: xKisa, igMetin: igMetin,
+    sayfa: sayfa, hazir: hazir, vakaEtiket: vakaEtiket, vekilHazirla: vekilHazirla, ek: ek, kopya: kopya, paylas: paylas, menu: menu, gorselPaylas: gorselPaylas, sadeceGorsel: sadeceGorsel, sadeceMetin: sadeceMetin, BILGI: BILGI, ETIKET: ETIKET, waKisalt: waKisalt, sahaUrl: sahaUrl, vekiller: function (il) { return (VK && VK[il]) || []; }, xKisa: xKisa, igMetin: igMetin,
     haritaVeri: haritaVeri, haritaLink: haritaLink, haritaPaylas: haritaPaylas, haritaGorsel: haritaGorsel, et: et };
 })();
