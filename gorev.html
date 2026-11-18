@@ -3516,9 +3516,11 @@ var fpRows = [], fpTur = '', fpYon = -1, fpFormTur = 'eylem', fpGorsel = null, f
 
 function fpTarihMetni(v, saatli) {
   try {
-    var d = new Date(v);
-    return d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', weekday: saatli ? 'long' : undefined }) +
-      (saatli ? ' · ' + d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }) : '');
+    // Saat Türkiye saatiyle, 24 saat düzeninde. Saati girilmemiş (yalnız tarih, 00:00 UTC) kayıtta saat yazılmaz:
+    // aksi halde gece yarısı Türkiye'de 03:00 görünüyordu
+    var d = new Date(v), saatYok = d.getUTCHours() === 0 && d.getUTCMinutes() === 0;
+    return d.toLocaleDateString('tr-TR', { timeZone: saatYok ? 'UTC' : 'Europe/Istanbul', day: 'numeric', month: 'long', year: 'numeric', weekday: saatli ? 'long' : undefined }) +
+      (saatli && !saatYok ? ' · saat ' + d.toLocaleTimeString('tr-TR', { timeZone: 'Europe/Istanbul', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }) : '');
   } catch (e) { return ''; }
 }
 function fpVakaNo(ref) { var m = /(\d+)\D*$/.exec(ref || ''); return m ? m[1] : ''; }
