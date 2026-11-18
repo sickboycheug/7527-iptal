@@ -234,11 +234,13 @@
     if (out.length < 60 && p.govde.length) out += '\n\n' + p.govde.shift();
     if (out.length + ek2.length > sinir) out = out.slice(0, sinir - ek2.length - 2).replace(/\s+\S*$/, '') + '…';
     out += ek2;
-    p.govde.forEach(function (g) { if ((out + '\n\n' + g).length <= sinir) out += '\n\n' + g; });
-    // #etiketler ve @hesaplar sığdığı kadar eklenir
+    // Önce hesaplar (@), sonra etiketler (#) sığdığı kadar; kalan yer olursa metnin diğer paragrafları araya girer
+    var etk = p.etk.filter(function (x) { return x.charAt(0) === '@'; }).concat(p.etk.filter(function (x) { return x.charAt(0) === '#'; }));
     var sat = '';
-    p.etk.forEach(function (e) { var d = sat ? sat + ' ' + e : e; if ((out + '\n\n' + d).length <= sinir) sat = d; });
-    return sat ? out + '\n\n' + sat : out;
+    etk.forEach(function (e) { var d = sat ? sat + ' ' + e : e; if ((out + '\n\n' + d).length <= sinir) sat = d; });
+    var orta = '';
+    p.govde.forEach(function (g) { var d = orta ? orta + '\n\n' + g : g; if ((out + '\n\n' + d + (sat ? '\n\n' + sat : '')).length <= sinir) orta = d; });
+    return out + (orta ? '\n\n' + orta : '') + (sat ? '\n\n' + sat : '');
   }
   function xUzunluk(s) { return String(s).replace(LINK_RE, '12345678901234567890123').length; }
   function xKisa(t, url, hazir2) {
