@@ -200,8 +200,9 @@
     if (out.length + ek2.length > sinir) out = out.slice(0, sinir - ek2.length - 2).replace(/\s+\S*$/, '') + '…';
     out += ek2;
     p.govde.forEach(function (g) { if ((out + '\n\n' + g).length <= sinir) out += '\n\n' + g; });
-    var et2 = p.etk.filter(function (e) { return e.charAt(0) === '#'; }), sat = '';
-    et2.forEach(function (e) { var d = sat ? sat + ' ' + e : e; if ((out + '\n\n' + d).length <= sinir) sat = d; });
+    // #etiketler ve @hesaplar sığdığı kadar eklenir
+    var sat = '';
+    p.etk.forEach(function (e) { var d = sat ? sat + ' ' + e : e; if ((out + '\n\n' + d).length <= sinir) sat = d; });
     return sat ? out + '\n\n' + sat : out;
   }
   function xUzunluk(s) { return String(s).replace(LINK_RE, '12345678901234567890123').length; }

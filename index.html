@@ -22,7 +22,7 @@
 <meta name="twitter:image" content="https://7527iptal.org/gorsel/halk-iradesi.png?v=2">
 <!-- Tailwind: hazır CSS dosyası -->
 <link rel="stylesheet" href="/kaynak/tailwind.css?v=1">
-<script src="/kaynak/og.js?v=15" defer></script>
+<script src="/kaynak/og.js?v=16" defer></script>
 <script src="/kaynak/tarayici.js?v=2" defer></script>
 <!-- QRCode.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -4525,9 +4525,12 @@ function ilpVeri() {
     R.basG = basL; R.ust = D.sus.toLocaleUpperCase(L); R.cagriG = D.cagri; R.lbl = D.lbl; R.s1L = s1L;
     R.trUst = dn ? "DÜNYA 7527'YE SESSİZ KALMIYOR" : bas + " 7527'YE SESSİZ KALMIYOR";
   }
-  R.metin = R.govde + '\n\n' + ETK;
-  R.xUzun = R.metin + (hX.length ? '\n\n' + hX.join(' ') : '');
-  R.ig = R.metin + (hIG.length ? '\n\n' + hIG.join(' ') : '');
+  // Hesap etiketleri her metinde: X metninde X hesapları, diğerlerinde (WhatsApp, Telegram, Facebook, Instagram, kopyala) yerel hesaplar
+  var tabanMetin = R.govde + '\n\n' + ETK;
+  R.xUzun = tabanMetin + (hX.length ? '\n\n' + hX.join(' ') : '');
+  R.ig = tabanMetin + (hIG.length ? '\n\n' + hIG.join(' ') : '');
+  R.metin = R.ig;
+  if (hIG.length) R.wa += '\n\n' + hIG.join(' ');
   return R;
 }
 function ilpGoster() {
