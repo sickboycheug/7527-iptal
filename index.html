@@ -22,7 +22,7 @@
 <meta name="twitter:image" content="https://7527iptal.org/gorsel/halk-iradesi.png?v=2">
 <!-- Tailwind: hazır CSS dosyası -->
 <link rel="stylesheet" href="/kaynak/tailwind.css?v=1">
-<script src="/kaynak/og.js?v=14" defer></script>
+<script src="/kaynak/og.js?v=15" defer></script>
 <script src="/kaynak/tarayici.js?v=2" defer></script>
 <!-- QRCode.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -4489,6 +4489,7 @@ function ilpVeri() {
   if (tr) {
     if (y) {
       etk.push(et(y));
+      ((EJ.il_hashtag || {})[y] || []).forEach(function (h) { etk.push(h); });
       if (alt) etk.push(ilceEt(y, alt));
       (IL_ILCE[y] || []).forEach(function (ic) { etk.push(ilceEt(y, ic)); });
       ((EJ.il || {})[y] || []).forEach(function (h) { hIG.push('@' + h); });
@@ -7678,9 +7679,9 @@ function rkOnurPencere(r, blob, dosyaAdi, metin) {
   // O ilin (yurtdışında ülkenin) Instagram grup etiketleri: veri/etiketler.json. Liste yoksa bölüm hiç görünmez.
   rkEtiketler().then(function (d) {
     var yurt = r.ulke && r.ulke !== 'Türkiye', yerAd = String((yurt ? r.ulke : r.il) || '').trim();
-    var l = ((yurt ? d.ulke : d.il) || {})[yerAd] || [];
-    if (!l.length || !m.isConnected) return;
-    var et = l.slice(0, 10).map(function (h) { return '@' + h; }).join(' ');
+    var l = ((yurt ? d.ulke : d.il) || {})[yerAd] || [], hs = yurt ? [] : ((d.il_hashtag || {})[yerAd] || []);
+    if ((!l.length && !hs.length) || !m.isConnected) return;
+    var et = l.slice(0, 10).map(function (h) { return '@' + h; }).concat(hs).join(' ');
     m.querySelector('[data-k="eb"]').textContent = 'Instagram etiketleri · ' + yerAd;
     m.querySelector('[data-k="et"]').textContent = et;
     m.querySelector('[data-k="ec"]').onclick = async function () {

@@ -330,11 +330,14 @@
     return VKY;
   }
   function et(s) { return '#' + String(s || '').split(/\s+/).map(function (k) { return k.charAt(0).toLocaleUpperCase('tr') + k.slice(1).toLocaleLowerCase('tr'); }).join('').replace(/[^0-9A-Za-zÇĞİÖŞÜçğıöşü]/g, ''); }
+  // Yerel etiket/hesap listesi (veri/etiketler.json): il hashtag'leri vaka paylaşımlarına da girer
+  var ETJ = {}; try { fetch('/veri/etiketler.json').then(function (r) { return r.ok ? r.json() : {}; }).then(function (d) { ETJ = d || {}; }).catch(function () {}); } catch (e) {}
   function vakaEtiket(il, yer) {
     if (!il) return '';
     var ilce = String(yer || '').split(/[·\/,]/)[0].trim(), tags = [];
     if (ilce && ilce.toLocaleLowerCase('tr') !== il.toLocaleLowerCase('tr') && ilce.length < 30) tags.push(et(ilce));
-    tags.push(et(il), et(il + ' Milletvekilleri'));
+    tags.push(et(il));
+    ((ETJ.il_hashtag || {})[il] || []).forEach(function (h) { if (tags.indexOf(h) < 0) tags.push(h); });
     var v = (VK && VK[il]) || [], h = v.map(function (k) { return k.x ? '@' + k.x : ''; }).filter(Boolean).slice(0, 20);
     return tags.join(' ') + (h.length ? '\n' + h.join(' ') : '');
   }
