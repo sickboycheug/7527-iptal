@@ -7,6 +7,7 @@
   var DILLER = { tr: 'Türkçe', en: 'English', de: 'Deutsch' };
   var ATLA = '#print-petition,#petition-header-text,#petition-body-text,#petition-konu-text,#cp-kime,#cp-konu,#cp-mesaj,#admin-modal,#admin-box,#admin-main,#admin-login,[data-notr],script,style,noscript,textarea,select,option,input,code,#dil-sec';
   var ATTR = ['placeholder', 'title', 'aria-label', 'alt'];
+  var ATLA_ATTR = ATLA.replace(',textarea,select,option,input', '');
 
   function oku() { try { return localStorage.getItem('dil'); } catch (e) { return null; } }
   function yaz(v) { try { localStorage.setItem('dil', v); } catch (e) {} }
@@ -42,7 +43,7 @@
     if (n.nodeValue !== yeni) n.nodeValue = yeni;
   }
   function eleman(el) {
-    if (el.nodeType !== 1 || el.closest(ATLA)) return;
+    if (el.nodeType !== 1 || el.closest(ATLA_ATTR)) return;
     for (var i = 0; i < ATTR.length; i++) {
       var a = el.getAttribute(ATTR[i]);
       if (a) { var v = cevir(a); if (v != null && v !== a) el.setAttribute(ATTR[i], v); }
@@ -52,8 +53,8 @@
     if (!kok) return;
     if (kok.nodeType === 3) { dugum(kok); return; }
     if (kok.nodeType !== 1) return;
-    if (kok.closest && kok.closest(ATLA)) return;
     eleman(kok);
+    if (kok.closest && kok.closest(ATLA)) return;
     var w = document.createTreeWalker(kok, NodeFilter.SHOW_TEXT, null), n;
     while ((n = w.nextNode())) dugum(n);
     var els = kok.querySelectorAll('[placeholder],[title],[aria-label],[alt]');
@@ -85,9 +86,9 @@
   function dugme() {
     var b = document.createElement('div');
     b.id = 'dil-sec';
-    b.style.cssText = 'position:fixed;top:10px;right:10px;z-index:9999;font-family:inherit';
+    b.style.cssText = 'position:fixed;left:10px;bottom:10px;z-index:9999;font-family:inherit';
     var h = '<button type="button" aria-label="Dil / Language" style="background:rgba(9,9,11,.85);color:#f4f4f5;border:1px solid #3f3f46;border-radius:999px;padding:5px 10px;font-size:12px;font-weight:700;cursor:pointer">🌐 ' + dil.toUpperCase() + '</button>' +
-      '<div style="display:none;position:absolute;right:0;top:34px;background:#18181b;border:1px solid #3f3f46;border-radius:10px;overflow:hidden;min-width:120px">';
+      '<div style="display:none;position:absolute;left:0;bottom:34px;background:#18181b;border:1px solid #3f3f46;border-radius:10px;overflow:hidden;min-width:120px">';
     Object.keys(DILLER).forEach(function (k) {
       h += '<button type="button" data-dil="' + k + '" style="display:block;width:100%;text-align:left;padding:8px 12px;background:' + (k === dil ? '#27272a' : 'transparent') + ';color:#f4f4f5;border:0;font-size:13px;cursor:pointer">' + DILLER[k] + '</button>';
     });
