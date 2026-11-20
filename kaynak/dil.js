@@ -37,7 +37,7 @@
     var p = n.parentElement;
     if (!p || p.closest(ATLA)) return;
     var v = cevir(n.nodeValue);
-    if (v == null) return;
+    if (v == null) { otoSira(n); return; }
     var bas = n.nodeValue.match(/^\s*/)[0], son = n.nodeValue.match(/\s*$/)[0];
     var yeni = bas + v + son;
     if (n.nodeValue !== yeni) n.nodeValue = yeni;
@@ -61,12 +61,63 @@
     for (var i = 0; i < els.length; i++) eleman(els[i]);
   }
 
+
+  /* Otomatik çeviri: sözlükte olmayan Türkçe cümleler (admin'den eklenen vakalar, duyurular, sohbet)
+     Google çeviri ile çevrilir, bu cihazda saklanır; bir daha istek atılmaz. Hata olursa Türkçe kalır. */
+  var OTO = {}, bekleyen = {}, kuyruk = [], aktif = 0, OKEY = 'dil_oto_' + dil;
+  try { OTO = JSON.parse(localStorage.getItem(OKEY) || '{}') || {}; } catch (e) { OTO = {}; }
+  var CIKTI = {};   // zaten çevrilmiş metinler: tekrar çeviriye gönderilmez
+  Object.keys(OTO).forEach(function (k) { CIKTI[nrm(OTO[k])] = 1; });
+  var kayitZamanla = null;
+  function otoKaydet() {
+    clearTimeout(kayitZamanla);
+    kayitZamanla = setTimeout(function () {
+      try {
+        var ks = Object.keys(OTO);
+        if (ks.length > 3000) ks.slice(0, ks.length - 3000).forEach(function (k) { delete OTO[k]; });
+        localStorage.setItem(OKEY, JSON.stringify(OTO));
+      } catch (e) {}
+    }, 800);
+  }
+  function cevrilsinMi(k) {
+    if (k.length < 12 || k.length > 4500) return false;
+    if (/^(https?:|www\.)|@[\w.-]+\.\w/.test(k)) return false;
+    var w = k.split(' ');
+    if (w.length < 3) return false;
+    return /(^|\s)[a-zçğıöşü]{2,}/.test(k);   // en az bir küçük harfli kelime (isim listelerini atlar)
+  }
+  function uygula(n, v) {
+    if (!n.parentNode) return;
+    var bas = n.nodeValue.match(/^\s*/)[0], son = n.nodeValue.match(/\s*$/)[0];
+    n.nodeValue = bas + v + son;
+  }
+  function otoSira(n) {
+    if (dil === 'tr') return;
+    var k = nrm(n.nodeValue);
+    if (CIKTI[k] || !cevrilsinMi(k)) return;
+    if (OTO[k] != null) { uygula(n, OTO[k]); return; }
+    if (bekleyen[k]) { bekleyen[k].push(n); return; }
+    bekleyen[k] = [n]; kuyruk.push(k); calis();
+  }
+  function calis() {
+    while (aktif < 3 && kuyruk.length) (function (k) {
+      aktif++;
+      fetch('https://translate.googleapis.com/translate_a/single?client=gtx&sl=tr&tl=' + dil + '&dt=t', {
+        method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+        body: 'q=' + encodeURIComponent(k)
+      }).then(function (r) { return r.json(); }).then(function (j) {
+        var v = (j && j[0] || []).map(function (x) { return x[0] || ''; }).join('').trim();
+        if (v) { OTO[k] = v; CIKTI[nrm(v)] = 1; otoKaydet(); (bekleyen[k] || []).forEach(function (n) { if (nrm(n.nodeValue) === k) uygula(n, v); }); }
+      }).catch(function () {}).then(function () { delete bekleyen[k]; aktif--; calis(); });
+    })(kuyruk.shift());
+  }
   function baslat(json) {
     harita = {};
     Object.keys(json).forEach(function (k) {
       if (k.indexOf('{n}') >= 0) {
         kaliplar.push([new RegExp('^' + esc(nrm(k)).replace('\\{n\\}', '(\\d[\\d.,]*)') + '$'), json[k]]);
       } else harita[nrm(k)] = json[k];
+      CIKTI[nrm(String(json[k]))] = 1;
     });
     document.documentElement.lang = dil;
     tara(document.body);
