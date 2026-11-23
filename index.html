@@ -25,14 +25,15 @@
 <script src="/kaynak/og.js?v=21" defer></script>
 <script src="/kaynak/tarayici.js?v=2" defer></script>
 <!-- QRCode.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
 <!-- Supabase JS -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
-<script src="/kaynak/sbkopru.js?v=1"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js" defer></script>
+<script src="/kaynak/sbkopru.js?v=1" defer></script>
+<script>/* Sayaç isteği sayfa yüklenmeden hemen başlar */try{window.__sayacErken=fetch('https://mednnlpprdgupdajmrin.supabase.co/rest/v1/rpc/campaign_counts',{method:'POST',headers:{'apikey':'sb_publishable_4xahmL7yt4C53MAJuorucg_qhImIEwn','Content-Type':'application/json'},body:'{}'}).then(function(r){if(!r.ok)throw 0;return r.json()}).catch(function(){return null});}catch(e){}</script>
 <!-- Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;600;700;800&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;600;700;800&family=Cinzel:wght@700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <style>
   body { font-family: 'Inter', sans-serif; }
   .font-impact { font-family: 'Oswald', sans-serif; }
@@ -320,6 +321,7 @@
             <div id="mp-sent-counter" class="text-sky-400 font-mono font-bold text-sm mt-0.5">0</div>
           </div>
         </div>
+<script>try{var k7=JSON.parse(localStorage.getItem('7527_sayac')||'null');if(k7&&k7.citizen){document.getElementById('citizen-counter').textContent=Number(k7.citizen).toLocaleString('tr-TR')+' / 3.000.000';document.getElementById('citizen-progress').style.width=Math.min(k7.citizen/3000000*100,100)+'%';document.getElementById('mp-counter').textContent=(k7.mpSigned||0)+' / 592';document.getElementById('mp-progress').style.width=((k7.mpSigned||0)/592*100)+'%';document.getElementById('cb-counter').textContent=k7.cb||0;document.getElementById('mb-counter').textContent=k7.mb||0;document.getElementById('mp-sent-counter').textContent=k7.mpSent||0;}}catch(e){}</script>
       </div>
     </div>
   </div>
@@ -1841,9 +1843,19 @@ setInterval(presenceTickSite, 2000);
 // Yetki sinirlari RLS ve security-definer fonksiyonlarla sunucuda uygulanir.
 var SUPABASE_URL = 'https://mednnlpprdgupdajmrin.supabase.co';
 var SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_4xahmL7yt4C53MAJuorucg_qhImIEwn';
-var supabaseClient = (window.supabase && window.supabase.createClient)
-  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, window.SB_SECENEK || {})
-  : null;
+var supabaseClient = null;
+// Kütüphane artık sayfayı bekletmeden (defer) yükleniyor: istemci, kütüphane hazır olunca kurulur
+function sbKur() {
+  if (!supabaseClient && window.supabase && window.supabase.createClient) supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, window.SB_SECENEK || {});
+  return supabaseClient;
+}
+async function sbHazir() {
+  if (sbKur()) return supabaseClient;
+  if (document.readyState === 'loading') await new Promise(function (r) { document.addEventListener('DOMContentLoaded', r); });
+  return sbKur();
+}
+sbKur();
+document.addEventListener('DOMContentLoaded', sbKur);
 
 // =====================================================================
 // UCTAN UCA SIFRELEME
@@ -1951,7 +1963,7 @@ function dataErrorText(e) {
 // Supabase RPC sarmalayici: hata kodlarini normallestirir
 // Sunucu tek seferde en çok 1000 satır döndürür: listeyi 1000'erli sayfalarla sonuna kadar çek
 async function callRpcTum(fn, args) {
-  if (!supabaseClient) throw new Error('no_client');
+  if (!(await sbHazir())) throw new Error('no_client');
   var hepsi = [];
   for (var bas = 0; bas < 100000; bas += 1000) {
     var res = await supabaseClient.rpc(fn, args || {}).range(bas, bas + 999);
@@ -1963,7 +1975,7 @@ async function callRpcTum(fn, args) {
   return hepsi;
 }
 async function callRpc(fn, args) {
-  if (!supabaseClient) throw new Error('no_client');
+  if (!(await sbHazir())) throw new Error('no_client');
   var res = await supabaseClient.rpc(fn, args);
   if (res.error) {
     console.error('[rpc:' + fn + ']', res.error);
@@ -1976,7 +1988,7 @@ async function callRpc(fn, args) {
 // PIN dogrulamasi sunucuda yapilir; acik PIN bu dosyada BULUNMAZ.
 // true = dogru, false = yanlis, throw = baglanti yok / deneme siniri asildi
 async function verifyAccessPin(scope, pin) {
-  if (!supabaseClient) throw new Error('no_client');
+  if (!(await sbHazir())) throw new Error('no_client');
   var res;
   try {
     res = await supabaseClient.rpc('verify_access_pin', { p_scope: scope, p_pin: pin });
@@ -2763,7 +2775,7 @@ var DEFAULT_TEMPLATES = {
 var PETITION_TEMPLATES = JSON.parse(JSON.stringify(DEFAULT_TEMPLATES));
 
 async function loadPetitionTemplates() {
-  if (!supabaseClient) return;
+  if (!sbKur()) return;
   try {
     var rows = await callRpc('get_petition_templates', {});
     if (!Array.isArray(rows)) return;
@@ -2819,6 +2831,8 @@ var counters = {
   mpSent: 0,
   mpSigned: 0
 };
+// Son bilinen sayılar: sunucu cevabı gelene kadar 0 yerine bunlar görünür
+try { var _k7 = JSON.parse(localStorage.getItem('7527_sayac') || 'null'); if (_k7) Object.keys(counters).forEach(function (a) { if (typeof _k7[a] === 'number') counters[a] = _k7[a]; }); } catch (e) {}
 
 // TBMM Resmi E-Posta Fallback Üretici
 // TBMM adres bicimi tahmin edilemiyor: cok parcali adlar noktasiz birlesiyor
@@ -3066,7 +3080,7 @@ function updateSentMpNotice() {
 // Adresler sayfaya gomulu; bu istek yalnizca Supabase'de duzeltme yapilmissa
 // onu yansitmak icindir. Basarisiz olursa gomulu adresler kullanilmaya devam eder.
 async function refreshMpEmails() {
-  if (!supabaseClient) return;
+  if (!sbKur()) return;
   try {
     var rows = await callRpc('list_mp_contacts', {});
     if (!Array.isArray(rows) || rows.length === 0) return;
@@ -3110,7 +3124,7 @@ function mpCountBadge(id) {
 
 async function loadMpCounts(tries) {
   tries = tries || 0;
-  if (!supabaseClient) {
+  if (!sbKur()) {
     if (tries < 10) setTimeout(function() { loadMpCounts(tries + 1); }, 1000);
     return;
   }
@@ -4829,7 +4843,7 @@ var LG_STAGE = {
 // Vakalar sunucudan (list_almanac_cases) gelir; ulasilamazsa sayfadaki
 // gomulu liste kullanilir.
 async function loadAlmanacFromServer() {
-  if (!supabaseClient) { syncAlmanacUi(); return; }
+  if (!sbKur()) { syncAlmanacUi(); return; }
   try {
     var rows = await callRpc('list_almanac_cases', {});
     if (Array.isArray(rows) && rows.length > 0) {
@@ -5666,9 +5680,10 @@ function setTestCountdown(sec) {
 // --- SAYAÇLAR ---
 // Tum sayaclar sunucudan (campaign_counts) okunur.
 async function refreshCounters() {
-  if (!supabaseClient) return;
   try {
-    var rows = await callRpc('campaign_counts', {});
+    var rows = null;
+    if (window.__sayacErken) { rows = await window.__sayacErken; window.__sayacErken = null; }
+    if (!rows || !rows[0]) { if (!sbKur()) return; rows = await callRpc('campaign_counts', {}); }
     var c = (rows && rows[0]) || null;
     if (!c) return;
     counters.citizen  = c.citizen_total || 0;
@@ -5678,6 +5693,7 @@ async function refreshCounters() {
     counters.mpSigned = c.mp_signed     || 0;
     counters.volunteers = c.volunteers  || 0;
     updateCountersUI();
+    try { localStorage.setItem('7527_sayac', JSON.stringify(counters)); } catch (e) {}
     updateVolunteerBadge();
   } catch (e) {
     console.error('[sayac]', e);
@@ -7719,7 +7735,7 @@ rkRender = function () {
 };
 function rkToggle() { _rkOpen = !_rkOpen; rkRender(); if (!_rkOpen) { var c = document.getElementById('rk-card'); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }
 async function rkLoad() {
-  if (!supabaseClient) return;
+  if (!sbKur()) return;
   try {
     var rows = await callRpcTum('public_petition_ranking', {});
     // Adı henüz sıralamaya işlenmemiş kayıtlar herkese açık listede gösterilmez
