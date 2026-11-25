@@ -1906,9 +1906,14 @@ var AREAS = ['Afiş ve broşür dağıtımı','Sosyal medya paylaşımı','Mille
   'Basın ve medya iletişimi','Hukuki destek','Tasarım ve video','Yazılım ve teknik destek','Çeviri','Bağış ve kaynak yaratma','Diğer'];
 
 var presCh = null;
+var _onlineN = 0, _uyeN = 0;
 function setOnline(n) {
-  var el = $('online-count');
-  if (el) el.textContent = n ? '🟢 ' + n + ' kişi çevrimiçi' : '';
+  if (n != null) _onlineN = n;
+  var el = $('online-count'); if (!el) return;
+  if (!_onlineN) { el.textContent = ''; return; }
+  // Giriş yapmamış ziyaretçinin kim olduğu bilinemez: "misafir" olarak sayılır
+  var uye = Math.min(_uyeN, _onlineN), mis = _onlineN - uye;
+  el.textContent = '🟢 ' + _onlineN + ' kişi burada' + (uye ? ' · ' + uye + ' üye' : '') + (mis ? ' · ' + mis + ' misafir' : '');
 }
 function presenceTick() {
   var inBoard = document.visibilityState === 'visible';
@@ -3149,6 +3154,7 @@ async function refreshOnline() {
   if (!box) return;
   try {
     var rows = (await callRpc('gv_online_public', {})) || [];
+    _uyeN = rows.length; setOnline();
     box.textContent = '';
     if (!rows.length) return;
     var ad = rows.slice(0, 40).map(function (r) { var yer = r.country ? r.country : r.city; return r.nick + (yer ? ' (' + yer + ')' : ''); }).join(', ');
@@ -3987,7 +3993,7 @@ if (window.SOHBET_MODU) (function () {
   if (eskiKod && !authUser && !$('auth-email').value) $('auth-email').value = eskiKod;
   $('auth-oldnote').classList.toggle('hidden', !eskiKod || !!authUser);
   if (!window.SOHBET_MODU) boardTimer = setInterval(function () { if (document.visibilityState === 'visible') refreshBoard(); }, 60000);
-  setInterval(function () { if (document.visibilityState === 'visible') refreshOnline(); }, 60000);
+  setInterval(function () { if (document.visibilityState === 'visible') refreshOnline(); }, window.SOHBET_MODU ? 15000 : 60000);
   if (supabaseClient) supabaseClient.auth.onAuthStateChange(function (ev) {
     if (ev === 'SIGNED_OUT' && authUser) setTimeout(function () { authUser = null; meInfo = null; profEdit = false; authGoster(); refreshBoard(); refreshChat(true); }, 0);
   });
