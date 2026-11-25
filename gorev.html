@@ -19,6 +19,16 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="stylesheet" href="/kaynak/tailwind.css?v=1">
+<script>/* Sohbet penceresi (kaynak/sohbet.js) bu sayfayı ?sohbet=1 ile yalnız sohbet olarak açar */window.SOHBET_MODU=/[?&]sohbet=1(&|$)/.test(location.search);if(window.SOHBET_MODU)document.documentElement.classList.add('sohbet-modu');</script>
+<style>
+html.sohbet-modu,html.sohbet-modu body{height:100%;overflow:hidden;background:#18181b}
+html.sohbet-modu #sohbet-kart{display:flex;flex-direction:column;height:100%;margin:0;border:0;border-radius:0;padding:10px 12px;box-sizing:border-box}
+html.sohbet-modu #sohbet-kart > *{margin-top:0}
+html.sohbet-modu #sohbet-kart > * + *{margin-top:8px}
+html.sohbet-modu #sohbet-kart > .sohbet-ust{display:none}
+html.sohbet-modu #online-list{order:-1}
+html.sohbet-modu #chat-list{flex:1 1 auto;height:auto!important;min-height:0}
+</style>
 <script src="/kaynak/og.js?v=22" defer></script>
 <script src="/kaynak/kt.js?v=1" defer></script>
 <script src="/kaynak/tarayici.js?v=2" defer></script>
@@ -419,7 +429,7 @@ function siraBoya(pre, cok) {
   }
   window.mpRankLoad = load;
   var q = document.getElementById('mp-rank-q'); if (q) q.addEventListener('input', render);
-  window.addEventListener('load', function () { load(); setInterval(load, 60000); });
+  window.addEventListener('load', function () { if (window.SOHBET_MODU) return; load(); setInterval(load, 60000); });
 })();
 </script>
     <div id="stats-box" class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-4">
@@ -482,7 +492,7 @@ function siraBoya(pre, cok) {
       <div id="live-frame" class="aspect-video w-full bg-black"></div>
       <div id="live-open" class="flex flex-wrap justify-center gap-x-4 gap-y-1 py-1.5"></div>
     </div>
-    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-3">
+    <div id="sohbet-kart" class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-3">
       <div class="flex items-center justify-between gap-2">
         <h3 class="text-sm font-bold text-white">💬 Kampanya Sohbeti</h3>
         <button type="button" onclick="sohbetPaylas()" class="btn bg-emerald-700 hover:bg-emerald-600 text-white px-3 py-1.5 whitespace-nowrap">📤 Sohbete davet et</button>
@@ -2178,6 +2188,7 @@ function duyuruAc() {
   b.textContent = kisa ? 'Devamını oku' : 'Kısalt';
 }
 window.addEventListener('load', function () {
+  if (window.SOHBET_MODU) return;
   try { var p = localStorage.getItem('7527_pano_bolum'); if (p && !/[?&](saha|tv)=/.test(location.search)) panoAc(p); } catch (e) {}
   if (/[?&]tv=1/.test(location.search)) {
     panoAc('ofis', false);
@@ -3937,11 +3948,18 @@ function faDuzenle(r) {
 }
 
 // ---------- acilis ----------
+// Sohbet modu: sohbet kartı sayfanın tek içeriği olur; sayfadaki diğer bölümler gizlenir
+if (window.SOHBET_MODU) (function () {
+  var k = document.getElementById('sohbet-kart'); if (!k) return;
+  var ust = k.firstElementChild; if (ust) ust.classList.add('sohbet-ust');
+  function gizle() { Array.prototype.forEach.call(document.body.children, function (el) { if (el !== k && el.tagName !== 'SCRIPT') el.style.display = 'none'; }); }
+  document.body.insertBefore(k, document.body.firstChild);
+  gizle(); document.addEventListener('DOMContentLoaded', gizle);
+})();
 (async function init() {
   AREAS.forEach(function (a) { var o = document.createElement('option'); o.value = a; o.textContent = a; $('adm-t-area').appendChild(o); var o2 = document.createElement('option'); o2.value = a; o2.textContent = 'Alan: ' + a; $('adm-m-area').appendChild(o2); });
   admMatKind();
-  loadCounters();
-  guncellemeDoldur();
+  if (!window.SOHBET_MODU) { loadCounters(); guncellemeDoldur(); }
   // Eski gönüllü bağlantısı (?kod=...): kod saklanır, e-postayla girişte hesaba bir kez bağlanır
   try {
     var k = (new URLSearchParams(location.search).get('kod') || '').trim();
@@ -3953,13 +3971,16 @@ function faDuzenle(r) {
     var sh = parseInt(new URLSearchParams(location.search).get('saha') || '', 10);
     if (sh > 0) { fpAcilacak = sh; panoAc('saha', false); }
   } catch (e) {}
+  if (window.SOHBET_MODU) { refreshChat(true); refreshOnline(); }
+  else {
   refreshBoard(); refreshChat(true); loadMaterials(); loadMap(); refreshOnline(); liveYukle(); fpYukle();
   setInterval(function () { if (document.visibilityState === 'visible') liveYukle(); }, 60000);
+  }
   await oturumYukle();
   var eskiKod = load('gv_code');
   if (eskiKod && !authUser && !$('auth-email').value) $('auth-email').value = eskiKod;
   $('auth-oldnote').classList.toggle('hidden', !eskiKod || !!authUser);
-  boardTimer = setInterval(function () { if (document.visibilityState === 'visible') refreshBoard(); }, 60000);
+  if (!window.SOHBET_MODU) boardTimer = setInterval(function () { if (document.visibilityState === 'visible') refreshBoard(); }, 60000);
   setInterval(function () { if (document.visibilityState === 'visible') refreshOnline(); }, 60000);
   if (supabaseClient) supabaseClient.auth.onAuthStateChange(function (ev) {
     if (ev === 'SIGNED_OUT' && authUser) setTimeout(function () { authUser = null; meInfo = null; profEdit = false; authGoster(); refreshBoard(); refreshChat(true); }, 0);
