@@ -225,7 +225,9 @@
           } catch (e) {}
         })();
       }
-      if (goHedef) setTimeout(function () { var hc = document.getElementById('th-card'); if (hc) hc.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 900);
+      // Hedef kartına kaydırma: üstündeki sıralama kartı veriyle açılmadan kaydırılırsa kart sonradan aşağı kayıyordu (yavaş telefonlarda).
+      // Bu yüzden sıralama kartı görünene kadar (en çok 6 sn) beklenir, sonra kaydırılır.
+      if (goHedef) (function () { var t0 = Date.now(); (function bekle() { var rk = document.getElementById('rk-card'); if (rk && rk.classList.contains('hidden') && Date.now() - t0 < 6000) { setTimeout(bekle, 200); return; } var hc = document.getElementById('th-card'); if (hc) hc.scrollIntoView({ behavior: 'smooth', block: 'start' }); })(); })();
       if (goRank) setTimeout(function () { var rc = document.getElementById('rk-card'); if (rc && !rc.classList.contains('hidden')) rc.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 1500);
     });
   }
@@ -3847,6 +3849,18 @@ var currentTekrarKey = '';
 
 // Düğmeye basıldığı an "Kontrol ediliyor..." yazar; sunucu kontrolü sürerken ekran donmuş görünmez
 var _gonderimSuruyor = false;
+// Form hatası: açılır kutu (alert) yerine ekranın altında kısa süreli mesaj.
+// alert sayfayı dondurur, uygulama içi tarayıcılarda bazen hiç açılmaz.
+function formHata(msg) {
+  var el = document.getElementById('form-hata');
+  if (!el) { el = document.createElement('div'); el.id = 'form-hata'; el.setAttribute('role', 'alert');
+    el.style.cssText = 'position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:9999;width:calc(100% - 32px);max-width:28rem;box-sizing:border-box;padding:14px 16px;border-radius:12px;background:#450a0a;border:1px solid #ef4444;color:#fff;font-size:14px;font-weight:700;line-height:1.4;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.5);display:none;cursor:pointer';
+    el.onclick = function () { el.style.display = 'none'; }; document.body.appendChild(el); }
+  clearTimeout(formHata._t);
+  if (!msg) { el.style.display = 'none'; return; }
+  el.textContent = '⚠️ ' + msg; el.style.display = 'block';
+  formHata._t = setTimeout(function () { el.style.display = 'none'; }, 7000);
+}
 async function sendPetitionViaEmail() {
   if (_gonderimSuruyor || petitionBusy) return;
   if (window.INAPP) { window.INAPP.uyar(); return; }
@@ -3858,6 +3872,7 @@ async function sendPetitionViaEmail() {
 }
 async function _dilekceGonder() {
   if (petitionBusy) return;
+  formHata('');
 
   var btn = document.getElementById('petition-send-btn');
   var name = (document.getElementById('citizen-name').value || '').trim();
@@ -3866,14 +3881,14 @@ async function _dilekceGonder() {
  // Ad ve soyad: ad en az 3 harf, soyad en az 2 harf (nokta sayılmaz: "M. Çelik", "Ab Çelik" geçmez; "Rıdvan Uz" geçer)
  var adK = name.split(/\s+/).map(function (p) { return p.replace(/[^\p{L}]/gu, ''); }).filter(function (p) { return p.length >= 2; });
  if (adK.length < 2 || adK[0].length < 3) {
-    alert('Lütfen adınızı ve soyadınızı kısaltmadan, tam yazın.');
+    formHata('Lütfen adınızı ve soyadınızı kısaltmadan, tam yazın.');
     document.getElementById('citizen-name').focus();
     return;
   }
   var contactInput = document.getElementById('citizen-contact');
   var contact = contactInput ? contactInput.value.trim() : '';
   if (!validateContact(contact)) {
-    alert(contact.length === 0
+    formHata(contact.length === 0
       ? 'Lütfen telefon numaranızı veya e-posta adresinizi girin.'
       : 'İletişim bilginiz geçerli görünmüyor. Telefon 10 haneli olmalı (örn. 0532 123 45 67) veya geçerli bir e-posta adresi girin.');
     if (contactInput) { contactInput.focus(); contactInput.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
@@ -3881,24 +3896,24 @@ async function _dilekceGonder() {
   }
   var abrChk = getAbroad();
   if (abrChk.on && (!abrChk.country || !abrChk.city)) {
-    alert('Lütfen ülkenizi ve şehrinizi seçin veya yazın.');
+    formHata('Lütfen ülkenizi ve şehrinizi seçin veya yazın.');
     return;
   }
   var yerChk = getPlace();
   if (!abrChk.on && (!yerChk.city || !yerChk.district)) {
-    alert('Lütfen şehir ve ilçenizi seçin.');
+    formHata('Lütfen şehir ve ilçenizi seçin.');
     return;
   }
   if (!selectedTarget) {
-    alert('Lütfen önce dilekçeyi kime göndereceğinizi seçin (CB, Meclis Başkanı veya Vekil).');
+    formHata('Lütfen önce dilekçeyi kime göndereceğinizi seçin (CB, Meclis Başkanı veya Vekil).');
     return;
   }
   if (selectedTarget === 'mp' && !selectedMP) {
-    alert('Lütfen bir milletvekili seçin.');
+    formHata('Lütfen bir milletvekili seçin.');
     return;
   }
   if (consent && !consent.checked) {
-    alert('Devam edebilmek için aydınlatma metnini okuyup onay kutusunu işaretlemeniz gerekir.');
+    formHata('Devam edebilmek için aydınlatma metnini okuyup onay kutusunu işaretlemeniz gerekir.');
     consent.scrollIntoView({ behavior: 'smooth', block: 'center' });
     consent.focus();
     return;
