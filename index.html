@@ -22,7 +22,8 @@
 <meta name="twitter:image" content="https://7527iptal.org/gorsel/halk-iradesi.png?v=2">
 <!-- Tailwind: hazır CSS dosyası -->
 <link rel="stylesheet" href="/kaynak/tailwind.css?v=1">
-<script src="/kaynak/og.js?v=21" defer></script>
+<script src="/kaynak/og.js?v=22" defer></script>
+<script src="/kaynak/kt.js?v=1" defer></script>
 <script src="/kaynak/tarayici.js?v=2" defer></script>
 <!-- QRCode.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
@@ -1242,6 +1243,7 @@ window.addEventListener('load', function () {
         <p class="mt-1.5"><strong class="text-white">İşleme amacı ve hukuki sebep:</strong> Kişisel verileriniz; kampanyaya verilen desteğin sayılması ve doğrulanması ile gerektiğinde tarafınızla iletişim kurulması amacıyla, 6698 sayılı Kanun'un 5/1. maddesi uyarınca dilekçe ekranındaki onay kutusunun işaretlenmesi suretiyle verdiğiniz açık rızanıza dayanılarak işlenmektedir.</p>
         <p class="mt-1.5"><strong class="text-white">Saklama süresi ve aktarım:</strong> Kaydedilen veriler kampanya sona erene kadar saklanır, kampanyanın sona ermesiyle birlikte silinir. Veriler üçüncü kişilere aktarılmaz, satılmaz ve reklam amacıyla kullanılmaz.</p>
         <p class="mt-1.5 text-zinc-400">Dilekçenin kendi e-posta hesabınız üzerinden veya elden ilgili kuruma iletilmesi hâlinde, dilekçede yer alan bilgiler alıcı kurumun (Cumhurbaşkanlığı, TBMM veya milletvekili) kendi mevzuatı çerçevesinde ve kendi sorumluluğunda işlenir.</p>
+        <p class="mt-1.5"><strong class="text-white">Paylaşım ölçümü:</strong> Siteye bir paylaşım bağlantısıyla gelip dilekçenizi onaylarsanız, bağlantının hangi paylaşımdan geldiği (ör. WhatsApp) dilekçe numaranız ve iliniz ile birlikte kaydedilir. Ad, iletişim bilgisi ya da IP adresi bu kayda yazılmaz; yalnızca hangi paylaşımın kaç dilekçeye dönüştüğünü saymak için kullanılır.</p>
       </div>
       <div>
         <h4 class="font-bold text-emerald-400 uppercase text-[11px] tracking-wider mb-1">3. Gönüllülük ve Kampanya Sohbeti</h4>
@@ -1439,6 +1441,10 @@ window.addEventListener('load', function () {
             <span>👁️</span> Sıralama listesi (gizle / göster)
           </button>
           <div id="rk-admin" class="space-y-1"></div>
+          <button id="exp-kt" onclick="ktAdminList()" class="py-2 bg-emerald-800 hover:bg-emerald-700 rounded font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-50">
+            <span>📈</span> Paylaşım takibi (hangi paylaşım kaç dilekçe getirdi)
+          </button>
+          <div id="kt-admin" class="space-y-1"></div>
           <button id="exp-tekrar" onclick="tekrarAnaliz()" class="py-2 bg-fuchsia-800 hover:bg-fuchsia-700 rounded font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-50">
             <span>🧹</span> Tekrarları bul / onaysızları gör
           </button>
@@ -4103,6 +4109,7 @@ async function confirmPetitionSent(didSend) {
   if (okBtn) { okBtn.disabled = true; okBtn.textContent = 'Kaydediliyor...'; }
   try {
     await callRpc('confirm_petition', { p_petition_number: lastPetitionNumber });
+    try { if (window.KT) KT.dilekce(lastPetitionNumber, selectedTarget, getPlace().country, getPlace().city); } catch (eK) {}
     try { rkTag(lastPetitionNumber, (document.getElementById('citizen-name') || {}).value || ''); } catch (eT) {}
   } catch (e) {
     console.error('[onay]', e);
@@ -4238,6 +4245,7 @@ async function linkKontrol() {
     ok.disabled = true; ok.textContent = 'Kaydediliyor...';
     try { await callRpc('confirm_petition', { p_petition_number: no }); }
     catch (e) { ok.disabled = false; ok.textContent = '✓ Gönderdim'; alert('Bağlantı hatası, tekrar dene.'); return; }
+    try { if (window.KT) KT.dilekce(no, selectedTarget, getPlace().country, getPlace().city); } catch (eK) {}
     try { rkTag(no, (document.getElementById('citizen-name') || {}).value || ''); } catch (eT) {}
     lkTemizle(no);
     try { await refreshCounters(); } catch (e) {}
@@ -4289,6 +4297,7 @@ async function bekleyenEvet() {
   var b = document.getElementById('bekleyen-evet'); b.disabled = true;
   try {
     await callRpc('confirm_petition', { p_petition_number: p.no });
+    try { if (window.KT) KT.dilekce(p.no); } catch (eK) {}
     bekleyenSil(p.no);
     try { await refreshCounters(); } catch (e) {}
   } catch (e) {
@@ -7833,6 +7842,60 @@ function admKutuKapat(boxId) {
   var box = document.getElementById(boxId);
   if (box && box.childNodes.length) { box.textContent = ''; return true; }
   return false;
+}
+// ---- Paylaşım takibi raporu (kaynak/kt.js + kt_rapor) ----
+var KT_ADM = { rows: [], gun: 0, azdan: false, n: 10 };
+var KT_AD = { wa: 'WhatsApp', tg: 'Telegram', x: 'X', fb: 'Facebook', tel: 'Telefon paylaş menüsü', kop: 'Kopyalanan link' };
+async function ktAdminList(yenile) {
+  if (!adminPinCache) { alert('Oturum düşmüş. Lütfen yönetici PIN’ini tekrar girin.'); return; }
+  var box = document.getElementById('kt-admin'); if (!box) return;
+  if (!yenile && admKutuKapat('kt-admin')) return;
+  if (!yenile) { KT_ADM.azdan = false; KT_ADM.n = 10; }
+  box.textContent = 'Yükleniyor...';
+  try {
+    KT_ADM.rows = await callRpc('kt_rapor', { p_pin: adminPinCache, p_gun: KT_ADM.gun }) || [];
+    ktAdminCiz();
+  } catch (e) { box.textContent = ''; alert(dataErrorText(e)); }
+}
+function ktAdminCiz() {
+  var box = document.getElementById('kt-admin'); if (!box) return;
+  box.textContent = '';
+  var ust = rkEl('div', 'flex flex-wrap items-center gap-1.5');
+  [[0, 'Tümü'], [7, '7 gün'], [1, 'Bugün']].forEach(function (g) {
+    var b = rkEl('button', 'px-2 py-1 rounded text-[11px] font-bold ' + (KT_ADM.gun === g[0] ? 'bg-emerald-700 text-white' : 'bg-zinc-800 text-zinc-300'), g[1]);
+    b.type = 'button'; b.onclick = function () { KT_ADM.gun = g[0]; KT_ADM.n = 10; ktAdminList(true); }; ust.appendChild(b);
+  });
+  var sir = rkEl('button', 'px-2 py-1 rounded bg-zinc-700 text-zinc-100 text-[11px] font-bold', KT_ADM.azdan ? '↑ Azdan çoğa' : '↓ Çoktan aza');
+  sir.type = 'button'; sir.onclick = function () { KT_ADM.azdan = !KT_ADM.azdan; KT_ADM.n = 10; ktAdminCiz(); }; ust.appendChild(sir);
+  box.appendChild(ust);
+  var rows = KT_ADM.rows.slice().sort(function (a, b) {
+    var f = (Number(b.dilekce) - Number(a.dilekce)) || (Number(b.ziyaret) - Number(a.ziyaret));
+    return KT_ADM.azdan ? -f : f;
+  });
+  var tz = 0, td = 0; rows.forEach(function (r) { tz += Number(r.ziyaret) || 0; td += Number(r.dilekce) || 0; });
+  box.appendChild(rkEl('p', 'text-[11px] text-zinc-300 font-bold', 'Toplam: ' + tz + ' ziyaret · ' + td + ' dilekçe (yalnız etiketli bağlantılarla gelenler)'));
+  if (!rows.length) { box.appendChild(rkEl('p', 'text-[11px] text-zinc-400', 'Bu dönemde etiketli bağlantıyla gelen yok.')); return; }
+  rows.slice(0, KT_ADM.n).forEach(function (r) {
+    var kart = rkEl('div', 'bg-zinc-950 border border-zinc-800 rounded-lg p-2 space-y-1');
+    var bas = rkEl('div', 'flex items-start justify-between gap-2');
+    bas.appendChild(rkEl('span', 'text-[11px] font-bold text-white break-all', (KT_AD[r.k] || r.k) + ' · ' + (r.kaynak || '(sayfa bilinmiyor)')));
+    var sil = rkEl('button', 'shrink-0 px-2 py-1 rounded bg-red-900 hover:bg-red-800 text-white text-[10px] font-bold', 'Sil');
+    sil.type = 'button';
+    sil.onclick = async function () {
+      if (!confirm((KT_AD[r.k] || r.k) + ' · ' + (r.kaynak || '') + '\nBu paylaşımın bütün takip kayıtları silinecek. Dilekçelerin kendisine dokunulmaz. Devam edilsin mi?')) return;
+      sil.disabled = true;
+      try { await callRpc('kt_sil', { p_pin: adminPinCache, p_k: r.k, p_kaynak: r.kaynak || '' }); ktAdminList(true); }
+      catch (e) { sil.disabled = false; alert(dataErrorText(e)); }
+    };
+    bas.appendChild(sil); kart.appendChild(bas);
+    kart.appendChild(rkEl('div', 'text-[11px] text-zinc-300', r.ziyaret + ' ziyaret · ' + r.dilekce + ' dilekçe'));
+    if (r.iller) kart.appendChild(rkEl('div', 'text-[10px] text-zinc-400', r.iller));
+    box.appendChild(kart);
+  });
+  if (rows.length > KT_ADM.n) {
+    var d = rkEl('button', 'w-full py-1.5 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-[11px] font-bold', 'Daha fazla (' + (rows.length - KT_ADM.n) + ' daha)');
+    d.type = 'button'; d.onclick = function () { KT_ADM.n += 20; ktAdminCiz(); }; box.appendChild(d);
+  }
 }
 var RK_ADM = { rows: [], q: '', azdan: false, n: 10 };
 async function rkAdminList(yenile) {

@@ -277,6 +277,8 @@
     var T = xTanir();
     return String(s || '').replace(/(^|\s)@([A-Za-z0-9_.]+)/g, function (m, b, h) { var l = h.toLowerCase(); return T.ig[l] && !T.x[l] ? b + '#' + h.replace(/\./g, '') : m; });
   }
+  // Kopyalanan linke 'kop' etiketi (paylaşım takibi: kaynak/kt.js)
+  function kU(u) { try { return window.KT ? window.KT.etiketle(u, 'kop') : u; } catch (e) { return u; } }
   function menu(t, url, baslik, xt, bekle, o2) {
     o2 = o2 || {};
     var e = encodeURIComponent, eski = document.getElementById('og-menu'); if (eski) eski.remove();
@@ -298,14 +300,14 @@
     // Facebook metni almaz: metin önce panoya kopyalanır, gönderiye yapıştırılır
     var dgl = hedef.map(function (h) { return dg(h[0], function () { if (h[2]) kopya(igHash(t) + '\n\n' + url); window.open(h[1], '_blank', 'noopener'); m.remove(); }); });
     if (MOBIL && navigator.share) dgl.push(dg('📱 Telefonun paylaş menüsü', function () { var tam = t + '\n\n' + url; kopya(tam); navigator.share({ title: baslik || '7527 İPTAL', text: tam }).catch(function () {}); m.remove(); }, true));
-    var kb = dg('📋 Metni ve linki kopyala', function () { kopya(t + '\n\n' + url); kb.textContent = '✓ Kopyalandı, istediğin yere yapıştır'; }, true);
+    var kb = dg('📋 Metni ve linki kopyala', function () { kopya(t + '\n\n' + kU(url)); kb.textContent = '✓ Kopyalandı, istediğin yere yapıştır'; }, true);
     dgl.push(kb);
     // Görselli paylaşım (Instagram gönderi/hikâye): görsel + metin tek pencerede, ayrıca yalnız görsel
     if (o2.gorsel) {
       var gb = null, ad = o2.gorselAd || '7527iptal.jpg', gp = Promise.resolve().then(o2.gorsel).then(function (b) { gb = b; return b; }).catch(function () { return null; });
       var b1 = dg('📸 Instagram · görsel + metin', function () { gp.then(function (b) { if (!b) { b1.textContent = '⚠️ Görsel alınamadı'; return; } m.remove(); gorselPaylas({ metin: o2.ig || t, url: url, blob: b, ad: ad, ham: true }); }); }, true);
       var b2 = dg('🖼 Sadece görsel', function () { gp.then(function (b) { if (b) { sadeceGorsel(b, ad); b2.textContent = '✓ Görsel hazır'; } else b2.textContent = '⚠️ Görsel alınamadı'; }); });
-      var b3 = dg('📝 Sadece metin', function () { kopya(t + '\n\n' + url); b3.textContent = '✓ Kopyalandı'; });
+      var b3 = dg('📝 Sadece metin', function () { kopya(t + '\n\n' + kU(url)); b3.textContent = '✓ Kopyalandı'; });
       dgl.push(b1, b2, b3);
     }
     k.appendChild(g);
