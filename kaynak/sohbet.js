@@ -5,7 +5,7 @@
   'use strict';
   if (window.top !== window.self || window.SOHBET_MODU) return;
   var YESIL = '#059669', ZEMIN = '#18181b', KENAR = '#3f3f46';
-  var balon, pencere, cerceve, sayac, zamanlayici;
+  var balon, pencere, cerceve;
 
   function durum(v) { try { if (v == null) return sessionStorage.getItem('sohbet_durum') || ''; sessionStorage.setItem('sohbet_durum', v); } catch (e) { return ''; } }
   function mobil() { return window.innerWidth < 640; }
@@ -26,9 +26,7 @@
     pencere = el('div'); pencere.id = 'sohbet-pencere'; pencere.setAttribute('role', 'dialog'); pencere.setAttribute('aria-label', 'Kampanya sohbeti');
     var ust = el('div', 'display:flex;align-items:center;gap:6px;padding:8px 8px 8px 12px;border-bottom:1px solid ' + KENAR + ';background:#111113');
     var baslik = el('div', 'flex:1;min-width:0');
-    baslik.appendChild(el('div', 'color:#fff;font:800 14px Inter,system-ui,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis', '💬 Kampanya Sohbeti'));
-    sayac = el('div', 'color:#34d399;font:600 11px Inter,system-ui,sans-serif;min-height:14px', '');
-    baslik.appendChild(sayac);
+    baslik.appendChild(el('div', 'color:#fff;font:800 18px Inter,system-ui,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis', 'Sohbetler'));
     ust.appendChild(baslik);
     ust.appendChild(dugme('–', 'Küçült', kucult));
     ust.appendChild(dugme('✕', 'Kapat', kapat));
@@ -39,10 +37,6 @@
     pencere.appendChild(cerceve);
     document.body.appendChild(pencere);
     boyut();
-    // Başlıktaki çevrimiçi sayısı sohbetin kendi sayacından okunur
-    zamanlayici = setInterval(function () {
-      try { var o = cerceve.contentDocument && cerceve.contentDocument.getElementById('online-count'); sayac.textContent = o ? o.textContent : ''; } catch (e) {}
-    }, 4000);
   }
   function ac() {
     if (!pencere) pencereKur();
@@ -54,7 +48,7 @@
     balon.style.display = 'flex'; durum('kucuk');
   }
   function kapat() {
-    if (pencere) { clearInterval(zamanlayici); pencere.remove(); pencere = null; cerceve = null; }
+    if (pencere) { pencere.remove(); pencere = null; cerceve = null; }
     balon.style.display = 'flex'; durum('kapali');
   }
   function kur() {

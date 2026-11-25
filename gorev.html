@@ -19,22 +19,33 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="stylesheet" href="/kaynak/tailwind.css?v=1">
-<script>/* Sohbet penceresi (kaynak/sohbet.js) bu sayfayı ?sohbet=1 ile yalnız sohbet olarak açar */window.SOHBET_MODU=/[?&]sohbet=1(&|$)/.test(location.search);if(window.SOHBET_MODU)document.documentElement.classList.add('sohbet-modu');</script>
+<script>/* Sohbet penceresi (kaynak/sohbet.js) bu sayfayı ?sohbet=1 ile yalnız sohbet olarak açar */window.SOHBET_MODU=/[?&]sohbet=1(&|$)/.test(location.search);if(window.SOHBET_MODU)document.documentElement.classList.add('sohbet-modu','sm-liste');</script>
 <style>
 html.sohbet-modu,html.sohbet-modu body{height:100%;overflow:hidden;background:#18181b}
 html.sohbet-modu #sohbet-kart{display:flex;flex-direction:column;height:100%;margin:0;border:0;border-radius:0;padding:10px 12px;box-sizing:border-box}
 html.sohbet-modu #sohbet-kart > *{margin-top:0}
 html.sohbet-modu #sohbet-kart > * + *{margin-top:8px}
 html.sohbet-modu #sohbet-kart > .sohbet-ust h3{display:none}
-html.sohbet-modu #sohbet-kart > .sohbet-ust{justify-content:flex-end}
+html.sohbet-modu #sohbet-kart > .sohbet-ust{justify-content:space-between;position:sticky;top:-10px;z-index:2;background:#18181b;padding:6px 0}
+html.sohbet-modu #sohbet-kart{overflow-y:auto}
+html.sohbet-modu #chat-pins{max-height:96px}
+html.sohbet-modu #sohbet-kart > *{flex-shrink:0}
 html.sohbet-modu #online-list{order:-1}
-html.sohbet-modu #chat-list{flex:1 1 auto;height:auto!important;min-height:0}
+html.sohbet-modu #chat-list{flex:1 1 auto;height:auto!important;min-height:220px}
+/* Messenger tarzı liste görünümü (Sohbetler) ve sohbete geri dönüş */
+html.sohbet-modu.sm-liste #sohbet-kart > :not(#sohbet-liste){display:none!important}
+html.sohbet-modu:not(.sm-liste) #sohbet-liste{display:none!important}
+html:not(.sohbet-modu) #sohbet-liste,html:not(.sohbet-modu) #sm-geri,html.sohbet-modu #online-list{display:none!important}
+html.sohbet-modu #sohbet-liste{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain}
+.sm-satir{display:flex;align-items:center;gap:10px;width:100%;padding:8px;border:0;border-radius:10px;background:transparent;color:#f4f4f5;text-align:left;cursor:pointer;font-family:inherit}
+.sm-satir:hover{background:#27272a}
+.sm-flash{outline:2px solid #10b981;outline-offset:2px}
 /* Sayfanın kendisinde sohbet yok (sağ alttaki pencerede); burada yalnız giriş/hesap ve çevrimiçi listesi kalır */
 html:not(.sohbet-modu) #sohbet-kart .sohbet-ust,html:not(.sohbet-modu) #sohbet-kart .sohbet-not,html:not(.sohbet-modu) #chat-pins,html:not(.sohbet-modu) #chat-list,html:not(.sohbet-modu) #chat-compose,html:not(.sohbet-modu) #chat-msg,html.sohbet-modu .sohbet-yonlendir{display:none!important}
 </style>
 <script src="/kaynak/og.js?v=22" defer></script>
 <script src="/kaynak/kt.js?v=1" defer></script>
-<script src="/kaynak/sohbet.js?v=1" defer></script>
+<script src="/kaynak/sohbet.js?v=2" defer></script>
 <script src="/kaynak/tarayici.js?v=2" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
 <script src="/kaynak/sbkopru.js?v=1"></script>
@@ -498,6 +509,8 @@ function siraBoya(pre, cok) {
     </div>
     <div id="sohbet-kart" class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-3">
       <p class="sohbet-yonlendir text-xs font-bold text-emerald-400">💬 Kampanya sohbeti sağ alttaki balonda.</p>
+      <div id="sohbet-liste"></div>
+      <button type="button" id="sm-geri" onclick="smGorunum('liste')" style="align-self:flex-start" class="text-xs font-bold text-emerald-400 hover:text-emerald-300 cursor-pointer">‹ Sohbetler</button>
       <div class="sohbet-ust flex items-center justify-between gap-2">
         <h3 class="text-sm font-bold text-white">💬 Kampanya Sohbeti</h3>
         <button type="button" onclick="sohbetPaylas()" class="btn bg-emerald-700 hover:bg-emerald-600 text-white px-3 py-1.5 whitespace-nowrap">📤 Sohbete davet et</button>
@@ -1906,14 +1919,9 @@ var AREAS = ['Afiş ve broşür dağıtımı','Sosyal medya paylaşımı','Mille
   'Basın ve medya iletişimi','Hukuki destek','Tasarım ve video','Yazılım ve teknik destek','Çeviri','Bağış ve kaynak yaratma','Diğer'];
 
 var presCh = null;
-var _onlineN = 0, _uyeN = 0;
 function setOnline(n) {
-  if (n != null) _onlineN = n;
-  var el = $('online-count'); if (!el) return;
-  if (!_onlineN) { el.textContent = ''; return; }
-  // Giriş yapmamış ziyaretçinin kim olduğu bilinemez: "misafir" olarak sayılır
-  var uye = Math.min(_uyeN, _onlineN), mis = _onlineN - uye;
-  el.textContent = '🟢 ' + _onlineN + ' kişi burada' + (uye ? ' · ' + uye + ' üye' : '') + (mis ? ' · ' + mis + ' misafir' : '');
+  var el = $('online-count');
+  if (el) el.textContent = n ? '🟢 ' + n + ' kişi çevrimiçi' : '';
 }
 function presenceTick() {
   var inBoard = document.visibilityState === 'visible';
@@ -1946,6 +1954,7 @@ async function refreshChat(force) {
   }
 }
 function chatCiz(rows) {
+  _smChat = rows; if (window.SOHBET_MODU) smListeCiz();
   var box = $('chat-list'), pins = $('chat-pins');
   var atEnd = box.scrollTop + box.clientHeight >= box.scrollHeight - 30;
   var pinned = rows.filter(function (r) { return r.pinned; }), rest = rows.filter(function (r) { return !r.pinned; });
@@ -1963,6 +1972,7 @@ function chatCiz(rows) {
 }
 function chatSatir(r) {
   var row = h('div', 'flex gap-2 rounded-lg px-2.5 py-2 ' + (r.mine ? 'bg-emerald-950/60 border border-emerald-800' : 'bg-zinc-950/60 border border-zinc-800'));
+  if (!r.pinned) row.id = 'msg-' + r.id;
   row.appendChild(avatarEl(r, 32));
   var col = h('div', 'min-w-0 flex-1');
   var hd = h('div', 'flex flex-wrap items-center gap-x-1.5 text-[11px] text-zinc-400');
@@ -1987,6 +1997,81 @@ function chatSatir(r) {
   }
   row.appendChild(col);
   return row;
+}
+// ---------- Sohbetler listesi (yalnız sağ alttaki pencerede) ----------
+var _smChat = [], _smOnline = [], _smN = 8;
+function smZaman(at) {
+  var d = (Date.now() - new Date(at).getTime()) / 60000;
+  if (d < 1) return 'şimdi'; if (d < 60) return Math.floor(d) + ' dk'; if (d < 1440) return Math.floor(d / 60) + ' sa';
+  return new Date(at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
+}
+function smSon() { try { return localStorage.getItem('sohbet_son') || ''; } catch (e) { return ''; } }
+function smGorunum(v) {
+  var c = document.documentElement.classList;
+  c.toggle('sm-liste', v !== 'sohbet'); c.toggle('sm-sohbet', v === 'sohbet');
+  if (v === 'sohbet') {
+    var son = _smChat.reduce(function (m, r) { return r.at > m ? r.at : m; }, '');
+    try { if (son) localStorage.setItem('sohbet_son', son); } catch (e) {}
+    var b = $('chat-list'); if (b) b.scrollTop = b.scrollHeight;
+  } else smListeCiz();
+}
+function smMesajaGit(id) {
+  smGorunum('sohbet');
+  var m = $('msg-' + id); if (!m) return;
+  m.scrollIntoView({ block: 'center' }); m.classList.add('sm-flash');
+  setTimeout(function () { m.classList.remove('sm-flash'); }, 2000);
+}
+function smSatir(av, baslik, alt, sag, nokta, f) {
+  var b = h('button', 'sm-satir'); b.type = 'button'; b.onclick = f;
+  var a = h('span', 'relative shrink-0'); a.appendChild(av);
+  if (nokta === 'yesil') { var d = h('span', 'absolute rounded-full'); d.style.cssText = 'right:0;bottom:0;width:11px;height:11px;background:#22c55e;border:2px solid #18181b'; a.appendChild(d); }
+  b.appendChild(a);
+  var o = h('span', 'min-w-0 flex-1');
+  o.appendChild(h('span', 'block text-sm font-bold text-zinc-100 truncate', baslik));
+  if (alt) o.appendChild(h('span', 'block text-[12px] text-zinc-400 truncate', alt));
+  b.appendChild(o);
+  if (sag) b.appendChild(h('span', 'shrink-0 text-[11px] text-zinc-500', sag));
+  if (nokta === 'mavi') { var m = h('span', 'shrink-0 rounded-full'); m.style.cssText = 'width:10px;height:10px;background:#10b981'; b.appendChild(m); }
+  return b;
+}
+function smListeCiz() {
+  var L = $('sohbet-liste'); if (!L) return;
+  L.textContent = '';
+  var hepsi = _smChat.slice().sort(function (a, b) { return a.at < b.at ? 1 : -1; });
+  var normal = hepsi.filter(function (r) { return !r.pinned; });
+  var son = normal[0] || hepsi[0];
+  // 1) Kampanya sohbeti (grup)
+  var ikon = h('span', 'inline-flex items-center justify-center rounded-full'); ikon.style.cssText = 'width:48px;height:48px;background:#059669;font-size:22px'; ikon.textContent = '💬';
+  var alt = son ? ((son.pinned ? '📌 ' : '') + (son.nick || 'Gönüllü') + ': ' + (son.body || (son.has_image ? '📷 Fotoğraf' : ''))) : 'Henüz mesaj yok. İlk mesajı sen yaz.';
+  var yeni = son && son.at > smSon();
+  L.appendChild(smSatir(ikon, 'Kampanya Sohbeti', alt, son ? smZaman(son.at) : '', yeni ? 'mavi' : '', function () { smGorunum('sohbet'); }));
+  // Kişinin avatarı: son mesajındaki avatar (yoksa adının baş harfi)
+  function avatarBul(nick, city) {
+    var r = hepsi.filter(function (x) { return x.nick === nick && (!city || x.city === city); })[0];
+    return avatarEl(r || { nick: nick }, 48);
+  }
+  // 2) Şu an burada (giriş yapmış olanlar)
+  if (_smOnline.length) {
+    L.appendChild(h('div', 'px-2 pt-3 pb-2 text-[11px] font-bold uppercase tracking-wider text-zinc-500', 'Şu an burada'));
+    _smOnline.forEach(function (o) {
+      var yer = o.country ? o.country : o.city;
+      L.appendChild(smSatir(avatarBul(o.nick, o.city), o.nick || 'Gönüllü', yer || '', '', 'yesil', function () { smGorunum('sohbet'); }));
+    });
+  }
+  // 3) Son yazanlar: her kişinin son mesajı
+  var gor = {}, kisiler = [];
+  normal.forEach(function (r) { var k = (r.mid || '') + '|' + r.nick; if (!gor[k]) { gor[k] = 1; kisiler.push(r); } });
+  if (kisiler.length) {
+    L.appendChild(h('div', 'px-2 pt-3 pb-2 text-[11px] font-bold uppercase tracking-wider text-zinc-500', 'Son yazanlar'));
+    kisiler.slice(0, _smN).forEach(function (r) {
+      var ad = (r.nick || 'Gönüllü') + (r.mod ? ' · Ekip' : '') + (r.city ? ' · ' + r.city : '');
+      L.appendChild(smSatir(avatarEl(r, 48), ad, r.body || (r.has_image ? '📷 Fotoğraf' : ''), smZaman(r.at), '', function () { smMesajaGit(r.id); }));
+    });
+    if (kisiler.length > _smN) {
+      var d = h('button', 'w-full py-2 text-xs font-bold text-emerald-400 hover:text-emerald-300', 'Daha fazla (' + (kisiler.length - _smN) + ')');
+      d.type = 'button'; d.onclick = function () { _smN += 8; smListeCiz(); }; L.appendChild(d);
+    }
+  }
 }
 async function chatSil(r) {
   if (!confirm('Bu mesaj silinsin mi?')) return;
@@ -3154,7 +3239,7 @@ async function refreshOnline() {
   if (!box) return;
   try {
     var rows = (await callRpc('gv_online_public', {})) || [];
-    _uyeN = rows.length; setOnline();
+    _smOnline = rows; if (window.SOHBET_MODU) smListeCiz();
     box.textContent = '';
     if (!rows.length) return;
     var ad = rows.slice(0, 40).map(function (r) { var yer = r.country ? r.country : r.city; return r.nick + (yer ? ' (' + yer + ')' : ''); }).join(', ');
@@ -3963,7 +4048,8 @@ function faDuzenle(r) {
 // Sohbet modu: sohbet kartı sayfanın tek içeriği olur; sayfadaki diğer bölümler gizlenir
 if (window.SOHBET_MODU) (function () {
   var k = document.getElementById('sohbet-kart'); if (!k) return;
-  var ust = k.firstElementChild; if (ust) ust.classList.add('sohbet-ust');
+  var ust = k.querySelector('.sohbet-ust'), geri = document.getElementById('sm-geri');
+  if (ust && geri) ust.insertBefore(geri, ust.firstChild);
   function gizle() { Array.prototype.forEach.call(document.body.children, function (el) { if (el !== k && el.tagName !== 'SCRIPT') el.style.display = 'none'; }); }
   document.body.insertBefore(k, document.body.firstChild);
   gizle(); document.addEventListener('DOMContentLoaded', gizle);
@@ -3983,7 +4069,7 @@ if (window.SOHBET_MODU) (function () {
     var sh = parseInt(new URLSearchParams(location.search).get('saha') || '', 10);
     if (sh > 0) { fpAcilacak = sh; panoAc('saha', false); }
   } catch (e) {}
-  if (window.SOHBET_MODU) { refreshChat(true); refreshOnline(); }
+  if (window.SOHBET_MODU) { smListeCiz(); refreshChat(true); refreshOnline(); }
   else {
   refreshBoard(); refreshChat(true); loadMaterials(); loadMap(); refreshOnline(); liveYukle(); fpYukle();
   setInterval(function () { if (document.visibilityState === 'visible') liveYukle(); }, 60000);
