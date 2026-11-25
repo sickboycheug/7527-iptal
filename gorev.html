@@ -25,12 +25,16 @@ html.sohbet-modu,html.sohbet-modu body{height:100%;overflow:hidden;background:#1
 html.sohbet-modu #sohbet-kart{display:flex;flex-direction:column;height:100%;margin:0;border:0;border-radius:0;padding:10px 12px;box-sizing:border-box}
 html.sohbet-modu #sohbet-kart > *{margin-top:0}
 html.sohbet-modu #sohbet-kart > * + *{margin-top:8px}
-html.sohbet-modu #sohbet-kart > .sohbet-ust{display:none}
+html.sohbet-modu #sohbet-kart > .sohbet-ust h3{display:none}
+html.sohbet-modu #sohbet-kart > .sohbet-ust{justify-content:flex-end}
 html.sohbet-modu #online-list{order:-1}
 html.sohbet-modu #chat-list{flex:1 1 auto;height:auto!important;min-height:0}
+/* Sayfanın kendisinde sohbet yok (sağ alttaki pencerede); burada yalnız giriş/hesap ve çevrimiçi listesi kalır */
+html:not(.sohbet-modu) #sohbet-kart .sohbet-ust,html:not(.sohbet-modu) #sohbet-kart .sohbet-not,html:not(.sohbet-modu) #chat-pins,html:not(.sohbet-modu) #chat-list,html:not(.sohbet-modu) #chat-compose,html:not(.sohbet-modu) #chat-msg,html.sohbet-modu .sohbet-yonlendir{display:none!important}
 </style>
 <script src="/kaynak/og.js?v=22" defer></script>
 <script src="/kaynak/kt.js?v=1" defer></script>
+<script src="/kaynak/sohbet.js?v=1" defer></script>
 <script src="/kaynak/tarayici.js?v=2" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
 <script src="/kaynak/sbkopru.js?v=1"></script>
@@ -493,11 +497,12 @@ function siraBoya(pre, cok) {
       <div id="live-open" class="flex flex-wrap justify-center gap-x-4 gap-y-1 py-1.5"></div>
     </div>
     <div id="sohbet-kart" class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 space-y-3">
-      <div class="flex items-center justify-between gap-2">
+      <p class="sohbet-yonlendir text-xs font-bold text-emerald-400">💬 Kampanya sohbeti sağ alttaki balonda.</p>
+      <div class="sohbet-ust flex items-center justify-between gap-2">
         <h3 class="text-sm font-bold text-white">💬 Kampanya Sohbeti</h3>
         <button type="button" onclick="sohbetPaylas()" class="btn bg-emerald-700 hover:bg-emerald-600 text-white px-3 py-1.5 whitespace-nowrap">📤 Sohbete davet et</button>
       </div>
-      <p class="text-[11px] text-zinc-500 -mt-1">Mesajlar 24 saat sonra silinir · sabitlenenler kalır</p>
+      <p class="sohbet-not text-[11px] text-zinc-500 -mt-1">Mesajlar 24 saat sonra silinir · sabitlenenler kalır</p>
       <div id="chat-pins" class="hidden max-h-48 overflow-y-auto overscroll-contain rounded-xl border border-amber-700/70 bg-amber-950/30 p-2 space-y-2 text-sm"></div>
       <div id="chat-list" class="space-y-2 h-[26rem] overflow-y-auto overscroll-contain pr-1 text-sm"><div class="text-[12px] text-zinc-500">Sohbet yükleniyor...</div></div>
 
@@ -1922,6 +1927,7 @@ setInterval(presenceTick, 2000);
 
 var chatCount = -1, chatBusy = false, chatSig = '', chatLoaded = false;
 async function refreshChat(force) {
+  if (!window.SOHBET_MODU) return; // sohbet yalnız sağ alttaki pencerede yüklenir
   if (chatBusy && !force) return;
   try {
     var rows = (await callRpc('gv_chat_public', {})) || [];
