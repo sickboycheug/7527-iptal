@@ -137,11 +137,68 @@ footer a.mail{font-size:clamp(20px,3.4vw,28px);font-weight:700;text-decoration:n
 .btn-red{background:var(--red);color:#fff}
 .btn-red:hover{background:#f87171}
 </style>
+<style>
+/* Sekme şeridi: dokuz sekme tek satırda, parmakla kaydırılır */
+.tabs-in{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.tabs-in::-webkit-scrollbar{display:none}
+.tabs-in .tab{flex:0 0 auto;white-space:nowrap;padding:9px 14px}
+/* Bülten: kayan haber şeridi */
+.tk{overflow-x:auto;scrollbar-width:none;margin:0 -20px 30px;padding:2px 20px 6px;-webkit-overflow-scrolling:touch}
+.tk::-webkit-scrollbar{display:none}
+.tk-in{display:flex;gap:12px;width:max-content}
+.tk-c{flex:none;width:min(70vw,250px);display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;cursor:pointer;text-align:left;color:var(--tx);font:inherit;padding:0}
+.tk-c:hover,.tk-c:focus-visible{border-color:var(--em)}
+.tk-c .fd-im{margin:0;border-radius:0;aspect-ratio:16/10}
+.tk-t{padding:10px 12px 12px;display:flex;flex-direction:column;gap:4px}
+.tk-t b{font-family:'Oswald',sans-serif;letter-spacing:.08em;text-transform:uppercase;font-size:12px;color:var(--amb);font-weight:600}
+.tk-t span{font-size:15px;line-height:1.3;font-weight:700;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.tk-t small{font-size:13px;color:var(--mut)}
+/* Kart görseli: haberin/kampanyanın kendi kapağı, yoksa sitenin tür görseli */
+.fd-im{margin:-16px -16px 4px;border-radius:18px 18px 0 0;overflow:hidden;aspect-ratio:16/9;background:#0d1914}
+.fd-im img{width:100%;height:100%;object-fit:cover;display:block}
+.fd-tl{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center;padding:10px}
+.fd-tl i{font-style:normal;font-size:40px;line-height:1}
+.fd-tl b{font-family:'Oswald',sans-serif;letter-spacing:.14em;text-transform:uppercase;font-size:15px;color:var(--tx)}
+.fd-tl small{font-size:13px;color:#d4e0d9}
+/* Akış süzgeçleri */
+.fd-f{display:grid;gap:8px;grid-template-columns:1fr;margin:16px 0}
+@media(min-width:720px){.fd-f{grid-template-columns:1.6fr 1fr 1.2fr}}
+.fd-f input,.fd-f select{width:100%;font:inherit;font-size:16px;color:var(--tx);background:#0d1914;border:1px solid var(--line);border-radius:12px;padding:10px 12px;box-sizing:border-box}
+.fd-so{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:#0d1914;border:1px solid var(--line);border-radius:12px;padding:4px}
+.fd-so button{font:inherit;font-size:14px;font-weight:700;border:0;border-radius:9px;padding:7px 4px;background:none;color:var(--mut);cursor:pointer}
+.fd-so button.on{background:var(--em);color:#052e1f}
+.fd-dur{font-size:14px;border:1px solid #5b4a14;background:#1d1807;border-radius:12px;padding:8px 10px;color:#fde9a3}
+.fd-dur b{display:block;color:var(--amb)}
+.fd-by{font-size:13px;color:var(--mut)}
+.fd-c.odak{outline:3px solid #f87171;outline-offset:2px}
+/* Bugünün Hedefi */
+.hd-list{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(min(100%,20rem),1fr))}
+.hd-r{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.hd-u{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.hd-u div{min-width:0}
+.hd-u h4{margin:0;font-size:17px;line-height:1.25}
+.hd-u p{margin:2px 0 0;font-size:14px;color:var(--mut)}
+.hd-s{text-align:right;flex:none}
+.hd-s b{display:block;font-family:'Oswald',sans-serif;font-size:26px;line-height:1;color:var(--amb)}
+.hd-s small{font-size:12px;color:var(--mut)}
+.hd-v{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:999px;border:1px solid var(--line)}
+.hd-v.K{color:#fca5a5;border-color:#7f1d1d;background:#2a1010}.hd-v.R{color:#6ee7b7;border-color:#065f46;background:#052e1f}.hd-v.Y,.hd-v.C{color:#fde68a;border-color:#78350f;background:#1d1807}.hd-v.I{color:#052e1f;background:var(--em2);border-color:var(--em2)}
+.hd-a{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.hd-a .btn{padding:7px 12px;font-size:13px}
+/* Canlı yayın */
+.cn-fr{aspect-ratio:16/9;width:100%;background:#000;border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.cn-fr iframe{width:100%;height:100%;border:0;display:block}
+</style>
 <nav class="tabs" aria-label="Sayfa bölümleri"><div class="tabs-in">
+<a class="tab" href="#bulten" data-go="bulten">📰 Bülten</a>
+<a class="tab" href="#hedef" data-go="hedef">🎯 Hedef</a>
+<a class="tab" href="#harita" data-go="harita">🗺️ Haritalar</a>
+<a class="tab" href="#vakalar" data-go="vakalar">🐾 Vakalar</a>
+<a class="tab" href="#imzalar" data-go="imzalar">✍️ İmzalar</a>
+<a class="tab" href="#eylemler" data-go="eylemler">📢 Eylemler</a>
+<a class="tab" href="#davalar" data-go="davalar">⚖️ Davalar</a>
+<a class="tab" href="#canli" data-go="canli">🔴 Canlı</a>
 <a class="tab" href="#biz" data-go="biz">Biz kimiz</a>
-<a class="tab" href="#duyurular" data-go="duyurular">Duyurular</a>
-<a class="tab" href="#vakalar" data-go="vakalar">Vakalar</a>
-<a class="tab" href="#harita" data-go="harita">Haritalar</a>
 </div></nav>
 
 <section id="biz" data-tab="biz">
@@ -175,7 +232,7 @@ footer a.mail{font-size:clamp(20px,3.4vw,28px);font-weight:700;text-decoration:n
 <div class="biz-slogan"><b>Öldüren değil, yaşatan ol!</b><span>Yaşam hakkı için · Hayvanlarımız için · Geleceğimiz için</span></div>
 <div class="cta3"><a class="btn" href="https://7527iptal.org/?dilekce=1">Dilekçeni gönder</a><a class="btn btn-red" href="https://7527iptal.org/?vaka=bildir">🐾 Vakayı bildir</a><a class="btn dy-ghost" href="https://7527iptal.org/gorev.html">İl gönüllüsü ol</a></div>
 </section>
-<!-- DUYURULAR: yeni duyuru için üstteki <article> bloklarından birini kopyalayıp en başa ekle, aşağıdaki SETS listesine de aynı adla ekle -->
+<!-- BÜLTEN: yeni slayt seti için slaytlar/ klasörüne görselleri koy, aşağıdaki SETS listesine ekle, bülten şeridindeki (tkKur içindeki S listesi) kartlara da ekle. -->
 <style>
 .up{margin:6px 0 34px;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:26px 24px 24px}
 .up .dy-meta{margin-bottom:6px}
@@ -248,9 +305,10 @@ button.btn.dy-ghost{border:1px solid var(--em)}
 }
 .irade-txt.kisa p:nth-child(n+4){display:none}.irade-txt p{font-size:18px;line-height:1.6;color:#d4e0d9;margin:0 0 14px;max-width:44rem}.irade-txt .irade-vurgu{font-family:'Oswald',sans-serif;text-transform:uppercase;font-size:clamp(22px,4vw,30px);line-height:1.15;color:var(--em2);margin:22px 0}.irade-txt .irade-imza{font-family:'Oswald',sans-serif;letter-spacing:.04em;color:var(--amb);font-size:18px;margin-top:20px}
 </style>
-<section id="duyurular" data-tab="duyurular">
-<p class="eyebrow">Haberler ve çağrılar</p>
-<h2>Duyurular</h2>
+<section id="bulten" data-tab="bulten">
+<p class="eyebrow">Kampanyadan son haberler</p>
+<h2>7527iptal Bülten</h2>
+<div class="tk" id="tk" aria-label="Kayan haber şeridi"><div class="tk-in" id="tk-in"></div></div>
 <div class="up" id="irade" style="margin-bottom:28px">
 <div class="dy-meta"><span class="dy-tag">Bildiri</span><span>20 Kasım 2026</span></div>
 <h3>Halkın iradesinden neden rahatsızsınız?</h3>
@@ -285,145 +343,35 @@ button.btn.dy-ghost{border:1px solid var(--em)}
 })();
 </script>
 </div>
-<div class="dy-news" style="margin-bottom:28px">
-<article class="dy-card" data-set="cabbar" id="cabbar">
-<button type="button" class="dy-cov" data-open="cabbar" aria-label="Görselleri aç"><img src="gorsel/cabbar-erteleme-01.png" alt="Cabbar’ın duruşması 12 Kasım’a ertelendi" loading="lazy"></button>
-<div class="dy-in"><div class="dy-meta"><span class="dy-tag">Dava takibi</span><span>20 Ekim 2026</span></div>
-<h3>Cabbar’ın duruşması 12 Kasım’a ertelendi</h3><p>Sarıyer’de mahallenin beslediği Cabbar silahla vuruldu. Mahkeme, videoların incelenmesi gerekçesiyle duruşmayı 12 Kasım Perşembe, 11.55’e erteledi. Çağlayan Adliyesi, 33. Asliye Ceza. Cezasız kalan her vaka yenisinin davetiyesi: biz takipteyiz. İstanbul vekillerine dilekçeni gönder.</p>
-<div class="dy-acts"><button type="button" class="btn" data-open="cabbar">Görselleri aç</button><button type="button" class="btn dy-ghost" data-open="cabbar">Paylaş</button><a class="btn dy-ghost" href="https://7527iptal.org/?dilekce=1">Dilekçeni gönder</a></div></div>
-</article>
-<article class="dy-card" data-set="nimet" id="nimet">
-<button type="button" class="dy-cov" data-open="nimet" aria-label="Slaytları aç"><img src="slaytlar/nimet/nimet-01.png" alt="Nimet vekilim, sözünüzü tutun" loading="lazy"></button>
-<div class="dy-in"><div class="dy-meta"><span class="dy-tag">Açık çağrı</span><span>11 Ekim 2026</span></div>
-<h3>Nimet vekilim, sözünüzü tutun</h3><p>Meclis kürsüsünde ve Gebze, Ümraniye kapılarında verdiğiniz sözlerin arkasında durun. 7527’nin iptal dilekçesine imza verin.</p>
-<div class="dy-acts"><button type="button" class="btn" data-open="nimet">Slaytları aç</button><button type="button" class="btn dy-ghost" data-open="nimet">Paylaş</button></div></div>
-</article>
-<article class="dy-card" data-set="bildiri" id="bildiri">
-<button type="button" class="dy-cov" data-open="bildiri" aria-label="Slaytları aç"><img src="slaytlar/bildiri/bildiri-01.png" alt="Bir halk iradesidir: 7527 iptal" loading="lazy"></button>
-<div class="dy-in"><div class="dy-meta"><span class="dy-tag">Bildiri</span><span>10 Ekim 2026</span></div>
-<h3>Bir halk iradesidir: 7527 iptal</h3><p>Bildirinin tamamı 13 slaytta. Kaydır, oku, paylaş.</p>
-<div class="dy-acts"><button type="button" class="btn" data-open="bildiri">Slaytları aç</button><button type="button" class="btn dy-ghost" data-open="bildiri">Paylaş</button></div></div>
-</article>
-<article class="dy-card" data-set="15gun" id="15gun">
-<button type="button" class="dy-cov" data-open="15gun" aria-label="Slaytları aç"><img src="slaytlar/15gun/15gun-01.png" alt="İlk 15 gün: şeffaf bilgilendirme" loading="lazy"></button>
-<div class="dy-in"><div class="dy-meta"><span class="dy-tag">Rapor</span><span>10 Ekim 2026</span></div>
-<h3>İlk 15 gün: şeffaf bilgilendirme</h3><p>2.000 dilekçe, 813 kişi, 514 vekile ulaştık. Rakamlar olduğu gibi, nerede eksik kaldığımızla birlikte.</p>
-<div class="dy-acts"><button type="button" class="btn" data-open="15gun">Slaytları aç</button><button type="button" class="btn dy-ghost" data-open="15gun">Paylaş</button></div></div>
-</article>
-<article class="dy-card" data-set="dilekce" id="dilekce">
-<button type="button" class="dy-cov" data-open="dilekce" aria-label="Slaytları aç"><img src="slaytlar/dilekce/dilekce-01.png" alt="Dilekçeni adım adım gönder" loading="lazy"></button>
-<div class="dy-in"><div class="dy-meta"><span class="dy-tag">Rehber</span><span>11 Ekim 2026</span></div>
-<h3>Dilekçeni adım adım gönder</h3><p>Ekranda göreceğin her pencere bu sunumda. Sırayla ilerle, hiçbir adımı atlama.</p>
-<div class="dy-acts"><button type="button" class="btn" data-open="dilekce">Slaytları aç</button><button type="button" class="btn dy-ghost" data-open="dilekce">Paylaş</button></div></div>
-</article>
-</div>
-<div class="up" id="guncelleme">
-<div class="dy-meta"><span class="dy-tag">Güncelleme</span><span>10 – 19 Ekim 2026</span></div>
-<h3>Daha kolay, daha görünür, daha güçlü: 10 Ekim’den bu yana</h3>
-<p class="lead">Bir dilekçe, bir vaka, bir ses. 7527iptal.org’u herkesin dakikalar içinde kullanabileceği, yaşananı sayılarla ortaya koyan ve tamamen yasal sınırlar içinde işleyen bir kampanya aracına dönüştürüyoruz. İşte son günlerin özeti.</p>
-<div class="up-hero">
-<div class="up-flow"><b>✍️ 3 adımda oluştur</b><ol><li>Hedefini seç: Cumhurbaşkanlığı, TBMM Başkanlığı ya da kendi ilinin milletvekili</li><li>Ad-soyad, il-ilçe (ülke-şehir) ve telefon ya da e-postanı yaz</li><li>Sistem resmi metni, konu başlığını ve vekilin e-postasını hazırlar</li></ol></div>
-<div class="up-flow"><b>📨 3 adımda gönder</b><ol><li>E-posta uygulamanı tek tıkla aç, alıcı, konu ve metin kendiliğinden dolar</li><li>İndirilen PDF dilekçeni e-postaya ekle ve gönder</li><li>Siteye dön, “Gönderdim”e bas, sayaca yansır</li></ol></div>
-<div class="up-flow"><b>⏱️ Yaklaşık 45 saniye</b><span>Bir dilekçenin sana maliyeti bu kadar.</span></div>
-<div class="up-flow"><b>🌍 Yurtdışından da</b><span>Hangi ülkede yaşarsan yaşa, ülkeni ve şehrini seç, sesini ilet.</span></div>
-</div>
-<p class="up-law"><b>Hakkımız, sınırımız:</b> Her adımımız Anayasa’nın 74. maddesindeki dilekçe hakkına ve ifade özgürlüğüne dayanır. Yasal sınırların içinde, açık kimlikle ve barışçıl biçimde irade gösteriyoruz.</p>
-<h4 class="up-pg">✨ Bizi farklı kılan ne?</h4>
-<div class="up-grid">
-<div class="up-it"><h4>🎯 Sade</h4><p>Hesap açmak yok, uzun form yok. Üç adım, bir dilekçe.</p></div>
-<div class="up-it"><h4>📊 Verisel</h4><p>Dilekçe, gönüllü, vekil ve vaka aynı haritada, il il görünür. Duygu değil, sayı konuşur.</p></div>
-<div class="up-it"><h4>🔎 Şeffaf</h4><p>Neyi, neden yaptığımızı ve hangi kaynağa dayandığımızı açıkça yazıyoruz.</p></div>
-<div class="up-it"><h4>🛡️ Korunaklı</h4><p>Kişisel bilgiler herkese açık değildir. Haritada isim değil, il bazında rakam vardır.</p></div>
-</div>
-<h4 class="up-pg">📍 Ana sayfa · 7527iptal.org</h4>
-<div class="up-grid">
-<div class="up-it"><h4>🗺️ Kampanya haritası: dört katman</h4><p>Harita artık Gönüllüler, Dilekçeler, Vekiller ve Vakalar katmanlarıyla çalışıyor. Bir ile dokunduğunda o ildeki vaka, dilekçe ve gönüllü sayısını görürsün.</p><p class="why"><b>Amaç:</b> Yaşananla halkın tepkisini aynı haritada yan yana koymak. Hangi ilde vahşet var ama ses yok, herkes görsün.</p><p class="why how"><b>Nasıl kullanılır:</b> Katman düğmelerinden birini seç, haritada bir ile dokun, açılan kartı oku.</p></div>
-<div class="up-it"><h4>🏛️ İl bazında dilekçe uyarısı</h4><p>Bir ilden vekillere hiç ya da yalnızca bir dilekçe gittiyse harita bunu açıkça yazar.</p><p class="why"><b>Amaç:</b> Vekillerin kendi illerindeki kamuoyu sesine ne kadar kulak verdiğini göstermek ve o illerdeki destekçilere çağrı yapmak.</p><p class="why how"><b>Nasıl kullanılır:</b> İlini seç. Uyarıyı görürsen dilekçe gönder ve çevrene duyur.</p></div>
-<div class="up-it"><h4>🐾 Vaka Bildir</h4><p>Bulunduğun ildeki bir vakayı yer, tarih ve haber bağlantısıyla bize gönderebilirsin.</p><p class="why"><b>Amaç:</b> Her ildeki vakayı belgelemek. Dosya yüklenmez, yalnızca bağlantı alınır. Telefon ve e-posta yalnızca ekibimize görünür, yayınlanmaz. Her bildirim yayından önce incelenir.</p><p class="why how"><b>Nasıl kullanılır:</b> “Vaka Bildir” formunu doldur, haber bağlantısını ekle ve gönder.</p></div>
-<div class="up-it"><h4>⚖️ Vaka almanağı ve adli takip</h4><p>Vaka kartlarında artık mahkeme, dava aşaması, karar ve kaynak bağlantısı da yer alıyor.</p><p class="why"><b>Amaç:</b> Cezasızlığı ve denetimsizliği somut veriyle göstermek: vaka yaşandı mı, dava açıldı mı, ne karar verildi.</p><p class="why how"><b>Nasıl kullanılır:</b> Almanaktan bir vaka seç, kartta adli takip bölümüne bak. Bilinmeyen alanlar “bilinmiyor” yazar.</p></div>
-<div class="up-it"><h4>📤 Daha kolay paylaşım</h4><p>Harita ve vakalar artık WhatsApp, X, Facebook ve Telegram’da, telefonlarda cihazın kendi paylaşım menüsüyle de paylaşılabiliyor.</p><p class="why"><b>Amaç:</b> Sesi büyütmek. Her paylaşım bir ilde yeni bir destekçi olabilir.</p><p class="why how"><b>Nasıl kullanılır:</b> İlin kartındaki paylaşım düğmelerinden birine bas.</p></div>
-</div>
-<h4 class="up-pg">📖 Hakikat sayfası</h4>
-<div class="up-grid">
-<div class="up-it"><h4>🗺️ Duyurulardaki harita: Vakalar katmanı</h4><p>Bu sayfadaki harita da artık vakaları gösteriyor. Ana sayfadaki haritayla aynı dört katman burada da var.</p><p class="why"><b>Amaç:</b> Okurun sayfadan ayrılmadan, anlatılan olayın sahadaki karşılığını görmesi.</p><p class="why how"><b>Nasıl kullanılır:</b> Harita bölümünde Vakalar katmanını seç ve bir ile dokun.</p></div>
-<div class="up-it"><h4>📢 Güncelleme bölümü</h4><p>Yaptığımız değişiklikleri nedenleriyle birlikte burada yayınlıyoruz.</p><p class="why"><b>Amaç:</b> Kamuoyuna ve destekçilere hesap vermek. Ne yaptığımızı gizlemiyoruz.</p><p class="why how"><b>Nasıl kullanılır:</b> Duyurular bölümünün en üstüne bak. Yeni bir şey olduğunda buraya yazarız.</p></div>
-</div>
-<h4 class="up-pg">🙋 Görev sayfası</h4>
-<div class="up-grid">
-<div class="up-it"><h4>İl gönüllüsü ol</h4><p>Gönüllüler kendi illerinde kampanyanın yüzü ve sesi olur. Gönüllü sayısı haritadaki Gönüllüler katmanında il il görünür.</p><p class="why"><b>Amaç:</b> Her ilde en az bir tanıdık yüz olması, çevrenin dilekçe ve vaka bildirimine yönelmesi.</p><p class="why how"><b>Nasıl kullanılır:</b> Görev sayfasına git, formu doldur. Haritada ilini kontrol et.</p></div>
-</div>
 
-<div class="up-pr"><b>Bunları yaparken neleri gözetiyoruz?</b>
-<ul>
-<li><b>Kaynaksız yayınlamıyoruz.</b> Her vaka bir haber ya da resmî kayda dayanır.</li>
-<li><b>İddia ile kesin bilgiyi ayırıyoruz.</b> Bilmediğimizi açıkça “bilinmiyor” olarak yazıyoruz.</li>
-<li><b>Kişi değil, sayı gösteriyoruz.</b> Haritada isim yok, yalnızca il bazında rakamlar var.</li>
-<li><b>Herkesin verisini koruyoruz.</b> Bildirenin bilgisi ve dosya numaraları gibi ayrıntılar herkese açık değildir.</li>
-<li><b>Gizlimiz saklımız yok.</b> Ne yaptığımızı ve neden yaptığımızı burada açıkça yazıyoruz.</li>
-</ul></div>
-<div class="up-cta"><a class="btn" href="#harita">Haritayı gör</a><a class="btn dy-ghost" href="https://7527iptal.org/?dilekce=1">Dilekçeni gönder</a></div>
-<div class="up-share"><b>Bu güncellemeyi paylaş:</b>
-<a class="btn dy-ghost" href="https://wa.me/?text=7527%20%C4%B0ptal%20kampanyas%C4%B1%20g%C3%BCncellendi%3A%203%20ad%C4%B1mda%20dilek%C3%A7e%2C%20vaka%20haritas%C4%B1%2C%20adli%20takip.%20Sen%20de%20sesini%20ilet%3A%20https%3A%2F%2F7527iptal.org%2Fpaylas%2Fpaylas-guncelleme.html" target="_blank" rel="noopener">WhatsApp</a>
-<a class="btn dy-ghost" href="https://twitter.com/intent/tweet?text=7527%20%C4%B0ptal%20kampanyas%C4%B1%20g%C3%BCncellendi%3A%203%20ad%C4%B1mda%20dilek%C3%A7e%2C%20vaka%20haritas%C4%B1%2C%20adli%20takip.%20Sen%20de%20sesini%20ilet%3A&url=https%3A%2F%2F7527iptal.org%2Fpaylas%2Fpaylas-guncelleme.html" target="_blank" rel="noopener">X</a>
-<a class="btn dy-ghost" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2F7527iptal.org%2Fpaylas%2Fpaylas-guncelleme.html" target="_blank" rel="noopener">Facebook</a>
-<a class="btn dy-ghost" href="https://t.me/share/url?url=https%3A%2F%2F7527iptal.org%2Fpaylas%2Fpaylas-guncelleme.html&text=7527%20%C4%B0ptal%20kampanyas%C4%B1%20g%C3%BCncellendi%3A%203%20ad%C4%B1mda%20dilek%C3%A7e%2C%20vaka%20haritas%C4%B1%2C%20adli%20takip.%20Sen%20de%20sesini%20ilet%3A" target="_blank" rel="noopener">Telegram</a>
-<button type="button" class="btn dy-ghost" data-up-native style="display:none">Paylaş…</button>
-<button type="button" class="btn dy-ghost" data-up-copy>Bağlantıyı kopyala</button></div>
-<script>
-(function(){
-  var box=document.getElementById('guncelleme');
-  if(!box)return;
-  var url="https://7527iptal.org/paylas/paylas-guncelleme.html", text="7527 İptal kampanyası güncellendi: 3 adımda dilekçe, vaka haritası, adli takip. Sen de sesini ilet:";
-  var cp=box.querySelector('[data-up-copy]'), nv=box.querySelector('[data-up-native]');
-  if(nv&&navigator.share){nv.style.display='';nv.addEventListener('click',function(){navigator.share({title:document.title,text:text+'\n\n'+url}).catch(function(){});});}
-  if(cp){cp.addEventListener('click',function(){
-    var done=function(){var o=cp.textContent;cp.textContent='✓ Kopyalandı';setTimeout(function(){cp.textContent=o;},1800);};
-    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(done).catch(function(){prompt('Bağlantıyı kopyala:',url);});}
-    else{prompt('Bağlantıyı kopyala:',url);}
-  });}
-})();
-</script>
-</div>
-<div class="up" id="duyuru-buyuyoruz" style="margin-top:28px">
-<div class="dy-meta"><span class="dy-tag">Duyuru</span><span>Önceki duyuru</span></div>
-<h3>Kampanyamız büyüyor, sınırları aşıyor!</h3>
-<p class="lead">Can dostlarımıza yönelik zulmü ve yaşatılan vahşeti sonlandırmak, sesimizi Meclis’e ve milletvekillerimize daha güçlü duyurmak için başlattığımız mücadeleye gösterdiğiniz yoğun ilgi için teşekkür ederiz! Sizlerden gelen geri bildirimler ve talepler doğrultusunda web sitemizde önemli güncellemeler yapıyoruz:</p>
-<div class="up-grid">
-<div class="up-it"><h4>🌍 Yurt dışındaki vatandaşlarımız da sürece katılıyor</h4><p>Yurt dışında yaşayan, seçimlerde oy kullanarak ülkemizin geleceğinde söz sahibi olan tüm vatandaşlarımızın sesini dilekçelerimize dahil ediyoruz. Sistemimize yurt dışı ülke ve şehir seçenekleri eklendi; artık dünyanın her yerinden katılım sağlayabilirsiniz.</p></div>
-<div class="up-it"><h4>🔒 Kişisel verilerin korunması ve kolay katılım</h4><p><b>Zorunlu alanlar:</b> ad-soyad, il/ilçe (yurt dışı için ülke/şehir) ile telefon numarası veya e-posta adresi.</p></div>
-<div class="up-it"><h4>📄 Hedefimiz: vekillerimizin Meclis’te imza atması</h4><p>Toplanan her dilekçe, vekillerimizin Meclis çatısı altında gerekli yasal adımları atmaları ve imzalarıyla bu sürece öncülük etmeleri için üzerlerindeki kamuoyu sorumluluğunu artırıyor.</p></div>
-</div>
-<p class="lead" style="margin-top:18px">Güzel gidiyoruz, katlanarak büyüyoruz! Can dostlarımız için bu haklı mücadeleyi büyütmeye, dilekçe sayımızı artırmaya devam edelim.</p>
-<div class="up-cta"><a class="btn" href="https://7527iptal.org/?dilekce=1">Dilekçeni gönder</a></div>
-</div>
 </section>
 
 <style>
-#vakalar .vk-top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
-#vakalar .vk-badge{display:inline-block;font-family:'Oswald',sans-serif;letter-spacing:.1em;text-transform:uppercase;font-size:14px;color:#fca5a5;background:#2a1010;border:1px solid #4a2323;border-radius:999px;padding:4px 12px;margin-bottom:10px}
-#vakalar .vk-sub{color:var(--mut);font-size:16px;margin:0 0 6px;max-width:44rem}
-#vakalar .vk-call{color:var(--amb);font-weight:700;font-size:16px;margin:0}
-#vakalar .vk-f{display:grid;gap:8px;grid-template-columns:1fr;margin:16px 0}
-@media(min-width:720px){#vakalar .vk-f{grid-template-columns:1.6fr 1fr 1fr 1fr}}
-#vakalar .vk-f input,#vakalar .vk-f select{width:100%;font:inherit;font-size:16px;color:var(--tx);background:#0d1914;border:1px solid var(--line);border-radius:12px;padding:10px 12px}
-#vakalar .vk-n{color:var(--mut);font-size:15px;margin:0 0 10px}
-#vakalar .vk-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(min(100%,18rem),1fr))}
-#vakalar .vk-c{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0}
-#vakalar .vk-m{display:flex;justify-content:space-between;gap:8px;font-size:14px;color:var(--mut)}
-#vakalar .vk-k{color:#fca5a5;font-weight:700}
-#vakalar .vk-c h4{margin:0;font-size:18px;line-height:1.3}
-#vakalar .vk-d{margin:0;font-size:15px;color:#d4e0d9;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer}
-#vakalar .vk-d.ac{-webkit-line-clamp:unset;display:block}
-#vakalar .vk-lg{font-size:14px;border:1px solid #5b4a14;background:#1d1807;border-radius:12px;padding:8px 10px;color:#fde9a3}
-#vakalar .vk-lg b{display:block;color:var(--amb)}
-#vakalar .vk-lg a{color:var(--amb)}
-#vakalar .vk-lt{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer}
-#vakalar .vk-lt.ac{-webkit-line-clamp:unset;display:block}
-#vakalar .vk-x{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;font-size:13px}#vakalar .vk-x a{color:#34d399;font-weight:700}
-#vakalar .vk-a{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:auto;padding-top:8px;border-top:1px solid var(--line)}
-#vakalar .vk-a a{font-size:15px}
-#vakalar .vk-a .btn{padding:7px 14px;font-size:13px}
-#vakalar .vk-more{display:block;margin:18px auto 0}
+:is(#vakalar,#hedef,#imzalar,#eylemler,#davalar,#canli) .vk-top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+:is(#vakalar,#hedef,#imzalar,#eylemler,#davalar,#canli) .vk-badge{display:inline-block;font-family:'Oswald',sans-serif;letter-spacing:.1em;text-transform:uppercase;font-size:14px;color:#fca5a5;background:#2a1010;border:1px solid #4a2323;border-radius:999px;padding:4px 12px;margin-bottom:10px}
+:is(#vakalar,#hedef,#imzalar,#eylemler,#davalar,#canli) .vk-sub{color:var(--mut);font-size:16px;margin:0 0 6px;max-width:44rem}
+:is(#vakalar,#hedef,#imzalar,#eylemler,#davalar,#canli) .vk-call{color:var(--amb);font-weight:700;font-size:16px;margin:0}
+:is(#vakalar,#hedef,#imzalar,#eylemler,#davalar,#canli) .vk-f{display:grid;gap:8px;grid-template-columns:1fr;margin:16px 0}
+@media(min-width:720px){:is(#vakalar,#hedef,#imzalar,#eylemler,#davalar,#canli) .vk-f{grid-template-columns:1.6fr 1fr 1fr 1fr}}
+:is(#vakalar,#hedef,#imzalar,#eylemler,#davalar,#canli) .vk-f input,:is(#vakalar,#hedef,#imzalar,#eylemler,#davalar,#canli) .vk-f select{width:100%;font:inherit;font-size:16px;color:var(--tx);background:#0d1914;border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+:is(#vakalar,#hedef,#imzalar,#eylemler,#davalar,#canli) .vk-n{color:var(--mut);font-size:15px;margin:0 0 10px}
+:is(#vakalar,#hedef,#imzalar,#eylemler,#davalar,#canli) .vk-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(min(100%,18rem),1fr))}
+:is(#vakalar,#hedef,#imzalar,#eylemler,#davalar,#canli) .vk-c{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+:is(#vakalar,#hedef,#imzalar,#eylemler,#davalar,#canli) .vk-m{display:flex;justify-content:space-between;gap:8px;font-size:14px;color:var(--mut)}
+:is(#vakalar,#hedef,#imzalar,#eylemler,#davalar,#canli) .vk-k{color:#fca5a5;font-weight:700}
+:is(#vakalar,#hedef,#imzalar,#eylemler,#davalar,#canli) .vk-c h4{margin:0;font-size:18px;line-height:1.3}
+:is(#vakalar,#hedef,#imzalar,#eylemler,#davalar,#canli) .vk-d{margin:0;font-size:15px;color:#d4e0d9;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer}
+:is(#vakalar,#hedef,#imzalar,#eylemler,#davalar,#canli) .vk-d.ac{-webkit-line-clamp:unset;display:block}
+:is(#vakalar,#hedef,#imzalar,#eylemler,#davalar,#canli) .vk-lg{font-size:14px;border:1px solid #5b4a14;background:#1d1807;border-radius:12px;padding:8px 10px;color:#fde9a3}
+:is(#vakalar,#hedef,#imzalar,#eylemler,#davalar,#canli) .vk-lg b{display:block;color:var(--amb)}
+:is(#vakalar,#hedef,#imzalar,#eylemler,#davalar,#canli) .vk-lg a{color:var(--amb)}
+:is(#vakalar,#hedef,#imzalar,#eylemler,#davalar,#canli) .vk-lt{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer}
+:is(#vakalar,#hedef,#imzalar,#eylemler,#davalar,#canli) .vk-lt.ac{-webkit-line-clamp:unset;display:block}
+:is(#vakalar,#hedef,#imzalar,#eylemler,#davalar,#canli) .vk-x{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;font-size:13px}:is(#vakalar,#hedef,#imzalar,#eylemler,#davalar,#canli) .vk-x a{color:#34d399;font-weight:700}
+:is(#vakalar,#hedef,#imzalar,#eylemler,#davalar,#canli) .vk-a{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:auto;padding-top:8px;border-top:1px solid var(--line)}
+:is(#vakalar,#hedef,#imzalar,#eylemler,#davalar,#canli) .vk-a a{font-size:15px}
+:is(#vakalar,#hedef,#imzalar,#eylemler,#davalar,#canli) .vk-a .btn{padding:7px 14px;font-size:13px}
+:is(#vakalar,#hedef,#imzalar,#eylemler,#davalar,#canli) .vk-more{display:block;margin:18px auto 0}
 .vk-sh{position:fixed;inset:0;z-index:60;background:rgba(5,8,7,.92);display:none;align-items:center;justify-content:center;padding:16px}
 .vk-sh.on{display:flex}
 .vk-sh-in{background:var(--card);border:1px solid var(--line);border-radius:20px;max-width:28rem;width:100%;max-height:90vh;overflow:auto;padding:20px}
@@ -517,6 +465,49 @@ button.btn.dy-ghost{border:1px solid var(--em)}
 
 <p class="hm-note">Haritada isim gösterilmez, sadece il bazında sayı gösterilir.</p>
 </section>
+<section id="hedef" data-tab="hedef">
+<p class="eyebrow">Halkın iradesi vekillerin önünde</p>
+<h2>Bugünün Hedefi</h2>
+<p class="vk-sub">Bu sayılar halk iradesidir. Bu haklar bize verilmedi, kazanıldı. Egemenlik kayıtsız şartsız milletindir; biz de kayıtsız şartsız 7527'nin iptalini istiyoruz.</p>
+<div class="fd-f"><input type="search" id="hd-q" autocomplete="off" placeholder="Vekil, parti veya il ara" aria-label="Vekil, parti veya il ara"><select id="hd-il" autocomplete="off" aria-label="İl"><option value="">Tüm iller</option></select><div class="fd-so" role="group" aria-label="Sıralama"><button type="button" class="on" data-so="hd" data-y="1">En çoktan aza</button><button type="button" data-so="hd" data-y="-1">En azdan çoğa</button></div></div>
+<p class="vk-n" id="hd-n"></p>
+<div class="hd-list" id="hd-list"><p class="vk-n">Yükleniyor…</p></div>
+<button type="button" class="btn dy-ghost vk-more" id="hd-more" hidden>Daha fazla göster</button>
+</section>
+<section id="imzalar" data-tab="imzalar">
+<p class="eyebrow">Sahadan gelenler</p>
+<h2>İmza kampanyaları</h2>
+<div class="vk-top"><p class="vk-sub">İmzala ve yay. Her imza bir can için.</p><a class="btn" href="/gorev.html?saha=ekle">+ Sen de ekle</a></div>
+<div class="fd-f"><input type="search" id="fd-imza-q" autocomplete="off" placeholder="Ara…" aria-label="Ara"><select id="fd-imza-il" autocomplete="off" aria-label="İl"><option value="">Tüm iller</option></select><div class="fd-so" role="group" aria-label="Sıralama"><button type="button" class="on" data-so="imza" data-y="1">Yeniden eskiye</button><button type="button" data-so="imza" data-y="-1">Eskiden yeniye</button></div></div>
+<p class="vk-n" id="fd-imza-n"></p>
+<div class="vk-grid" id="fd-imza"><p class="vk-n">Yükleniyor…</p></div>
+<button type="button" class="btn dy-ghost vk-more" id="fd-imza-more" hidden>Daha fazla göster</button>
+</section>
+<section id="eylemler" data-tab="eylemler">
+<p class="eyebrow">Sahadan gelenler</p>
+<h2>Eylemler</h2>
+<div class="vk-top"><p class="vk-sub">Sen de gel, sesimizi birlikte yükseltelim.</p><a class="btn" href="/gorev.html?saha=ekle">+ Sen de ekle</a></div>
+<div class="fd-f"><input type="search" id="fd-eylem-q" autocomplete="off" placeholder="Ara…" aria-label="Ara"><select id="fd-eylem-il" autocomplete="off" aria-label="İl"><option value="">Tüm iller</option></select><div class="fd-so" role="group" aria-label="Sıralama"><button type="button" class="on" data-so="eylem" data-y="1">Yeniden eskiye</button><button type="button" data-so="eylem" data-y="-1">Eskiden yeniye</button></div></div>
+<p class="vk-n" id="fd-eylem-n"></p>
+<div class="vk-grid" id="fd-eylem"><p class="vk-n">Yükleniyor…</p></div>
+<button type="button" class="btn dy-ghost vk-more" id="fd-eylem-more" hidden>Daha fazla göster</button>
+</section>
+<section id="davalar" data-tab="davalar">
+<p class="eyebrow">Cezasızlığa izin yok</p>
+<h2>Dava takibi</h2>
+<div class="vk-top"><p class="vk-sub">Davayı takip ediyoruz, cezasızlığa izin yok. Salon ne kadar doluysa cezasızlığa göz yummak o kadar zorlaşır.</p><a class="btn" href="/gorev.html?saha=ekle">+ Sen de ekle</a></div>
+<div class="fd-f"><input type="search" id="fd-dava-q" autocomplete="off" placeholder="Ara…" aria-label="Ara"><select id="fd-dava-il" autocomplete="off" aria-label="İl"><option value="">Tüm iller</option></select><div class="fd-so" role="group" aria-label="Sıralama"><button type="button" class="on" data-so="dava" data-y="1">Yeniden eskiye</button><button type="button" data-so="dava" data-y="-1">Eskiden yeniye</button></div></div>
+<p class="vk-n" id="fd-dava-n"></p>
+<div class="vk-grid" id="fd-dava"><p class="vk-n">Yükleniyor…</p></div>
+<button type="button" class="btn dy-ghost vk-more" id="fd-dava-more" hidden>Daha fazla göster</button>
+</section>
+<section id="canli" data-tab="canli">
+<p class="eyebrow">ARA ACTIVISTS</p>
+<h2>Canlı yayın</h2>
+<p class="vk-sub" id="cn-durum">Yayın durumu yükleniyor…</p>
+<div class="cn-fr" id="cn-fr"></div>
+<div class="cta3"><a class="btn" href="/gorev.html">💬 Sohbete katıl</a><a class="btn btn-red" href="https://www.youtube.com/@ARA-AnimalRightsActivists?sub_confirmation=1" target="_blank" rel="noopener">🔔 Kanala abone ol</a></div>
+</section>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
 <script src="/kaynak/sbkopru.js?v=1"></script>
@@ -535,8 +526,11 @@ button.btn.dy-ghost{border:1px solid var(--em)}
   function $(i){return document.getElementById(i)}
   function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
   var sb=(window.supabase&&window.supabase.createClient)?window.supabase.createClient(URL_,KEY,window.SB_SECENEK||{}):null;
-  function rpc(fn){if(!sb)return Promise.reject(new Error('no_client'));return sb.rpc(fn,{}).then(function(r){if(r.error)throw new Error(fn);return r.data})}
+  function rpc(fn,args){if(!sb)return Promise.reject(new Error('no_client'));return sb.rpc(fn,args||{}).then(function(r){if(r.error)throw new Error(fn);return r.data})}
   window.__hkRpc=rpc;
+  // 1000'den fazla kayıt dönen listeler (vakalar) sayfa sayfa okunur; sunucu tek seferde en çok 1000 verir
+  async function rpcTum(fn){if(!sb)throw new Error('no_client');var hepsi=[];for(var a=0;a<100000;a+=1000){var r=await sb.rpc(fn,{}).range(a,a+999);if(r.error)throw new Error(fn);var d=r.data||[];hepsi=hepsi.concat(d);if(d.length<1000)break}return hepsi}
+  window.__hkRpcTum=rpcTum;
   function geo(){if(!geoP)geoP=fetch('https://cdn.jsdelivr.net/gh/johan/world.geo.json@master/countries.geo.json').then(function(r){return r.json()}).catch(function(){return null});return geoP}
   async function borders(svg,mode){
     var gj=await geo();if(!gj)return;var g=document.createElementNS(NS,'g');
@@ -629,7 +623,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
       var r=await rpc('gv_public_map');rows=Array.isArray(r)?r:[];render();
       try{var p=await rpc('petition_public_map');pet=Array.isArray(p)?p:[]}catch(e){pet=[]}
       try{var m=await rpc('mp_petition_counts');mpc={};(Array.isArray(m)?m:[]).forEach(function(x){mpc[x.mp_id]=Number(x.total)})}catch(e){mpc={}}
-      try{var cs=await rpc('list_almanac_cases');cases=Array.isArray(cs)?cs:[]}catch(e){cases=[]}
+      try{var cs=await rpcTum('list_almanac_cases');cases=Array.isArray(cs)?cs:[]}catch(e){cases=[]}
       render()
     }catch(e){box.textContent='Harita şu an yüklenemedi.'}
   }
@@ -692,7 +686,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
     V.classList.add('on');document.body.style.overflow='hidden';open=true;tr.scrollLeft=0;upd();
     if(push!==false){try{history.replaceState(null,'','#'+k)}catch(e){}}
   }
-  function closeSet(){V.classList.remove('on');document.body.style.overflow='';open=false;cur=null;try{history.replaceState(null,'',location.pathname+location.search+'#duyurular')}catch(e){}}
+  function closeSet(){V.classList.remove('on');document.body.style.overflow='';open=false;cur=null;try{history.replaceState(null,'',location.pathname+location.search+'#bulten')}catch(e){}}
   Array.prototype.forEach.call(document.querySelectorAll('[data-open]'),function(b){b.addEventListener('click',function(){openSet(b.getAttribute('data-open'))})});
   $('vw-x').addEventListener('click',closeSet);
   V.addEventListener('click',function(e){if(e.target===V)closeSet()});
@@ -702,25 +696,279 @@ button.btn.dy-ghost{border:1px solid var(--em)}
   tr.addEventListener('scroll',upd,{passive:true});window.addEventListener('resize',upd);
   $('vw-cp').addEventListener('click',function(){if(cur)copy(clean(SETS[cur].c)+'\n\n'+LINK(cur))});
   $('vw-lk').addEventListener('click',function(){if(cur)copy(LINK(cur))});
+  window.__hkSlayt=openSet;
   var hs=(location.hash||'').slice(1);if(SETS[hs])openSet(hs,false);
 })();
 </script>
 
 <script>
-// Sekmeler: Biz kimiz / Duyurular / Vakalar / Haritalar. Eski baglantilar (#cabbar, #bildiri...) Duyurular'i acar.
+// Bülten şeridi, Bugünün Hedefi, sahadan akışlar (imza / eylem / dava) ve canlı yayın.
+// Veri: gv_fp_public (sahadan kayıtlar), mp_petition_counts + veri/vekil-listesi.txt (vekiller), gv_live_get (yayın).
 (function(){
-  var TABS=['biz','duyurular','vakalar','harita'];
-  function which(h){h=(h||'').replace('#','');if(TABS.indexOf(h)!==-1)return h;var el=h&&document.getElementById(h);var sec=el&&el.closest&&el.closest('[data-tab]');return sec?sec.getAttribute('data-tab'):(h?'duyurular':'biz')}
+  var SITE='https://7527iptal.org';
+  function $(i){return document.getElementById(i)}
+  function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+  function rpc(fn,args){return window.__hkRpc?window.__hkRpc(fn,args):Promise.reject(new Error('no_client'))}
+  var IMG={};
+  function fpImg(r){if(!IMG[r.id])IMG[r.id]=rpc('gv_fp_image',{p_id:r.id}).catch(function(){delete IMG[r.id];return null});return IMG[r.id]}
+  var TUR={
+    imza:{ad:'İmza kampanyası',ik:'✍️',bg:'linear-gradient(135deg,#065f46,#0b0f0d)',btn:'✍️ İmzala'},
+    eylem:{ad:'Eylem',ik:'📢',bg:'linear-gradient(135deg,#7f1d1d,#0b0f0d)',btn:'🔗 Ayrıntı'},
+    dava:{ad:'Dava',ik:'⚖️',bg:'linear-gradient(135deg,#78350f,#0b0f0d)',btn:'📄 Haberi oku'},
+    cimer:{ad:'CİMER',ik:'📝',bg:'linear-gradient(135deg,#075985,#0b0f0d)',btn:'🔗 Ayrıntı'},
+    vaka:{ad:'Vaka',ik:'🐾',bg:'linear-gradient(135deg,#450a0a,#12201a)',btn:''}
+  };
+  // Saat Türkiye saatiyle, 24 saat düzeninde; saati girilmemiş (00:00 UTC) kayıtta saat yazılmaz
+  function tarih(v,saatli){
+    try{var d=new Date(v),yok=d.getUTCHours()===0&&d.getUTCMinutes()===0;
+      return d.toLocaleDateString('tr-TR',{timeZone:yok?'UTC':'Europe/Istanbul',day:'numeric',month:'long',year:'numeric',weekday:saatli?'long':undefined})+
+        (saatli&&!yok?' · saat '+d.toLocaleTimeString('tr-TR',{timeZone:'Europe/Istanbul',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}):'')}catch(e){return ''}
+  }
+  function yer(r){return [r.city,r.district].filter(Boolean).join(' / ')||r.country||''}
+  function yakin(r){return r.event_at&&new Date(r.event_at).getTime()>Date.now()-864e5}
+
+  // Kart görseli: linkin kendi kapağı (/kapak), bulunamazsa sitenin renkleriyle tür görseli
+  function karo(tur,alt){var t=TUR[tur]||TUR.vaka,d=el('div','fd-tl');d.style.background=t.bg;d.appendChild(el('i',null,t.ik));d.appendChild(el('b',null,t.ad));if(alt)d.appendChild(el('small',null,alt));return d}
+  function kapak(link,tur,alt,img){
+    var k=el('div','fd-im');
+    var src=img||(/^https?:\/\//i.test(link||'')&&!/instagram\.com|facebook\.com|fb\.watch|tiktok\.com|jointvoice\.com/i.test(link)?'/kapak?u='+encodeURIComponent(link):'');
+    if(!src){k.appendChild(karo(tur,alt));return k}
+    var i=el('img');i.alt='';i.loading='lazy';i.decoding='async';i.referrerPolicy='no-referrer';
+    i.onerror=function(){k.textContent='';k.appendChild(karo(tur,alt))};
+    i.src=src;k.appendChild(i);return k;
+  }
+  window.__hkKapak=kapak;
+
+  var FP=null;
+  function fpAl(){if(!FP)FP=rpc('gv_fp_public').then(function(r){return Array.isArray(r)?r:[]}).catch(function(){FP=null;return []});return FP}
+
+  // ---- Paylaş (görev sayfasındaki Sahadan Paylaş ile aynı metin ve önizleme) ----
+  function paylas(r){
+    var y=yer(r),s=[],dur=yakin(r)&&(r.kind==='dava'||(r.kind==='eylem'&&/duruşma/i.test(r.title+' '+(r.place||''))));
+    if(dur){s.push('⚖️ DURUŞMAYA GEL: '+tarih(r.event_at,true));s.push('📍 '+[r.place,y].filter(Boolean).join(' · '));
+      s.push('Salon ne kadar doluysa cezasızlığa göz yummak o kadar zorlaşır. Orada ol, hâkim bu davanın takip edildiğini görsün.');s.push('');
+      s.push('🐾 '+r.title.replace(/^Duruşma takibi:\s*/i,''));s.push('');s.push('Gelemiyorsan paylaş ve '+(r.city||'ilinin')+' vekillerine dilekçeni gönder.')}
+    else if(r.kind==='eylem'){s.push('📣 '+r.title);if(y||r.place)s.push('📍 '+[y,r.place].filter(Boolean).join(' · '));if(r.event_at)s.push('🗓 '+tarih(r.event_at,true));s.push('Sen de gel, sesimizi birlikte yükseltelim.')}
+    else if(r.kind==='dava'){s.push('⚖️ '+r.title);if(y||r.place)s.push('📍 '+[r.place,y].filter(Boolean).join(' · '));if(r.event_at)s.push('🗓 '+tarih(r.event_at,true));s.push('Davayı takip ediyoruz, cezasızlığa izin yok.')}
+    else if(r.kind==='cimer'){s.push('📝 CİMER\'e sen de yaz: '+r.title);s.push('Başvuru metni hazır: kopyala, yapıştır, gönder.')}
+    else{s.push('✍️ '+r.title);s.push('İmzala ve yay. Her imza bir can için.')}
+    var O=window.OG;
+    var url=(O&&O.sahaUrl)?O.sahaUrl(r):SITE+'/p/saha-'+r.id+'?v=2';
+    var hz=null;try{if(O&&O.saha)hz=O.saha(r,function(){return fpImg(r)})}catch(e){}
+    function ac(){
+      if(O&&O.paylas){var et='';try{et=O.vakaEtiket(r.city,r.district)}catch(e){}
+        O.paylas({baslik:r.title,metin:s.join('\n')+(et?'\n\n'+et:''),url:url,
+          gorsel:O.sahaGorsel?function(){return O.sahaGorsel(r,dur?['DURUŞMAYA GEL',tarih(r.event_at,true),r.place||'']:[(TUR[r.kind]||TUR.eylem).ad.toLocaleUpperCase('tr')])}:null,
+          gorselAd:'7527-saha-'+r.id+'.jpg'})}
+      else if(navigator.share)navigator.share({title:r.title,text:s.join('\n')+'\n\n'+url}).catch(function(){});
+      else window.open('https://api.whatsapp.com/send?text='+encodeURIComponent(s.join('\n')+'\n\n'+url),'_blank');
+    }
+    if(!hz){ac();return}
+    Promise.race([Promise.resolve(hz).catch(function(){}),new Promise(function(ok){setTimeout(ok,12000)})]).then(ac);
+  }
+
+  // ---- Sahadan akışlar ----
+  var AK={};
+  function akKur(kind){
+    if(AK[kind])return AK[kind];
+    var a=AK[kind]={kind:kind,y:1,n:6,odak:null,rows:[],hazir:false};
+    $('fd-'+kind+'-q').addEventListener('input',function(){a.n=6;ciz(a)});
+    $('fd-'+kind+'-il').addEventListener('change',function(){a.n=6;ciz(a)});
+    $('fd-'+kind+'-more').addEventListener('click',function(){a.n+=12;ciz(a)});
+    return a;
+  }
+  function kart(r){
+    var c=el('article','vk-c fd-c'),y=yer(r);c.id='fd-'+r.id;
+    var kp=kapak(r.link,r.kind,y);c.appendChild(kp);
+    // Kaydın kendi afişi varsa kart görseli odur
+    if(r.has_image)fpImg(r).then(function(u){if(typeof u==='string'&&/^(data:image\/|https:\/\/)/.test(u)){kp.textContent='';var i=el('img');i.alt=r.title;i.src=u;kp.appendChild(i)}});
+    var m=el('div','vk-m');m.appendChild(el('span','vk-k',(TUR[r.kind]||TUR.eylem).ad));m.appendChild(el('span',null,[y,tarih(r.event_at||r.at)].filter(Boolean).join(' · ')));c.appendChild(m);
+    c.appendChild(el('h4',null,r.title));
+    if(yakin(r)&&(r.kind==='dava'||r.kind==='eylem')){var du=el('div','fd-dur');du.appendChild(el('b',null,r.kind==='dava'?'⚖️ Duruşmaya gel':'📢 Sen de gel'));du.appendChild(el('div',null,tarih(r.event_at,true)));if(r.place)du.appendChild(el('div',null,'📍 '+r.place));c.appendChild(du)}
+    else if(r.place&&r.kind!=='imza')c.appendChild(el('div','fd-by','📍 '+r.place));
+    if(r.body){var d=el('p','vk-d',r.body);d.title='Tamamını oku';d.addEventListener('click',function(){d.classList.toggle('ac')});c.appendChild(d)}
+    if(r.sender_nick)c.appendChild(el('div','fd-by','Paylaşan: '+r.sender_nick));
+    var ac=el('div','vk-a'),sol=el('span');
+    if(/^https?:\/\//i.test(r.link||'')){var l=el('a',null,(TUR[r.kind]||TUR.eylem).btn||'🔗 Aç');l.href=r.link;l.target='_blank';l.rel='noopener';sol.appendChild(l)}
+    var vn=/(\d+)\D*$/.exec(r.case_ref||'');if(vn){if(sol.childNodes.length)sol.appendChild(document.createTextNode('  '));var v=el('a',null,'🐾 Vakayı gör');v.href='#vakalar';v.addEventListener('click',function(e){e.preventDefault();if(window.__vkOdak)window.__vkOdak(vn[1])});sol.appendChild(v)}
+    ac.appendChild(sol);
+    var b=el('button','btn dy-ghost','📤 Paylaş');b.type='button';b.addEventListener('click',function(){paylas(r)});ac.appendChild(b);
+    c.appendChild(ac);return c;
+  }
+  function ciz(a){
+    var g=$('fd-'+a.kind),q=($('fd-'+a.kind+'-q').value||'').toLocaleLowerCase('tr'),il=$('fd-'+a.kind+'-il').value;
+    var r=a.rows.filter(function(x){return(!il||(x.country||x.city)===il)&&(!q||[x.title,x.body,x.city,x.district,x.place,x.country].join(' ').toLocaleLowerCase('tr').indexOf(q)!==-1)});
+    function an(x){return String(x.at||'')}
+    r.sort(function(p,s){
+      if(!!p.pinned!==!!s.pinned)return p.pinned?-1:1;
+      if(a.kind!=='imza'&&a.y===1){var yp=yakin(p),ys=yakin(s);if(yp!==ys)return yp?-1:1;if(yp&&ys)return String(p.event_at).localeCompare(String(s.event_at))}
+      return a.y*an(s).localeCompare(an(p));
+    });
+    if(a.odak){var i=r.findIndex(function(x){return String(x.id)===String(a.odak)});if(i>0)r.unshift(r.splice(i,1)[0])}
+    g.textContent='';
+    $('fd-'+a.kind+'-n').textContent=r.length+' kayıt';
+    if(!r.length){g.appendChild(el('p','vk-n',a.rows.length?'Bu ölçütlere uyan kayıt yok.':'Henüz kayıt yok. İlk sen ekle.'));$('fd-'+a.kind+'-more').hidden=true;return}
+    r.slice(0,a.n).forEach(function(x){var k=kart(x);if(a.odak&&String(x.id)===String(a.odak))k.classList.add('odak');g.appendChild(k)});
+    $('fd-'+a.kind+'-more').hidden=r.length<=a.n;
+  }
+  async function akGoster(kind){
+    var a=akKur(kind);
+    if(!a.hazir){
+      var t=await fpAl();a.rows=t.filter(function(x){return x.kind===kind});a.hazir=true;
+      var se=$('fd-'+kind+'-il'),o={};a.rows.forEach(function(x){var k=x.country||x.city;if(k)o[k]=1});
+      Object.keys(o).sort(function(p,s){return p.localeCompare(s,'tr')}).forEach(function(v){var op=el('option',null,v);op.value=v;se.appendChild(op)});
+    }
+    ciz(a);
+  }
+  // Şeritten ya da başka yerden bir kayda gidiş: o sekme açılır, kayıt en üstte işaretli görünür
+  window.__fdOdak=function(kind,id){
+    var sec={imza:'imzalar',eylem:'eylemler',dava:'davalar'}[kind];if(!sec)return;
+    var a=akKur(kind);a.odak=id;$('fd-'+kind+'-q').value='';$('fd-'+kind+'-il').value='';
+    if(window.__hkSekme)window.__hkSekme(sec,true);
+    setTimeout(function(){var k=$('fd-'+id);if(k)k.scrollIntoView({behavior:'smooth',block:'center'})},500);
+  };
+
+  // ---- Bugünün Hedefi: en çok dilekçe alan vekilden başlar, iki yönlü sıralanır ----
+  var HD={all:[],y:1,n:6,hazir:false,yuk:null};
+  var OY={K:'7527: Kabul etti',R:'7527: Ret etti',Y:'7527: Oylamada yoktu',C:'7527: Çekimser'};
+  function hdCiz(){
+    var g=$('hd-list'),q=($('hd-q').value||'').toLocaleLowerCase('tr').trim(),il=$('hd-il').value;
+    var r=HD.all.filter(function(x){return(!il||x.city===il)&&(!q||(x.name+' '+x.party+' '+x.city).toLocaleLowerCase('tr').indexOf(q)!==-1)})
+      .sort(function(p,s){return HD.y*(s.total-p.total)||p.name.localeCompare(s.name,'tr')});
+    g.textContent='';$('hd-n').textContent=r.length+' vekil';
+    if(!r.length){g.appendChild(el('p','vk-n','Eşleşen vekil yok.'));$('hd-more').hidden=true;return}
+    r.slice(0,HD.n).forEach(function(x){
+      var d=el('div','hd-r'),u=el('div','hd-u'),sol=el('div'),sag=el('div','hd-s');
+      sol.appendChild(el('h4',null,x.name));sol.appendChild(el('p',null,x.party+' · '+x.city));
+      sag.appendChild(el('b',null,Number(x.total).toLocaleString('tr-TR')));sag.appendChild(el('small',null,'dilekçe'));
+      u.appendChild(sol);u.appendChild(sag);d.appendChild(u);
+      var a=el('div','hd-a');
+      if(x.imza)a.appendChild(el('span','hd-v I','✅ İmzacı'));else if(OY[x.vote])a.appendChild(el('span','hd-v '+x.vote,OY[x.vote]));
+      var gn=el('a','btn btn-red','Dilekçe gönder');gn.href='/?vekil='+x.id;a.appendChild(gn);
+      if((x.vote==='K'||x.vote==='R'||x.vote==='Y')&&!x.imza){var mk=el('a','btn dy-ghost','Mektup gönder');mk.href='/gorev.html?mektup='+x.id;a.appendChild(mk)}
+      var pl=el('a','btn dy-ghost','📤 Paylaş');pl.href='/gorev.html?vpaylas='+x.id;a.appendChild(pl);
+      d.appendChild(a);g.appendChild(d);
+    });
+    $('hd-more').hidden=r.length<=HD.n;
+  }
+  function hdYukle(){
+    if(HD.yuk)return HD.yuk;
+    HD.yuk=(async function(){
+      try{
+        var res=await Promise.all([rpc('mp_petition_counts'),fetch('/veri/vekil-listesi.txt').then(function(r){if(!r.ok)throw 0;return r.text()}),rpc('list_signed_mps').catch(function(){return []})]);
+        var m=res[1].match(/var RAW_MP_STRING = `([\s\S]*?)`/);if(!m)throw 0;
+        var oy={},sayi={},imz={};
+        var vm=res[1].match(/var MP_VOTES = \{([\s\S]*?)\};/);if(vm)vm[1].replace(/(\d+):"([KRYC])"/g,function(_,i,v){oy[i]=v;return ''});
+        (res[0]||[]).forEach(function(r){sayi[r.mp_id]=Number(r.total)});
+        (res[2]||[]).forEach(function(r){imz[Number(r.mp_id)]=1});
+        HD.all=m[1].trim().split('\n').map(function(l,i){var c=l.split('|'),id=i+1;return{id:id,city:(c[0]||'').trim(),name:(c[1]||'').trim(),party:(c[2]||'').trim(),total:sayi[id]||0,vote:oy[id]||'',imza:!!imz[id]}}).filter(function(x){return x.name});
+        if(!HD.hazir){HD.hazir=true;var o={};HD.all.forEach(function(x){o[x.city]=1});
+          Object.keys(o).sort(function(p,s){return p.localeCompare(s,'tr')}).forEach(function(v){var op=el('option',null,v);op.value=v;$('hd-il').appendChild(op)});
+          $('hd-q').addEventListener('input',function(){HD.n=6;hdCiz()});$('hd-il').addEventListener('change',function(){HD.n=6;hdCiz()});
+          $('hd-more').addEventListener('click',function(){HD.n+=12;hdCiz()})}
+        hdCiz();
+      }catch(e){HD.yuk=null;$('hd-list').textContent='';$('hd-list').appendChild(el('p','vk-n','Liste yüklenemedi, sayfayı yenile.'))}
+    })();
+    return HD.yuk;
+  }
+
+  // Sıralama düğmeleri (iki yönlü)
+  document.addEventListener('click',function(e){
+    var b=e.target.closest&&e.target.closest('.fd-so button');if(!b)return;
+    var k=b.getAttribute('data-so'),y=Number(b.getAttribute('data-y'));
+    Array.prototype.forEach.call(b.parentNode.children,function(x){x.classList.toggle('on',x===b)});
+    if(k==='hd'){HD.y=y;HD.n=6;hdCiz()}else if(AK[k]){AK[k].y=y;AK[k].n=6;AK[k].odak=null;ciz(AK[k])}
+  });
+
+  // ---- Canlı yayın ----
+  var CN=false;
+  function ytId(u){var m=/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:[^#\s]*&)?v=|live\/|embed\/|shorts\/))([\w-]{11})/i.exec(u||'');return m?m[1]:''}
+  async function cnGoster(){
+    if(CN)return;CN=true;
+    var TV_VIDEO='zQMSV1BFUGA'; // görev sayfasındaki ekranda dönen videoyla aynı
+    var r=await Promise.all([rpc('gv_live_get').catch(function(){return null}),
+      /7527iptal\.org$/.test(location.hostname)?fetch('/p/tv-canli',{cache:'no-store'}).then(function(x){return x.ok?x.json():null}).catch(function(){return null}):null]);
+    var d=r[0]||{},oto=r[1]&&r[1].on&&/^[\w-]{11}$/.test(r[1].id||'')?r[1]:null;
+    var id=(d.on&&d.url?String(d.url).split(/\s+/).map(ytId).filter(Boolean)[0]:'')||(oto?oto.id:'');
+    var f=el('iframe');f.title='ARA ACTIVISTS';f.allowFullscreen=true;f.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+    if(id){f.src='https://www.youtube-nocookie.com/embed/'+id+'?rel=0&playsinline=1';$('cn-durum').textContent='🔴 Şu an canlıdayız'+((d.on&&d.title)||(oto&&oto.title)?': '+((d.on&&d.title)||oto.title):'')+'. Sorunu sohbete yaz.'}
+    else{f.src='https://www.youtube-nocookie.com/embed/'+TV_VIDEO+'?playlist='+TV_VIDEO+'&loop=1&rel=0&playsinline=1';$('cn-durum').textContent='Şu an canlı yayın yok. Yayınlarımız ARA ACTIVISTS kanalında; abone ol, yayın başlayınca haberin olsun.'}
+    $('cn-fr').textContent='';$('cn-fr').appendChild(f);
+  }
+
+  // Sekme açılınca yalnızca o bölümün verisi yüklenir (sayfa hafif kalır)
+  window.__hkGoster=function(t){
+    if(t==='hedef')hdYukle();
+    else if(t==='imzalar')akGoster('imza');
+    else if(t==='eylemler')akGoster('eylem');
+    else if(t==='davalar')akGoster('dava');
+    else if(t==='canli')cnGoster();
+    else if(t==='bulten')tkKur();
+  };
+
+  // ---- Bülten: kayan haber şeridi ----
+  var TK=false;
+  function tkKart(o){
+    var b=el('button','tk-c');b.type='button';
+    b.appendChild(kapak(o.link,o.tur||'vaka',o.alt,o.img));
+    var t=el('div','tk-t');t.appendChild(el('b',null,o.tag));t.appendChild(el('span',null,o.t));if(o.d)t.appendChild(el('small',null,o.d));b.appendChild(t);
+    b.addEventListener('click',o.git);return b;
+  }
+  async function tkKur(){
+    if(TK)return;TK=true;
+    var S=[
+      {tag:'Bildiri',t:'Halkın iradesinden neden rahatsızsınız?',d:'20 Kasım 2026',img:'/gorsel/og-halkin-iradesi.png',git:function(){var x=$('irade');if(x)x.scrollIntoView({behavior:'smooth',block:'start'})}},
+      {tag:'Açık çağrı',t:'Nimet vekilim, sözünüzü tutun',d:'Slaytlar',img:'slaytlar/nimet/nimet-01.png',git:function(){if(window.__hkSlayt)window.__hkSlayt('nimet')}},
+      {tag:'Bildiri',t:'Bir halk iradesidir: 7527 iptal',d:'Slaytlar',img:'slaytlar/bildiri/bildiri-01.png',git:function(){if(window.__hkSlayt)window.__hkSlayt('bildiri')}},
+      {tag:'Rehber',t:'Dilekçeni adım adım gönder',d:'Slaytlar',img:'slaytlar/dilekce/dilekce-01.png',git:function(){if(window.__hkSlayt)window.__hkSlayt('dilekce')}}
+    ];
+    var fp=await fpAl(),vk=[];
+    try{vk=window.__vkTum?await Promise.race([window.__vkTum(),new Promise(function(ok){setTimeout(function(){ok([])},8000)})]):[]}catch(e){}
+    function fpO(r,tag){return{tag:tag,t:r.title,d:[yer(r),tarih(r.event_at||r.at)].filter(Boolean).join(' · '),link:r.link,tur:r.kind,alt:yer(r),git:function(){window.__fdOdak(r.kind,r.id)}}}
+    function son(k,n,haric){return fp.filter(function(r){return r.kind===k&&haric.indexOf(r)===-1}).sort(function(p,s){return String(s.at||'').localeCompare(String(p.at||''))}).slice(0,n)}
+    var dur=fp.filter(function(r){return(r.kind==='dava'||r.kind==='eylem')&&yakin(r)}).sort(function(p,s){return String(p.event_at).localeCompare(String(s.event_at))}).slice(0,3);
+    var dv=son('dava',2,dur),ey=son('eylem',1,dur),im=son('imza',2,[]);
+    var vs=vk.slice().sort(function(p,s){return String(s.case_date||'').localeCompare(String(p.case_date||''))}).slice(0,2).map(function(v){
+      return{tag:'Vaka · '+(v.category||'Vaka'),t:v.title,d:[v.city,v.case_date?String(v.case_date).slice(0,10).split('-').reverse().join('.'):''].filter(Boolean).join(' · '),link:v.source_url,tur:'vaka',alt:v.city,git:function(){if(window.__vkOdak)window.__vkOdak(v.id)}}});
+    var L=dur.map(function(r){return fpO(r,r.kind==='dava'?'⚖️ Duruşmaya gel':'📢 Eyleme gel')});
+    [S[0],vs[0],S[1],dv[0]&&fpO(dv[0],'Dava takibi'),im[0]&&fpO(im[0],'İmza kampanyası'),S[2],ey[0]&&fpO(ey[0],'Eylem'),vs[1],dv[1]&&fpO(dv[1],'Dava takibi'),S[3],im[1]&&fpO(im[1],'İmza kampanyası')].forEach(function(o){if(o)L.push(o)});
+    var tk=$('tk'),ic=$('tk-in');ic.textContent='';
+    L.forEach(function(o){ic.appendChild(tkKart(o))});
+    // Kendiliğinden kayma: içerik iki kez dizilir, yarıya gelince başa sarar. Parmak/fare değince durur.
+    if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+    L.forEach(function(o){var k=tkKart(o);k.setAttribute('aria-hidden','true');k.tabIndex=-1;ic.appendChild(k)});
+    var dur_=false,zam=0,x=0;
+    function bekle(){dur_=true;clearTimeout(zam)}
+    function devam(){clearTimeout(zam);zam=setTimeout(function(){x=tk.scrollLeft;dur_=false},3000)}
+    ['pointerenter','pointerdown','touchstart','focusin','wheel'].forEach(function(e){tk.addEventListener(e,bekle,{passive:true})});
+    ['pointerleave','touchend','focusout'].forEach(function(e){tk.addEventListener(e,devam,{passive:true})});
+    tk.addEventListener('scroll',function(){if(dur_){var y=ic.scrollWidth/2;if(tk.scrollLeft>=y)tk.scrollLeft-=y}},{passive:true});
+    (function adim(){
+      if(!dur_&&tk.offsetParent!==null&&document.visibilityState==='visible'){
+        var y=ic.scrollWidth/2;x+=0.5;if(x>=y)x-=y;tk.scrollLeft=x;
+      }
+      requestAnimationFrame(adim);
+    })();
+  }
+})();
+</script>
+<script>
+// Sekmeler: Bülten / Hedef / Haritalar / Vakalar / İmzalar / Eylemler / Davalar / Canlı / Biz kimiz. Eski bağlantılar (#duyurular, #cabbar, #bildiri...) Bülten'i açar.
+(function(){
+  var TABS=['bulten','hedef','harita','vakalar','imzalar','eylemler','davalar','canli','biz'];
+  function which(h){h=(h||'').replace('#','');if(h==='duyurular')return 'bulten';if(TABS.indexOf(h)!==-1)return h;var el=h&&document.getElementById(h);var sec=el&&el.closest&&el.closest('[data-tab]');return sec?sec.getAttribute('data-tab'):'bulten'}
   function show(t,scroll){
+    try{if(window.__hkGoster)window.__hkGoster(t)}catch(e){}
     if((t==='harita'||t==='vakalar')&&window.__hkMapGo)try{window.__hkMapGo();if(window.__hkLayer)window.__hkLayer(t==='vakalar'?'case':'mp')}catch(e){}
     Array.prototype.forEach.call(document.querySelectorAll('[data-tab]'),function(s){var d=s.getAttribute('data-tab');s.hidden=!(d===t||(t==='vakalar'&&d==='harita'))});
     Array.prototype.forEach.call(document.querySelectorAll('.tabs .tab'),function(a){a.classList.toggle('on',a.getAttribute('data-go')===t)});
     if(scroll){var n=document.querySelector('.tabs');if(n)window.scrollTo({top:n.offsetTop,behavior:'smooth'})}
   }
   Array.prototype.forEach.call(document.querySelectorAll('.tabs .tab'),function(a){a.addEventListener('click',function(e){e.preventDefault();var t=a.getAttribute('data-go');show(t,true);try{history.replaceState(null,'','#'+t)}catch(x){}})});
-  Array.prototype.forEach.call(document.querySelectorAll('a[href="#harita"],a[href="#vakalar"],a[href="#duyurular"],a[href="#biz"]'),function(a){if(a.classList.contains('tab'))return;a.addEventListener('click',function(e){e.preventDefault();var t=a.getAttribute('href').slice(1);show(t,true);try{history.replaceState(null,'','#'+t)}catch(x){}})});
+  Array.prototype.forEach.call(document.querySelectorAll('a[href="#harita"],a[href="#vakalar"],a[href="#duyurular"],a[href="#bulten"],a[href="#hedef"],a[href="#imzalar"],a[href="#eylemler"],a[href="#davalar"],a[href="#canli"],a[href="#biz"]'),function(a){if(a.classList.contains('tab'))return;a.addEventListener('click',function(e){e.preventDefault();var t=which(a.getAttribute('href'));show(t,true);try{history.replaceState(null,'','#'+t)}catch(x){}})});
+  window.__hkSekme=function(t,scroll){show(t,scroll);try{history.replaceState(null,'','#'+t)}catch(x){}};
   var ilk=which(location.hash);show(ilk,false);
-  if(location.hash&&ilk!=='biz'){var n=document.querySelector('.tabs');if(n)setTimeout(function(){window.scrollTo({top:n.offsetTop})},60)}
+  if(location.hash&&ilk!=='bulten'){var n=document.querySelector('.tabs');if(n)setTimeout(function(){window.scrollTo({top:n.offsetTop})},60)}
   window.addEventListener('hashchange',function(){show(which(location.hash),true)});
   // Paylaşım linki bir duyuruya geliyorsa (#cabbar, #nimet, #bildiri…): o duyuruya in, slaytları varsa doğrudan aç
   (function(){var h=(location.hash||'').slice(1);if(!h||TABS.indexOf(h)!==-1)return;var el=document.getElementById(h);if(!el)return;
@@ -779,7 +1027,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
   }
   var EXT={};
   function card(v){
-    var c=el('article','vk-c'),m=el('div','vk-m');m.appendChild(el('span','vk-k',v.category||'Vaka'));m.appendChild(el('span',null,[trDate(v.case_date),v.city].filter(Boolean).join(' · ')));
+    var c=el('article','vk-c'),m=el('div','vk-m');if(window.__hkKapak)c.appendChild(window.__hkKapak(v.source_url,'vaka',v.city));m.appendChild(el('span','vk-k',v.category||'Vaka'));m.appendChild(el('span',null,[trDate(v.case_date),v.city].filter(Boolean).join(' · ')));
     c.appendChild(m);c.appendChild(el('h4',null,v.title));
     var d=el('p','vk-d',v.description||'');d.title='Tamamını oku';d.addEventListener('click',function(){d.classList.toggle('ac')});c.appendChild(d);
     var lg=legal(v.id);if(lg)c.appendChild(lg);
@@ -800,6 +1048,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
     r.sort(function(a,b){var x=String(a.case_date||''),y=String(b.case_date||'');return so==='old'?x.localeCompare(y):y.localeCompare(x)});
     return r;
   }
+  var HAZIR=null,hazirOk;HAZIR=new Promise(function(ok){hazirOk=ok});window.__vkTum=function(){return HAZIR};
   var FOCUS=(function(){var m=/[?&]vaka=(\d+)/.exec(location.search)||/vaka-(\d+)/.exec(location.hash);return m?String(m[1]):null})();
   function render(){
     var r=list(),g=$('vk-grid');
@@ -816,18 +1065,22 @@ button.btn.dy-ghost{border:1px solid var(--em)}
   function fill(sel,vals){vals.sort(function(a,b){return a.localeCompare(b,'tr')}).forEach(function(v){var o=el('option',null,v);o.value=v;sel.appendChild(o)})}
   async function load(){
     var rpc=window.__hkRpc;
-    if(!rpc){$('vk-grid').textContent='';$('vk-grid').appendChild(el('p','vk-n','Vakalar şu an yüklenemedi.'));return}
-    try{var cs=await rpc('list_almanac_cases');ALL=Array.isArray(cs)?cs:[]}catch(e){ALL=[]}
+    if(!rpc){hazirOk([]);$('vk-grid').textContent='';$('vk-grid').appendChild(el('p','vk-n','Vakalar şu an yüklenemedi.'));return}
+    try{var cs=await (window.__hkRpcTum||rpc)('list_almanac_cases');ALL=Array.isArray(cs)?cs:[]}catch(e){ALL=[]}
     try{var lg=await rpc('list_almanac_legal');(lg||[]).forEach(function(x){LEG[x.case_id]=x})}catch(e){}
     try{var ex=await rpc('list_almanac_extra');(ex||[]).forEach(function(x){EXT[x.id]=x})}catch(e){}
     $('vk-count').textContent=ALL.length;
     var cities={},cats={};ALL.forEach(function(v){if(v.city)cities[v.city]=1;if(v.category)cats[v.category]=1});
     fill($('vk-city'),Object.keys(cities));fill($('vk-cat'),Object.keys(cats));
     try{var qil=new URLSearchParams(location.search).get('il');if(qil&&cities[qil])$('vk-city').value=qil}catch(e){}
+    hazirOk(ALL);
     if(!ALL.length){$('vk-grid').textContent='';$('vk-grid').appendChild(el('p','vk-n','Vakalar şu an yüklenemedi.'));return}
     render();
     if(FOCUS){setTimeout(function(){var c=$('vk-grid').firstElementChild;if(c){c.style.outline='3px solid #f87171';c.style.borderRadius='16px';c.scrollIntoView({behavior:'smooth',block:'center'})}},400)}
   }
+  // Şeritten bir vakaya gidiş: süzgeçler temizlenir, vaka en üstte işaretli görünür
+  window.__vkOdak=function(id){FOCUS=String(id);['vk-q','vk-city','vk-cat'].forEach(function(i){$(i).value=''});SHOWN=12;render();if(window.__hkSekme)window.__hkSekme('vakalar',true);
+    setTimeout(function(){var c=$('vk-grid').firstElementChild;if(c){c.style.outline='3px solid #f87171';c.scrollIntoView({behavior:'smooth',block:'center'})}},500)};
   load();
 })();
 </script>

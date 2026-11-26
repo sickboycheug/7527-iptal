@@ -4723,7 +4723,7 @@ var LG_STAGE = {
 async function loadAlmanacFromServer() {
   if (!sbKur()) { syncAlmanacUi(); return; }
   try {
-    var rows = await callRpc('list_almanac_cases', {});
+    var rows = await callRpcTum('list_almanac_cases', {});
     if (Array.isArray(rows) && rows.length > 0) {
       ALMANAC_DATA = rows.map(function(r) {
         return {

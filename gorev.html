@@ -440,6 +440,9 @@ function siraBoya(pre, cok) {
       all = Object.keys(mps).map(function (id) { var m = mps[id]; return { id: Number(id), name: m.name, party: m.party, city: m.city, total: sayi[id] || 0, vote: votes[id] || '' }; })
         .sort(function (a, b) { return b.total - a.total || a.name.localeCompare(b.name, 'tr'); });
       render();
+      // Hakikat sayfasındaki Bugünün Hedefi'nden gelen bağlantı: ?mektup=ID mektubu, ?vpaylas=ID paylaşımı açar (bir kez)
+      if (!window.__mpDerin) { window.__mpDerin = 1; try { var sp = new URLSearchParams(location.search), mk = Number(sp.get('mektup')) || 0, vp = Number(sp.get('vpaylas')) || 0, hr = (mk || vp) && all.find(function (x) { return x.id === (mk || vp); });
+        if (hr) { try { panoAc('hedef', true); } catch (e) {} if (mk && vkMektupVar(hr)) vkMektupAc(hr); else vkPaylas(hr); } } catch (e) {} }
     } catch (e) { if (box && !all.length) box.textContent = 'Liste yüklenemedi, sayfayı yenile.'; }
   }
   window.mpRankLoad = load;
@@ -1816,7 +1819,7 @@ function fmtN(n) { return Number(n || 0).toLocaleString('tr-TR'); }
 // Güncelleme kartı: bütün sayılar her açılışta canlı veriden doldurulur
 async function guncellemeDoldur() {
   function yaz(k, v) { Array.prototype.forEach.call(document.querySelectorAll('.g-' + k), function (e) { e.textContent = v; }); }
-  async function al(fn) { try { var r = await (fn === 'public_petition_ranking' ? callRpcTum(fn, {}) : callRpc(fn, {})); return Array.isArray(r) ? r : (r ? [r] : []); } catch (e) { return null; } }
+  async function al(fn) { try { var r = await (fn === 'public_petition_ranking' || fn === 'list_almanac_cases' ? callRpcTum(fn, {}) : callRpc(fn, {})); return Array.isArray(r) ? r : (r ? [r] : []); } catch (e) { return null; } }
   try {
     var bugun = new Date(), t = bugun.toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' }).split('-'), b = CAMPAIGN_START.split('-');
     yaz('gun', String(Math.floor((Date.UTC(+t[0], +t[1] - 1, +t[2]) - Date.UTC(+b[0], +b[1] - 1, +b[2])) / 86400000) + 1));
@@ -1858,7 +1861,7 @@ function stSira(cok) { _stCok = cok; siraBoya('st-s', cok); if (_stIl) _stIl(); 
 async function statsLoad() {
   if (Date.now() - _statsAt < 60000) return;
   _statsAt = Date.now();
-  async function al(fn) { try { var r = await (fn === 'public_petition_ranking' ? callRpcTum(fn, {}) : callRpc(fn, {})); return Array.isArray(r) ? r : (r ? [r] : []); } catch (e) { return null; } }
+  async function al(fn) { try { var r = await (fn === 'public_petition_ranking' || fn === 'list_almanac_cases' ? callRpcTum(fn, {}) : callRpc(fn, {})); return Array.isArray(r) ? r : (r ? [r] : []); } catch (e) { return null; } }
   var res = await Promise.all([al('campaign_counts'), al('petition_public_map'), al('mp_petition_counts'), al('public_petition_ranking')]);
   var cc = res[0] && res[0][0], pm = res[1], mp = res[2], rk = res[3];
   if (!cc) { _statsAt = 0; return; }
@@ -3025,7 +3028,7 @@ function mapPubLoad() {
     } catch (e) {}
     try {
       var cm = {};
-      ((await callRpc('list_almanac_cases', {})) || []).forEach(function (x) { if (x.city) cm[x.city] = (cm[x.city] || 0) + 1; });
+      ((await callRpcTum('list_almanac_cases', {})) || []).forEach(function (x) { if (x.city) cm[x.city] = (cm[x.city] || 0) + 1; });
       o.case = Object.keys(cm).map(function (c) { return { country: '', city: c, n: cm[c] }; });
     } catch (e) {}
     _mapPub = o; return o;
@@ -4068,6 +4071,8 @@ if (window.SOHBET_MODU) (function () {
   try {
     var sh = parseInt(new URLSearchParams(location.search).get('saha') || '', 10);
     if (sh > 0) { fpAcilacak = sh; panoAc('saha', false); }
+    // Hakikat sayfasındaki "+ Sen de ekle": Sahadan Paylaş formu açık gelir
+    else if (new URLSearchParams(location.search).get('saha') === 'ekle') { panoAc('saha', true); fpFormAc(); }
   } catch (e) {}
   if (window.SOHBET_MODU) { smListeCiz(); refreshChat(true); refreshOnline(); }
   else {
