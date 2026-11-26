@@ -128,6 +128,16 @@ footer a.mail{font-size:clamp(20px,3.4vw,28px);font-weight:700;text-decoration:n
 [data-tab][hidden]{display:none!important}
 .biz-lead{font-size:clamp(19px,2.6vw,22px);color:#d8e4dd;max-width:44rem;margin:0 0 26px}
 .biz-h{margin:34px 0 14px}
+.zincir{display:grid;gap:10px;margin:0 0 8px;padding:0;list-style:none;counter-reset:z}
+.zincir li{counter-increment:z;display:grid;grid-template-columns:auto 1fr;column-gap:16px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 18px}
+.zincir li::before{content:counter(z);grid-row:span 2;font-family:'Oswald',sans-serif;font-size:32px;line-height:1;color:var(--amb);min-width:26px;text-align:center;align-self:center}
+.zincir b{font-size:17px}.zincir span{font-size:15px;color:#d4e0d9}
+.pn-k{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(min(100%,16rem),1fr))}
+.pn-k a{display:flex;flex-direction:column;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;color:var(--tx);text-decoration:none;transition:border-color .2s,transform .2s}
+.pn-k a:hover,.pn-k a:focus-visible{border-color:var(--em);transform:translateY(-2px)}
+.pn-k i{font-style:normal;font-size:30px;line-height:1}
+.pn-k b{font-family:'Oswald',sans-serif;letter-spacing:.06em;text-transform:uppercase;font-size:17px;color:var(--em2)}
+.pn-k span{font-size:15px;color:#d4e0d9}
 .biz-why p{margin:0 0 14px;color:#d4e0d9;max-width:46rem}
 .biz-why p b{color:var(--tx)}
 .biz-slogan{margin:34px 0 0;padding:22px 24px;border-radius:20px;background:linear-gradient(135deg,#2a1010,#12201a);border:1px solid #4a2323;text-align:center}
@@ -235,6 +245,43 @@ footer a.mail{font-size:clamp(20px,3.4vw,28px);font-weight:700;text-decoration:n
 <div class="panel"><span class="tag">Vaka ve dava takibi</span><p>Her ildeki vakayı kaynağıyla belgeliyor, mahkeme sürecini duruşma duruşma izliyoruz.</p></div>
 <div class="panel"><span class="tag">İl gönüllüleri</span><p>Her ilde kampanyanın sesi olacak gönüllülerle, il il örgütleniyoruz.</p></div>
 <div class="panel"><span class="tag">Şeffaflık</span><p>Rakamları olduğu gibi paylaşıyoruz. Kişisel bilgiler gizli kalır; haritada isim değil, il bazında sayı görünür.</p></div>
+</div>
+
+<h3 class="biz-h">Amacımız</h3>
+<div class="biz-why">
+<p>7527 sayılı Kanun’un yaşam hakkını zedeleyen hükümleri kaldırılana kadar kamuoyunu, Meclis’i, yargıyı ve sahadaki uygulamayı izliyoruz. <b>Halkın iradesini, vakaları ve kamu sorumluluğunu görünür kılıyoruz.</b></p>
+<p>Canın değeri türle ölçülmez. İnsan da hayvan da yaşam hakkına sahiptir; bu hakkı çiğneyen ağır eylemler etkili, adil ve caydırıcı yaptırımla karşılanmalıdır.</p>
+</div>
+
+<h3 class="biz-h">Cezasızlığa karşı: vakadan yaptırıma</h3>
+<p class="biz-why" style="margin:0 0 14px;color:#d4e0d9;max-width:46rem">Vaka takibi yalnızca arşiv tutmak değildir. Bir vakayı ilk bildirimden cezanın uygulanmasına kadar adım adım izliyoruz:</p>
+<ol class="zincir">
+<li><b>Bildirim ve kaynak</b><span>Tarih, yer, tür ve ilk kaynak kaydedilir; haber, resmî kayıt ve tanık anlatımı ayrı tutulur.</span></li>
+<li><b>Doğrulama ve delil</b><span>Görüntü, veteriner raporu, kamera kaydı ve tutanak gibi deliller kaybolmadan korunur.</span></li>
+<li><b>Başvuru ve soruşturma</b><span>Suç duyurusu ve bilgi taleplerinin yapılıp yapılmadığı, yanıt süreleri izlenir.</span></li>
+<li><b>Adli süreç</b><span>Dava, duruşma tarihleri, ara kararlar, hüküm, istinaf ve kesinleşme kaydedilir.</span></li>
+<li><b>Yaptırım</b><span>Cezanın gerçekten uygulanıp uygulanmadığı, kamu görevlilerinin sorumluluğu takip edilir.</span></li>
+<li><b>Sistemik değişim</b><span>Aynı ilde, aynı kurumda tekrar eden ihlaller raporlanır; yasa ve denetim için öneriye dönüşür.</span></li>
+</ol>
+
+<h3 class="biz-h">Site nasıl işler?</h3>
+<p class="biz-why" style="margin:0 0 14px;color:#d4e0d9;max-width:46rem">Her panel tek bir işi yapar. Hepsi aynı hedefe çalışır: yasanın iptali için halk iradesini Meclis’e taşımak.</p>
+<div class="pn-k">
+<a href="https://7527iptal.org/?dilekce=1"><i>✉️</i><b>Vatandaş Paneli</b><span>Anayasa’nın 74. maddesindeki dilekçe hakkınla Cumhurbaşkanlığı’na, TBMM Başkanlığı’na ve 592 milletvekiline kendi e-postandan dilekçe gönderirsin.</span></a>
+<a href="https://7527iptal.org/?meclis=1"><i>🏛️</i><b>Meclis Vekil Paneli</b><span>Milletvekilleri TBMM e-postalarıyla iptal teklifine imzacı olur; imzalayan vekiller herkesin önünde listelenir.</span></a>
+<a href="https://7527iptal.org/?siralama=1"><i>🏅</i><b>Onur Köşesi</b><span>594 dilekçenin tamamını gönderenler burada. Kimin ne kadar yol aldığı sıralamada görünür.</span></a>
+<a href="#hedef" data-git="hedef"><i>🎯</i><b>Bugünün Hedefi</b><span>Hangi vekile kaç dilekçe gittiği açıkça görünür; halkın iradesini görmezden gelen vekiller hatırlatılır.</span></a>
+<a href="#harita" data-git="harita"><i>🗺️</i><b>Kampanya Haritası</b><span>Dilekçeler, gönüllüler ve vakalar il il haritada. Kişisel bilgi değil, sayı görünür.</span></a>
+<a href="#vakalar" data-git="vakalar"><i>🐾</i><b>Vaka Almanağı</b><span>Her ilde yaşanan ihlaller kaynağıyla, tarihiyle ve yargı aşamasıyla kayıt altında.</span></a>
+<a href="#davalar" data-git="davalar"><i>⚖️</i><b>Dava Takibi</b><span>Duruşma tarihleri ve kararlar; salon ne kadar doluysa cezasızlığa göz yummak o kadar zorlaşır.</span></a>
+<a href="#bulten" data-git="bulten"><i>📰</i><b>7527iptal Bülten</b><span>Kampanyadan son haberler, bildiriler ve paylaşım slaytları tek yerde.</span></a>
+<a href="https://7527iptal.org/gorev.html"><i>💬</i><b>Kampanya Panosu</b><span>Sohbet, görevler, sahadan paylaşımlar (eylem, dava, imza kampanyası) ve canlı yayın.</span></a>
+</div>
+
+<h3 class="biz-h">Şeffaflık ve veri etiği</h3>
+<div class="biz-why">
+<p>Vaka Almanağı kaynağı, tarihçeyi ve yargı aşamasını gösterir. Bilinmeyen “bilinmiyor” olarak kalır; iddia kesin hüküm gibi sunulmaz.</p>
+<p>İhbarcı, tanık ve gönüllülerin kimlik ve iletişim bilgileri, kişilerin güvenliğini ya da soruşturmayı tehlikeye atabilecek belgeler yayımlanmaz.</p>
 </div>
 
 <div class="biz-slogan"><b>Öldüren değil, yaşatan ol!</b><span>Yaşam hakkı için · Hayvanlarımız için · Geleceğimiz için</span></div>
@@ -974,6 +1021,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
   }
   Array.prototype.forEach.call(document.querySelectorAll('.tabs .tab[data-go]'),function(a){a.addEventListener('click',function(e){e.preventDefault();var t=a.getAttribute('data-go');show(t,true);try{history.replaceState(null,'','#'+t)}catch(x){}})});
   Array.prototype.forEach.call(document.querySelectorAll('a[href="#harita"],a[href="#vakalar"],a[href="#duyurular"],a[href="#bulten"],a[href="#hedef"],a[href="#imzalar"],a[href="#eylemler"],a[href="#davalar"],a[href="#canli"],a[href="#biz"]'),function(a){if(a.classList.contains('tab'))return;a.addEventListener('click',function(e){e.preventDefault();var t=which(a.getAttribute('href'));show(t,true);try{history.replaceState(null,'','#'+t)}catch(x){}})});
+  document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('.pn-k a[data-git]');if(!a)return;e.preventDefault();window.__hkSekme(a.getAttribute('data-git'),true)});
   window.__hkSekme=function(t,scroll){show(t,scroll);try{history.replaceState(null,'','#'+t)}catch(x){}};
   var ilk=which(location.hash);show(ilk,false);
   if(location.hash&&ilk!=='bulten'){var n=document.querySelector('.tabs');if(n)setTimeout(function(){window.scrollTo({top:n.offsetTop})},60)}
