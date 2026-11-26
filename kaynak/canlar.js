@@ -3,8 +3,11 @@
 // sırayla yanıp söner: "Cabbar için gönder", "Eros için paylaş"… Arada düğmenin kendi yazısı da görünür.
 // Adlar /veri/canlar.json dosyasından gelir. Düğme o an başka bir şey yazıyorsa ("Gönderiliyor…") dokunulmaz.
 (function () {
-  var PAY = ['paylaş', 'share', 'teilen'];
-  var DIL = ['dilekçe gönder', 'e-posta ile dilekçeyi gönder', 'send petition', 'petition senden', 'send the petition by e-mail', 'petition per e-mail senden'];
+  // Hangi düğmeler: kısa "… paylaş" düğmeleri (Paylaş, Haritayı paylaş, Mektubu paylaş…) ve her türlü
+  // "dilekçe(ni/yi) gönder" düğmesi. WhatsApp'ta/Facebook'ta paylaş gibi paylaşım menüsündeki seçenekler hariç.
+  var PAY = /^(?:[\p{L}]+ )?(?:paylaş|teilen)$|^share(?: the [\p{L}]+)?$|^[\p{L}]+ teilen$/u;
+  var DIL = /^(?:e-posta ile )?dilekçe(?:ni|yi)? gönder$|^send (?:your |the )?petition(?: by e-mail)?$|^(?:sende deine petition|petition (?:per e-mail )?senden)$/u;
+  var HARIC = /whatsapp|facebook|telegram|twitter|instagram|cihaz|pdf|sahadan|menü/i;
   var AD = [], i = 0;
   function sade(t) { return String(t || '').replace(/[^\p{L}\s-]/gu, ' ').replace(/\s+/g, ' ').trim().toLocaleLowerCase('tr'); }
   function dil() { return (document.documentElement.lang || 'tr').slice(0, 2); }
@@ -21,10 +24,11 @@
     var m = el.getAttribute('data-cn');
     if (!m) {
       var t = sade(el.textContent);
-      m = PAY.indexOf(t) !== -1 ? 'p' : DIL.indexOf(t) !== -1 ? 'd' : '';
+      if (HARIC.test(el.textContent)) return null;
+      m = DIL.test(t) ? 'd' : PAY.test(t) ? 'p' : '';
       if (!m) return null;
       el.setAttribute('data-cn', m);
-    } else if (PAY.indexOf(sade(el.textContent)) === -1 && DIL.indexOf(sade(el.textContent)) === -1) return null;
+    } else { var t2 = sade(el.textContent); if (!DIL.test(t2) && !PAY.test(t2)) return null; }
     var w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null), n, son = null;
     while ((n = w.nextNode())) if (/\p{L}/u.test(n.nodeValue)) son = n;
     if (!son) return null;
