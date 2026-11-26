@@ -4354,7 +4354,7 @@ function bvKart(no, baslik, aciklama, metin, linkler, acil) {
 }
 function bvHazirla() {
   var k = _bvDurum, s = $('bv-s'); if (!k) return;
-  var ad = bvV('bv-ad') || '[Adınız Soyadınız]', il = bvV('bv-il') || '[il]', ilce = bvV('bv-ilce') || '[ilçe]',
+  var ad = bvV('bv-ad') || '[Adınız Soyadınız]', IL = (bvV('bv-il') || '[il]').toLocaleUpperCase('tr'), ILCE = (bvV('bv-ilce') || '[ilçe]').toLocaleUpperCase('tr'), il = bvV('bv-il') || '[il]', ilce = bvV('bv-ilce') || '[ilçe]',
       yer = bvV('bv-yer') || '[olay yeri]', tarih = bvTarih(bvV('bv-tarih')), hayvan = bvV('bv-hayvan') || '[hayvanın türü, sayısı, varsa adı]',
       olay = bvV('bv-olay') || '[olayın kısa anlatımı]', fail = bvV('bv-fail');
   var delil = Array.prototype.filter.call(document.querySelectorAll('#bv-delil input'), function (c) { return c.checked; }).map(function (c) { return c.value; });
@@ -4368,10 +4368,10 @@ function bvHazirla() {
     s.appendChild(bvKart('', 'Sonra kayda geçir', 'Olay bitince bu rehberde “Şiddet, öldürme, zehirleme oldu”yu seç; savcılığa ve Tarım ve Orman müdürlüğüne yazılı başvurunu hazırla.', '', [BV_LINK.vaka]));
   } else if (k === 'siddet') {
     s.appendChild(bvKart(1, 'İl/İlçe Tarım ve Orman Müdürlüğü', '5199 sayılı Kanun’un 28/A maddesindeki suçlarda soruşturma, Tarım ve Orman il/ilçe müdürlüğünün Cumhuriyet Başsavcılığına yazılı başvurusuna bağlıdır. Bu yüzden önce müdürlüğe yaz: dilekçeyi elden ver ya da CİMER’den “Tarım ve Orman Bakanlığı”nı seçerek gönder.',
-      il + ' İL / ' + ilce + ' İLÇE TARIM VE ORMAN MÜDÜRLÜĞÜNE\n\nKonu: 5199 sayılı Hayvanları Koruma Kanunu’na aykırı fiil hakkında Cumhuriyet Başsavcılığına başvuruda bulunulması talebi.\n\n' + olayMetni + '\n\nBu fiil 5199 sayılı Kanun’un 28/A maddesi kapsamında suç teşkil etmektedir. Anılan madde uyarınca Müdürlüğünüzce Cumhuriyet Başsavcılığına yazılı başvuruda bulunulmasını, gerekiyorsa hayvanın veteriner muayenesinin ve ölüm hâlinde nekropsisinin yaptırılmasını, sonuç hakkında tarafıma 3071 ve 4982 sayılı Kanunlar uyarınca bilgi verilmesini arz ederim.' + imza,
+      IL + ' İL / ' + ILCE + ' İLÇE TARIM VE ORMAN MÜDÜRLÜĞÜNE\n\nKonu: 5199 sayılı Hayvanları Koruma Kanunu’na aykırı fiil hakkında Cumhuriyet Başsavcılığına başvuruda bulunulması talebi.\n\n' + olayMetni + '\n\nBu fiil 5199 sayılı Kanun’un 28/A maddesi kapsamında suç teşkil etmektedir. Anılan madde uyarınca Müdürlüğünüzce Cumhuriyet Başsavcılığına yazılı başvuruda bulunulmasını, gerekiyorsa hayvanın veteriner muayenesinin ve ölüm hâlinde nekropsisinin yaptırılmasını, sonuç hakkında tarafıma 3071 ve 4982 sayılı Kanunlar uyarınca bilgi verilmesini arz ederim.' + imza,
       [BV_LINK.tarim, BV_LINK.cimer]));
     s.appendChild(bvKart(2, 'Cumhuriyet Başsavcılığı', 'Aynı olayı savcılığa da bildir: adliyedeki savcılık büroya elden verebilir ya da e-imzan varsa UYAP Vatandaş’tan gönderebilirsin. Başvuru numarasını sakla.',
-      il + ' CUMHURİYET BAŞSAVCILIĞINA\n\nŞİKÂYET / İHBAR EDEN: ' + ad + '\nŞÜPHELİ: ' + (fail || 'Tespit edilecek kişi veya kişiler') + '\nSUÇ: 5199 sayılı Hayvanları Koruma Kanunu’na muhalefet (m.28/A)\nSUÇ TARİHİ: ' + tarih + '\nSUÇ YERİ: ' + yer + ', ' + ilce + ' / ' + il + '\n\nAÇIKLAMALAR:\n' + olayMetni + '\n\nDelillerin kaybolmaması için olay yerindeki kamera kayıtlarının ivedilikle istenmesini, tanıkların dinlenmesini, hayvanın veteriner raporunun ve ölüm hâlinde nekropsi raporunun alınmasını talep ederim.\n\nSONUÇ VE İSTEM: Şüpheli veya şüpheliler hakkında soruşturma başlatılmasını ve kamu davası açılmasını saygıyla arz ederim.' + imza,
+      IL + ' CUMHURİYET BAŞSAVCILIĞINA\n\nŞİKÂYET / İHBAR EDEN: ' + ad + '\nŞÜPHELİ: ' + (fail || 'Tespit edilecek kişi veya kişiler') + '\nSUÇ: 5199 sayılı Hayvanları Koruma Kanunu’na muhalefet (m.28/A)\nSUÇ TARİHİ: ' + tarih + '\nSUÇ YERİ: ' + yer + ', ' + ilce + ' / ' + il + '\n\nAÇIKLAMALAR:\n' + olayMetni + '\n\nDelillerin kaybolmaması için olay yerindeki kamera kayıtlarının ivedilikle istenmesini, tanıkların dinlenmesini, hayvanın veteriner raporunun ve ölüm hâlinde nekropsi raporunun alınmasını talep ederim.\n\nSONUÇ VE İSTEM: Şüpheli veya şüpheliler hakkında soruşturma başlatılmasını ve kamu davası açılmasını saygıyla arz ederim.' + imza,
       [BV_LINK.uyap]));
     s.appendChild(bvKart(3, 'Ekler ve takip', ekListe + ' Başvurularının tarih ve numaralarını not et; yanıt gelmezse aynı yoldan hatırlat.', '', []));
     s.appendChild(bvKart(4, 'Vaka Almanağı’na ekle', 'Olayı sitede bildir: vaka kayda geçer, ilinin haritasında görünür ve dava sürecini birlikte takip ederiz.', '', [BV_LINK.vaka]));
@@ -4385,7 +4385,7 @@ function bvHazirla() {
   } else if (k === 'barinak') {
     var bk = fail || (ilce + ' Belediyesi hayvan bakımevi');
     s.appendChild(bvKart(1, 'Tarım ve Orman il müdürlüğünden denetim', 'Bakımevlerinin denetimi Tarım ve Orman Bakanlığının il müdürlüklerindedir. Dilekçeyi CİMER’den “Tarım ve Orman Bakanlığı”nı seçerek ya da elden ver.',
-      il + ' İL TARIM VE ORMAN MÜDÜRLÜĞÜNE\n\nKonu: ' + bk + ' hakkında denetim talebi.\n\n' + olayMetni + '\n\nBakımevinin 5199 sayılı Kanun ve Hayvanların Korunmasına Dair Uygulama Yönetmeliği’ne uygunluğunun yerinde ve habersiz denetlenmesini, tespit edilen eksikliklerin ve sorumluların belirlenmesini, suç teşkil eden durumlar için Cumhuriyet Başsavcılığına başvurulmasını ve sonuç hakkında tarafıma bilgi verilmesini arz ederim.' + imza,
+      IL + ' İL TARIM VE ORMAN MÜDÜRLÜĞÜNE\n\nKonu: ' + bk + ' hakkında denetim talebi.\n\n' + olayMetni + '\n\nBakımevinin 5199 sayılı Kanun ve Hayvanların Korunmasına Dair Uygulama Yönetmeliği’ne uygunluğunun yerinde ve habersiz denetlenmesini, tespit edilen eksikliklerin ve sorumluların belirlenmesini, suç teşkil eden durumlar için Cumhuriyet Başsavcılığına başvurulmasını ve sonuç hakkında tarafıma bilgi verilmesini arz ederim.' + imza,
       [BV_LINK.cimer, BV_LINK.tarim]));
     s.appendChild(bvKart(2, 'Belediyeye bilgi edinme', 'Aynı anda belediyeden kayıtları iste: kurum 15 iş günü içinde yanıt vermek zorunda.',
       (ilce + ' Belediye Başkanlığına').toLocaleUpperCase('tr') + '\n\nKonu: Hayvan bakımevi kayıtları hakkında bilgi edinme.\n\n4982 sayılı Bilgi Edinme Hakkı Kanunu uyarınca ' + bk + ' için:\n1. Toplam kapasitenin ve şu an barındırılan hayvan sayısının,\n2. Son bir yılda bakımevine alınan, sahiplendirilen, yerine bırakılan ve ölen hayvan sayılarının,\n3. Ölüm ve ötanazi gerekçelerinin ve kararı veren veteriner hekim bilgisinin,\n4. Görevli veteriner hekim ve personel sayısının\ntarafıma yazılı olarak bildirilmesini arz ederim.' + imza,
@@ -4393,7 +4393,7 @@ function bvHazirla() {
     s.appendChild(bvKart(3, 'Ekler', ekListe, '', [BV_LINK.vaka]));
   } else if (k === 'ticaret') {
     s.appendChild(bvKart(1, 'İhbar: Tarım ve Orman il müdürlüğü', 'İzinsiz üretim, satış ilanı ve hayvan dövüştürme için CİMER’den “İhbar” türüyle Tarım ve Orman Bakanlığını seç. Dövüştürme şu an oluyorsa 155 ya da 156’yı ara.',
-      il + ' İL TARIM VE ORMAN MÜDÜRLÜĞÜNE\n\nKonu: 5199 sayılı Kanun’a aykırı üretim, satış veya dövüştürme ihbarı.\n\n' + olayMetni + '\n\nYerinde inceleme yapılmasını, hayvanların koruma altına alınmasını, idari yaptırım uygulanmasını ve suç teşkil eden fiiller için Cumhuriyet Başsavcılığına başvurulmasını; sonuç hakkında tarafıma bilgi verilmesini arz ederim.' + imza,
+      IL + ' İL TARIM VE ORMAN MÜDÜRLÜĞÜNE\n\nKonu: 5199 sayılı Kanun’a aykırı üretim, satış veya dövüştürme ihbarı.\n\n' + olayMetni + '\n\nYerinde inceleme yapılmasını, hayvanların koruma altına alınmasını, idari yaptırım uygulanmasını ve suç teşkil eden fiiller için Cumhuriyet Başsavcılığına başvurulmasını; sonuç hakkında tarafıma bilgi verilmesini arz ederim.' + imza,
       [BV_LINK.cimer, ['📞 155 Polis', 'tel:155'], ['📞 156 Jandarma', 'tel:156']]));
     s.appendChild(bvKart(2, 'Ekler', ekListe + ' İlanın ekran görüntüsünü ve linkini, yayınlayan hesabın adını kaydet.', '', [BV_LINK.vaka]));
   } else if (k === 'iptal') {
