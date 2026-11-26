@@ -12,7 +12,7 @@
 <meta property="og:site_name" content="7527 İPTAL">
 <meta property="og:title" content="Bir Halk İradesidir: 7527 İptal">
 <meta property="og:description" content="Gizlimiz saklımız yok. Taleplerimiz, hedefimiz ve ilk 15 günün açık rakamları.">
-<meta property="og:url" content="https://7527iptal.org/hakikat.html">
+<meta property="og:url" content="https://7527iptal.org/hakikat">
 <meta property="og:image" content="https://7527iptal.org/gorsel/paylasim-bildiri.png?v=3">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -569,7 +569,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
 <script src="/kaynak/sbkopru.js?v=1"></script>
-<script src="/kaynak/og.js?v=22" defer></script>
+<script src="/kaynak/og.js?v=23" defer></script>
 <script src="/kaynak/kt.js?v=1" defer></script>
 <script src="/kaynak/sohbet.js?v=2" defer></script>
 <script src="/kaynak/tarayici.js?v=2" defer></script>
@@ -742,9 +742,9 @@ button.btn.dy-ghost{border:1px solid var(--em)}
     $('s-fb').href='https://www.facebook.com/sharer/sharer.php?u='+q(U);
     $('s-tg').href='https://t.me/share/url?url='+q(U)+'&text='+q(S.x);
     V.classList.add('on');document.body.style.overflow='hidden';open=true;tr.scrollLeft=0;upd();
-    if(push!==false){try{history.replaceState(null,'','#'+k)}catch(e){}}
+    if(push!==false){try{history.replaceState(null,'','?s='+k+'#'+k)}catch(e){}}
   }
-  function closeSet(){V.classList.remove('on');document.body.style.overflow='';open=false;cur=null;try{history.replaceState(null,'',location.pathname+location.search+'#bulten')}catch(e){}}
+  function closeSet(){V.classList.remove('on');document.body.style.overflow='';open=false;cur=null;try{history.replaceState(null,'',location.pathname+'?s=bulten#bulten')}catch(e){}}
   Array.prototype.forEach.call(document.querySelectorAll('[data-open]'),function(b){b.addEventListener('click',function(){openSet(b.getAttribute('data-open'))})});
   $('vw-x').addEventListener('click',closeSet);
   V.addEventListener('click',function(e){if(e.target===V)closeSet()});
@@ -755,7 +755,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
   $('vw-cp').addEventListener('click',function(){if(cur)copy(clean(SETS[cur].c)+'\n\n'+LINK(cur))});
   $('vw-lk').addEventListener('click',function(){if(cur)copy(LINK(cur))});
   window.__hkSlayt=openSet;
-  var hs=(location.hash||'').slice(1);if(SETS[hs])openSet(hs,false);
+  var hs=(location.hash||'').slice(1)||((/[?&]s=([\w-]+)/.exec(location.search)||[])[1]||'');if(SETS[hs])openSet(hs,false);
 })();
 </script>
 
@@ -1022,11 +1022,11 @@ button.btn.dy-ghost{border:1px solid var(--em)}
     Array.prototype.forEach.call(document.querySelectorAll('.tabs .tab'),function(a){a.classList.toggle('on',a.getAttribute('data-go')===t)});
     if(scroll){var n=document.querySelector('.tabs');if(n)window.scrollTo({top:n.offsetTop,behavior:'smooth'})}
   }
-  Array.prototype.forEach.call(document.querySelectorAll('.tabs .tab[data-go]'),function(a){a.addEventListener('click',function(e){e.preventDefault();var t=a.getAttribute('data-go');show(t,true);try{history.replaceState(null,'','#'+t)}catch(x){}})});
-  Array.prototype.forEach.call(document.querySelectorAll('a[href="#harita"],a[href="#vakalar"],a[href="#duyurular"],a[href="#bulten"],a[href="#hedef"],a[href="#imzalar"],a[href="#eylemler"],a[href="#davalar"],a[href="#canli"],a[href="#biz"]'),function(a){if(a.classList.contains('tab'))return;a.addEventListener('click',function(e){e.preventDefault();var t=which(a.getAttribute('href'));show(t,true);try{history.replaceState(null,'','#'+t)}catch(x){}})});
+  Array.prototype.forEach.call(document.querySelectorAll('.tabs .tab[data-go]'),function(a){a.addEventListener('click',function(e){e.preventDefault();var t=a.getAttribute('data-go');show(t,true);try{history.replaceState(null,'','?s='+t+'#'+t)}catch(x){}})});
+  Array.prototype.forEach.call(document.querySelectorAll('a[href="#harita"],a[href="#vakalar"],a[href="#duyurular"],a[href="#bulten"],a[href="#hedef"],a[href="#imzalar"],a[href="#eylemler"],a[href="#davalar"],a[href="#canli"],a[href="#biz"]'),function(a){if(a.classList.contains('tab'))return;a.addEventListener('click',function(e){e.preventDefault();var t=which(a.getAttribute('href'));show(t,true);try{history.replaceState(null,'','?s='+t+'#'+t)}catch(x){}})});
   document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('.pn-k a[data-git]');if(!a)return;e.preventDefault();window.__hkSekme(a.getAttribute('data-git'),true)});
-  window.__hkSekme=function(t,scroll){show(t,scroll);try{history.replaceState(null,'','#'+t)}catch(x){}};
-  var ilk=which(location.hash);show(ilk,false);
+  window.__hkSekme=function(t,scroll){show(t,scroll);try{history.replaceState(null,'','?s='+t+'#'+t)}catch(x){}};
+  var _s=(/[?&]s=([\w-]+)/.exec(location.search)||[])[1]||'';if(_s&&!location.hash&&TABS.indexOf(_s)===-1&&/^(cabbar|dilekce|nimet|bildiri|15gun)$/.test(_s))_s='bulten';var ilk=which(location.hash||_s);show(ilk,false);
   if(location.hash&&ilk!=='bulten'){var n=document.querySelector('.tabs');if(n)setTimeout(function(){window.scrollTo({top:n.offsetTop})},60)}
   window.addEventListener('hashchange',function(){show(which(location.hash),true)});
   // Paylaşım linki bir duyuruya geliyorsa (#cabbar, #nimet, #bildiri…): o duyuruya in, slaytları varsa doğrudan aç

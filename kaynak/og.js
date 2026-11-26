@@ -433,7 +433,7 @@
       case: [top + ' VAKA, ' + d + ' İLDE BELGELENDİ', b + ' İLDE HENÜZ KAYIT YOK', 'VAKAYI BİLDİR',
         "7527 sonrası Türkiye'de " + d + ' ilde ' + top + ' vaka belgelendi: zehirlenen, vurulan, barınaklarda ölüme terk edilen canlar. ' + b + ' ilde ise henüz kayıt yok; bu, orada yaşanmadığı anlamına gelmiyor.',
         'Henüz vaka kaydı olmayan iller', 'Şehrindeki eski-yeni her şiddet, ihmal ve barınak vakasını bildir. Belgeleyelim, davasının takipçisi olalım.',
-        d + ' ilde ' + top + ' vaka belgelendi, ' + b + ' ilde kayıt yok. Şehrindeki vakayı bildir, takipçisi olalım.', '/hakikat.html#harita'],
+        d + ' ilde ' + top + ' vaka belgelendi, ' + b + ' ilde kayıt yok. Şehrindeki vakayı bildir, takipçisi olalım.', '/hakikat?s=harita'],
       vol: [d + ' İLDE GÖNÜLLÜMÜZ VAR', b + ' İLDE SENİ ARIYORUZ', 'GÖNÜLLÜ OL',
         '7527 sayılı yasanın iptali için il il örgütleniyoruz: ' + d + ' ilde gönüllümüz var.',
         'Henüz gönüllümüz olmayan iller', 'İlinde kampanyanın sesi ol, gönüllü ol.',
