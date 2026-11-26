@@ -534,8 +534,19 @@
     </div>
     </section>
 
-    <!-- SAĞ KOLON: Onur Köşesi ve dilekçe sıralaması (mobilde dilekçe adımlarının altında) -->
-    <section class="lg:col-span-6 space-y-6">
+    <!-- SAĞ KOLON: Onur Köşesi ve dilekçe sıralaması (mobilde dilekçe adımlarının altında).
+         Masaüstünde dilekçe paneliyle aynı boyda durur; sıralama listesi kutunun içinde kayar. -->
+    <style>
+      @media (min-width:1024px){
+        #rk-sag{position:relative}
+        #rk-sag>#rk-card{position:absolute;inset:0;display:flex}
+        #rk-sag>#rk-card.hidden{display:none}
+        #rk-card>div{flex:1;display:flex;flex-direction:column;min-height:0}
+        #rk-card>div>div:last-child{flex:1;min-height:0;overflow-y:auto}
+        #rk-more{display:none!important}
+      }
+    </style>
+    <section id="rk-sag" class="lg:col-span-6 space-y-6">
       <div id="rk-card" class="hidden w-full text-left">
       <div class="bg-zinc-900 rounded-2xl border border-amber-700/70 shadow-xl overflow-hidden">
         <div class="p-5 bg-gradient-to-br from-amber-950/70 via-zinc-900 to-zinc-900 border-b border-amber-900/50 space-y-3">
@@ -7436,7 +7447,9 @@ function rkRender() {
   var ol = document.getElementById('rk-list'); ol.textContent = '';
   rest = rest.slice().sort(function (a, b) { return Number(b.toplam) - Number(a.toplam); });
   var sirali = _rkCok ? rest : rest.slice().reverse();
-  var show = _rkOpen ? sirali : sirali.slice(0, 10);
+  // Masaüstünde liste kutunun içinde kaydığı için hepsi gösterilir; telefonda ilk 10 + Tümünü gör
+  var genis = window.matchMedia && window.matchMedia('(min-width:1024px)').matches;
+  var show = (_rkOpen || genis) ? sirali : sirali.slice(0, 10);
   show.forEach(function (r, i) {
     var li = rkEl('li', 'bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2');
     var top = rkEl('div', 'flex items-baseline justify-between gap-2 text-xs');
