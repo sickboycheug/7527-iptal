@@ -134,7 +134,8 @@ html:not(.sohbet-modu) #sohbet-kart .sohbet-ust,html:not(.sohbet-modu) #sohbet-k
 </style>
 <style>
   /* Sahadan Paylaş: haber akışı (telefonda tek, geniş ekranda iki sütun; 6'şar açılır, yarım satır kalmaz) */
-  .fp-akis { display:grid; grid-template-columns:minmax(0,1fr); gap:.75rem; align-items:start; }
+  .fp-akis { display:grid; grid-template-columns:minmax(0,1fr); gap:.75rem; align-items:stretch; }
+  .fp-c > div:nth-last-child(2) { margin-top:auto; } /* düğmeler kartın dibine: yan yana kartlar aynı boyda */
   @media (min-width:640px) { .fp-akis { grid-template-columns:repeat(2,minmax(0,1fr)); } }
   .fp-akis > p, .fp-akis > button { grid-column:1 / -1; }
   .fp-c { overflow:hidden; display:flex; flex-direction:column; }
