@@ -132,6 +132,62 @@ html:not(.sohbet-modu) #sohbet-kart .sohbet-ust,html:not(.sohbet-modu) #sohbet-k
     #task-list { grid-template-columns:repeat(4,minmax(0,1fr)); }
   }
 </style>
+<style>
+  /* ===== Görev panosu: görsel düzen ===== */
+  #rehber, #vol-update { order: 2; }
+  #view-board > #pano-nav { order: 2; }
+  /* Pano kutuları: her bölümün kendi rengi, büyük simge */
+  .pn-b { position:relative; overflow:hidden; min-height:6.25rem; padding:.85rem .4rem; border-radius:1rem; font-size:.82rem; gap:.2rem; border-width:1px; transition:transform .15s, border-color .15s; }
+  .pn-b:hover { transform:translateY(-2px); }
+  .pn-b i { font-size:2.1rem; line-height:1.1; filter:drop-shadow(0 2px 6px rgba(0,0,0,.45)); }
+  .pn-b small { font-size:.66rem; }
+  .pn-b[data-p="ofis"] { background:linear-gradient(150deg,#065f46 0%,#0c1a14 75%); border-color:#047857; }
+  .pn-b[data-p="gorevler"] { background:linear-gradient(150deg,#0c4a6e 0%,#0c1620 75%); border-color:#0369a1; }
+  .pn-b[data-p="hedef"] { background:linear-gradient(150deg,#991b1b 0%,#1c0b0b 75%); border-color:#b91c1c; }
+  .pn-b[data-p="veriler"] { background:linear-gradient(150deg,#92400e 0%,#1c140a 75%); border-color:#b45309; }
+  .pn-b[data-p="harita"] { background:linear-gradient(150deg,#3730a3 0%,#12122a 75%); border-color:#4338ca; }
+  .pn-b[data-p="saha"] { background:linear-gradient(150deg,#9a3412 0%,#1f120b 75%); border-color:#c2410c; }
+  .pn-b small { color:#e4e4e7 !important; opacity:.85; }
+  /* Nasıl gönüllü olunur? rehber şeridi */
+  .rh-k { display:flex; gap:.6rem; overflow-x:auto; scrollbar-width:none; padding:.1rem .1rem .4rem; -webkit-overflow-scrolling:touch; }
+  .rh-k::-webkit-scrollbar { display:none; }
+  .rh-c { flex:none; width:8.4rem; aspect-ratio:3/4; border-radius:1rem; border:1px solid #27272a; display:flex; flex-direction:column; justify-content:space-between; padding:.75rem; text-align:left; color:#fff; cursor:pointer; position:relative; overflow:hidden; }
+  .rh-c:hover, .rh-c:focus-visible { border-color:#34d399; }
+  .rh-c i { font-style:normal; font-size:2.4rem; line-height:1; }
+  .rh-c b { font-family:'Oswald',sans-serif; font-size:1rem; line-height:1.15; text-transform:uppercase; letter-spacing:.02em; }
+  .rh-c span { font-size:.66rem; font-weight:700; color:#fde68a; }
+  .rh-n { position:absolute; top:.55rem; right:.65rem; font-family:'Oswald',sans-serif; font-size:1.1rem; color:rgba(255,255,255,.35); }
+  #rh-modal { display:none; position:fixed; inset:0; z-index:99500; background:rgba(0,0,0,.85); align-items:center; justify-content:center; padding:14px; }
+  #rh-modal.on { display:flex; }
+  #rh-box { width:100%; max-width:26rem; max-height:92vh; overflow-y:auto; background:#18181b; border:1px solid #3f3f46; border-radius:1.25rem; padding:1.1rem; }
+  #rh-vid { aspect-ratio:9/16; max-height:60vh; width:100%; border-radius:.9rem; overflow:hidden; background:#000; margin-bottom:.8rem; }
+  #rh-vid iframe { width:100%; height:100%; border:0; display:block; }
+  #rh-steps { list-style:none; margin:.6rem 0 1rem; padding:0; display:grid; gap:.5rem; counter-reset:r; }
+  #rh-steps li { counter-increment:r; display:grid; grid-template-columns:auto 1fr; gap:.6rem; align-items:start; background:#09090b; border:1px solid #27272a; border-radius:.75rem; padding:.6rem .7rem; font-size:.82rem; color:#e4e4e7; line-height:1.35; }
+  #rh-steps li::before { content:counter(r); font-family:'Oswald',sans-serif; font-size:1.3rem; line-height:1; color:#34d399; min-width:1.1rem; text-align:center; }
+  /* Gönüllü yolu */
+  /* Telefonda üç adım yan yana kaydırılır (sayfa uzamasın); geniş ekranda üçü eşit sütun */
+  .gy-a { display:flex; gap:.6rem; overflow-x:auto; scrollbar-width:none; scroll-snap-type:x mandatory; padding-bottom:.2rem; }
+  .gy-a::-webkit-scrollbar { display:none; }
+  .gy-a > .gy-s { flex:0 0 82%; scroll-snap-align:start; }
+  @media (min-width:640px) { .gy-a { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); overflow:visible; } .gy-a > .gy-s { flex:none; } }
+  .gy-s { position:relative; display:flex; flex-direction:column; gap:.35rem; border-radius:1rem; padding:1rem; border:1px solid #27272a; min-width:0; }
+  .gy-s em { font-style:normal; font-family:'Oswald',sans-serif; font-size:2.2rem; line-height:1; color:rgba(255,255,255,.9); }
+  .gy-s b { font-size:.95rem; color:#fff; }
+  .gy-s p { margin:0; font-size:.78rem; color:#d4d4d8; line-height:1.4; }
+  .gy-s .btn { margin-top:auto; align-self:flex-start; }
+  .gy-1 { background:linear-gradient(150deg,#7f1d1d,#18181b 70%); border-color:#991b1b; }
+  .gy-2 { background:linear-gradient(150deg,#065f46,#18181b 70%); border-color:#047857; }
+  .gy-3 { background:linear-gradient(150deg,#78350f,#18181b 70%); border-color:#92400e; }
+  .gy-r { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.5rem; }
+  .gy-r div { background:#09090b; border:1px solid #27272a; border-radius:.75rem; padding:.55rem .5rem; text-align:center; min-width:0; }
+  .gy-r b { display:block; font-family:'Oswald',sans-serif; font-size:1.35rem; line-height:1.15; color:#fbbf24; white-space:nowrap; }
+  .gy-r span { display:block; font-size:.64rem; color:#a1a1aa; }
+  .gy-e { display:grid; grid-template-columns:minmax(0,1fr); gap:.4rem; }
+  @media (min-width:640px) { .gy-e { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+  .gy-e div { font-size:.74rem; color:#fecaca; background:#1f0b0b; border:1px solid #7f1d1d; border-radius:.6rem; padding:.45rem .6rem; }
+  .gy-e b { color:#fff; }
+</style>
 <script src="/kaynak/dil.js?v=4" defer></script>
 <script src="/kaynak/canlar.js?v=3" defer></script>
 </head>
@@ -171,6 +227,56 @@ html:not(.sohbet-modu) #sohbet-kart .sohbet-ust,html:not(.sohbet-modu) #sohbet-k
       <p id="announce-text" class="kisa text-sm text-zinc-100 leading-relaxed whitespace-pre-line"></p>
       <button type="button" id="announce-more" onclick="duyuruAc()" class="text-xs text-emerald-300 underline mt-1 cursor-pointer">Devamını oku</button>
     </div>
+
+
+    <!-- Nasıl gönüllü olunur? Her modül için kısa rehber; video eklendiğinde kartta oynar (veri/rehber.json) -->
+    <section id="rehber" class="space-y-2">
+      <div class="flex items-end justify-between gap-2">
+        <h3 class="font-impact text-lg text-white uppercase tracking-wide">🎬 Nasıl gönüllü olunur?</h3>
+        <span class="text-[11px] text-zinc-400">Kaydır, dokun, öğren</span>
+      </div>
+      <div class="rh-k" id="rh-k"></div>
+    </section>
+
+    <section id="vol-update" class="bg-zinc-900 border border-zinc-800 p-5 sm:p-6 rounded-2xl shadow-xl space-y-4">
+      <div class="space-y-1">
+        <div class="flex items-center justify-between text-[11px] uppercase tracking-wider">
+          <span class="bg-emerald-700 text-white font-bold px-2 py-0.5 rounded">Gönüllü yolu</span>
+          <span class="text-zinc-500 g-tarih"></span>
+        </div>
+        <h2 class="font-impact text-2xl text-white uppercase tracking-wide"><span class="g-gun">…</span> günde <span class="g-top">…</span> dilekçe. Şimdi sıra sahada.</h2>
+      </div>
+      <div class="gy-r">
+        <div><b class="g-kisi">…</b><span>kişi dilekçe gönderdi</span></div>
+        <div><b class="g-vol">…</b><span>gönüllü</span></div>
+        <div><b class="g-vaka">…</b><span>vaka belgelendi</span></div>
+      </div>
+      <div class="gy-a">
+        <div class="gy-s gy-1"><em>1</em><b>Dilekçelerini tamamla</b><p>Cumhurbaşkanlığı → TBMM Başkanlığı → ilinin vekilleri. Site sıradaki hedefi kendisi getirir. 594'ü tamamlayan <span class="g-onur">…</span> kişi Onur Köşesi'nde.</p><a class="btn bg-red-600 hover:bg-red-500 text-white" href="/?dilekce=1">Dilekçe gönder</a></div>
+        <div class="gy-s gy-2"><em>2</em><b>Üç kişiye gönderttir</b><p>Çevrendeki üç kişiye dilekçe gönderttir, sayfayı paylaş. Özellikle dilekçe gelmeyen illerde tanıdığın varsa.</p><button type="button" class="btn bg-emerald-600 hover:bg-emerald-500 text-white" data-up-share>📤 Bu sayfayı paylaş</button></div>
+        <div class="gy-s gy-3"><em>3</em><b>Vaka bildir, sahaya çık</b><p>Şehrindeki eski ya da yeni vakayı bildir; eylemini, davanı Sahadan Paylaş'a ekle.</p><a class="btn bg-amber-600 hover:bg-amber-500 text-white" href="/?vaka=bildir">🐾 Vakayı bildir</a></div>
+      </div>
+      <p class="text-[11px] font-bold uppercase tracking-wider text-red-300">Nerede eksiğiz?</p>
+      <div class="gy-e">
+        <div><b class="g-volyok">…</b> ilde henüz gönüllümüz yok.</div>
+        <div><b class="g-petyok">…</b> ilden henüz tek dilekçe gelmedi.</div>
+        <div>Cumhurbaşkanlığı <b class="g-cb">…</b>, TBMM Başkanlığı yalnızca <b class="g-mb">…</b> dilekçe.</div>
+      </div>
+      <p class="text-xs text-zinc-300 leading-relaxed border-l-4 border-amber-500 bg-zinc-950 rounded-r-lg px-4 py-3"><span class="font-bold text-amber-400">Hakkımız, sınırımız:</span> Tüm çalışmalarımız Anayasa’nın 74. maddesindeki dilekçe hakkına ve ifade özgürlüğüne dayanır. Yasal sınırlar içinde, barışçıl ve açık biçimde irade gösteriyoruz. Gönüllülerimizden de bunu bekliyoruz.</p>
+<script>
+(function(){
+  var box=document.getElementById('vol-update');
+  if(!box)return;
+  var url="https://7527iptal.org/paylas/paylas-gonullu.html?v=2", text="Kendi şehrinde ses ol: 7527 İptal kampanyasına katıl. Sohbete katıl, görev al, materyal indir:";
+  var b=box.querySelector('[data-up-share]');
+  if(b)b.addEventListener('click',function(){
+    if(window.OG&&OG.paylas){OG.paylas({baslik:'7527 İptal · Kampanya Panosu',metin:text,url:url});return}
+    if(navigator.share){navigator.share({title:document.title,text:text+'\n\n'+url}).catch(function(){});return}
+    window.open('https://api.whatsapp.com/send?text='+encodeURIComponent(text+'\n\n'+url),'_blank');
+  });
+})();
+</script>
+    </section>
 
     <nav id="pano-nav" aria-label="Pano bölümleri">
       <button type="button" class="pn-b" data-p="ofis" onclick="panoAc('ofis', true)"><i>💬</i>Sohbet<small id="pn-sohbet-sm">Herkese açık</small></button>
@@ -724,77 +830,7 @@ function siraBoya(pre, cok) {
   </div>
   </div>
 
-    <section id="vol-update" class="bg-zinc-900 border border-zinc-800 p-6 sm:p-8 rounded-2xl shadow-xl space-y-5">
-      <div class="space-y-2">
-        <div class="flex items-center justify-between text-[11px] uppercase tracking-wider">
-          <span class="bg-emerald-700 text-white font-bold px-2 py-0.5 rounded">Güncelleme</span>
-          <span class="text-zinc-500 g-tarih"></span>
-        </div>
-        <h2 class="font-impact text-2xl text-white uppercase tracking-wide"><span class="g-gun">…</span> günde <span class="g-top">…</span> dilekçe. Şimdi sıra sahada.</h2>
-        <p class="text-sm text-zinc-300 leading-relaxed">Kampanyanın bugünkü tablosu, olduğu gibi:</p>
-        <ul class="text-sm text-zinc-300 leading-relaxed space-y-1 list-none">
-          <li>📨 <strong class="text-white"><span class="g-top">…</span> dilekçe:</strong> <span class="g-kisi">…</span> kişi, <span class="g-petil">…</span> il. Cumhurbaşkanlığı'na <span class="g-cb">…</span>, TBMM Başkanlığı'na <span class="g-mb">…</span>, vekillere <span class="g-mp">…</span>.</li>
-          <li>🤝 <strong class="text-white"><span class="g-vol">…</span> gönüllü:</strong> <span class="g-volil">…</span> il ve <span class="g-volulke">…</span> ülke.</li>
-          <li>🐾 <strong class="text-white"><span class="g-vaka">…</span> vaka:</strong> <span class="g-vakail">…</span> ilde belgelendi.</li>
-        </ul>
-        <p class="text-sm font-bold text-amber-300 pt-1">Nerede eksiğiz?</p>
-        <ul class="text-sm text-zinc-300 leading-relaxed space-y-1 list-disc pl-5">
-          <li><span class="g-volyok">…</span> ilde henüz gönüllümüz yok.</li>
-          <li><span class="g-petyok">…</span> ilden henüz tek dilekçe gelmedi.</li>
-          <li>Cumhurbaşkanlığı'na gönderenlerin çoğu TBMM'ye ve vekillere geçmedi. Cumhurbaşkanlığı: <span class="g-cb">…</span>, TBMM Başkanlığı: <span class="g-mb">…</span>.</li>
-        </ul>
-        <p class="text-sm font-bold text-emerald-300 pt-1">Gönüllüden beklediğimiz:</p>
-        <ol class="text-sm text-zinc-300 leading-relaxed space-y-1 list-decimal pl-5">
-          <li><strong class="text-white">Kendi dilekçelerini tamamla:</strong> Cumhurbaşkanlığı → TBMM → ilinin vekilleri. Site artık sıradaki hedefi kendisi getiriyor ve kaç dilekçen kaldığını gösteriyor.</li>
-          <li><strong class="text-white">Çevrendeki üç kişiye dilekçe gönderttir.</strong> Özellikle dilekçe gelmeyen illerde tanıdığın varsa.</li>
-          <li><strong class="text-white">Şehrinde gördüğün eski ya da yeni vakayı bildir.</strong></li>
-        </ol>
-        <p class="text-sm text-zinc-300 leading-relaxed">594 dilekçenin tamamını gönderen <span class="g-onur">…</span> kişi Onur Köşesi'nde. Sıradaki isim seninki olsun.</p>
-      </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-      <div class="bg-zinc-950 border border-emerald-800/60 rounded-xl p-4 text-center">
-        <div class="font-impact text-2xl text-emerald-400">1</div>
-        <div class="font-bold text-white text-sm">E-postanla gir</div>
-        <div class="text-xs text-zinc-400 mt-1">Kod e-postana gelir, şifre yok. Bir kez girersin, bu cihazda açık kalır.</div>
-      </div>
-      <div class="bg-zinc-950 border border-emerald-800/60 rounded-xl p-4 text-center">
-        <div class="font-impact text-2xl text-emerald-400">2</div>
-        <div class="font-bold text-white text-sm">Sohbete katıl, görev al</div>
-        <div class="text-xs text-zinc-400 mt-1">Materyali indir, paylaş, dilekçeni gönder, vakayı bildir.</div>
-      </div>
-      <div class="bg-zinc-950 border border-emerald-800/60 rounded-xl p-4 text-center">
-        <div class="font-impact text-2xl text-emerald-400">3</div>
-        <div class="font-bold text-white text-sm">İstersen aktif gönüllü ol</div>
-        <div class="text-xs text-zinc-400 mt-1">İlinde stand ve toplantı yapmak istiyorsan profilinde işaretle.</div>
-      </div>
-      </div>
-
-            <p class="text-xs text-zinc-300 leading-relaxed border-l-4 border-amber-500 bg-zinc-950 rounded-r-lg px-4 py-3"><span class="font-bold text-amber-400">Hakkımız, sınırımız:</span> Tüm çalışmalarımız Anayasa’nın 74. maddesindeki dilekçe hakkına ve ifade özgürlüğüne dayanır. Yasal sınırlar içinde, barışçıl ve açık biçimde irade gösteriyoruz. Gönüllülerimizden de bunu bekliyoruz.</p>
-      <div class="flex flex-wrap items-center gap-2">
-        <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 mr-1">Bu sayfayı paylaş:</span>
-        <a class="bg-zinc-950 border border-emerald-700 text-emerald-300 hover:bg-emerald-700 hover:text-white text-xs font-bold px-3 py-2 rounded-full transition" href="https://wa.me/?text=Kendi%20%C5%9Fehrinde%20ses%20ol%3A%207527%20%C4%B0ptal%20kampanyas%C4%B1na%20kat%C4%B1l.%20Sohbete%20kat%C4%B1l%2C%20g%C3%B6rev%20al%2C%20materyal%20indir%3A%20https%3A%2F%2F7527iptal.org%2Fpaylas%2Fpaylas-gonullu.html%3Fv%3D2" target="_blank" rel="noopener">WhatsApp</a>
-        <a class="bg-zinc-950 border border-emerald-700 text-emerald-300 hover:bg-emerald-700 hover:text-white text-xs font-bold px-3 py-2 rounded-full transition" href="https://twitter.com/intent/tweet?text=Kendi%20%C5%9Fehrinde%20ses%20ol%3A%207527%20%C4%B0ptal%20kampanyas%C4%B1na%20kat%C4%B1l.%20Sohbete%20kat%C4%B1l%2C%20g%C3%B6rev%20al%2C%20materyal%20indir%3A&url=https%3A%2F%2F7527iptal.org%2Fpaylas%2Fpaylas-gonullu.html%3Fv%3D2" target="_blank" rel="noopener">X</a>
-        <a class="bg-zinc-950 border border-emerald-700 text-emerald-300 hover:bg-emerald-700 hover:text-white text-xs font-bold px-3 py-2 rounded-full transition" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2F7527iptal.org%2Fpaylas%2Fpaylas-gonullu.html%3Fv%3D2" target="_blank" rel="noopener">Facebook</a>
-        <a class="bg-zinc-950 border border-emerald-700 text-emerald-300 hover:bg-emerald-700 hover:text-white text-xs font-bold px-3 py-2 rounded-full transition" href="https://t.me/share/url?url=https%3A%2F%2F7527iptal.org%2Fpaylas%2Fpaylas-gonullu.html%3Fv%3D2&text=Kendi%20%C5%9Fehrinde%20ses%20ol%3A%207527%20%C4%B0ptal%20kampanyas%C4%B1na%20kat%C4%B1l.%20Sohbete%20kat%C4%B1l%2C%20g%C3%B6rev%20al%2C%20materyal%20indir%3A" target="_blank" rel="noopener">Telegram</a>
-        <button type="button" class="bg-zinc-950 border border-emerald-700 text-emerald-300 hover:bg-emerald-700 hover:text-white text-xs font-bold px-3 py-2 rounded-full transition" data-up-native style="display:none">Paylaş…</button>
-        <button type="button" class="bg-zinc-950 border border-emerald-700 text-emerald-300 hover:bg-emerald-700 hover:text-white text-xs font-bold px-3 py-2 rounded-full transition" data-up-copy>Bağlantıyı kopyala</button>
-      </div>
-<script>
-(function(){
-  var box=document.getElementById('vol-update');
-  if(!box)return;
-  var url="https://7527iptal.org/paylas/paylas-gonullu.html?v=2", text="Kendi şehrinde ses ol: 7527 İptal kampanyasına katıl. Sohbete katıl, görev al, materyal indir:";
-  var cp=box.querySelector('[data-up-copy]'), nv=box.querySelector('[data-up-native]');
-  if(nv&&navigator.share){nv.style.display='';nv.addEventListener('click',function(){navigator.share({title:document.title,text:text+'\n\n'+url}).catch(function(){});});}
-  if(cp){cp.addEventListener('click',function(){
-    var done=function(){var o=cp.textContent;cp.textContent='✓ Kopyalandı';setTimeout(function(){cp.textContent=o;},1800);};
-    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(done).catch(function(){prompt('Bağlantıyı kopyala:',url);});}
-    else{prompt('Bağlantıyı kopyala:',url);}
-  });}
-})();
-</script>
-    </section>
 
   <div id="task-modal" onclick="if(event.target===this)taskModalClose()">
     <div class="w-full max-w-md max-h-full overflow-y-auto space-y-2">
@@ -4144,6 +4180,58 @@ if (window.SOHBET_MODU) (function () {
   }
   function kur() { try { (window.__tekPaylasHedefler || function () { return []; })().forEach(function (h) { tek(h[0], h[1], h[2]); }); } catch (e) {} }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', kur); else kur();
+})();
+</script>
+
+<div id="rh-modal" role="dialog" aria-modal="true" aria-labelledby="rh-t">
+  <div id="rh-box">
+    <div class="flex items-center justify-between gap-2 mb-2"><h3 id="rh-t" class="font-impact text-xl text-white uppercase tracking-wide"></h3><button type="button" onclick="rehberKapat()" class="text-2xl text-zinc-400 hover:text-white leading-none" aria-label="Kapat">×</button></div>
+    <div id="rh-vid" hidden></div>
+    <ol id="rh-steps"></ol>
+    <button type="button" id="rh-git" class="btn w-full bg-emerald-600 hover:bg-emerald-500 text-white text-sm py-3"></button>
+  </div>
+</div>
+<script>
+// Gönüllü rehberi: her modül için 3 adım + ilgili yere götüren düğme.
+// Video hazır olduğunda veri/rehber.json içine {"dilekce":"YouTubeKimliği", ...} eklenir; kartta "▶ İzle" çıkar ve rehberde oynar.
+var REHBER = [
+  { k:'dilekce', ik:'✉️', ad:'Dilekçe gönder', renk:'linear-gradient(160deg,#991b1b,#18181b 75%)', adim:['Kime göndereceğini seç: önce Cumhurbaşkanlığı, sonra TBMM Başkanlığı, sonra ilinin vekilleri.','Adını soyadını, ilini ve telefon ya da e-postanı yaz.','“E-posta ile dilekçeyi gönder”e bas; e-posta uygulaman alıcısıyla açılır, PDF’i ekleyip gönder ve “Gönderdim” de.'], git:'Dilekçe gönder', f:function(){ location.href='/?dilekce=1'; } },
+  { k:'paylas', ik:'📤', ad:'Paylaş, çoğalt', renk:'linear-gradient(160deg,#065f46,#18181b 75%)', adim:['Sitedeki her içeriğin altında tek bir “Paylaş” düğmesi var.','Platformu seç: WhatsApp, X, Facebook, Telegram ya da Instagram.','Paylaşım o içeriğin kendi linki ve görseliyle gider; çevrene dilekçe gönderttir.'], git:'Bu sayfayı paylaş', f:function(){ rehberKapat(); var b=document.querySelector('[data-up-share]'); if(b) b.click(); } },
+  { k:'vaka', ik:'🐾', ad:'Vaka bildir', renk:'linear-gradient(160deg,#7c2d12,#18181b 75%)', adim:['Şehrindeki eski ya da yeni vakayı seç: şiddet, zehirleme, toplama, barınak ihmali…','Yerini, tarihini, fotoğraf, video ya da haber linkini ekle.','İletişim bilgini bırak; incelendikten sonra Vaka Almanağı’na ve haritaya girer.'], git:'Vakayı bildir', f:function(){ location.href='/?vaka=bildir'; } },
+  { k:'saha', ik:'📣', ad:'Sahadan paylaş', renk:'linear-gradient(160deg,#9a3412,#18181b 75%)', adim:['“+ Ekle”ye bas ve türü seç: eylem, dava, CİMER başvurusu ya da imza kampanyası.','Yerini, tarihini ve varsa linkini, afişini ekle.','Onaylandığında herkes görür ve tek dokunuşla paylaşır.'], git:'Sahadan Paylaş’ı aç', f:function(){ rehberKapat(); panoAc('saha', true); try { fpFormAc(); } catch (e) {} } },
+  { k:'sohbet', ik:'💬', ad:'Sohbete katıl', renk:'linear-gradient(160deg,#047857,#18181b 75%)', adim:['Sohbeti girmeden de okuyabilirsin.','Yazmak için e-postanla gir: e-postana kod gelir, şifre yok; bu cihazda açık kalır.','Adını seç ve yaz. Mesajlar 24 saat sonra silinir.'], git:'Sohbeti aç', f:function(){ rehberKapat(); panoAc('ofis', true); } },
+  { k:'gorev', ik:'📋', ad:'Görev al', renk:'linear-gradient(160deg,#0c4a6e,#18181b 75%)', adim:['Görevler’i aç; ilindeki ve herkese açık görevleri gör.','Birini seç ve üstlen; süresi içinde yap.','Yapamayacaksan “Bırak” demen yeterli, bunun cezası yok.'], git:'Görevleri aç', f:function(){ rehberKapat(); panoAc('gorevler', true); } },
+  { k:'hedef', ik:'🎯', ad:'Bugünün Hedefi', renk:'linear-gradient(160deg,#7f1d1d,#18181b 75%)', adim:['Hangi vekile kaç dilekçe gittiğini gör; en çoktan aza ya da tersine sırala.','Vekile dilekçe gönder ya da 7527 oyuna göre hazırlanmış mektubu gönder.','Mektubu vekilin hesaplarını etiketleyerek paylaş.'], git:'Bugünün Hedefi’ni aç', f:function(){ rehberKapat(); panoAc('hedef', true); } },
+  { k:'harita', ik:'🗺️', ad:'Haritayı kullan', renk:'linear-gradient(160deg,#3730a3,#18181b 75%)', adim:['İlini haritada bul: dilekçe, gönüllü ve vaka sayıları.','Eksik olan illeri gör.','İlinin paylaşımını yap, oradaki tanıdıklarını çağır.'], git:'Haritayı aç', f:function(){ rehberKapat(); panoAc('harita', true); } }
+];
+var _rhVid = {};
+function rehberKapat() { var m = document.getElementById('rh-modal'); m.classList.remove('on'); var v = document.getElementById('rh-vid'); v.textContent = ''; v.hidden = true; }
+function rehberAc(r) {
+  document.getElementById('rh-t').textContent = r.ik + ' ' + r.ad;
+  var ol = document.getElementById('rh-steps'); ol.textContent = '';
+  r.adim.forEach(function (a) { var li = document.createElement('li'); li.textContent = a; ol.appendChild(li); });
+  var v = document.getElementById('rh-vid'); v.textContent = '';
+  if (_rhVid[r.k]) { var f = document.createElement('iframe'); f.src = 'https://www.youtube-nocookie.com/embed/' + _rhVid[r.k] + '?rel=0&playsinline=1&autoplay=1'; f.allow = 'autoplay; encrypted-media; picture-in-picture'; f.allowFullscreen = true; f.title = r.ad; v.appendChild(f); v.hidden = false; } else v.hidden = true;
+  var g = document.getElementById('rh-git'); g.textContent = r.git + ' →'; g.onclick = r.f;
+  document.getElementById('rh-modal').classList.add('on');
+}
+(function () {
+  var k = document.getElementById('rh-k'); if (!k) return;
+  function ciz() {
+    k.textContent = '';
+    REHBER.forEach(function (r, i) {
+      var c = document.createElement('button'); c.type = 'button'; c.className = 'rh-c'; c.style.background = r.renk;
+      c.innerHTML = '<em class="rh-n"></em><i></i><div><b></b><br><span></span></div>';
+      c.querySelector('.rh-n').textContent = String(i + 1); c.querySelector('i').textContent = r.ik; c.querySelector('b').textContent = r.ad;
+      c.querySelector('span').textContent = _rhVid[r.k] ? '▶ İzle' : 'Nasıl? →';
+      c.addEventListener('click', function () { rehberAc(r); });
+      k.appendChild(c);
+    });
+  }
+  ciz();
+  fetch('/veri/rehber.json', { cache: 'no-store' }).then(function (x) { return x.ok ? x.json() : {}; }).then(function (j) { if (j && typeof j === 'object') { _rhVid = j; ciz(); } }).catch(function () {});
+  document.getElementById('rh-modal').addEventListener('click', function (e) { if (e.target.id === 'rh-modal') rehberKapat(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') rehberKapat(); });
 })();
 </script>
 </body>
