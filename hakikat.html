@@ -143,9 +143,12 @@ footer a.mail{font-size:clamp(20px,3.4vw,28px);font-weight:700;text-decoration:n
 .tabs-in{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .tabs-in::-webkit-scrollbar{display:none}
 .tabs-in .tab{flex:0 0 auto;white-space:nowrap;padding:9px 14px}
-/* Geniş ekranda alt sekmeler 4'erli iki satırda, hepsi eşit genişlikte */
-@media(min-width:720px){.tabs-in{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));overflow:visible}.tabs-in .tab{padding:9px 8px;text-align:center;overflow:hidden;text-overflow:ellipsis}}
-.tabs-in .tab.tab-dl{background:#dc2626;border-color:#dc2626;color:#fff}
+/* Geniş ekranda alt sekmeler tek satırda, satırı boşluksuz doldurur */
+@media(min-width:1000px){.tabs-in{overflow:visible}.tabs-in .tab{flex:1 1 0;min-width:0;padding:9px 4px;font-size:14px;text-align:center;overflow:hidden;text-overflow:ellipsis}.tabs-in .tab.tab-dl{flex:1.9 1 0;min-width:0}}
+.tabs-in .tab.tab-dl{background:#dc2626;border-color:#dc2626;color:#fff;text-align:center;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:999px){.tabs-in .tab.tab-dl{min-width:13.5em}}
+.tab-dl span{display:inline-block;transition:opacity .45s}
+.tab-dl span.sn{opacity:0}
 /* Bülten: kayan haber şeridi */
 .tk{overflow-x:auto;scrollbar-width:none;margin:0 -20px 30px;padding:2px 20px 6px;-webkit-overflow-scrolling:touch}
 .tk::-webkit-scrollbar{display:none}
@@ -204,7 +207,7 @@ footer a.mail{font-size:clamp(20px,3.4vw,28px);font-weight:700;text-decoration:n
 <a class="tab" href="#eylemler" data-go="eylemler">📢 Eylemler</a>
 <a class="tab" href="#davalar" data-go="davalar">⚖️ Davalar</a>
 <a class="tab" href="#canli" data-go="canli">🔴 Canlı</a>
-<a class="tab tab-dl" href="/">✉️ Dilekçe gönder</a>
+<a class="tab tab-dl" id="tab-dl" href="/">✉️ Dilekçe gönder</a>
 </div></nav>
 
 <section id="biz" data-tab="biz">
@@ -901,6 +904,26 @@ button.btn.dy-ghost{border:1px solid var(--em)}
     else{f.src='https://www.youtube-nocookie.com/embed/'+TV_VIDEO+'?playlist='+TV_VIDEO+'&loop=1&rel=0&playsinline=1';$('cn-durum').textContent='Şu an canlı yayın yok. Yayınlarımız ARA ACTIVISTS kanalında; abone ol, yayın başlayınca haberin olsun.'}
     $('cn-fr').textContent='';$('cn-fr').appendChild(f);
   }
+
+  // Dilekçe gönder düğmesinde kaybettiğimiz canların adları sırayla yanıp söner: "Cabbar için gönder".
+  // Adlar veri/canlar.json dosyasından gelir; yeni ad eklemek için o listeye yazmak yeter.
+  (function(){
+    var b=$('tab-dl');if(!b)return;
+    fetch('/veri/canlar.json').then(function(r){return r.ok?r.json():[]}).then(function(ad){
+      if(!Array.isArray(ad)||!ad.length)return;
+      var sp=el('span');sp.setAttribute('data-notr','');sp.textContent=b.textContent;b.textContent='';b.appendChild(sp);
+      var i=0;
+      function yaz(n){var d=(document.documentElement.lang||'tr').slice(0,2);
+        if(!n)return d==='en'?'✉️ Send petition':d==='de'?'✉️ Petition senden':'✉️ Dilekçe gönder';
+        return d==='en'?'✉️ Send for '+n:d==='de'?'✉️ Senden für '+n:'✉️ '+n+' için gönder'}
+      sp.textContent=yaz('');
+      setInterval(function(){
+        if(document.visibilityState!=='visible')return;
+        sp.classList.add('sn');
+        setTimeout(function(){var k=i%(ad.length+1);sp.textContent=yaz(k===ad.length?'':ad[k]);i++;sp.classList.remove('sn')},450);
+      },2600);
+    }).catch(function(){});
+  })();
 
   // Sekme açılınca yalnızca o bölümün verisi yüklenir (sayfa hafif kalır)
   window.__hkGoster=function(t){
