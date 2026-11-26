@@ -133,6 +133,20 @@ html:not(.sohbet-modu) #sohbet-kart .sohbet-ust,html:not(.sohbet-modu) #sohbet-k
   }
 </style>
 <style>
+  /* Sahadan Paylaş: haber akışı (telefonda tek, geniş ekranda iki sütun; 6'şar açılır, yarım satır kalmaz) */
+  .fp-akis { display:grid; grid-template-columns:minmax(0,1fr); gap:.75rem; align-items:stretch; }
+  .fp-c > div:nth-last-child(2) { margin-top:auto; } /* düğmeler kartın dibine: yan yana kartlar aynı boyda */
+  @media (min-width:640px) { .fp-akis { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  .fp-akis > p, .fp-akis > button { grid-column:1 / -1; }
+  .fp-c { overflow:hidden; display:flex; flex-direction:column; }
+  .fp-kp { margin:-.75rem -.75rem .35rem; aspect-ratio:16/9; overflow:hidden; background:#0d1914; }
+  .fp-kp img { width:100%; height:100%; object-fit:cover; display:block; }
+  .fp-tl { width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.2rem; text-align:center; }
+  .fp-tl i { font-style:normal; font-size:2.5rem; line-height:1; }
+  .fp-tl b { font-family:'Oswald',sans-serif; letter-spacing:.14em; text-transform:uppercase; font-size:.95rem; color:#fff; }
+  .fp-tl small { font-size:.75rem; color:#d4e0d9; }
+  .k-imza { background:linear-gradient(135deg,#065f46,#0b0f0d); } .k-eylem { background:linear-gradient(135deg,#7f1d1d,#0b0f0d); }
+  .k-dava { background:linear-gradient(135deg,#78350f,#0b0f0d); } .k-cimer { background:linear-gradient(135deg,#075985,#0b0f0d); }
   /* ===== Görev panosu: görsel düzen ===== */
   #rehber, #vol-update { order: 2; }
   #view-board > #pano-nav { order: 2; }
@@ -826,7 +840,7 @@ function siraBoya(pre, cok) {
       <select id="fp-f-city" class="inp" onchange="fpCiz()" aria-label="İle göre süz"><option value="">Tüm iller</option></select>
       <button type="button" id="fp-sort" onclick="fpSirala()" class="btn bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs px-2">↓ Yeniden eskiye</button>
     </div>
-    <div id="fp-list" class="space-y-2 text-sm"><p class="text-[12px] text-zinc-500">Yükleniyor...</p></div>
+    <div id="fp-list" class="fp-akis text-sm"><p class="text-[12px] text-zinc-500">Yükleniyor...</p></div>
   </div>
   </div>
 
@@ -3733,9 +3747,24 @@ function fpCiz() {
   if (list.length > fpGoster) box.appendChild(actBtn('Daha fazla göster (' + (list.length - fpGoster) + ')', 'w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs', function () { fpGoster += 6; fpCiz(); }));
 }
 var fpGoster = 6;
+var FP_KARO = { imza: 'k-imza', eylem: 'k-eylem', dava: 'k-dava', cimer: 'k-cimer' };
 function fpKart(r) {
   var T = FP_TUR[r.kind] || FP_TUR.eylem;
-  var c = h('div', 'bg-zinc-950/60 border ' + (r.pinned ? 'border-amber-600' : 'border-zinc-800') + ' rounded-xl p-3 space-y-2'); c.id = 'fp-c-' + r.id;
+  var c = h('div', 'fp-c bg-zinc-950/60 border ' + (r.pinned ? 'border-amber-600' : 'border-zinc-800') + ' rounded-xl p-3 space-y-2'); c.id = 'fp-c-' + r.id;
+  // Haber akışı: kartın başında kaydın kendi afişi, yoksa linkteki haberin/kampanyanın kapak görseli, o da yoksa türün görseli
+  var kp = h('div', 'fp-kp'), kpAlt = [r.city, r.district].filter(Boolean).join(' / ') || r.country || '';
+  function kpKaro() { kp.textContent = ''; var d = h('div', 'fp-tl ' + (FP_KARO[r.kind] || FP_KARO.eylem)); d.appendChild(h('i', '', T.ik)); d.appendChild(h('b', '', T.ad)); if (kpAlt) d.appendChild(h('small', '', kpAlt)); kp.appendChild(d); }
+  var kpLink = /^https?:\/\//i.test(r.link || '') && !/instagram\.com|facebook\.com|fb\.watch|tiktok\.com|jointvoice\.com/i.test(r.link) ? '/kapak?u=' + encodeURIComponent(r.link) : '';
+  if (r.has_image) {
+    kpKaro();
+    var im = h('img', 'cursor-pointer'); im.alt = r.title; im.loading = 'lazy';
+    if (!_fpImg[r.id]) _fpImg[r.id] = callRpc('gv_fp_image', { p_id: r.id });
+    _fpImg[r.id].then(function (s) { if (s) { im.src = s; kp.textContent = ''; kp.appendChild(im); } }).catch(function () { delete _fpImg[r.id]; });
+    im.onclick = function () { if (im.src) fpBuyut(im.src, r); };
+  } else if (kpLink) {
+    var ik = h('img'); ik.alt = ''; ik.loading = 'lazy'; ik.referrerPolicy = 'no-referrer'; ik.onerror = kpKaro; ik.src = kpLink; kp.appendChild(ik);
+  } else kpKaro();
+  c.appendChild(kp);
   var ust = h('div', 'flex flex-wrap items-center gap-2');
   ust.appendChild(h('span', 'text-[10px] font-bold uppercase tracking-wide text-white px-2 py-0.5 rounded ' + T.renk, T.ik + ' ' + T.ad));
   if (r.pinned) ust.appendChild(h('span', 'text-[10px] font-bold text-amber-300', '📌 Öne çıkan'));
@@ -3746,17 +3775,10 @@ function fpKart(r) {
   var yer = [r.country, r.city, r.district].filter(Boolean).join(' / ');
   if (yer || r.place) c.appendChild(h('div', 'text-[12px] text-zinc-300', '📍 ' + [yer, r.place].filter(Boolean).join(' · ')));
   if (r.event_at) c.appendChild(h('div', 'text-[12px] text-zinc-300', '🗓 ' + fpTarihMetni(r.event_at, true)));
-  if (r.has_image) {
-    var im = h('img', 'rounded-lg border border-zinc-700 max-h-72 max-w-full cursor-pointer'); im.alt = r.title; im.loading = 'lazy';
-    if (!_fpImg[r.id]) _fpImg[r.id] = callRpc('gv_fp_image', { p_id: r.id });
-    _fpImg[r.id].then(function (s) { if (s) im.src = s; }).catch(function () { delete _fpImg[r.id]; });
-    im.onclick = function () { if (im.src) fpBuyut(im.src, r); };
-    c.appendChild(im);
-  }
   if (r.body) {
     var b = h('div', 'text-[13px] text-zinc-200 whitespace-pre-line break-words leading-relaxed', r.body);
-    if (r.body.length > 280) {
-      b.style.display = '-webkit-box'; b.style.webkitLineClamp = '5'; b.style.webkitBoxOrient = 'vertical'; b.style.overflow = 'hidden';
+    if (r.body.length > 220) {
+      b.style.display = '-webkit-box'; b.style.webkitLineClamp = '4'; b.style.webkitBoxOrient = 'vertical'; b.style.overflow = 'hidden';
       var dv = h('button', 'text-[11px] text-emerald-300 underline cursor-pointer', 'Devamını oku'); dv.type = 'button';
       dv.onclick = function () { var acik = b.style.display === 'block'; b.style.display = acik ? '-webkit-box' : 'block'; dv.textContent = acik ? 'Devamını oku' : 'Kısalt'; };
       c.appendChild(b); c.appendChild(dv);
