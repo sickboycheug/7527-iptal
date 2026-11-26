@@ -1040,7 +1040,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
   function $(i){return document.getElementById(i)}
   function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
   function trDate(d){if(!d)return '';var p=String(d).slice(0,10).split('-');return p.length===3?p[2]+'.'+p[1]+'.'+p[0]:d}
-  function link(v){return SITE+'/vaka/'+encodeURIComponent(v.id)}
+  function link(v){return SITE+'/hakikat?vaka='+encodeURIComponent(v.id)+'#vakalar'}
   function text(v,short,withLink){
     var yer=[v.city,v.location].filter(Boolean).join(' · '),t=trDate(v.case_date),L=[v.title];
     if(yer||t)L.push([yer,t].filter(Boolean).join(' · '));

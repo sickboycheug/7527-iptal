@@ -4963,7 +4963,7 @@ var VOL_URL = SITE_URL + '/paylas/paylas-gonullu.html?v=2';
 var shareCase = null;
 
 // Paylasilacak metni kurar. 'short' surumu X'in karakter sinirina gore kisadir.
-function caseLink(item) { return item.adim ? SITE_URL + '/paylas/paylas-adim.html' : SITE_URL + '/vaka/' + encodeURIComponent(item.id); }
+function caseLink(item) { return item.adim ? SITE_URL + '/paylas/paylas-adim.html' : SITE_URL + '/hakikat?vaka=' + encodeURIComponent(item.id) + '#vakalar'; }
 function buildShareText(item, short, withLink) {
   if (item.adim) {
     var ml = short ? 'Dilekçeni adım adım gönder: 6 adımı sırayla izle, hiçbir adımı atlama. #7527İptal' : adimMetni();

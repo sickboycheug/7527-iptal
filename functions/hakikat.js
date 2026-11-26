@@ -15,16 +15,55 @@ const SEKME = {
 };
 const SET = { cabbar: 'paylas-cabbar-12kasim', dilekce: 'paylas-dilekce', nimet: 'paylas-nimet', bildiri: 'paylas-bildiri', '15gun': 'paylas-15gun' };
 
+const SB = 'https://mednnlpprdgupdajmrin.supabase.co', SBK = 'sb_publishable_4xahmL7yt4C53MAJuorucg_qhImIEwn';
+
+// Haber/kaynak sayfasının kendi kapak görseli (og:image); bulunamazsa ''
+async function kaynakGorsel(u) {
+  if (!/^https?:\/\//i.test(u || '')) return '';
+  try {
+    const r = await fetch(u, { headers: { 'User-Agent': 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)', 'Accept': 'text/html' }, redirect: 'follow', cf: { cacheTtl: 86400 } });
+    if (!r.ok || !/html/i.test(r.headers.get('content-type') || '')) return '';
+    const h = (await r.text()).slice(0, 300000);
+    const m = /<meta[^>]+(?:property|name)=["'](?:og:image(?::secure_url)?|twitter:image(?::src)?)["'][^>]*>/i.exec(h);
+    const c = m && /content=["']([^"']+)["']/i.exec(m[0]);
+    const img = c ? new URL(c[1].replace(/&amp;/g, '&'), r.url).href : '';
+    return /^https:\/\//i.test(img) ? img : '';
+  } catch (e) { return ''; }
+}
+
+// Tek vaka: kendi başlığı, açıklaması ve haberinin görseli (10 dk önbellek)
+async function vaka(id, waitUntil) {
+  const key = new Request('https://7527iptal.org/__og/vaka/' + id);
+  const hit = await caches.default.match(key);
+  if (hit) return hit.json();
+  let v = null;
+  try {
+    const r = await fetch(SB + '/rest/v1/rpc/list_almanac_cases?id=eq.' + id + '&select=id,title,description,city,location,source_url', {
+      method: 'POST', headers: { apikey: SBK, Authorization: 'Bearer ' + SBK, 'Content-Type': 'application/json' }, body: '{}'
+    });
+    const a = r.ok ? await r.json() : [];
+    if (a && a[0]) {
+      const c = a[0];
+      const yer = [c.city, c.location].filter(Boolean).join(' · ');
+      const d = String(c.description || '').replace(/\s+/g, ' ').trim();
+      v = [c.title + (yer ? ' · ' + yer : ''), d.length > 280 ? d.slice(0, 277) + '…' : d, (await kaynakGorsel(c.source_url)) || G + 'og-vaka.png'];
+    }
+  } catch (e) {}
+  if (v) waitUntil(caches.default.put(key, new Response(JSON.stringify(v), { headers: { 'Cache-Control': 'public, max-age=600', 'Content-Type': 'application/json' } })));
+  return v;
+}
+
 function meta(html, ad) {
   const m = new RegExp('<meta[^>]+property=["\']' + ad + '["\'][^>]*>', 'i').exec(html);
   const c = m && /content=["']([^"']*)["']/i.exec(m[0]);
   return c ? c[1] : '';
 }
 
-export async function onRequestGet({ request, env, next }) {
+export async function onRequestGet({ request, env, next, waitUntil }) {
   const url = new URL(request.url);
   const s = url.searchParams.get('s') || ((url.searchParams.get('il') || url.searchParams.get('vaka')) ? 'vakalar' : '');
-  let v = SEKME[s];
+  const vid = /^\d{1,7}$/.test(url.searchParams.get('vaka') || '') ? url.searchParams.get('vaka') : '';
+  let v = vid ? await vaka(vid, waitUntil) : SEKME[s];
   if (!v && SET[s]) {
     try {
       const r = await env.ASSETS.fetch(new URL('/paylas/' + SET[s], url));
@@ -36,7 +75,7 @@ export async function onRequestGet({ request, env, next }) {
   const res = await next();
   if (!v || !/html/i.test(res.headers.get('content-type') || '')) return res;
   const [t, d, img] = v;
-  const link = 'https://7527iptal.org/hakikat?s=' + encodeURIComponent(s);
+  const link = vid ? 'https://7527iptal.org/hakikat?vaka=' + vid : 'https://7527iptal.org/hakikat?s=' + encodeURIComponent(s);
   const set = (deger) => ({ element(e) { e.setAttribute('content', deger); } });
   return new HTMLRewriter()
     .on('title', { element(e) { e.setInnerContent(t + ' | 7527iptal.org'); } })
