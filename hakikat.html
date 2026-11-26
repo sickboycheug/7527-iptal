@@ -139,6 +139,7 @@ footer a.mail{font-size:clamp(20px,3.4vw,28px);font-weight:700;text-decoration:n
 </style>
 <style>
 /* Sekme şeridi: dokuz sekme tek satırda, parmakla kaydırılır */
+.tabs-ust{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px}
 .tabs-in{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .tabs-in::-webkit-scrollbar{display:none}
 .tabs-in .tab{flex:0 0 auto;white-space:nowrap;padding:9px 14px}
@@ -189,8 +190,10 @@ footer a.mail{font-size:clamp(20px,3.4vw,28px);font-weight:700;text-decoration:n
 .cn-fr{aspect-ratio:16/9;width:100%;background:#000;border:1px solid var(--line);border-radius:18px;overflow:hidden}
 .cn-fr iframe{width:100%;height:100%;border:0;display:block}
 </style>
-<nav class="tabs" aria-label="Sayfa bölümleri"><div class="tabs-in">
-<a class="tab" href="#bulten" data-go="bulten">📰 Bülten</a>
+<nav class="tabs" aria-label="Sayfa bölümleri"><div class="tabs-ust">
+<a class="tab" href="#biz" data-go="biz">Biz kimiz</a>
+<a class="tab" href="#bulten" data-go="bulten">📰 7527iptal Bülten</a>
+</div><div class="tabs-in">
 <a class="tab" href="#hedef" data-go="hedef">🎯 Hedef</a>
 <a class="tab" href="#harita" data-go="harita">🗺️ Haritalar</a>
 <a class="tab" href="#vakalar" data-go="vakalar">🐾 Vakalar</a>
@@ -198,7 +201,6 @@ footer a.mail{font-size:clamp(20px,3.4vw,28px);font-weight:700;text-decoration:n
 <a class="tab" href="#eylemler" data-go="eylemler">📢 Eylemler</a>
 <a class="tab" href="#davalar" data-go="davalar">⚖️ Davalar</a>
 <a class="tab" href="#canli" data-go="canli">🔴 Canlı</a>
-<a class="tab" href="#biz" data-go="biz">Biz kimiz</a>
 </div></nav>
 
 <section id="biz" data-tab="biz">

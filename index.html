@@ -100,6 +100,9 @@
   #mp-canvas {
     touch-action: none;
   }
+  /* Vekil imza alanı, seçilen vekilin doğru TBMM e-postası yazılana kadar kilitli */
+  #mp-pad-wrap.kilit #mp-canvas { pointer-events: none; }
+  #mp-pad-wrap:not(.kilit) #mp-pad-kilit { display: none; }
   #launch-gate.gate-hidden {
     opacity: 0;
     visibility: hidden;
@@ -895,8 +898,9 @@ window.addEventListener('load', function () {
         </div>
 
         <label class="block text-zinc-300 font-semibold mb-1">VEKİL EKRAN İMZASI *</label>
-        <div class="border-2 border-zinc-700 bg-white rounded-xl overflow-hidden touch-none relative shadow-inner">
-          <canvas id="mp-canvas" class="w-full h-32 cursor-crosshair block bg-white"></canvas>
+        <div id="mp-pad-wrap" class="kilit border-2 border-zinc-700 bg-white rounded-xl overflow-hidden touch-none relative shadow-inner">
+          <canvas id="mp-canvas" class="w-full cursor-crosshair block bg-white" style="height:15rem"></canvas>
+          <div id="mp-pad-kilit" class="absolute inset-0 flex items-center justify-center p-4 text-center text-sm font-semibold" style="background:rgba(24,24,27,.88);color:#e4e4e7">🔒 İmza alanı, seçtiğiniz vekilin TBMM e-posta adresini doğru yazdığınızda açılır.</div>
         </div>
         <div class="flex justify-between items-center mt-1">
           <span class="text-[10px] text-zinc-400">İmzanız doğrulanarak meclis sayaçlarına işlenir.</span>
@@ -5074,6 +5078,7 @@ function filterMpSignDropdown() {
 
 function onMpSignSelectChange() {
   updateMpDocument();
+  setTimeout(mpPadKilit, 0);
   var mpSignSelect = document.getElementById('mp-sign-select');
   var id = parseInt(mpSignSelect ? mpSignSelect.value : '0', 10);
   var m = MP_DATABASE.find(function(x) { return x.id === id; });
@@ -5096,6 +5101,20 @@ function onMpSignSelectChange() {
 
 // --- MECLİS VEKİL İMZASI ---
 var mpSignBusy = false;
+
+// İmza alanı yalnızca listeden seçilen vekilin kayıtlı TBMM e-postası birebir yazılınca açılır.
+// E-posta silinir/değişir ya da başka vekil seçilirse alan yeniden kilitlenir ve atılmış imza temizlenir.
+function mpPadKilit() {
+  var sel = document.getElementById('mp-sign-select'), em = document.getElementById('mp-sign-email'), w = document.getElementById('mp-pad-wrap');
+  if (!w) return;
+  var id = parseInt(sel ? sel.value : '0', 10), m = MP_DATABASE.find(function (x) { return x.id === id; });
+  var ok = !!(m && em && String(em.value).trim().toLowerCase() === String(m.email || '').trim().toLowerCase());
+  var kilitliydi = w.classList.contains('kilit');
+  w.classList.toggle('kilit', !ok);
+  if (!ok && !kilitliydi) { try { clearMpPad(); } catch (e) {} }
+  if (em) em.style.borderColor = ok ? '#10b981' : '';
+}
+document.addEventListener('input', function (e) { if (e.target && e.target.id === 'mp-sign-email') mpPadKilit(); });
 
 async function submitMpSignature() {
   if (mpSignBusy) return;
