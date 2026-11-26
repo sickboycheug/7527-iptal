@@ -143,6 +143,9 @@ footer a.mail{font-size:clamp(20px,3.4vw,28px);font-weight:700;text-decoration:n
 .tabs-in{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .tabs-in::-webkit-scrollbar{display:none}
 .tabs-in .tab{flex:0 0 auto;white-space:nowrap;padding:9px 14px}
+/* Geniş ekranda alt sekmeler 4'erli iki satırda, hepsi eşit genişlikte */
+@media(min-width:720px){.tabs-in{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));overflow:visible}.tabs-in .tab{padding:9px 8px;text-align:center;overflow:hidden;text-overflow:ellipsis}}
+.tabs-in .tab.tab-dl{background:#dc2626;border-color:#dc2626;color:#fff}
 /* Bülten: kayan haber şeridi */
 .tk{overflow-x:auto;scrollbar-width:none;margin:0 -20px 30px;padding:2px 20px 6px;-webkit-overflow-scrolling:touch}
 .tk::-webkit-scrollbar{display:none}
@@ -201,6 +204,7 @@ footer a.mail{font-size:clamp(20px,3.4vw,28px);font-weight:700;text-decoration:n
 <a class="tab" href="#eylemler" data-go="eylemler">📢 Eylemler</a>
 <a class="tab" href="#davalar" data-go="davalar">⚖️ Davalar</a>
 <a class="tab" href="#canli" data-go="canli">🔴 Canlı</a>
+<a class="tab tab-dl" href="/">✉️ Dilekçe gönder</a>
 </div></nav>
 
 <section id="biz" data-tab="biz">
@@ -966,7 +970,7 @@ button.btn.dy-ghost{border:1px solid var(--em)}
     Array.prototype.forEach.call(document.querySelectorAll('.tabs .tab'),function(a){a.classList.toggle('on',a.getAttribute('data-go')===t)});
     if(scroll){var n=document.querySelector('.tabs');if(n)window.scrollTo({top:n.offsetTop,behavior:'smooth'})}
   }
-  Array.prototype.forEach.call(document.querySelectorAll('.tabs .tab'),function(a){a.addEventListener('click',function(e){e.preventDefault();var t=a.getAttribute('data-go');show(t,true);try{history.replaceState(null,'','#'+t)}catch(x){}})});
+  Array.prototype.forEach.call(document.querySelectorAll('.tabs .tab[data-go]'),function(a){a.addEventListener('click',function(e){e.preventDefault();var t=a.getAttribute('data-go');show(t,true);try{history.replaceState(null,'','#'+t)}catch(x){}})});
   Array.prototype.forEach.call(document.querySelectorAll('a[href="#harita"],a[href="#vakalar"],a[href="#duyurular"],a[href="#bulten"],a[href="#hedef"],a[href="#imzalar"],a[href="#eylemler"],a[href="#davalar"],a[href="#canli"],a[href="#biz"]'),function(a){if(a.classList.contains('tab'))return;a.addEventListener('click',function(e){e.preventDefault();var t=which(a.getAttribute('href'));show(t,true);try{history.replaceState(null,'','#'+t)}catch(x){}})});
   window.__hkSekme=function(t,scroll){show(t,scroll);try{history.replaceState(null,'','#'+t)}catch(x){}};
   var ilk=which(location.hash);show(ilk,false);

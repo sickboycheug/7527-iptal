@@ -3838,11 +3838,10 @@ function fpIlDegisti() {
   d.disabled = !(IL_ILCE[il] || []).length;
 }
 function fpGorselSil() { fpGorsel = null; $('fp-file').value = ''; $('fp-img-box').classList.add('hidden'); $('fp-img-box').classList.remove('flex'); }
-async function fpGorselSec(inp) {
-  var f = inp.files && inp.files[0], msg = $('fp-form-msg');
-  if (!f) return;
+// Seçilen fotoğrafı sıkıştırır (en çok ~550 KB JPEG); olmazsa null döner. Form ve yönetici "Görsel ekle" ortak kullanır.
+async function fpSikistir(f) {
+  var url = URL.createObjectURL(f), im = new Image();
   try {
-    var url = URL.createObjectURL(f), im = new Image();
     await new Promise(function (ok, no) { im.onload = ok; im.onerror = no; im.src = url; });
     var s = null;
     [[1600, .75], [1280, .7], [1024, .6], [800, .55]].some(function (d) {
@@ -3851,7 +3850,14 @@ async function fpGorselSec(inp) {
       c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
       s = c.toDataURL('image/jpeg', d[1]); return s.length <= 560000;
     });
-    URL.revokeObjectURL(url);
+    return s && s.length <= 560000 ? s : null;
+  } finally { URL.revokeObjectURL(url); }
+}
+async function fpGorselSec(inp) {
+  var f = inp.files && inp.files[0], msg = $('fp-form-msg');
+  if (!f) return;
+  try {
+    var s = await fpSikistir(f);
     if (!s || s.length > 560000) { msg.textContent = 'Görsel çok büyük, başka bir görsel dene.'; fpGorselSil(); return; }
     fpGorsel = s; $('fp-img').src = s; $('fp-img-box').classList.remove('hidden'); $('fp-img-box').classList.add('flex'); msg.textContent = '';
   } catch (e) { msg.textContent = 'Bu görsel açılamadı.'; fpGorselSil(); }
@@ -3945,6 +3951,17 @@ function faCiz() {
     if (r.status !== 'rejected') line.appendChild(actBtn('Reddet', 'bg-zinc-800 hover:bg-zinc-700 text-zinc-200', function () { faDurum(r, 'rejected'); }));
     line.appendChild(actBtn(r.pinned ? 'Öne çıkarmayı kaldır' : '📌 Öne çıkar', 'bg-zinc-800 hover:bg-zinc-700 text-amber-300', function () { faKaydet(r, { pinned: !r.pinned }); }));
     line.appendChild(actBtn('✎ Düzenle', 'bg-zinc-800 hover:bg-zinc-700 text-white', function () { faDuzenle(r); }));
+    // Mevcut kayda fotoğraf ekleme / değiştirme (ör. dava fotoğrafı): kart görseli ve paylaşım önizlemesi bu olur
+    line.appendChild(actBtn(r.has_image ? '🖼 Görseli değiştir' : '🖼 Görsel ekle', 'bg-zinc-800 hover:bg-zinc-700 text-emerald-300', function () {
+      var inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*';
+      inp.onchange = async function () {
+        var f = inp.files && inp.files[0]; if (!f) return;
+        $('admin-msg').textContent = 'Görsel yükleniyor…';
+        try { var g = await fpSikistir(f); if (!g) { $('admin-msg').textContent = 'Görsel çok büyük, başka bir görsel dene.'; return; } await faKaydet(r, { image: g }); }
+        catch (e) { $('admin-msg').textContent = 'Görsel okunamadı, başka bir görsel dene.'; }
+      };
+      inp.click();
+    }));
     if (r.has_image) line.appendChild(actBtn('🖼 Görsel', 'bg-zinc-800 hover:bg-zinc-700 text-white', async function () {
       try { var s = await callRpc('gv_admin_fp_image', { p_pin: adminPin, p_id: r.id }); if (s) fpBuyut(s, r); } catch (e) { $('admin-msg').textContent = errText(e); }
     }));
