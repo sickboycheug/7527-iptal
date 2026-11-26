@@ -1710,7 +1710,7 @@ function vkaKopya() { var t = vkaMetin() + '\n\n' + vkaLink(), b = document.getE
   function durum(t) { $('gc-st').textContent = t; setTimeout(function () { $('gc-st').textContent = ''; }, 3000); }
   function kopyala(t) { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(function () { durum('✓ Metin kopyalandı'); }, function () {}); }
   function sec_(c) {
-    sec = c; $('gc-big').src = '/cagri/cagri-' + c + '-ig.jpg?v=6'; $('gc-dl').href = '/cagri/cagri-' + c + '-ig.jpg?v=6';
+    sec = c; $('gc-big').src = '/cagri/cagri-' + c + '-ig.jpg?v=7'; $('gc-dl').href = '/cagri/cagri-' + c + '-ig.jpg?v=7';
     Array.prototype.forEach.call(document.querySelectorAll('#gc-dil [data-gc]'), function (b) { var on = b.getAttribute('data-gc') === c; b.style.background = on ? '#047857' : '#16201b'; b.style.borderColor = on ? '#10b981' : '#2b3a33'; });
   }
   Array.prototype.forEach.call(document.querySelectorAll('#gc-dil [data-gc]'), function (b) { b.onclick = function () { sec_(b.getAttribute('data-gc')); }; });
@@ -1723,9 +1723,9 @@ function vkaKopya() { var t = vkaMetin() + '\n\n' + vkaLink(), b = document.getE
   $('gc-sh').onclick = function () {
     // 2 sayfalı gönderi: 1. sayfa o dil, 2. sayfa Türkçe
     var imgs = sec === 'tr' ? ['tr'] : [sec, 'tr'];
-    veri().then(function (d) { kopyala(d[sec].ig); return Promise.all(imgs.map(function (k) { return fetch('/cagri/cagri-' + k + '-ig.jpg?v=6').then(function (r) { return r.blob(); }).then(function (bl) { return new File([bl], 'cagri-' + k + '.jpg', { type: 'image/jpeg' }); }); })).then(function (fs) {
+    veri().then(function (d) { kopyala(d[sec].ig); return Promise.all(imgs.map(function (k) { return fetch('/cagri/cagri-' + k + '-ig.jpg?v=7').then(function (r) { return r.blob(); }).then(function (bl) { return new File([bl], 'cagri-' + k + '.jpg', { type: 'image/jpeg' }); }); })).then(function (fs) {
       if (navigator.canShare && navigator.canShare({ files: fs })) return navigator.share({ files: fs, text: d[sec].ig });
-      imgs.forEach(function (k) { var a = document.createElement('a'); a.href = '/cagri/cagri-' + k + '-ig.jpg?v=6'; a.download = 'cagri-' + k + '.jpg'; document.body.appendChild(a); a.click(); a.remove(); });
+      imgs.forEach(function (k) { var a = document.createElement('a'); a.href = '/cagri/cagri-' + k + '-ig.jpg?v=7'; a.download = 'cagri-' + k + '.jpg'; document.body.appendChild(a); a.click(); a.remove(); });
     }); }).catch(function () {});
   };
   // Paylaş: o dilin kendi sayfasının linki tek dokunuşla gider (önizleme görseli o sayfadan gelir). Paylaş menüsü yoksa seçenekler açılır.
