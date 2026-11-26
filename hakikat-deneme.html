@@ -143,8 +143,8 @@ footer a.mail{font-size:clamp(20px,3.4vw,28px);font-weight:700;text-decoration:n
 .tabs-in{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .tabs-in::-webkit-scrollbar{display:none}
 .tabs-in .tab{flex:0 0 auto;white-space:nowrap;padding:9px 14px}
-/* Geniş ekranda alt sekmeler 4'erli iki satırda, hepsi eşit genişlikte */
-@media(min-width:720px){.tabs-in{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));overflow:visible}.tabs-in .tab{padding:9px 8px;text-align:center;overflow:hidden;text-overflow:ellipsis}}
+/* Geniş ekranda alt sekmeler tek satırda, satırı boşluksuz doldurur */
+@media(min-width:1000px){.tabs-in{overflow:visible}.tabs-in .tab{flex:1 1 0;min-width:0;padding:9px 4px;font-size:14px;text-align:center;overflow:hidden;text-overflow:ellipsis}.tabs-in .tab.tab-dl{flex:1.9 1 0;min-width:0}}
 .tabs-in .tab.tab-dl{background:#dc2626;border-color:#dc2626;color:#fff;min-width:13.5em;text-align:center;overflow:hidden;text-overflow:ellipsis}
 .tab-dl span{display:inline-block;transition:opacity .45s}
 .tab-dl span.sn{opacity:0}
