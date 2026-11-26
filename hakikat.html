@@ -61,7 +61,9 @@ h3{font-family:'Oswald',sans-serif;text-transform:uppercase;font-weight:600;font
 .goal .big small{font-size:.4em;color:var(--mut);font-weight:500}
 .meter{height:14px;border-radius:999px;background:#0d1914;border:1px solid var(--line);overflow:hidden}
 .meter i{display:block;height:100%;min-width:6px;background:linear-gradient(90deg,var(--em),var(--em2))}
-.panels{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,17rem),1fr))}
+/* Kart grupları yarım satır bırakmaz: 4 kart 2x2, 9 kart 3x3 */
+.panels{display:grid;gap:14px;grid-template-columns:1fr}
+@media(min-width:720px){.panels{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .panel{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:6px}
 .panel .tag{font-family:'Oswald',sans-serif;color:var(--em2);font-size:14px;letter-spacing:.16em;text-transform:uppercase}
 .panel p{margin:0;font-size:17px;color:#d4e0d9}
@@ -132,7 +134,8 @@ footer a.mail{font-size:clamp(20px,3.4vw,28px);font-weight:700;text-decoration:n
 .zincir li{counter-increment:z;display:grid;grid-template-columns:auto 1fr;column-gap:16px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 18px}
 .zincir li::before{content:counter(z);grid-row:span 2;font-family:'Oswald',sans-serif;font-size:32px;line-height:1;color:var(--amb);min-width:26px;text-align:center;align-self:center}
 .zincir b{font-size:17px}.zincir span{font-size:15px;color:#d4e0d9}
-.pn-k{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(min(100%,16rem),1fr))}
+.pn-k{display:grid;gap:12px;grid-template-columns:1fr}
+@media(min-width:720px){.pn-k{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .pn-k a{display:flex;flex-direction:column;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;color:var(--tx);text-decoration:none;transition:border-color .2s,transform .2s}
 .pn-k a:hover,.pn-k a:focus-visible{border-color:var(--em);transform:translateY(-2px)}
 .pn-k i{font-style:normal;font-size:30px;line-height:1}
