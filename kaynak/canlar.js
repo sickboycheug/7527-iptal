@@ -5,7 +5,7 @@
 (function () {
   // Hangi düğmeler: kısa "… paylaş" düğmeleri (Paylaş, Haritayı paylaş, Mektubu paylaş…) ve her türlü
   // "dilekçe(ni/yi) gönder" düğmesi. WhatsApp'ta/Facebook'ta paylaş gibi paylaşım menüsündeki seçenekler hariç.
-  var PAY = /^(?:[\p{L}]+ )?(?:paylaş|teilen)$|^share(?: the [\p{L}]+)?$|^[\p{L}]+ teilen$/u;
+  var PAY = /^(?:[\p{L}]+ ){0,2}(?:paylaş|teilen)$|^share(?: (?:the|this) [\p{L}]+)?$/u;
   var DIL = /^(?:e-posta ile )?dilekçe(?:ni|yi)? gönder$|^send (?:your |the )?petition(?: by e-mail)?$|^(?:sende deine petition|petition (?:per e-mail )?senden)$/u;
   var HARIC = /whatsapp|facebook|telegram|twitter|instagram|cihaz|pdf|sahadan|menü/i;
   var AD = [], i = 0;
