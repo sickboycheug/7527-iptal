@@ -943,14 +943,14 @@ button.btn.dy-ghost{border:1px solid var(--em)}
   function ytId(u){var m=/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:[^#\s]*&)?v=|live\/|embed\/|shorts\/))([\w-]{11})/i.exec(u||'');return m?m[1]:''}
   async function cnGoster(){
     if(CN)return;CN=true;
-    var TV_VIDEO='zQMSV1BFUGA'; // görev sayfasındaki ekranda dönen videoyla aynı
+    var TV_VIDEO=['pdl2lqZh7dE','zQMSV1BFUGA']; // ekranda sırayla dönen videolar (görev sayfasıyla aynı liste)
     var r=await Promise.all([rpc('gv_live_get').catch(function(){return null}),
       /7527iptal\.org$/.test(location.hostname)?fetch('/p/tv-canli',{cache:'no-store'}).then(function(x){return x.ok?x.json():null}).catch(function(){return null}):null]);
     var d=r[0]||{},oto=r[1]&&r[1].on&&/^[\w-]{11}$/.test(r[1].id||'')?r[1]:null;
     var id=(d.on&&d.url?String(d.url).split(/\s+/).map(ytId).filter(Boolean)[0]:'')||(oto?oto.id:'');
     var f=el('iframe');f.title='ARA ACTIVISTS';f.allowFullscreen=true;f.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
     if(id){f.src='https://www.youtube-nocookie.com/embed/'+id+'?rel=0&playsinline=1';$('cn-durum').textContent='🔴 Şu an canlıdayız'+((d.on&&d.title)||(oto&&oto.title)?': '+((d.on&&d.title)||oto.title):'')+'. Sorunu sohbete yaz.'}
-    else{f.src='https://www.youtube-nocookie.com/embed/'+TV_VIDEO+'?playlist='+TV_VIDEO+'&loop=1&rel=0&playsinline=1';$('cn-durum').textContent='Şu an canlı yayın yok. Yayınlarımız ARA ACTIVISTS kanalında; abone ol, yayın başlayınca haberin olsun.'}
+    else{f.src='https://www.youtube-nocookie.com/embed/'+TV_VIDEO[0]+'?playlist='+TV_VIDEO.join(',')+'&loop=1&rel=0&playsinline=1';$('cn-durum').textContent='Şu an canlı yayın yok. Yayınlarımız ARA ACTIVISTS kanalında; abone ol, yayın başlayınca haberin olsun.'}
     $('cn-fr').textContent='';$('cn-fr').appendChild(f);
   }
 

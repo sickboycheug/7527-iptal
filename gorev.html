@@ -3568,8 +3568,8 @@ function liveBirles() {
 }
 function tvOynat(oto) {
   var fr = $('live-frame'), f = document.createElement('iframe');
-  var TV_VIDEO = 'zQMSV1BFUGA';   // Ekranda sürekli dönen video: yenisi için yalnızca bu kimliği değiştir
-  f.src = 'https://www.youtube-nocookie.com/embed/' + TV_VIDEO + '?playlist=' + TV_VIDEO + '&loop=1&autoplay=1&rel=0&playsinline=1' + (oto ? '&mute=1' : '');
+  var TV_VIDEO = ['pdl2lqZh7dE', 'zQMSV1BFUGA'];   // Ekranda sırayla dönen videolar: listeye kimlik ekle/çıkar
+  f.src = 'https://www.youtube-nocookie.com/embed/' + TV_VIDEO[0] + '?playlist=' + TV_VIDEO.join(',') + '&loop=1&autoplay=1&rel=0&playsinline=1' + (oto ? '&mute=1' : '');
   f.title = 'ARA ACTIVISTS'; f.allowFullscreen = true;
   f.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
   f.setAttribute('style', 'width:100%;height:100%;border:0;display:block');
