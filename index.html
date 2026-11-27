@@ -797,17 +797,17 @@ window.addEventListener('load', function () {
       <div id="hm-info" class="text-xs text-zinc-300 min-h-[1.5rem] text-center"></div>
       <div id="hm-list"></div>
       <div id="hm-alt" class="text-center pt-1">
-        <p id="hm-call" class="text-sm font-bold text-amber-300 leading-relaxed max-w-xl mx-auto"></p>
-        <div class="grid grid-cols-1 gap-2 max-w-xs mx-auto mt-3">
-          <button type="button" id="hm-cta-case" onclick="openReportModal()" class="py-3 bg-red-700 hover:bg-red-600 text-white rounded-xl font-bold text-xs uppercase tracking-wide shadow">🐾 Vakayı Bildir</button>
-          <button type="button" id="hm-cta-pet" onclick="switchTab('vatandas'); adim1eGit()" class="py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold text-xs uppercase tracking-wide shadow">📨 Dilekçeni Gönder</button>
-          <a id="hm-cta-vol" href="/gorev.html" class="block py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs uppercase tracking-wide shadow">🤝 İl Gönüllüsü Ol</a>
+        <p id="hm-call" class="text-sm font-bold text-amber-300 leading-relaxed max-w-xl mx-auto mb-3"></p>
+        <div class="grid grid-cols-1 gap-2 max-w-sm mx-auto">
+          <button type="button" id="hm-cta-case" onclick="openReportModal()" class="w-full py-3 bg-red-700 hover:bg-red-600 text-white rounded-xl font-bold text-xs shadow">🐾 Vakayı bildir</button>
+          <button type="button" id="hm-cta-pet" onclick="switchTab('vatandas'); adim1eGit()" class="w-full py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold text-xs shadow">📨 Dilekçeni gönder</button>
+          <a id="hm-cta-vol" href="/gorev.html" class="block w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs shadow">🤝 İl gönüllüsü ol</a>
         </div>
         <div class="max-w-sm mx-auto mt-2">
-          <button type="button" onclick="hmPaylas(this)" class="w-full py-2.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-white rounded-xl font-bold text-[11px]">📤 Haritayı paylaş</button>
+          <button type="button" onclick="hmPaylas(this)" class="w-full py-3 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-white rounded-xl font-bold text-xs">📤 Haritayı paylaş</button>
         </div>
         <div class="max-w-sm mx-auto mt-2">
-          <button type="button" onclick="ilpAc()" class="w-full py-2.5 bg-pink-700 hover:bg-pink-600 text-white rounded-xl font-bold text-[11px]">📍 Ülke / İl / İlçe Seç ve Paylaş</button>
+          <button type="button" onclick="ilpAc()" class="w-full py-3 bg-pink-700 hover:bg-pink-600 text-white rounded-xl font-bold text-xs">📍 Ülke / İl / İlçe Seç ve Paylaş</button>
           <div id="ilp-kutu" style="display:none" class="mt-2 text-left space-y-2">
             <div class="grid grid-cols-2 gap-2">
               <select id="ilp-ulke" onchange="ilpUlkeDegisti()" aria-label="Ülke" class="w-full min-w-0 bg-zinc-950 border border-zinc-700 rounded-lg px-2 py-2 text-zinc-100 text-xs"></select>
@@ -4285,6 +4285,39 @@ async function hmBorders(svg, mode) {
     g.appendChild(p);
   });
   svg.insertBefore(g, svg.firstChild);
+  if (mode === 'tr') ilSinirlari(svg, g);
+}
+// İl haritası yerleşimi: daireler il merkezinde başlar, üst üste binenler birbirinden itilir (sayılar okunur kalır)
+function trYerlesim(cities, nOf) {
+  var P = {}, L = [];
+  cities.forEach(function (c) {
+    var ll = TR_XY[c], x = (ll[1] - 25.5) * 0.777 * 40, y = (42.7 - ll[0]) * 40, n = nOf(c);
+    var o = { x: x, y: y, ax: x, ay: y, r: n > 0 ? Math.min(14, 6 + Math.sqrt(n) * 0.6) : 3.6 };
+    P[c] = o; L.push(o);
+  });
+  for (var k = 0; k < 120; k++) {
+    for (var i = 0; i < L.length; i++) for (var j = i + 1; j < L.length; j++) {
+      var a = L[i], b = L[j], dx = b.x - a.x, dy = b.y - a.y, d = Math.sqrt(dx * dx + dy * dy) || 0.01, m = a.r + b.r + 1;
+      if (d < m) { var s = (m - d) / 2 / d; a.x -= dx * s; a.y -= dy * s; b.x += dx * s; b.y += dy * s; }
+    }
+    L.forEach(function (o) { o.x += (o.ax - o.x) * 0.04; o.y += (o.ay - o.y) * 0.04; });
+  }
+  return P;
+}
+// İl sınırları (ince çizgi): boş görünen alanların hangi ile ait olduğu belli olur
+var _ilGeoP = null;
+async function ilSinirlari(svg, sonra) {
+  if (!_ilGeoP) _ilGeoP = fetch('https://cdn.jsdelivr.net/gh/alpers/Turkey-Maps-GeoJSON@master/tr-cities.json').then(function (r) { return r.json(); }).catch(function () { return null; });
+  var gj = await _ilGeoP; if (!gj) return;
+  var NS = 'http://www.w3.org/2000/svg', d = '';
+  function px(p) { return ((p[0] - 25.5) * 0.777 * 40).toFixed(1) + ',' + ((42.7 - p[1]) * 40).toFixed(1); }
+  gj.features.forEach(function (f) {
+    var polys = f.geometry.type === 'Polygon' ? [f.geometry.coordinates] : f.geometry.coordinates;
+    polys.forEach(function (poly) { poly.forEach(function (ring) { d += 'M' + ring.map(px).join('L') + 'Z'; }); });
+  });
+  var p = document.createElementNS(NS, 'path');
+  p.setAttribute('d', d); p.setAttribute('fill', 'none'); p.setAttribute('stroke', 'rgba(255,255,255,0.22)'); p.setAttribute('stroke-width', '0.5'); p.setAttribute('pointer-events', 'none');
+  if (sonra && sonra.parentNode === svg) svg.insertBefore(p, sonra.nextSibling); else svg.insertBefore(p, svg.firstChild);
 }
 async function hmLoad() {
   var box = document.getElementById('hm-svg');
@@ -4696,10 +4729,11 @@ function hmRender() {
   sum.textContent = 'Türkiye: ' + withVol.length + ' / ' + allCities.length + ' ilde ' + trTotal + ' ' + W + '  ·  Yurtdışı: ' + abArr.length + ' ülkede ' + abTotal + ' ' + W;
   var callEl = document.getElementById('hm-call');
   if (callEl) callEl.textContent = CASE
-    ? without.length + ' ilde henüz kayıtlı vaka yok. Bu, orada yaşanmadığı anlamına gelmiyor. Şehrindeki eski-yeni vakayı bildir.'
+    ? (without.length ? without.length + ' ilde henüz kayıtlı vaka yok. Bu, orada yaşanmadığı anlamına gelmiyor. Şehrindeki eski-yeni vakayı bildir.' : '')
     : MPL ? 'Kendi ilinin vekillerine dilekçeni gönder. Her vekile giden dilekçe, Meclis\'te iptal için bir ses daha.'
     : PET ? without.length + ' ilden henüz dilekçe gelmedi. Senin ilinden ses ver, dilekçeni gönder.'
     : without.length + ' ilde il gönüllüsü arıyoruz. İlinde kampanyanın sesi ol.';
+  if (callEl) callEl.style.display = callEl.textContent ? '' : 'none';
   var svg = document.createElementNS(NS, 'svg');
   svg.setAttribute('class', 'w-full');
   function circle(cx, cy, r, fill) {
@@ -4722,12 +4756,13 @@ function hmRender() {
     svg.setAttribute('viewBox', '0 0 620 300');
     hmBorders(svg, 'tr');
     // Büyük daireler önce çizilir, küçükler üstte kalır: hiçbir ilin sayısı kapanmaz
+    var YER = trYerlesim(allCities, function (c) { return (byCity[c] && Number(byCity[c].n)) || 0; });
     allCities.slice().sort(function (a, b) { return ((byCity[b] && Number(byCity[b].n)) || 0) - ((byCity[a] && Number(byCity[a].n)) || 0); }).forEach(function (city) {
-      var ll = TR_XY[city], cx = (ll[1] - 25.5) * 0.777 * 40, cy = (42.7 - ll[0]) * 40;
+      var cx = YER[city].x, cy = YER[city].y;
       var r = byCity[city];
       if (r && Number(r.n) > 0) {
         var n = Number(r.n);
-        var c = circle(cx, cy, 7 + Math.min(n, 20) * 0.7, CASE ? '#ef4444' : '#10b981');
+        var c = circle(cx, cy, YER[city].r, CASE ? '#ef4444' : '#10b981');
         c.setAttribute('fill-opacity', '0.85'); c.setAttribute('stroke', '#ecfdf5'); c.setAttribute('stroke-width', '1');
         c.style.cursor = 'pointer';
         c.addEventListener('click', function () { if (CASE) { hmCaseInfo(city, info); return; } var s2 = MPST && MPST[city]; say(city, n, s2 ? (s2.vekil + ' vekilden ' + s2.alan + ' tanesine dilekçe gitti, ' + (s2.vekil - s2.alan) + ' vekile henüz gitmedi') : ''); });

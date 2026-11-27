@@ -859,6 +859,11 @@ function siraBoya(pre, cok) {
     <p id="fp-thanks" class="hidden text-xs text-emerald-300 font-semibold bg-emerald-950/60 border border-emerald-800 rounded-lg p-2">✓ Teşekkürler! Paylaşımın ekibe ulaştı. Onaylanınca burada yayınlanır.</p>
     <div id="fp-kinds" class="grid grid-cols-3 sm:grid-cols-6 gap-1.5"></div>
 
+    <div class="grid grid-cols-2 gap-2">
+      <select id="fp-f-city" class="inp" onchange="fpCiz()" aria-label="İle göre süz"><option value="">Tüm iller</option></select>
+      <button type="button" id="fp-sort" onclick="fpSirala()" class="btn bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs px-2">↓ Yeniden eskiye</button>
+    </div>
+    <div id="fp-list" class="fp-akis text-sm"><p class="text-[12px] text-zinc-500">Yükleniyor...</p></div>
     <!-- BAŞVURU REHBERİ: durum seçilir, bilgiler girilir; doğru kurum, hazır dilekçe ve ekler listesi çıkar.
          Hiçbir bilgi kaydedilmez ve sunucuya gitmez; dilekçe yalnızca bu cihazda hazırlanır. -->
     <section id="bv-box" class="hidden bv">
@@ -884,11 +889,6 @@ function siraBoya(pre, cok) {
       <div id="bv-s" class="hidden space-y-2"></div>
       <p class="text-[11px] text-zinc-500 leading-relaxed">Bu rehber bilgilendirme amaçlıdır, hukuki danışmanlık değildir. İlinin barosunun hayvan hakları komisyonundan destek isteyebilirsin.</p>
     </section>
-    <div class="grid grid-cols-2 gap-2">
-      <select id="fp-f-city" class="inp" onchange="fpCiz()" aria-label="İle göre süz"><option value="">Tüm iller</option></select>
-      <button type="button" id="fp-sort" onclick="fpSirala()" class="btn bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs px-2">↓ Yeniden eskiye</button>
-    </div>
-    <div id="fp-list" class="fp-akis text-sm"><p class="text-[12px] text-zinc-500">Yükleniyor...</p></div>
   </div>
   </div>
 
@@ -3074,13 +3074,15 @@ function mapPubLoad() {
     } catch (e) {}
     try {
       var cm = {};
-      ((await callRpcTum('list_almanac_cases', {})) || []).forEach(function (x) { if (x.city) cm[x.city] = (cm[x.city] || 0) + 1; });
+      var vkR = (await callRpcTum('list_almanac_cases', {})) || []; _mapVakalar = vkR;
+      vkR.forEach(function (x) { if (x.city) cm[x.city] = (cm[x.city] || 0) + 1; });
       o.case = Object.keys(cm).map(function (c) { return { country: '', city: c, n: cm[c] }; });
     } catch (e) {}
     _mapPub = o; return o;
   })();
   return _mapPubP;
 }
+var _mapVakalar = [];
 async function mapLayer(v) {
   _mapLayer = v;
   if (v !== 'vol' && !_mapPub) { var b = $('map-svg'); if (b) b.textContent = 'Harita yükleniyor...'; await mapPubLoad(); }
@@ -3121,7 +3123,41 @@ async function drawBorders(svg, mode) {
     g.appendChild(p);
   });
   svg.insertBefore(g, svg.firstChild);
+  if (mode === 'tr') ilSinirlari(svg, g);
 }
+// İl haritası yerleşimi: daireler il merkezinde başlar, üst üste binenler birbirinden itilir (sayılar okunur kalır)
+function trYerlesim(cities, nOf) {
+  var P = {}, L = [];
+  cities.forEach(function (c) {
+    var ll = TR_XY[c], x = (ll[1] - 25.5) * 0.777 * 40, y = (42.7 - ll[0]) * 40, n = nOf(c);
+    var o = { x: x, y: y, ax: x, ay: y, r: n > 0 ? Math.min(14, 6 + Math.sqrt(n) * 0.6) : 3.6 };
+    P[c] = o; L.push(o);
+  });
+  for (var k = 0; k < 120; k++) {
+    for (var i = 0; i < L.length; i++) for (var j = i + 1; j < L.length; j++) {
+      var a = L[i], b = L[j], dx = b.x - a.x, dy = b.y - a.y, d = Math.sqrt(dx * dx + dy * dy) || 0.01, m = a.r + b.r + 1;
+      if (d < m) { var s = (m - d) / 2 / d; a.x -= dx * s; a.y -= dy * s; b.x += dx * s; b.y += dy * s; }
+    }
+    L.forEach(function (o) { o.x += (o.ax - o.x) * 0.04; o.y += (o.ay - o.y) * 0.04; });
+  }
+  return P;
+}
+// İl sınırları (ince çizgi): boş görünen alanların hangi ile ait olduğu belli olur
+var _ilGeoP = null;
+async function ilSinirlari(svg, sonra) {
+  if (!_ilGeoP) _ilGeoP = fetch('https://cdn.jsdelivr.net/gh/alpers/Turkey-Maps-GeoJSON@master/tr-cities.json').then(function (r) { return r.json(); }).catch(function () { return null; });
+  var gj = await _ilGeoP; if (!gj) return;
+  var NS = 'http://www.w3.org/2000/svg', d = '';
+  function px(p) { return ((p[0] - 25.5) * 0.777 * 40).toFixed(1) + ',' + ((42.7 - p[1]) * 40).toFixed(1); }
+  gj.features.forEach(function (f) {
+    var polys = f.geometry.type === 'Polygon' ? [f.geometry.coordinates] : f.geometry.coordinates;
+    polys.forEach(function (poly) { poly.forEach(function (ring) { d += 'M' + ring.map(px).join('L') + 'Z'; }); });
+  });
+  var p = document.createElementNS(NS, 'path');
+  p.setAttribute('d', d); p.setAttribute('fill', 'none'); p.setAttribute('stroke', 'rgba(255,255,255,0.22)'); p.setAttribute('stroke-width', '0.5'); p.setAttribute('pointer-events', 'none');
+  if (sonra && sonra.parentNode === svg) svg.insertBefore(p, sonra.nextSibling); else svg.insertBefore(p, svg.firstChild);
+}
+
 async function loadMap() {
   var box = $('map-svg');
   if (!box) return;
@@ -3195,14 +3231,31 @@ function renderMap() {
     : 'Türkiye: ' + withVol.length + ' / ' + allCities.length + ' ilde ' + trTotal + ' ' + W + (CASE ? '' : '  ·  Yurtdışı: ' + abArr.length + ' ülkede ' + abTotal + ' ' + W);
   var mc = $('map-call');
   if (mc) mc.textContent = VOL ? without.length + ' ilde gönüllü arıyoruz. Görevin yalnızca bu pano değil: şehrinde yaşanan vakaları bildir, vekillerine dilekçeni gönder, çevrene de gönderttir.'
-    : CASE ? without.length + ' ilde henüz kayıtlı vaka yok. Bu, orada yaşanmadığı anlamına gelmiyor. Şehrindeki eski-yeni vakayı bildir.'
+    : CASE ? (without.length ? without.length + ' ilde henüz kayıtlı vaka yok. Bu, orada yaşanmadığı anlamına gelmiyor. Şehrindeki eski-yeni vakayı bildir.' : '')
     : MPL ? without.length + ' ilin vekillerine henüz dilekçe gitmedi. Kendi ilinin vekillerine dilekçeni gönder.'
     : without.length + ' ilden henüz dilekçe gelmedi. O illerdeki tanıdıklarına ulaş, dilekçelerini göndersinler.';
+  if (mc) mc.style.display = mc.textContent ? '' : 'none';
   function show(title, n, nicks, extra) {
     info.textContent = '';
     info.appendChild(h('div', 'font-bold text-white', title + ' — ' + n + ' ' + W));
     if (nicks && nicks.length) info.appendChild(h('div', 'text-zinc-400', nicks.join(', ')));
     if (extra) info.appendChild(h('div', 'text-zinc-500', extra));
+  }
+  // Vaka katmaninda ile dokununca o ilin son vakalari listelenir (ana sayfadaki gibi)
+  function vakaGoster(city, n) {
+    show(city, n, [], '');
+    var cs = _mapVakalar.filter(function (x) { return x.city === city; })
+      .sort(function (a, b) { return String(b.case_date || '').localeCompare(String(a.case_date || '')); });
+    var kutu = h('div', 'mt-2 space-y-2 text-left');
+    cs.slice(0, 6).forEach(function (x) {
+      var s = h('a', 'block bg-zinc-900 border border-zinc-800 hover:border-red-700 rounded-lg p-2');
+      s.href = '/?vaka=' + encodeURIComponent(x.id);
+      s.appendChild(h('div', 'text-[10px] text-red-300 font-bold', (x.category || '') + ' · ' + (x.case_date || '')));
+      s.appendChild(h('div', 'text-[11px] text-white font-semibold', x.title || ''));
+      kutu.appendChild(s);
+    });
+    if (cs.length > 6) { var tum = h('a', 'block text-center text-[11px] text-emerald-400 underline font-bold py-1', city + ' için ' + cs.length + ' vakanın tümünü gör →'); tum.href = '/hakikat.html?il=' + encodeURIComponent(city) + '#vakalar'; kutu.appendChild(tum); }
+    info.appendChild(kutu);
   }
   var svg = document.createElementNS(NS, 'svg');
   svg.setAttribute('class', 'w-full');
@@ -3220,15 +3273,16 @@ function renderMap() {
   if (_mapView === 'tr') {
     svg.setAttribute('viewBox', '0 0 620 300');
     drawBorders(svg, 'tr');
-    allCities.forEach(function (city) {
-      var ll = TR_XY[city], cx = (ll[1] - 25.5) * 0.777 * 40, cy = (42.7 - ll[0]) * 40;
+    var YER = trYerlesim(allCities, function (c) { return (byCity[c] && Number(byCity[c].n)) || 0; });
+    allCities.slice().sort(function (a, b) { return ((byCity[b] && Number(byCity[b].n)) || 0) - ((byCity[a] && Number(byCity[a].n)) || 0); }).forEach(function (city) {
+      var cx = YER[city].x, cy = YER[city].y;
       var r = byCity[city];
       if (r && Number(r.n) > 0) {
         var n = Number(r.n);
-        var c = circle(cx, cy, 7 + Math.min(n, 20) * 0.7, RENK);
+        var c = circle(cx, cy, YER[city].r, RENK);
         c.setAttribute('fill-opacity', '0.85'); c.setAttribute('stroke', '#ecfdf5'); c.setAttribute('stroke-width', '1');
         c.style.cursor = 'pointer';
-        c.addEventListener('click', function () { show(city, n, r.nicks || [], ''); });
+        c.addEventListener('click', function () { if (CASE) { vakaGoster(city, n); return; } show(city, n, r.nicks || [], ''); });
         svg.appendChild(c); svg.appendChild(label(cx, cy, String(n), 9));
       } else {
         var d = circle(cx, cy, 3.2, '#52525b'); d.setAttribute('stroke', '#a1a1aa'); d.setAttribute('stroke-width', '0.6');
