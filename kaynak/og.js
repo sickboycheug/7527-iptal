@@ -288,7 +288,7 @@
     k.style.cssText = 'background:#18181b;border:1px solid #3f3f46;border-radius:16px;padding:16px;width:100%;max-width:340px;font:600 14px Inter,system-ui,sans-serif;color:#f4f4f5';
     k.innerHTML = '<div style="font-weight:800;margin-bottom:10px">📤 Paylaş</div>';
     var uzun = igHash(o2.xUzun || t) + '\n\n' + url;
-    var hedef = [['💬 WhatsApp', 'https://api.whatsapp.com/send?text=' + e(waKisalt(o2.wa || t, url))],
+    var hedef = [['💬 WhatsApp', 'https://api.whatsapp.com/send?text=' + e(waKisalt(o2.wa || t, url, o2.waSinir))],
       ['Telegram', 'https://t.me/share/url?url=' + e(url) + '&text=' + e(t)],
       ['𝕏 X · mavi tik (tam metin)', 'https://twitter.com/intent/tweet?text=' + e(uzun)],
       ['𝕏 X · kısa (280)', 'https://twitter.com/intent/tweet?text=' + e(xKisa(igHash(t), url, xt))],
