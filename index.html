@@ -2,6 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
+<script>if(location.hostname==='7527-iptal.pages.dev')location.replace('https://7527iptal.org'+location.pathname+location.search+location.hash);</script>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,7 +24,7 @@
 <!-- Tailwind: hazır CSS dosyası -->
 <link rel="stylesheet" href="/kaynak/tailwind.css?v=1">
 <script src="/kaynak/og.js?v=24" defer></script>
-<script src="/kaynak/kt.js?v=1" defer></script>
+<script src="/kaynak/kt.js?v=2" defer></script>
 <script src="/kaynak/sohbet.js?v=2" defer></script>
 <script src="/kaynak/tarayici.js?v=2" defer></script>
 <!-- QRCode.js -->
@@ -3796,6 +3797,8 @@ function formHata(msg) {
   el.textContent = '⚠️ ' + msg; el.style.display = 'block';
   formHata._t = setTimeout(function () { el.style.display = 'none'; }, 7000);
 }
+// Ön kontroller yavaş bağlantıda butonu kilitlemesin: süre dolarsa null döner, akış sürer (sunucu tekrar kaydı yine engeller)
+function _sureli(p, ms) { return Promise.race([p, new Promise(function (ok) { setTimeout(function () { ok(null); }, ms || 5000); })]); }
 async function sendPetitionViaEmail() {
   if (_gonderimSuruyor || petitionBusy) return;
   if (window.INAPP) { window.INAPP.uyar(); return; }
@@ -3854,7 +3857,7 @@ async function _dilekceGonder() {
     return;
   }
   // Uyarıdan önce sunucudaki gönderim listesi alınır (her cihazda doğru kalan sayısı)
-  try { await gonderilenSenkron(name); } catch (e) {}
+  try { await _sureli(gonderilenSenkron(name), 5000); } catch (e) {}
   var zatenGitti = (selectedTarget === 'mp' && selectedMP && getSentMpIds().indexOf(selectedMP.id) !== -1) ||
                    ((selectedTarget === 'cb' || selectedTarget === 'mb') && hedefGonderildi(selectedTarget));
   if (zatenGitti) {
@@ -3872,7 +3875,7 @@ async function _dilekceGonder() {
   if (oncekiNo && onayli) {
     // Cihazdaki not eski olabilir (kayit yonetim panelinden silinmis olabilir): once sunucuya sor
     var stv = null;
-    try { stv = await callRpc('petition_status', { p_petition_number: oncekiNo }); } catch (e) { stv = null; }
+    try { stv = await _sureli(callRpc('petition_status', { p_petition_number: oncekiNo }), 5000); } catch (e) { stv = null; }
     if (stv && stv.found === false) {
       try { localStorage.removeItem(tekrarAnahtar); localStorage.removeItem(tekrarAnahtar + '_onay'); } catch (e) {}
       bekleyenSil(oncekiNo); oncekiNo = ''; onayli = false;
@@ -3886,7 +3889,7 @@ async function _dilekceGonder() {
   if (oncekiNo && !onayli && !window.__oncekiGec[tekrarAnahtar]) {
     // Bu hedefe daha once dilekce olusturulmus ama onaylanmamis: once kullaniciya sor
     var stx = null;
-    try { stx = await callRpc('petition_status', { p_petition_number: oncekiNo }); } catch (e) { stx = null; }
+    try { stx = await _sureli(callRpc('petition_status', { p_petition_number: oncekiNo }), 5000); } catch (e) { stx = null; }
     if (stx && stx.found === false) {
       try { localStorage.removeItem(tekrarAnahtar); localStorage.removeItem(tekrarAnahtar + '_onay'); } catch (e) {}
       bekleyenSil(oncekiNo); oncekiNo = '';
@@ -3905,10 +3908,10 @@ async function _dilekceGonder() {
     var mevcut = null;
     try {
       var kh = await rkHash(name);
-      if (kh) mevcut = await callRpc('petition_existing', {
+      if (kh) mevcut = await _sureli(callRpc('petition_existing', {
         p_hash: kh, p_type: selectedTarget,
         p_id: selectedTarget === 'mp' && selectedMP ? String(selectedMP.id) : null
-      });
+      }), 5000);
     } catch (e) { mevcut = null; }  // kontrol çalışmazsa dilekçe akışı aynen sürer
     if (mevcut && mevcut.no) {
       if (mevcut.onay) {
@@ -7757,13 +7760,14 @@ function rkSiraMetin(r, can) {
   var adTam = isimsiz ? 'Bir yurttaş' : r.etiket, ad = isimsiz ? 'Bu yurttaş' : String(r.etiket).split(' ')[0];
   var adNin = isimsiz ? 'Bu yurttaşın' : rkNin(ad, true), n = Number(r.toplam), kalan = Math.max(0, RK_TOPLAM - n);
   var yer = yurt ? 'binlerce kilometre öteden, ' + (r.il ? r.il + '/' : '') + rkDen(r.ulke) : (r.il ? rkDen(r.il) : '');
-  var etk = '#7527İptal' + (yurt ? ' ' + OG.et(r.ulke) + (r.il ? ' ' + OG.et(r.il) : '') : (r.il ? ' ' + OG.et(r.il) : ''));
+  // Türkiye: il etiketleri paylaşımda OG.vakaEtiket ile ayrı satır olarak eklenir (tekrar olmasın)
+  var etk = yurt ? '#7527İptal ' + OG.et(r.ulke) + (r.il ? ' ' + OG.et(r.il) : '') : (r.il ? '' : '#7527İptal');
   return '🕯 ' + adTam + (yer ? ', ' + yer : '') + ' ' + n.toLocaleString('tr-TR') + ' dilekçe gönderdi.\n\n' +
     '7527 sayılı yasayla sokaklarda doğup büyüyen canlar yaşadıkları yerden koparılıyor. Barınaklara kapatılıp açlığa, hastalığa ve ölüme terk ediliyorlar. ' + can + ' gibi nicelerini kaybettik ve çoğunun hesabı hiç sorulmadı.\n\n' +
     ad + ' gönderdiği her dilekçeyle bir milletvekilinin kapısını, Anayasa\'nın verdiği dilekçe hakkıyla, tek tek, adıyla çaldı: "Bu yasa kaldırılsın. İptal teklifine imzanızı koyun."\n\n' +
     'Hedef 594 dilekçe: Cumhurbaşkanlığı, TBMM Başkanlığı ve 592 vekilin her biri. ' + adNin + ' 594\'e ulaşmasına ' + kalan + ' dilekçe kaldı.\n\n' +
     'Bir beğeni bir canı kurtarmıyor, bir dilekçe kurtarır. Sen de ' + (yurt ? 'vekillere' : (r.il ? r.il : 'kendi ilinin') + ' vekillerinden başla,') + ' dilekçeni gönder. Bu mesajı sevdiğin üç kişiye ilet.\n\n' +
-    'Yaşam hakkı için · Hayvanlarımız için · Geleceğimiz için\n' + etk;
+    'Yaşam hakkı için · Hayvanlarımız için · Geleceğimiz için' + (etk ? '\n\n' + etk : '');
 }
 async function rkSiraGorsel(r, can) {
   try { await Promise.all([document.fonts.load('700 80px Oswald'), document.fonts.load('600 30px Inter')]); } catch (e) {}
@@ -7795,13 +7799,14 @@ async function rkSiraPaylas(r) {
     // O ilin (yurtdışında ülkenin) yerel etiketleri ve hesapları ayrı satırda eklenir
     try {
       var d = await rkEtiketler(), yurt = r.ulke && r.ulke !== 'Türkiye', yerAd = String((yurt ? r.ulke : r.il) || '').trim();
-      var yerel = (yurt ? [] : ((d.il_hashtag || {})[yerAd] || [])).concat((((yurt ? d.ulke : d.il) || {})[yerAd] || []).slice(0, 10).map(function (h) { return '@' + h; }));
-      if (yerel.length) metin += '\n\n' + yerel.join(' ');
+      // Türkiye: diğer yer paylaşımlarıyla aynı kural (#7527İptal, il, ilçeler, il etiketleri, yerel hesaplar, vekillerin X hesapları)
+      var yerel = yurt ? (((d.ulke || {})[yerAd] || []).slice(0, 10).map(function (h) { return '@' + h; }).join(' ')) : (yerAd ? OG.vakaEtiket(yerAd, '') : '');
+      if (yerel) metin += '\n\n' + yerel;
     } catch (e) {}
     var link = OG.sayfa({ tur: 'sira', id: r.etiket + ' ' + yer, parcalar: [r.etiket, yer, r.toplam], gorsel: blob, w: 1080, h: 1080, hedef: '/?siralama=1',
       baslik: r.etiket + (yer ? ' (' + yer + ')' : '') + ': ' + Number(r.toplam).toLocaleString('tr-TR') + ' dilekçe gönderdi',
       aciklama: 'Bir beğeni bir canı kurtarmıyor, bir dilekçe kurtarır. Sen de dilekçeni gönder.' });
-    OG.paylas({ baslik: r.etiket, metin: metin, url: link, ham: true, waSinir: 2000, gorsel: function () { return blob; }, gorselAd: '7527-' + rkNorm(r.etiket).replace(/\s+/g, '-') + '.png' });
+    OG.paylas({ baslik: r.etiket, metin: metin, url: link, ham: true, gorsel: function () { return blob; }, gorselAd: '7527-' + rkNorm(r.etiket).replace(/\s+/g, '-') + '.png' });
   } catch (e) { alert('Paylaşım hazırlanamadı. Sayfayı yenileyip tekrar dene.'); }
   _rkSiraMesgul = false;
 }
@@ -7898,7 +7903,10 @@ function admKutuKapat(boxId) {
 }
 // ---- Paylaşım takibi raporu (kaynak/kt.js + kt_rapor) ----
 var KT_ADM = { rows: [], gun: 0, azdan: false, n: 10 };
-var KT_AD = { wa: 'WhatsApp', tg: 'Telegram', x: 'X', fb: 'Facebook', tel: 'Telefon paylaş menüsü', kop: 'Kopyalanan link' };
+var KT_AD = { wa: 'Paylaşım · WhatsApp', tg: 'Paylaşım · Telegram', x: 'Paylaşım · X', fb: 'Paylaşım · Facebook', tel: 'Paylaşım · Telefon menüsü', kop: 'Paylaşım · Kopyalanan link',
+  'g-ig': 'Gelen · Instagram', 'g-fb': 'Gelen · Facebook', 'g-tt': 'Gelen · TikTok', 'g-x': 'Gelen · X', 'g-tg': 'Gelen · Telegram', 'g-wa': 'Gelen · WhatsApp Web',
+  'g-yt': 'Gelen · YouTube', 'g-arama': 'Gelen · Google/arama', 'g-dogrudan': 'Gelen · Doğrudan (WhatsApp, yazarak, yer imi)' };
+function ktAd(k) { return KT_AD[k] || (/^r-/.test(k) ? 'Gelen · ' + k.slice(2).replace(/-/g, '.') : k); }
 async function ktAdminList(yenile) {
   if (!adminPinCache) { alert('Oturum düşmüş. Lütfen yönetici PIN’ini tekrar girin.'); return; }
   var box = document.getElementById('kt-admin'); if (!box) return;
@@ -7926,16 +7934,16 @@ function ktAdminCiz() {
     return KT_ADM.azdan ? -f : f;
   });
   var tz = 0, td = 0; rows.forEach(function (r) { tz += Number(r.ziyaret) || 0; td += Number(r.dilekce) || 0; });
-  box.appendChild(rkEl('p', 'text-[11px] text-zinc-300 font-bold', 'Toplam: ' + tz + ' ziyaret · ' + td + ' dilekçe (yalnız etiketli bağlantılarla gelenler)'));
-  if (!rows.length) { box.appendChild(rkEl('p', 'text-[11px] text-zinc-400', 'Bu dönemde etiketli bağlantıyla gelen yok.')); return; }
+  box.appendChild(rkEl('p', 'text-[11px] text-zinc-300 font-bold', 'Toplam: ' + tz + ' ziyaret · ' + td + ' dilekçe (her ziyaret bir kez, kaynağıyla; 28 Kasım öncesi yalnız paylaşım düğmeleri)'));
+  if (!rows.length) { box.appendChild(rkEl('p', 'text-[11px] text-zinc-400', 'Bu dönemde kayıt yok.')); return; }
   rows.slice(0, KT_ADM.n).forEach(function (r) {
     var kart = rkEl('div', 'bg-zinc-950 border border-zinc-800 rounded-lg p-2 space-y-1');
     var bas = rkEl('div', 'flex items-start justify-between gap-2');
-    bas.appendChild(rkEl('span', 'text-[11px] font-bold text-white break-all', (KT_AD[r.k] || r.k) + ' · ' + (r.kaynak || '(sayfa bilinmiyor)')));
+    bas.appendChild(rkEl('span', 'text-[11px] font-bold text-white break-all', ktAd(r.k) + ' · ' + (r.kaynak || '(sayfa bilinmiyor)')));
     var sil = rkEl('button', 'shrink-0 px-2 py-1 rounded bg-red-900 hover:bg-red-800 text-white text-[10px] font-bold', 'Sil');
     sil.type = 'button';
     sil.onclick = async function () {
-      if (!confirm((KT_AD[r.k] || r.k) + ' · ' + (r.kaynak || '') + '\nBu paylaşımın bütün takip kayıtları silinecek. Dilekçelerin kendisine dokunulmaz. Devam edilsin mi?')) return;
+      if (!confirm(ktAd(r.k) + ' · ' + (r.kaynak || '') + '\nBu paylaşımın bütün takip kayıtları silinecek. Dilekçelerin kendisine dokunulmaz. Devam edilsin mi?')) return;
       sil.disabled = true;
       try { await callRpc('kt_sil', { p_pin: adminPinCache, p_k: r.k, p_kaynak: r.kaynak || '' }); ktAdminList(true); }
       catch (e) { sil.disabled = false; alert(dataErrorText(e)); }

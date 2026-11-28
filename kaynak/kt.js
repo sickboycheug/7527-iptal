@@ -98,6 +98,26 @@
       var r = new URL(document.referrer);
       if (r.host === location.host && RE.test(r.searchParams.get('k') || '')) { k = r.searchParams.get('k'); kaynak = r.pathname; }
     }
+    // Etiketsiz gelen ziyaret de kaynağıyla bir kez kaydedilir (Instagram, X, arama, doğrudan...)
+    // Böylece bütün trafik nereden geliyor ve kaç dilekçeye dönüyor görülür. Siteiçi geçişler sayılmaz.
+    if (!k && !oku()) {
+      var ref = '', ua = navigator.userAgent || '';
+      try { ref = document.referrer ? new URL(document.referrer).hostname.replace(/^(www|m|l|lm|mobile)\./, '') : ''; } catch (e) { ref = ''; }
+      if (ref && ref.replace(/^www\./, '') === location.hostname.replace(/^www\./, '')) ref = 'ic';
+      if (ref !== 'ic') {
+        k = /Instagram/i.test(ua) || /instagram\.com$/.test(ref) ? 'g-ig'
+          : /FBAN|FBAV|FB_IAB/i.test(ua) || /facebook\.com$/.test(ref) ? 'g-fb'
+          : /musical_ly|BytedanceWebview|TikTok/i.test(ua) || /tiktok\.com$/.test(ref) ? 'g-tt'
+          : /Twitter/i.test(ua) || /^(t\.co|x\.com|twitter\.com)$/.test(ref) ? 'g-x'
+          : /Telegram/i.test(ua) || /^(t\.me|web\.telegram\.org)$/.test(ref) ? 'g-tg'
+          : /whatsapp/i.test(ref) ? 'g-wa'
+          : /youtube\.com$|youtu\.be$/.test(ref) ? 'g-yt'
+          : /(^|\.)(google|bing|yandex|duckduckgo|yahoo|ecosia)\./.test(ref) ? 'g-arama'
+          : !ref ? 'g-dogrudan'
+          : ('r-' + ref.replace(/[^a-z0-9]+/g, '-')).slice(0, 40);
+        kaynak = location.pathname;
+      }
+    }
     if (k) {
       kaynak = kaynak.slice(0, 160);
       var o = oku();
